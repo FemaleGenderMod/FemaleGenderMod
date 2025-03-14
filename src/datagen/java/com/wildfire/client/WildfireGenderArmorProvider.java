@@ -42,7 +42,7 @@ public class WildfireGenderArmorProvider extends GenderArmorProvider {
         add(ArmorMaterials.IRON, WildfireHelper.IRON);
         add(ArmorMaterials.DIAMOND, WildfireHelper.DIAMOND);
         add(ArmorMaterials.NETHERITE, WildfireHelper.NETHERITE);
-        ////TODO - 1.21.4: EquipmentAssets.ELYTRA
+        //TODO - 1.21.4: EquipmentAssets.ELYTRA
         add(ResourceLocation.withDefaultNamespace("elytra"), GenderArmor.EMPTY);
     }
 }

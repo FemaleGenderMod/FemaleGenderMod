@@ -1,2 +1,5 @@
 # GSON uses LF only, this prevents annoyance on Windows where only EOLs differ
 *.json eol=lf
+
+# In GitHub, hide generated resources by default
+generated/** linguist-generated

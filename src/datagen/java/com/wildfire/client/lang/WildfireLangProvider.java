@@ -55,8 +55,8 @@ public class WildfireLangProvider extends BaseLanguageProvider {
         add(WildfireLang.LABEL_WITH_CONTRIBUTOR, "You are playing on a server with a contributor of this mod!");
         add(WildfireLang.LABEL_WITH_BOTH, "You are playing on a server with the creator and a contributor of this mod!");
 
-        add(WildfireLang.TOOLTIP_BOUNCE_WARNING, "TODO");
-        add(WildfireLang.TOOLTIP_HIDE_IN_ARMOR, "TODO");
+        add(WildfireLang.TOOLTIP_BOUNCE_WARNING, "Setting 'Bounce Intensity' to a high value will look very unnatural!");
+        add(WildfireLang.TOOLTIP_HIDE_IN_ARMOR, "Hide Breast Model When Wearing Armors");
         add(WildfireLang.TOOLTIP_HURT_SOUNDS, "Your character will play a female hurt sound when taking damage if your gender is set to either Female or Other");
         add(WildfireLang.TOOLTIP_OVERRIDE_PHYSICS_1, "Breast physics will no longer be reduced/suppressed by your equipped armor while enabled");
         add(WildfireLang.TOOLTIP_OVERRIDE_PHYSICS_2, "This is intended for use with resource packs that hide armor, or any similar minimal armor packs");
@@ -106,7 +106,7 @@ public class WildfireLangProvider extends BaseLanguageProvider {
         add(WildfireLang.FIRST_TIME_SETUP_DISABLE_CLOUD_SYNC, "Disable Cloud Syncing");
 
         add(WildfireLang.CLOUD_DETAILS, "Cloud Sync Server Information");
-        add(WildfireLang.CLOUD_DETAILS_PAGE1, "TODO");
+        add(WildfireLang.CLOUD_DETAILS_PAGE1, "Page 1");
         add(WildfireLang.DETAILS_NEXT_PAGE, "Next Page");
         add(WildfireLang.DETAILS_PREV_PAGE, "Prev Page");
 
