@@ -19,7 +19,9 @@
 package com.wildfire.client.gui;
 
 import com.wildfire.main.WildfireGender;
+import com.wildfire.main.WildfireLang;
 import com.wildfire.main.entitydata.PlayerConfig;
+import com.wildfire.main.text.TextComponentUtil;
 import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
@@ -36,13 +38,13 @@ public class GuiHelper {
         if (syncedPlayers.isEmpty()) {
             return;
         }
-        graphics.drawString(font, Component.translatable("wildfire_gender.wardrobe.players_using_mod").withStyle(ChatFormatting.AQUA), 5, 5, 0xFFFFFF);
+        graphics.drawString(font, WildfireLang.WARDROBE_PLAYERS_USING.translateColored(ChatFormatting.AQUA), 5, 5, 0xFFFFFF);
 
         int yPos = 18;
         for (PlayerInfo entry : syncedPlayers) {
             PlayerConfig cfg = WildfireGender.getPlayerById(entry.getProfile().getId());
             if (cfg != null) {
-                Component text = Component.literal(entry.getProfile().getName()).append(" - ").append(cfg.getGender().getDisplayName());
+                Component text = TextComponentUtil.build(entry.getProfile(), " - ", cfg.getGender());
                 graphics.drawString(font, text, 10, yPos, 0xFFFFFF, false);
                 yPos += 10;
             }

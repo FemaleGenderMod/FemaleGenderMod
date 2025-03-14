@@ -18,34 +18,24 @@
 
 package com.wildfire.client.gui.screen;
 
-import com.wildfire.client.gui.GuiHelper;
 import com.wildfire.client.gui.WildfireButton;
 import com.wildfire.main.WildfireGender;
+import com.wildfire.main.WildfireLang;
 import java.util.UUID;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 public class WildfireCloudDetailsScreen extends BaseWildfireScreen {
 
-    //TODO: PROPER TRANSLATIONS
-
-    private static final Component TITLE = Component.translatable("wildfire_gender.cloud_details.title");
-
-    private static final Component PAGE_1 = Component.translatable("wildfire_gender.cloud_details.title").withStyle(ChatFormatting.UNDERLINE);
-
-    private static final Component NEXT_PAGE = Component.translatable("wildfire_gender.details.next_page");
-    private static final Component PREV_PAGE = Component.translatable("wildfire_gender.details.prev_page");
     private static final ResourceLocation BACKGROUND = WildfireGender.rl("textures/gui/details_page.png");
 
     private WildfireButton nextPage, prevPage;
     private int currentPage = 0;
 
     public WildfireCloudDetailsScreen(Screen parent, UUID uuid) {
-        super(Component.translatable("wildfire_gender.cloud_settings"), parent, uuid);
+        super(WildfireLang.CLOUD_SETTINGS.translate(), parent, uuid);
     }
 
     @Override
@@ -54,13 +44,13 @@ public class WildfireCloudDetailsScreen extends BaseWildfireScreen {
         int y = this.height / 2;
 
         currentPage = 0;
-        nextPage = addRenderableWidget(new WildfireButton(x + 46, y + 74, 76, 20, NEXT_PAGE, button -> {
+        nextPage = addRenderableWidget(new WildfireButton(x + 46, y + 74, 76, 20, WildfireLang.DETAILS_NEXT_PAGE.translate(), button -> {
             if (currentPage < 1) {
                 currentPage++;
             }
         }));
 
-        prevPage = addRenderableWidget(new WildfireButton(x - 128 + 6, y + 74, 76, 20, PREV_PAGE, button -> {
+        prevPage = addRenderableWidget(new WildfireButton(x - 128 + 6, y + 74, 76, 20, WildfireLang.DETAILS_PREV_PAGE.translate(), button -> {
             if (currentPage > 0) {
                 currentPage--;
             }
@@ -83,10 +73,10 @@ public class WildfireCloudDetailsScreen extends BaseWildfireScreen {
         int x = this.width / 2;
         int y = this.height / 2;
 
-        drawCenteredText(graphics, TITLE, x, y - 94, 0x444444);
+        drawCenteredText(graphics, WildfireLang.CLOUD_DETAILS.translate(), x, y - 94, 0x444444);
 
         if (currentPage == 0) {
-            drawCenteredTextWrapped(graphics, Component.translatable("wildfire_gender.cloud_details.page1"), x, y - 75, 256 - 10, 0x00FF00);
+            drawCenteredTextWrapped(graphics, WildfireLang.CLOUD_DETAILS_PAGE1.translate(), x, y - 75, 256 - 10, 0x00FF00);
         }
     }
 }

@@ -73,7 +73,7 @@ public class GeneralClientConfig {
 	}
 
 	public void save() {
-		//TODO - 1.21: Implement/Re-evaluate if we can just call save on the ConfigValues
+		//TODO - 1.21: Implement/Re-evaluate if we can just call save on the ConfigValues and whether some guis are meant to only save on close
 		EXECUTOR.submit(new ConfigSaver(configSpec));
 	}
 

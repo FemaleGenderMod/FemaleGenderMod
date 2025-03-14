@@ -20,6 +20,7 @@ import com.wildfire.client.gui.screen.WildfireBreastCustomizationScreen;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.config.BreastPresetConfiguration;
+import com.wildfire.main.text.TextComponentUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -148,7 +149,7 @@ public class WildfireBreastPresetList extends AbstractSelectionList<BreastPreset
 
             graphics.blit(thumbnail, x + 2, y + 2, 0, 0, 28, 28, 28,28);
 
-            graphics.drawString(font, Component.literal(name), x + 34, y + 4, 0xFFFFFFFF, false);
+            graphics.drawString(font, TextComponentUtil.getString(name), x + 34, y + 4, 0xFFFFFFFF, false);
             //graphics.drawString(font, Component.literal("07/25/2023 1:19 AM").formatted(Formatting.ITALIC), x + 34, y + 20, 0xFF888888, false);
             this.btnOpenGUI.setX(x);
             this.btnOpenGUI.setY(y);

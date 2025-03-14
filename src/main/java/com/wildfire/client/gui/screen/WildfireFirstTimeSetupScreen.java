@@ -20,11 +20,12 @@ package com.wildfire.client.gui.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.wildfire.client.WildfireGenderClient;
-import com.wildfire.client.gui.GuiHelper;
 import com.wildfire.client.gui.WildfireButton;
 import com.wildfire.main.WildfireGender;
+import com.wildfire.main.WildfireLang;
 import com.wildfire.main.config.GeneralClientConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
+import com.wildfire.main.text.TextComponentUtil;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -32,27 +33,17 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
-
-    //TODO: PROPER TRANSLATIONS
-
-    private static final Component TITLE = Component.translatable("wildfire_gender.first_time_setup.title").withStyle(ChatFormatting.UNDERLINE);
-    private static final Component DESCRIPTION = Component.translatable("wildfire_gender.first_time_setup.description");
-    private static final Component NOTICE = Component.translatable("wildfire_gender.first_time_setup.notice");
-
-    private static final Component ENABLE_CLOUD_SYNCING = Component.translatable("wildfire_gender.first_time_setup.enable").withStyle(ChatFormatting.GREEN);
-    private static final Component DISABLE_CLOUD_SYNCING = Component.translatable("wildfire_gender.first_time_setup.disable").withStyle(ChatFormatting.RED);
 
     private static final ResourceLocation BACKGROUND = WildfireGender.rl("textures/gui/first_time_bg.png");
 
     private WildfireButton enableCloudSyncing, disableCloudSyncing;
 
     public WildfireFirstTimeSetupScreen(Screen parent, UUID uuid) {
-        super(Component.translatable("wildfire_gender.cloud_settings"), parent, uuid);
+        super(WildfireLang.CLOUD_SETTINGS.translate(), parent, uuid);
     }
 
     @Override
@@ -60,7 +51,7 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
         int x = this.width / 2;
         int y = this.height / 2;
 
-        enableCloudSyncing = addRenderableWidget(new WildfireButton(x + 3, y + 74, 128, 20, ENABLE_CLOUD_SYNCING, button -> {
+        enableCloudSyncing = addRenderableWidget(new WildfireButton(x + 3, y + 74, 128, 20, WildfireLang.FIRST_TIME_SETUP_ENABLE_CLOUD_SYNC.translateColored(ChatFormatting.GREEN), button -> {
             //Enable both settings, they can always disable automatic later? TBD
             GeneralClientConfig.INSTANCE.cloudSync.set(true);
             GeneralClientConfig.INSTANCE.syncPlayerData.set(true);
@@ -75,7 +66,7 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
             doInitialSync().thenRun(() -> minecraft.execute(() -> minecraft.setScreen(nextScreen)));
         }));
 
-        disableCloudSyncing = addRenderableWidget(new WildfireButton(x - 131, y + 74, 128, 20, DISABLE_CLOUD_SYNCING, button -> {
+        disableCloudSyncing = addRenderableWidget(new WildfireButton(x - 131, y + 74, 128, 20, WildfireLang.FIRST_TIME_SETUP_DISABLE_CLOUD_SYNC.translateColored(ChatFormatting.RED), button -> {
             GeneralClientConfig.INSTANCE.cloudSync.set(false);
             GeneralClientConfig.INSTANCE.syncPlayerData.set(false);
             GeneralClientConfig.INSTANCE.firstTimeLoad.set(false);
@@ -127,18 +118,18 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
         int x = this.width / 2;
         int y = this.height / 2;
 
-        drawCenteredText(graphics, TITLE, x, y - 24, 4210752);
+        drawCenteredText(graphics, WildfireLang.FIRST_TIME_SETUP.translate(), x, y - 24, 4210752);
 
-        drawCenteredTextWrapped(graphics, Component.literal("Keira Emberlyn:").withStyle(ChatFormatting.LIGHT_PURPLE), x + 32, y - 10, (int) ((256 - 65)), 0xFFFFFF);
+        drawCenteredTextWrapped(graphics, TextComponentUtil.build(ChatFormatting.LIGHT_PURPLE, "Keira Emberlyn:"), x + 32, y - 10, (int) ((256 - 65)), 0xFFFFFF);
 
         //TODO: Vertical scroll bar for longer text?
-        drawCenteredTextWrapped(graphics, DESCRIPTION, x + 32, y + 2, 256 - 65, 0xFFFFFF);
+        drawCenteredTextWrapped(graphics, WildfireLang.FIRST_TIME_SETUP_DESCRIPTION.translate(), x + 32, y + 2, 256 - 65, 0xFFFFFF);
 
         mStack.pushPose();
         mStack.translate(x, y + 47, 0);
         mStack.scale(0.8f, 0.8f, 1);
         mStack.translate(-x, -y - 47, 0);
-        drawCenteredTextWrapped(graphics, NOTICE, x, y + 68, (int) ((256 - 10) * 1.2f), 4210752);
+        drawCenteredTextWrapped(graphics, WildfireLang.FIRST_TIME_SETUP_NOTICE.translate(), x, y + 68, (int) ((256 - 10) * 1.2f), 4210752);
         mStack.popPose();
 
         int keiraX = x - 133;

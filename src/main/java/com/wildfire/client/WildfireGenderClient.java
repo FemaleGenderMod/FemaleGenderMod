@@ -29,6 +29,7 @@ import com.wildfire.client.render.HolidayFeaturesRenderer;
 import com.wildfire.client.resources.GenderArmorResourceManager;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireHelper;
+import com.wildfire.main.WildfireLang;
 import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.cloud.ContributorNametag;
 import com.wildfire.main.config.GeneralClientConfig;
@@ -205,9 +206,9 @@ public class WildfireGenderClient {
         if (custom != null) {
             return custom.asText();
         } else if (WildfireGender.CREATOR_UUID.equals(uuid)) {
-            return Component.translatable("wildfire_gender.nametag.creator").withStyle(ChatFormatting.LIGHT_PURPLE);
+            return WildfireLang.NAME_TAG_CREATOR.translateColored(ChatFormatting.LIGHT_PURPLE);
         } else if (WildfireGender.CONTRIBUTOR_UUIDS.contains(uuid)) {
-            return Component.translatable("wildfire_gender.nametag.contributor").withStyle(ChatFormatting.GOLD);
+            return WildfireLang.NAME_TAG_CONTRIBUTOR.translateColored(ChatFormatting.GOLD);
         }
         return null;
     }
@@ -383,16 +384,14 @@ public class WildfireGenderClient {
                 }
                 if (slot == EquipmentSlot.CHEST) {
                     float physResistance = WildfireHelper.getArmorConfig(stack).physicsResistance();
-                    event.addTooltipLines(Component.translatable("wildfire_gender.armor.tooltip", Math.floor(physResistance * 100) / 100f)
-                          .withStyle(ChatFormatting.LIGHT_PURPLE));
+                    event.addTooltipLines(WildfireLang.ARMOR_TOOLTIP.translateColored(ChatFormatting.LIGHT_PURPLE, Math.floor(physResistance * 100) / 100f));
                 }
 
                 //TODO - 1.21.4: Switch to this
                 /*Equippable equippable = stack.get(DataComponentTypes.EQUIPPABLE);
                 if (equippable != null && equippable.slot() == EquipmentSlot.CHEST) {
                     float physResistance = WildfireHelper.getArmorConfig(stack).physicsResistance();
-                    event.addTooltipLines(Component.translatable("wildfire_gender.armor.tooltip", Math.floor(physResistance * 100) / 100f)
-                          .withStyle(ChatFormatting.LIGHT_PURPLE));
+                    event.addTooltipLines(WildfireLang.ARMOR_TOOLTIP.translateColored(ChatFormatting.LIGHT_PURPLE, Math.floor(physResistance * 100) / 100f));
                 }*/
             }
         }

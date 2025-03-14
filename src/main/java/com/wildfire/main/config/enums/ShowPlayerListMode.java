@@ -18,37 +18,46 @@
 
 package com.wildfire.main.config.enums;
 
-import java.util.Locale;
+import com.wildfire.main.WildfireLang;
+import com.wildfire.main.text.IHasTextComponent.IHasEnumNameTextComponent;
+import com.wildfire.main.text.ILangEntry;
 import java.util.function.IntFunction;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ByIdMap;
+import org.jetbrains.annotations.NotNull;
 
-public enum ShowPlayerListMode {
-	MOD_UI_ONLY,
-	TAB_LIST_OPEN,
-	ALWAYS;
+public enum ShowPlayerListMode implements IHasEnumNameTextComponent {
+	MOD_UI_ONLY(WildfireLang.PLAYER_LIST_MODE_MOD_UI, WildfireLang.PLAYER_LIST_MODE_MOD_UI_TOOLTIP),
+	TAB_LIST_OPEN(WildfireLang.PLAYER_LIST_MODE_TAB_LIST, WildfireLang.PLAYER_LIST_MODE_TAB_LIST_TOOLTIP),
+	ALWAYS(WildfireLang.PLAYER_LIST_MODE_ALWAYS, WildfireLang.PLAYER_LIST_MODE_ALWAYS_TOOLTIP);
 
 	public static final IntFunction<ShowPlayerListMode> BY_ID = ByIdMap.continuous(ShowPlayerListMode::ordinal, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
+
+	private final ILangEntry name;
+	private final ILangEntry tooltip;
+
+	ShowPlayerListMode(ILangEntry name, ILangEntry tooltip) {
+		this.name = name;
+		this.tooltip = tooltip;
+	}
 
 	public ShowPlayerListMode next() {
 		return BY_ID.apply(this.ordinal() + 1);
 	}
 
-	private String getName() {
-		return name().toLowerCase(Locale.ROOT);
-	}
-
-	public Component text() {
-		return Component.translatable("wildfire_gender.always_show_list." + getName());
-	}
-
 	public Tooltip tooltip() {
-		if(this == TAB_LIST_OPEN) {
-			Component button = Minecraft.getInstance().options.keyPlayerList.getTranslatedKeyMessage();
-			return Tooltip.create(Component.translatable("wildfire_gender.always_show_list." + getName() + ".tooltip", button));
+		if (this == TAB_LIST_OPEN) {
+			//TODO - 1.21: Component#keybind ??
+			return Tooltip.create(tooltip.translate(Minecraft.getInstance().options.keyPlayerList.getTranslatedKeyMessage()));
 		}
-		return Tooltip.create(Component.translatable("wildfire_gender.always_show_list." + getName() + ".tooltip"));
+		return Tooltip.create(tooltip.translate());
+	}
+
+	@NotNull
+	@Override
+	public Component getTextComponent() {
+		return name.translate();
 	}
 }

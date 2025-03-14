@@ -18,6 +18,7 @@
 
 package com.wildfire.main.cloud;
 
+import com.wildfire.main.text.TextComponentUtil;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,6 +26,6 @@ public record ContributorNametag(String text, @Nullable Integer color) {
 	private static final int DEFAULT_COLOR = 0xFF55FF; // ChatFormatting.LIGHT_PURPLE
 
 	public Component asText() {
-		return Component.literal(this.text).withColor(color == null ? DEFAULT_COLOR : color);
+		return TextComponentUtil.getString(this.text).withColor(color == null ? DEFAULT_COLOR : color);
 	}
 }

@@ -29,7 +29,7 @@ import com.mojang.authlib.HttpAuthenticationService;
 import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.util.InstantTypeAdapter;
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.WildfireLocalization;
+import com.wildfire.main.WildfireLang;
 import com.wildfire.main.config.GeneralClientConfig;
 import com.wildfire.main.config.enums.SyncVerbosity;
 import com.wildfire.main.entitydata.PlayerConfig;
@@ -220,12 +220,12 @@ public final class CloudSync {
         synchronized (AUTH_LOCK) {
             Minecraft client = Minecraft.getInstance();
             if (client.player == null) {
-                SyncLog.add(WildfireLocalization.SYNC_LOG_AUTHENTICATION_FAILED);
+                SyncLog.add(WildfireLang.SYNC_LOG_AUTHENTICATION_FAILED);
                 throw new IllegalStateException("Cannot get a new auth token while the client player is unset");
             }
             if (auth == null || auth.isExpired() || auth.isInvalidForClientPlayer()) {
                 WildfireGender.LOGGER.info("Obtaining new authentication token from the cloud sync server");
-                SyncLog.add(WildfireLocalization.SYNC_LOG_AUTHENTICATING);
+                SyncLog.add(WildfireLang.SYNC_LOG_AUTHENTICATING);
 
                 String serverId = generateServerId();
                 User session = client.getUser();
@@ -241,7 +241,7 @@ public final class CloudSync {
                 HttpRequest request = createRequest(uri).GET().build();
                 HttpResponse<String> response = CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString()).join();
                 if (response.statusCode() >= HttpURLConnection.HTTP_BAD_REQUEST) {
-                    SyncLog.add(WildfireLocalization.SYNC_LOG_AUTHENTICATION_FAILED);
+                    SyncLog.add(WildfireLang.SYNC_LOG_AUTHENTICATION_FAILED);
                     throw new RuntimeException("Failed to authenticate with sync server: " + response.body());
                 }
 
@@ -251,7 +251,7 @@ public final class CloudSync {
                 }
                 WildfireGender.LOGGER.info("Obtained authentication token for {}, expiry {}", auth.account(), auth.expires());
                 if (!auth.isInvalidForClientPlayer()) { //TODO: This might not need to be here.
-                    SyncLog.add(WildfireLocalization.SYNC_LOG_AUTHENTICATION_SUCCESS);
+                    SyncLog.add(WildfireLang.SYNC_LOG_AUTHENTICATION_SUCCESS);
                 }
             }
         }
@@ -289,7 +289,7 @@ public final class CloudSync {
             URI url = URI.create(getCloudServer() + "/" + config.uuid);
             String json = config.toJson().toString();
 
-            SyncLog.add(WildfireLocalization.SYNC_LOG_ATTEMPTING_SYNC);
+            SyncLog.add(WildfireLang.SYNC_LOG_ATTEMPTING_SYNC);
 
             HttpRequest request = createRequest(url)
                   .PUT(HttpRequest.BodyPublishers.ofString(json))
@@ -298,7 +298,7 @@ public final class CloudSync {
                   .build();
             HttpResponse<String> response = CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString()).join();
             if (response.statusCode() == HttpURLConnection.HTTP_UNAUTHORIZED && !resyncing) {
-                SyncLog.add(WildfireLocalization.SYNC_LOG_REAUTHENTICATING);
+                SyncLog.add(WildfireLang.SYNC_LOG_REAUTHENTICATING);
                 WildfireGender.LOGGER.warn("Auth token is invalid, attempting to reauth...");
                 auth = null;
                 syncInternal(config, true).join();
@@ -307,7 +307,7 @@ public final class CloudSync {
                 throw new RuntimeException("Server responded " + response.statusCode() + ": " + response.body());
             }
             WildfireGender.LOGGER.debug("Server responded to update: {}", response.body());
-            SyncLog.add(WildfireLocalization.SYNC_LOG_SYNC_SUCCESS);
+            SyncLog.add(WildfireLang.SYNC_LOG_SYNC_SUCCESS);
         }, EXECUTOR);
     }
 
@@ -350,7 +350,7 @@ public final class CloudSync {
                 throw new RuntimeException("Server responded " + response.statusCode() + ": " + response.body());
             }
 
-            SyncLog.add(WildfireLocalization.SYNC_LOG_GET_SINGLE_PROFILE, SyncVerbosity.SHOW_FETCHES);
+            SyncLog.add(WildfireLang.SYNC_LOG_GET_SINGLE_PROFILE, SyncVerbosity.SHOW_FETCHES);
 
             JsonObject data = GSON.fromJson(response.body(), JsonObject.class);
             FETCH_CACHE.put(uuid, Optional.of(data));
@@ -388,7 +388,7 @@ public final class CloudSync {
                 throw new RuntimeException("Server responded " + response.statusCode() + ": " + response.body());
             }
 
-            SyncLog.add(WildfireLocalization.SYNC_LOG_GET_MULTIPLE_PROFILES, SyncVerbosity.SHOW_FETCHES);
+            SyncLog.add(WildfireLang.SYNC_LOG_GET_MULTIPLE_PROFILES, SyncVerbosity.SHOW_FETCHES);
             Map<UUID, JsonObject> data = GSON.fromJson(response.body(), BulkFetch.class).users();
             uuids.forEach(uuid -> FETCH_CACHE.put(uuid, Optional.ofNullable(data.get(uuid))));
             return data;

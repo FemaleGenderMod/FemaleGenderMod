@@ -20,6 +20,7 @@ package com.wildfire.main.cloud;
 
 import com.wildfire.main.config.GeneralClientConfig;
 import com.wildfire.main.config.enums.SyncVerbosity;
+import com.wildfire.main.text.ILangEntry;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,15 +35,14 @@ public final class SyncLog {
 		return GeneralClientConfig.INSTANCE.syncLogVerbosity.get().ordinal();
 	}
 
-	public static void add(Component text, SyncVerbosity verbosity) {
-		if(verbosity() < verbosity.ordinal()) {
-			return;
+	public static void add(ILangEntry langEntry, SyncVerbosity verbosity) {
+		if (verbosity() >= verbosity.ordinal()) {
+			add(langEntry);
 		}
-		add(text);
 	}
 
-	public static void add(Component text) {
-		SYNC_LOG.add(new Entry(text, Instant.now()));
+	public static void add(ILangEntry langEntry) {
+		SYNC_LOG.add(new Entry(langEntry.translate(), Instant.now()));
 		if(SYNC_LOG.size() > 6) {
 			SYNC_LOG.removeFirst();
 		}

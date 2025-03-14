@@ -22,7 +22,7 @@ import com.google.gson.JsonObject;
 import com.wildfire.client.gui.screen.BaseWildfireScreen;
 import com.wildfire.main.Gender;
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.WildfireLocalization;
+import com.wildfire.main.WildfireLang;
 import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.cloud.SyncLog;
 import com.wildfire.main.config.ClientConfiguration;
@@ -304,10 +304,10 @@ public class PlayerConfig extends EntityConfig {
             try {
                 CloudSync.sync(this).join();
                 WildfireGender.LOGGER.info("Synced player data to the cloud");
-                SyncLog.add(WildfireLocalization.SYNC_LOG_SYNC_TO_CLOUD);
+                SyncLog.add(WildfireLang.SYNC_LOG_SYNC_TO_CLOUD);
             } catch (Exception e) {
                 WildfireGender.LOGGER.error("Failed to sync player data", e);
-                SyncLog.add(WildfireLocalization.SYNC_LOG_FAILED_TO_SYNC_DATA);
+                SyncLog.add(WildfireLang.SYNC_LOG_FAILED_TO_SYNC_DATA);
             }
         });
         needsCloudSync = false;

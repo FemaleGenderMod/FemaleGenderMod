@@ -15,6 +15,7 @@
 
 package com.wildfire.main;
 
+import com.wildfire.main.text.IHasTextComponent.IHasEnumNameTextComponent;
 import io.netty.buffer.ByteBuf;
 import java.util.function.IntFunction;
 import net.minecraft.ChatFormatting;
@@ -23,13 +24,14 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.ByIdMap;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public enum Gender {
+public enum Gender implements IHasEnumNameTextComponent {
     // NOTE: The order of these should remain unchanged! Changing these WILL modify player configs!
-    FEMALE(Component.translatable("wildfire_gender.label.female").withStyle(ChatFormatting.LIGHT_PURPLE), true, WildfireSounds.FEMALE_HURT),
-    MALE(Component.translatable("wildfire_gender.label.male").withStyle(ChatFormatting.BLUE), false, null),
-    OTHER(Component.translatable("wildfire_gender.label.other").withStyle(ChatFormatting.GREEN), true, null);
+    FEMALE(WildfireLang.FEMALE.translateColored(ChatFormatting.LIGHT_PURPLE), true, WildfireSounds.FEMALE_HURT),
+    MALE(WildfireLang.MALE.translateColored(ChatFormatting.BLUE), false, null),
+    OTHER(WildfireLang.OTHER.translateColored(ChatFormatting.GREEN), true, null);
 
     public static final IntFunction<Gender> BY_ID = ByIdMap.continuous(Gender::ordinal, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
     public static final StreamCodec<ByteBuf, Gender> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, Gender::ordinal);
@@ -45,10 +47,6 @@ public enum Gender {
         this.hurtSound = hurtSound;
     }
 
-    public Component getDisplayName() {
-        return name;
-    }
-
     @Nullable
     public SoundEvent getHurtSound() {
         return hurtSound;
@@ -56,5 +54,11 @@ public enum Gender {
 
     public boolean canHaveBreasts() {
         return canHaveBreasts;
+    }
+
+    @NotNull
+    @Override
+    public Component getTextComponent() {
+        return name;
     }
 }

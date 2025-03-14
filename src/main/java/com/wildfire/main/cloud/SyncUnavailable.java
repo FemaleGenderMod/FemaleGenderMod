@@ -18,16 +18,26 @@
 
 package com.wildfire.main.cloud;
 
-import java.util.Locale;
+import com.wildfire.main.WildfireLang;
+import com.wildfire.main.text.IHasTextComponent.IHasEnumNameTextComponent;
+import com.wildfire.main.text.ILangEntry;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.NotNull;
 
-public enum SyncUnavailable {
-	INVALID_ACCOUNT,
-	OFFLINE_SERVER,
+public enum SyncUnavailable implements IHasEnumNameTextComponent {
+	INVALID_ACCOUNT(WildfireLang.CLOUD_UNAVAILABLE_INVALID_ACC),
+	OFFLINE_SERVER(WildfireLang.CLOUD_UNAVAILABLE_SERVER_OFFLINE),
 	;
 
-	public Component text() {
-		//TODO - 1.21: Validate that we use Locale.ROOT in all the calls to toLowerCase and friends
-		return Component.translatable("wildfire_gender.cloud.unavailable." + name().toLowerCase(Locale.ROOT));
+	private final ILangEntry name;
+
+	SyncUnavailable(ILangEntry name) {
+		this.name = name;
+	}
+
+	@NotNull
+	@Override
+	public Component getTextComponent() {
+		return name.translate();
 	}
 }
