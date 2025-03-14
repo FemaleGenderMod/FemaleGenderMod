@@ -18,17 +18,33 @@
 
 package com.wildfire.main.config;
 
+import com.wildfire.main.WildfireGender;
+import com.wildfire.main.config.enums.ShowPlayerListMode;
+import com.wildfire.main.config.enums.SyncVerbosity;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.ModConfigSpec.BooleanValue;
+import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
+import net.neoforged.neoforge.common.ModConfigSpec.EnumValue;
 
 public class GeneralClientConfig {
 
+	private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
 	public static final GeneralClientConfig INSTANCE = new GeneralClientConfig();
 
 	public final ModConfigSpec configSpec;
 
 	public final BooleanValue disableRendering;
 	public final BooleanValue disableSoundReplacement;
+
+	public final BooleanValue firstTimeLoad;
+	public final BooleanValue cloudSync;
+	public final BooleanValue syncPlayerData;
+	public final ConfigValue<String> cloudServer;
+	public final EnumValue<SyncVerbosity> syncLogVerbosity;
+	public final EnumValue<ShowPlayerListMode> alwaysShowList;
+	public final BooleanValue armorStat;
 
 	private GeneralClientConfig() {
 		ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -43,7 +59,45 @@ public class GeneralClientConfig {
 			  .translation("wildfire_gender.config.client.disable_sound_replacement")
 			  .define("disableSoundReplacement", false);
 
+		//TODO - 1.21: Comments and translations for these
+		firstTimeLoad = builder.define("firstTimeLoad", true);
+		cloudSync = builder.define("cloudSync", false);
+		syncPlayerData = builder.define("syncPlayerData", false);
+		cloudServer = builder.define("cloudServer", "");
+		syncLogVerbosity = builder.defineEnum("syncLogVerbosity", SyncVerbosity.DEFAULT);
+		alwaysShowList = builder.defineEnum("alwaysShowList", ShowPlayerListMode.MOD_UI_ONLY);
+		armorStat = builder.define("armorStat", true);
+
 		builder.pop();
 		configSpec = builder.build();
+	}
+
+	public void save() {
+		//TODO - 1.21: Implement/Re-evaluate if we can just call save on the ConfigValues
+		EXECUTOR.submit(new ConfigSaver(configSpec));
+	}
+
+	private static class ConfigSaver implements Runnable {
+
+		private final ModConfigSpec configSpec;
+		private int retries = 0;
+
+		private ConfigSaver(ModConfigSpec configSpec) {
+			this.configSpec = configSpec;
+		}
+
+		@Override
+		public void run() {
+			try {
+				configSpec.save();
+			} catch (Exception e) {
+				WildfireGender.LOGGER.error("Failed to save config", e);
+				if (retries++ < 3) {
+					EXECUTOR.submit(this);
+				} else {
+					WildfireGender.LOGGER.error("Giving up");
+				}
+			}
+		}
 	}
 }

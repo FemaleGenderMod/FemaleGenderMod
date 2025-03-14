@@ -1,47 +1,112 @@
 {
-	"category.wildfire_gender.generic": "Wildfire's Weibliche Geschlechtsmod",
-	"key.wildfire_gender.gender_menu": "Geschlechtsmenü",
-
-	"wildfire_gender.hurt.female": "Spielerin nimmt schaden",
+	"category.wildfire_gender.generic": "Wildfire's Weibliche Geschlechts Mod",
+	"key.wildfire_gender.gender_menu": "Weibliches Geschlechts Menü",
+	"key.wildfire_gender.toggle": "Brust Rendering umschalten",
+	"toast.wildfire_gender.get_started": "Drücke '%s' um loszulegen!",
 
 	"wildfire_gender.player_list.title": "Weibliche Geschlechts Mod",
 	"wildfire_gender.player_list.settings_button": "Einstellungen",
-	"wildfire_gender.player_list.sync_status": "Synchronisierungsstatus",
-	"wildfire_gender.player_list.state.loading": "Lade Spieler..",
-	"wildfire_gender.player_list.state.synced": "Geladener Spieler",
+	"wildfire_gender.player_list.sync_status": "Synchronisier Status",
+	"wildfire_gender.player_list.state.loading": "Daten laden...",
+	"wildfire_gender.player_list.state.synced": "Synchronisierte Spieler",
+	"wildfire_gender.player_list.bounce_multiplier": "Bounce Multiplikator: %sx",
+	"wildfire_gender.player_list.breast_momentum": "Brust Momentum: %s%%",
+	"wildfire_gender.player_list.female_sounds": "Weibliche Geräusche: %s",
+	"wildfire_gender.wardrobe.players_using_mod": "Spieler mit der Mod:",
 
-	"wildfire_gender.wardrobe.title": "Anpassungsmenü",
+	"wildfire_gender.always_show_list": "Zeige Synchronisierte Spieler: %s",
+	"wildfire_gender.always_show_list.mod_ui_only": "In diesem Fenster",
+	"wildfire_gender.always_show_list.mod_ui_only.tooltip": "Die Liste der Synchronisierten Spieler wir nur in diesem Fenster gezeigt",
+	"wildfire_gender.always_show_list.tab_list_open": "Mit der Spielerliste",
+	"wildfire_gender.always_show_list.tab_list_open.tooltip": "Die Liste der Synchronisierten Spieler wird gezeigt wenn du in diesem Fenster bist oder wenn du im Spiel %s drückst",
+	"wildfire_gender.always_show_list.always": "Immer",
+	"wildfire_gender.always_show_list.always.tooltip": "Die Liste der Synchronisierten Spieler wird immer gezeigt",
+
+	"wildfire_gender.wardrobe.title": "Wildfire's Weibliche Geschlechts Mod",
+	"wildfire_gender.breast_customization.tab_customization": "Anpassung",
+	"wildfire_gender.breast_customization.tab_physics": "Brust Physik",
+	"wildfire_gender.breast_customization.tab_miscellaneous": "Weiteres",
+
+	"wildfire_gender.breast_customization.presets.add_new": "Neue...",
+	"wildfire_gender.breast_customization.presets.delete": "Löschen",
+
 	"wildfire_gender.wardrobe.slider.breast_size": "Brustgröße: %s%%",
-	"wildfire_gender.wardrobe.slider.separation": "Separierung: %s",
+	"wildfire_gender.wardrobe.slider.separation": "Distanz: %s",
 	"wildfire_gender.wardrobe.slider.height": "Höhe: %s",
 	"wildfire_gender.wardrobe.slider.depth": "Tiefe: %s",
-	"wildfire_gender.wardrobe.slider.rotation": "Drehung: %s degrees",
+	"wildfire_gender.wardrobe.slider.rotation": "Drehung: %s°",
+	"wildfire_gender.slider.voice_pitch": "Stimmlage: %s%%",
 
-	"wildfire_gender.appearance_settings.title": "Aussehen",
-	"wildfire_gender.char_settings.title": "Spieler Einstellungen",
-	"wildfire_gender.char_settings.physics": "Brustphysik: %s",
-	"wildfire_gender.char_settings.hide_in_armor": "Versteckt mit Rüstung: %s",
+	"wildfire_gender.appearance_settings.title": "Charakter Einstellungen",
+	"wildfire_gender.char_settings.title": "Charaketer Einstellungen ALT",
+	"wildfire_gender.char_settings.physics": "Brust Physik: %s",
 
-	"wildfire_gender.acknowledge.confirm": "Okay",
+	"wildfire_gender.char_settings.override_armor_physics": "Rüstungs Physik: %s",
+	"wildfire_gender.tooltip.override_armor_physics.line1": "Brustphysik wird nicht mehr durch Rüstung reduziert/gestoppt, wenn es aktiviert ist.",
+	"wildfire_gender.tooltip.override_armor_physics.line2": "Dies ist hauptsächlich da für Resource Packs die Rüstungen entfernen oder verringern",
+
+	"wildfire_gender.char_settings.hide_in_armor": "In Rüstung verstecken: %s",
+	"wildfire_gender.char_settings.hurt_sounds": "Weibliche Verletzungsgeräusche: %s",
+	"wildfire_gender.tooltip.hurt_sounds": "Dein Charakter macht Weibliche Verletzungsgeräusche wenn du Schaden kriegst, wenn dein Geschlecht Weiblich oder Divers ist",
+
+	"wildfire_gender.breast_customization.dual_physics": "Dual Physik: %s",
 
 	"wildfire_gender.label.gender": "Geschlecht",
 	"wildfire_gender.label.female": "Weiblich",
 	"wildfire_gender.label.male": "Männlich",
-	"wildfire_gender.label.other": "Andere",
+	"wildfire_gender.label.other": "Divers",
 
 	"wildfire_gender.label.enabled": "Aktiviert",
 	"wildfire_gender.label.disabled": "Deaktiviert",
-	"wildfire_gender.label.yes": "Ja",
-	"wildfire_gender.label.no": "Nein",
-	"wildfire_gender.label.too_far": "Zu weit weg",
-	"wildfire_gender.label.with_creator": "Du spielst auf einem Server mit dem Programmierer dieser Mod!",
+	"wildfire_gender.label.on": "An",
+	"wildfire_gender.label.off": "Aus",
+	"wildfire_gender.label.with_creator": "Du spielst auf einem Server mit der Macherin der Mod!",
+	"wildfire_gender.label.with_contributor": "Du spielst auf einem Server mit einer der Mithelfer:innen der Mod!",
+	"wildfire_gender.label.with_both": "Du spielst auf einem Server mit der Macherin und einer der Mithelfer:innen der Mod!",
 
-	"wildfire_gender.slider.bounce": "Wackel Intensität: %s%%",
-	"wildfire_gender.slider.floppy": "Brust Schwung: %s%%",
-	"wildfire_gender.slider.min_bounce": "Warum ist die Physik überhaupt an?",
-	"wildfire_gender.slider.max_bounce": "Anime Brust Physik!",
-	"wildfire_gender.tooltip.bounce_warning": "Wenn die 'Wackel Intensität' zu stark einstellen ist sieht es nicht sehr natürlich aus!",
+	"wildfire_gender.slider.bounce": "Intensität: %s%%",
+	"wildfire_gender.slider.floppy": "Momentum: %s%%",
 
-	"wildfire_gender.cancer_awareness.title": "Hey, es ist Monat des Brustkrebses!",
-	"wildfire_gender.cancer_awareness.description": "Klicke hier um an die §dDeutsche Krebshilfe§f zu spenden!"
+	"wildfire_gender.cancer_awareness.title": "Hey, es ist der Brustkrebsmonat!",
+
+	"wildfire_gender.first_time_setup.title": "Willkommen bei Wildfire's Weiblichen Geschlechts Mod!",
+	"wildfire_gender.first_time_setup.description": "Möchtest du die Cloud Synchronizierung aktivieren? Dies erlaubt es anderen Spielern mit der Mod deine Geschlechtseinstellungen zu sehen.",
+	"wildfire_gender.first_time_setup.notice": "Dies kannst du später in den Einstellungen jederzeit ändern.",
+	"wildfire_gender.first_time_setup.enable": "Aktiviere Cloud Synchronizierung",
+	"wildfire_gender.first_time_setup.disable": "Deaktiviere Cloud Synchronizierung",
+
+
+	"wildfire_gender.cloud_settings": "Synchronizierungs Einstellungen",
+	"wildfire_gender.cloud.tooltip": "Cloud Synchronizierung",
+	"wildfire_gender.cloud.unavailable.invalid_account": "Cloud Synchronizierung ist zurzeit nicht verfügbar da du nicht mit einem gültigen Minecraft Account eingeloggt bist",
+	"wildfire_gender.cloud.status": "Cloud Synchronizierung: %s",
+	"wildfire_gender.cloud.automatic": "Automatische Synchronizierung: %s",
+	"wildfire_gender.cloud.automatic.tooltip.line1": "Wenn dies aktiviert ist werden deine Einstellungen nach jeder Änderung automatisch mit der Cloud synchronisiert.",
+	"wildfire_gender.cloud.automatic.tooltip.line2": "Wenn dies deaktiviert ist kannst du die Einstellungen dennoch manuell über den Knopf synchronisieren.",
+	"wildfire_gender.cloud.sync": "Jetzt synchronizieren",
+	"wildfire_gender.cloud.syncing": "Synchroniziere...",
+
+	"wildfire_gender.cloud.status_log": "Status Log",
+
+	"wildfire_gender.cloud.syncing.success": "Synchroniziert",
+	"wildfire_gender.cloud.syncing.fail": "Synchronizierung fehlgeschlagen",
+
+	"wildfire_gender.sync_log.authenticating": "Überprüfe Account...",
+	"wildfire_gender.sync_log.authentication_success": "Überprüfung erfolgreich.",
+	"wildfire_gender.sync_log.authentication_failed": "Überprüfe fehlgeschlagen.",
+	"wildfire_gender.sync_log.reauthenticating": "Überprüfe Account erneut...",
+
+	"wildfire_gender.sync_log.failed_to_sync_data": "Daten konnten nicht synchronisiert werden.",
+	"wildfire_gender.sync_log.sync_to_cloud": "Synchronisiere Daten zu Cloud...",
+	"wildfire_gender.sync_log.attempting_sync": "Synchronisiere Profil...",
+	"wildfire_gender.sync_log.sync_success": "Synchronisierung erfolgreich.",
+	"wildfire_gender.sync_log.sync_too_frequently": "Synchronisierrate begrenzt.",
+
+	"wildfire_gender.sync_log.get_single_profile": "Abrufen von Profil...",
+	"wildfire_gender.sync_log.get_multiple_profiles": "Abrufen von mehreren Profil...",
+
+	"wildfire_gender.details.next_page": "Nächste Seite",
+	"wildfire_gender.details.prev_page": "Vorherige Seite",
+
+	"wildfire_gender.cloud_details.title": "Cloud Synchronizierungsserver Information"
 }

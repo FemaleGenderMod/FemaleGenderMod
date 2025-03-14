@@ -42,8 +42,6 @@
 
 	"wildfire_gender.label.enabled": "Si",
 	"wildfire_gender.label.disabled": "No",
-	"wildfire_gender.label.yes": "Sí",
-	"wildfire_gender.label.no": "No",
 	"wildfire_gender.label.too_far": "¡Muy lejos!",
 	"wildfire_gender.label.with_creator": "¡Estás jugando en un servidor con la creadora del mod!",
 

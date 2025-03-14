@@ -2,8 +2,16 @@
 # Wildfire's Female Gender Mod
 
 ### Description
-The primary goal of this mod is to enhance your Minecraft player's appearance by adding breasts to your player model, providing a distinctive look compared to the standard model.
-It works on client-side without issues but if you wish to add syncing support then this mod must be present on the server as well.
+The Female Gender Mod introduces a small but significant visual enhancement to your Minecraft character: the addition of breasts for a more feminine appearance.
+
+### Key Features
+- Feminine Appearance: Adds breasts to your character model, creating a more distinctive and personalized look.
+- Armor Adjustments: Updates armor visuals to reflect the new body shape, ensuring seamless integration with your character’s appearance.
+- Client-Side Mod: Fully client-side, allowing compatibility with most servers while preserving gameplay mechanics.
+- Cloud Sync (New in 4.0): Synchronize your settings across multiple devices effortlessly with the new cloud sync feature, ensuring your customizations stay consistent wherever you play.
+- Optional Server Support: Install on servers to synchronize character visuals between players for a cohesive multiplayer experience.
+
+This mod focuses on enhancing your Minecraft character's appearance with minimal impact on gameplay, offering a subtle but meaningful change for players seeking more representation and individuality.
 
 ## Default Controls
 

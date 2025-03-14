@@ -1,3 +1,21 @@
+/*
+ * Wildfire's Female Gender Mod is a female gender mod created for Minecraft.
+ * Copyright (C) 2023-present WildfireRomeo
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package com.wildfire.main.entitydata;
 
 import com.mojang.serialization.Codec;
@@ -22,11 +40,12 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 /**
- * <p>Record class for storing player breast settings on armor equipped onto armor stands</p>
+ * <p>Data component-like class for storing player breast settings on armor equipped onto armor stands</p>
  *
  * <p>Note that while this is treated similarly to any other {@link net.minecraft.core.component.DataComponentType data component} for performance reasons,
  * this is never written as its own component on item stacks, but instead uses the
- * {@link net.minecraft.core.component.DataComponents#CUSTOM_DATA custom NBT data component} for compatibility with vanilla clients on servers.</p>
+ * {@link net.minecraft.core.component.DataComponents#CUSTOM_DATA custom NBT data component} (under the {@code WildfireGender} key) for compatibility with vanilla clients
+ * on servers.</p>
  */
 public record BreastDataComponent(float breastSize, float cleavage, Vector3f offsets, boolean jacket, @Nullable CustomData nbtComponent) {
 
@@ -79,10 +98,12 @@ public record BreastDataComponent(float breastSize, float cleavage, Vector3f off
     }
 
     public static boolean removeFromStack(ItemStack stack) {
-        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
-        if (data != null && data.contains(KEY)) {
-            CustomData.update(DataComponents.CUSTOM_DATA, stack, nbt -> nbt.remove(KEY));
-            return true;
+        if (!stack.isEmpty()) {
+            CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+            if (data != null && data.contains(KEY)) {
+                CustomData.update(DataComponents.CUSTOM_DATA, stack, nbt -> nbt.remove(KEY));
+                return true;
+            }
         }
         return false;
     }

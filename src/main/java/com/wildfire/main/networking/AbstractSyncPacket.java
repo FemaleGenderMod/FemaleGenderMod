@@ -1,24 +1,24 @@
 /*
-    Wildfire's Female Gender Mod is a female gender mod created for Minecraft.
-    Copyright (C) 2023 WildfireRomeo
-
-    This program is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 3 of the License, or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Lesser General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+ * Wildfire's Female Gender Mod is a female gender mod created for Minecraft.
+ * Copyright (C) 2023-present WildfireRomeo
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 
 package com.wildfire.main.networking;
 
-import com.mojang.datafixers.util.Function6;
+import com.mojang.datafixers.util.Function7;
 import com.wildfire.main.entitydata.Breasts;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.Gender;
@@ -27,16 +27,18 @@ import java.util.UUID;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 public abstract class AbstractSyncPacket implements IWildfirePacket {
 
     protected static <PACKET extends AbstractSyncPacket> StreamCodec<ByteBuf, PACKET> streamCodec(
-          Function6<UUID, Gender, Float, Boolean, BreastPhysics, Breasts, PACKET> constructor) {
-        return StreamCodec.composite(
+          Function7<UUID, Gender, Float, Boolean, Float, BreastPhysics, Breasts, PACKET> constructor) {
+        return NeoForgeStreamCodecs.composite(
               UUIDUtil.STREAM_CODEC, packet -> packet.uuid,
               Gender.STREAM_CODEC, packet -> packet.gender,
               ByteBufCodecs.FLOAT, packet -> packet.bustSize,
               ByteBufCodecs.BOOL, packet -> packet.hurtSounds,
+              ByteBufCodecs.FLOAT, packet -> packet.voicePitch,
               BreastPhysics.STREAM_CODEC, packet -> packet.breastPhysics,
               Breasts.STREAM_CODEC, packet -> packet.breasts,
               constructor
@@ -47,18 +49,20 @@ public abstract class AbstractSyncPacket implements IWildfirePacket {
     protected final Gender gender;
     protected final float bustSize;
     protected final boolean hurtSounds;
+    protected final float voicePitch;
     protected final BreastPhysics breastPhysics;
     protected final Breasts breasts;
 
     protected AbstractSyncPacket(PlayerConfig plr) {
-        this(plr.uuid, plr.getGender(), plr.getBustSize(), plr.hasHurtSounds(), new BreastPhysics(plr), plr.getBreasts());
+        this(plr.uuid, plr.getGender(), plr.getBustSize(), plr.hasHurtSounds(), plr.getVoicePitch(), new BreastPhysics(plr), plr.getBreasts());
     }
 
-    protected AbstractSyncPacket(UUID uuid, Gender gender, float bustSize, boolean hurtSounds, BreastPhysics breastPhysics, Breasts breasts) {
+    protected AbstractSyncPacket(UUID uuid, Gender gender, float bustSize, boolean hurtSounds, float voicePitch, BreastPhysics breastPhysics, Breasts breasts) {
         this.uuid = uuid;
         this.gender = gender;
         this.bustSize = bustSize;
         this.hurtSounds = hurtSounds;
+        this.voicePitch = voicePitch;
         this.breastPhysics = breastPhysics;
         this.breasts = breasts;
     }
@@ -67,6 +71,7 @@ public abstract class AbstractSyncPacket implements IWildfirePacket {
         plr.updateGender(gender);
         plr.updateBustSize(bustSize);
         plr.updateHurtSounds(hurtSounds);
+        plr.updateVoicePitch(voicePitch);
         breastPhysics.updatePlayer(plr);
         plr.getBreasts().updateFrom(breasts);
         //WildfireGender.logger.debug("{} - {}", plr.username, plr.gender);

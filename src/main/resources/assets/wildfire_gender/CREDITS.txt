@@ -1,0 +1,1 @@
+textures/cloud.png is sourced from Font Awesome Free 6.6.0 (https://fontawesome.com/), which is licensed under the CC-BY-4.0 license (https://fontawesome.com/license/free).

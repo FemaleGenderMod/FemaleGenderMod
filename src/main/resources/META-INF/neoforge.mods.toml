@@ -8,11 +8,11 @@ issueTrackerURL = "https://github.com/WildfireRomeo/WildfireFemaleGenderMod/issu
     version = "${file.jarVersion}"
     displayName = "Wildfire's Female Gender Mod"
     #updateJSONURL="https://change.me.example.invalid/updates.json"
-    displayURL = "https://www.curseforge.com/minecraft/mc-mods/female-gender-forge"
+    displayURL = "https://www.curseforge.com/minecraft/mc-mods/female-gender-neoforge"
     logoFile = "logo.png"
-    credits = "Archl, arcti_cc, Kichura, Powerless001, pupnewfster"
+    credits = "A2 76, Arcti_cc, BluelightAmelia, celeste, diademiemi, IzzyBizzy45, Kichura, PinguinLars, Powerless001, pupnewfster, RacoonDog"
     authors = "WildfireRomeo"
-    description = "Allows players to choose what gender they want to be."
+    description = "The primary goal of this mod is to enhance your Minecraft player's appearance by adding breasts, providing a distinctive look compared to the standard model."
     displayTest = "IGNORE_SERVER_VERSION"
 
 [[dependencies.wildfire_gender]]

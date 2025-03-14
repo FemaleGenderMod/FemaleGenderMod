@@ -1,0 +1,81 @@
+name: Bug Report
+description: File a bug report.
+labels: ["Bug"]
+body:
+  - type: dropdown
+    id: mod-loader
+    attributes:
+      label: "Which mod loader are you using?"
+      options:
+        - "Fabric"
+        - "NeoForge"
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: "What Minecraft & mod version are you using?"
+      placeholder: "Minecraft 1.x.y, Female Gender Mod x.y.z"
+    validations:
+      required: true
+
+  - type: input
+    id: modloader-version
+    attributes:
+      label: "What Fabric / NeoForge version are you using?"
+      description: |
+        If you're using Fabric, please also include the relevant Fabric API version.
+      placeholder: "Fabric Loader 0.x.y, Fabric API 0.x.y"
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: "What were you doing, and what did you expect to happen?"
+      placeholder: |
+        I was doing X, and expected Y to happen
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: "What actually happened?"
+      description: |
+        **Do not directly paste logs here!** Instead, upload them to [mclo.gs](https://mclo.gs/) or [Gist](https://gist.github.com/) and link it here.
+      placeholder: |
+        The game crashed
+    validations:
+      required: true
+
+  - type: textarea
+    id: repo-steps
+    attributes:
+      label: "Steps to reproduce this issue"
+      description: |
+        Please provide the list of steps required to reproduce this issue in as much detail as possible.
+      placeholder: |
+        1.
+        2.
+        3.
+        ...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: mod-compat
+    attributes:
+      label: "Is this a mod compatibility issue?"
+      options:
+        - "Not sure or not applicable"
+        - "Yes, this issue only occurs with other mods present"
+        - "No, this issue occurs with only this mod present"
+    validations:
+      required: true
+
+  - type: textarea
+    id: other-mods
+    attributes:
+      label: "What other mods do you have?"
+      description: |
+        Please list any other mods involved if this issue relates to mod compatibility.

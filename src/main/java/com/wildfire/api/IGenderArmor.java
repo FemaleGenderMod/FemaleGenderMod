@@ -1,30 +1,61 @@
 /*
-    Wildfire's Female Gender Mod is a female gender mod created for Minecraft.
-    Copyright (C) 2023 WildfireRomeo
-
-    This program is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 3 of the License, or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Lesser General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+ * Wildfire's Female Gender Mod is a female gender mod created for Minecraft.
+ * Copyright (C) 2023-present WildfireRomeo
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 
 package com.wildfire.api;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.wildfire.api.impl.GenderArmor;
+import com.wildfire.main.WildfireHelper;
+import net.neoforged.neoforge.common.util.TriState;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Expose this as a capability on your chestplates or items that go in the chest slot to configure how it interacts with breast rendering.
  */
 public interface IGenderArmor {
 
+    Codec<IGenderArmor> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+          Codec.floatRange(0f, 1f).optionalFieldOf("resistance", 0.5f)
+                .forGetter(IGenderArmor::physicsResistance),
+          Codec.floatRange(0f, 1f).optionalFieldOf("tightness", 0f)
+                .forGetter(IGenderArmor::tightness),
+          Codec.BOOL.optionalFieldOf("covers_breasts", true)
+                .forGetter(IGenderArmor::coversBreasts),
+          Codec.BOOL.optionalFieldOf("hide_breasts", false)
+                .forGetter(IGenderArmor::alwaysHidesBreasts),
+          WildfireHelper.TRISTATE.optionalFieldOf("render_on_armor_stands", TriState.DEFAULT)
+                .forGetter(armor -> armor.armorStandsCopySettings() ? TriState.TRUE : TriState.FALSE),
+          IBreastArmorTexture.CODEC.optionalFieldOf("texture", IBreastArmorTexture.DEFAULT)
+                .forGetter(IGenderArmor::texture)
+    ).apply(instance, (resistance, tightness, covers, hideBreasts, armorStands, texture) -> {
+        if (!covers) {
+            return GenderArmor.EMPTY;
+        }
+        //TODO - 1.21.4: Replace this once we are using vanilla's tristate
+        return new GenderArmor(resistance, tightness, true, hideBreasts, armorStands.isDefault() ? resistance == 1f : armorStands.isTrue(), texture);
+        //return new GenderArmor(resistance, tightness, true, hideBreasts, armorStands.asBoolean(resistance == 1f), texture);
+    }));
+
     /**
-     * Determines whether this {@link IGenderArmor} "covers" the breasts or if it has an open front ({@code false}) like the elytra.
+     * <p>Determines whether this {@link IGenderArmor} "covers" the breasts or if it has an open front ({@code false}) like the elytra.</p>
+     *
+     * <p>If this returns {@code false} the breast armor layer will not be rendered while this item is worn, as if the item simply didn't exist.</p>
      *
      * @return {@code true} if the breasts are covered.
      *
@@ -52,10 +83,10 @@ public interface IGenderArmor {
      *
      * @return Value between {@code 0} (no resistance, full physics) and {@code 1} (total resistance, no physics).
      *
-     * @implNote Defaults to {@code 0} (no resistance, full physics).
+     * @implNote Defaults to {@code 0.5} (50% physics resistance).
      */
     default float physicsResistance() {
-        return 0;
+        return 0.5F;
     }
 
     /**
@@ -73,8 +104,7 @@ public interface IGenderArmor {
     /**
      * Determines whether armor stands should copy the breast settings of the player equipping this chestplate onto it.
      *
-     * <p>If this returns {@code true}, an equipping player's breast settings will be copied onto the item stack's
-     * {@link net.minecraft.core.component.DataComponents#CUSTOM_DATA custom NBT data component} under the tag {@code WildfireGender}.
+     * <p>If this returns {@code true}, the equipping player's breast settings will also be rendered when this armor piece is equipped onto an armor stand.</p>
      *
      * <p>This is designed for armor types that are metallic in nature, and not armor types that would (realistically) be flexible enough to accommodate for a player's
      * breasts on their own (such as Leather and Chain).</p>
@@ -89,5 +119,21 @@ public interface IGenderArmor {
      */
     default boolean armorStandsCopySettings() {
         return !alwaysHidesBreasts() && coversBreasts() && physicsResistance() == 1F;
+    }
+
+    /**
+     * Overrides certain values when this armor piece is being rendered
+     *
+     * @return The relevant {@link IBreastArmorTexture}
+     *
+     * @implNote Defaults to {@link IBreastArmorTexture#DEFAULT}
+     *
+     * @see IBreastArmorTexture
+     *
+     * @since 4.0.0
+     */
+    @NotNull
+    default IBreastArmorTexture texture() {
+        return IBreastArmorTexture.DEFAULT;
     }
 }

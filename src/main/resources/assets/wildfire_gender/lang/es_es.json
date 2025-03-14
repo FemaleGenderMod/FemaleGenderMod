@@ -1,0 +1,111 @@
+{
+	"category.wildfire_gender.generic": "Mod del Género Femenino de Wildfire",
+	"key.wildfire_gender.gender_menu": "Menu de Genero",
+	"toast.wildfire_gender.get_started": "¡Pulsa '%s' para iniciar!",
+
+	"wildfire_gender.player_list.title": "Mod del Género Femenino",
+	"wildfire_gender.player_list.settings_button": "Configuración",
+	"wildfire_gender.player_list.sync_status": "Estatus de Sincronización",
+	"wildfire_gender.player_list.state.loading": "Cargando datos...",
+	"wildfire_gender.player_list.state.synced": "Jugador Sinvronizado",
+	"wildfire_gender.player_list.bounce_multiplier": "Multiplicador de Rebote: %sx",
+	"wildfire_gender.player_list.breast_momentum": "Impetu del Pecho: %s%%",
+	"wildfire_gender.player_list.female_sounds": "Sonidos de Mujer: %s",
+	"wildfire_gender.wardrobe.players_using_mod": "Jugadores usando el mod:",
+
+	"wildfire_gender.always_show_list": "Mostrar jugadores sincronizados: %s",
+	"wildfire_gender.always_show_list.mod_ui_only": "Ésta pantalla",
+	"wildfire_gender.always_show_list.mod_ui_only.tooltip": "La lista de jugadores sincronizados solo se mostrará en ésta pantalla.",
+	"wildfire_gender.always_show_list.tab_list_open": "Lista de jugadores",
+	"wildfire_gender.always_show_list.tab_list_open.tooltip": "La lista de jugadores sincronizados se mostrará al pulsar %s",
+	"wildfire_gender.always_show_list.always": "Siempre",
+	"wildfire_gender.always_show_list.always.tooltip": "La lista de jugadores sincronizados siempre se mostrará.",
+
+	"wildfire_gender.wardrobe.title": "Mod del Género Femenino de Wildfire",
+	"wildfire_gender.breast_customization.tab_customization": "Personalización",
+	"wildfire_gender.breast_customization.tab_physics": "Físicas del Pecho",
+	"wildfire_gender.breast_customization.tab_miscellaneous": "Misceláneo",
+
+	"wildfire_gender.breast_customization.presets.add_new": "Agregar nuevo...",
+	"wildfire_gender.breast_customization.presets.delete": "Eliminar",
+
+	"wildfire_gender.wardrobe.slider.breast_size": "Tamaño del Pecho: %s%%",
+	"wildfire_gender.wardrobe.slider.separation": "Separación: %s",
+	"wildfire_gender.wardrobe.slider.height": "Altura: %s",
+	"wildfire_gender.wardrobe.slider.depth": "Profundidad: %s",
+	"wildfire_gender.wardrobe.slider.rotation": "Rotación: %s°",
+	"wildfire_gender.slider.voice_pitch": "Tono de Voz: %s%%",
+
+	"wildfire_gender.appearance_settings.title": "Personalización de Personaje",
+	"wildfire_gender.char_settings.title": "Configuración de Personaje (VIEJA)",
+	"wildfire_gender.char_settings.physics": "Físicas del Pecho: %s",
+
+	"wildfire_gender.char_settings.override_armor_physics": "Físicas en la armadura: %s",
+	"wildfire_gender.tooltip.override_armor_physics.line1": "Las físicas ya no se verán limitadas por el tipo de armadura que uses",
+	"wildfire_gender.tooltip.override_armor_physics.line2": "Ésto está hecho por si usas paquetes de recursos que escondan la armadura o la minimicen.",
+
+	"wildfire_gender.char_settings.hide_in_armor": "Esconder en la armadura: %s",
+	"wildfire_gender.char_settings.hurt_sounds": "Sonidos de Mujer: %s",
+	"wildfire_gender.tooltip.hurt_sounds": "Tu personaje producirá sonidos de mujer al recibir daño cuándo se use el género 'Mujer' u 'Otro'",
+
+	"wildfire_gender.breast_customization.dual_physics": "Físicas Duales: %s",
+
+	"wildfire_gender.label.gender": "Género",
+	"wildfire_gender.label.female": "Mujer",
+	"wildfire_gender.label.male": "Hombre",
+	"wildfire_gender.label.other": "Otro",
+
+	"wildfire_gender.label.enabled": "Activado",
+	"wildfire_gender.label.disabled": "Desactivado",
+	"wildfire_gender.label.on": "Sí",
+	"wildfire_gender.label.off": "No",
+	"wildfire_gender.label.with_creator": "¡Estás jugando en un servidor con la creadora del mod!",
+	"wildfire_gender.label.with_contributor": "¡Estás en un servidor con un/a contribuidor/a del mod!",
+	"wildfire_gender.label.with_both": "¡Estás jugando en un servidor con la creadora y un/a contribuidor/a!",
+
+	"wildfire_gender.slider.bounce": "Intensidad: %s%%",
+	"wildfire_gender.slider.floppy": "Ímpetu: %s%%",
+
+	"wildfire_gender.cancer_awareness.title": "Hey, ¡Es el mes de concientización sobre el cáncer de mama!",
+
+	"wildfire_gender.first_time_setup.title": "¡Bienvenido/a al mod del género femenino de Wildfire!",
+	"wildfire_gender.first_time_setup.description": "¿Deseas activar la sincronización de configuración en la nube? Ésto permitirá a otros jugadores con el mod el ver tus ajustes sin que el servidor tenga el mod instalado.",
+	"wildfire_gender.first_time_setup.notice": "Siempre podrás cambiar ésta opción después en el menú del mod.",
+	"wildfire_gender.first_time_setup.enable": "Activar Sincronizado en la Nube",
+	"wildfire_gender.first_time_setup.disable": "Desactivar Sincronizado en la Nube",
+
+
+	"wildfire_gender.cloud_settings": "Configuración del Sincronizado en la Nube",
+	"wildfire_gender.cloud.tooltip": "Sincronizado en la Nube",
+	"wildfire_gender.cloud.unavailable.invalid_account": "El Sincronizado en la Nube no está disponible debido a que no iniciaste sesión en una cuenta de Minecraft válida.",
+	"wildfire_gender.cloud.status": "Sincronizado: %s",
+	"wildfire_gender.cloud.automatic": "Sincro. Automática: %s",
+	"wildfire_gender.cloud.automatic.tooltip.line1": "Cuando se active se enviaran los cambios que hagas a la nube.",
+	"wildfire_gender.cloud.automatic.tooltip.line2": "Aún puedes sincronizar manualmente si la opción no está disponible.",
+	"wildfire_gender.cloud.sync": "Sincronizar Ya",
+	"wildfire_gender.cloud.syncing": "Sincronizando...",
+
+	"wildfire_gender.cloud.status_log": "Registro de estado",
+
+	"wildfire_gender.cloud.syncing.success": "Sincronizado!",
+	"wildfire_gender.cloud.syncing.fail": "Sincro. Fallida...",
+
+	"wildfire_gender.sync_log.authenticating": "Autenticando cuenta...",
+	"wildfire_gender.sync_log.authentication_success": "Autenticación Exitosa.",
+	"wildfire_gender.sync_log.authentication_failed": "Autenticación Falló.",
+	"wildfire_gender.sync_log.reauthenticating": "Re-Autenticando Cuenta...",
+
+	"wildfire_gender.sync_log.failed_to_sync_data": "Fallo al Sincronizar Datos",
+	"wildfire_gender.sync_log.sync_to_cloud": "Sincronizado datos a la nube...",
+	"wildfire_gender.sync_log.attempting_sync": "Sincronizando Perfil...",
+	"wildfire_gender.sync_log.sync_success": "Sincronizado con éxito.",
+	"wildfire_gender.sync_log.sync_too_frequently": "Has sincronizado muy rápido, inténtalo en unos segundos.",
+
+	"wildfire_gender.sync_log.get_single_profile": "Obteniendo Perfil...",
+	"wildfire_gender.sync_log.get_multiple_profiles": "Obteniendo Perfiles en Lote...",
+
+	"wildfire_gender.details.next_page": "Sig. Página",
+	"wildfire_gender.details.prev_page": "Ant. Página",
+
+	"wildfire_gender.cloud_details.title": "Información del Servidor en la Nube"
+}
