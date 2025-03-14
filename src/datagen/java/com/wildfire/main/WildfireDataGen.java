@@ -1,5 +1,6 @@
 package com.wildfire.main;
 
+import com.wildfire.client.WildfireGenderArmorProvider;
 import com.wildfire.client.WildfireSoundProvider;
 import com.wildfire.client.lang.WildfireLangProvider;
 import net.minecraft.data.DataGenerator;
@@ -23,5 +24,6 @@ public class WildfireDataGen {
         gen.addProvider(true, new BasePackMetadataGenerator(output, WildfireLang.PACK_DESCRIPTION));
         gen.addProvider(event.includeClient(), new WildfireLangProvider(output));
         gen.addProvider(event.includeClient(), new WildfireSoundProvider(output, existingFileHelper));
+        gen.addProvider(event.includeClient(), new WildfireGenderArmorProvider(output, event.getLookupProvider()));
     }
 }

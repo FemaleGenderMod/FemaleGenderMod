@@ -19,9 +19,11 @@
 package com.wildfire.api;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.wildfire.api.impl.GenderArmor;
-import net.neoforged.neoforge.common.util.TriState;
+import java.util.Optional;
+import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -29,27 +31,36 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface IGenderArmor {
 
-    Codec<IGenderArmor> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-          Codec.floatRange(0f, 1f).optionalFieldOf("resistance", 0.5f)
-                .forGetter(IGenderArmor::physicsResistance),
-          Codec.floatRange(0f, 1f).optionalFieldOf("tightness", 0f)
-                .forGetter(IGenderArmor::tightness),
-          Codec.BOOL.optionalFieldOf("covers_breasts", true)
-                .forGetter(IGenderArmor::coversBreasts),
-          Codec.BOOL.optionalFieldOf("hide_breasts", false)
-                .forGetter(IGenderArmor::alwaysHidesBreasts),
-          WildfireAPI.TRISTATE.optionalFieldOf("render_on_armor_stands", TriState.DEFAULT)
-                .forGetter(armor -> armor.armorStandsCopySettings() ? TriState.TRUE : TriState.FALSE),
-          IBreastArmorTexture.CODEC.optionalFieldOf("texture", IBreastArmorTexture.DEFAULT)
-                .forGetter(IGenderArmor::texture)
-    ).apply(instance, (resistance, tightness, covers, hideBreasts, armorStands, texture) -> {
-        if (!covers) {
-            return GenderArmor.EMPTY;
-        }
-        //TODO - 1.21.4: Replace this once we are using vanilla's tristate
-        return new GenderArmor(resistance, tightness, true, hideBreasts, armorStands.isDefault() ? resistance == 1f : armorStands.isTrue(), texture);
-        //return new GenderArmor(resistance, tightness, true, hideBreasts, armorStands.asBoolean(resistance == 1f), texture);
-    }));
+    Codec<IGenderArmor> CODEC = NeoForgeExtraCodecs.withAlternative(
+          //If the gender armor doesn't cover breasts made it always serialize/deserialize as empty
+          Codec.BOOL.fieldOf("covers_breasts").flatXmap(
+                coversBreasts -> {
+                    if (coversBreasts) {
+                        return DataResult.error(() -> "Empty codec representation can only be used when breasts are not covered");
+                    }
+                    return DataResult.success(GenderArmor.EMPTY);
+                }, genderArmor -> {
+                    if (genderArmor.coversBreasts()) {
+                        return DataResult.error(() -> "Empty codec representation can only be used when breasts are not covered");
+                    }
+                    return DataResult.success(false);
+                }), RecordCodecBuilder.mapCodec(instance -> instance.group(
+                      Codec.floatRange(0F, 1F).optionalFieldOf("resistance", 0.5F).forGetter(IGenderArmor::physicsResistance),
+                      Codec.floatRange(0F, 1F).optionalFieldOf("tightness", 0F).forGetter(IGenderArmor::tightness),
+                      Codec.BOOL.optionalFieldOf("hide_breasts", false).forGetter(IGenderArmor::alwaysHidesBreasts),
+                      Codec.BOOL.optionalFieldOf("render_on_armor_stands").forGetter(armor -> {
+                          boolean defaultCopySettings = !armor.alwaysHidesBreasts() && armor.coversBreasts() && armor.physicsResistance() == 1F;
+                          if (armor.armorStandsCopySettings() == defaultCopySettings) {
+                              return Optional.empty();
+                          }
+                          return Optional.of(armor.armorStandsCopySettings());
+                      }),
+                      IBreastArmorTexture.CODEC.optionalFieldOf("texture", IBreastArmorTexture.DEFAULT).forGetter(IGenderArmor::texture)
+                ).apply(instance, (resistance, tightness, hideBreasts, armorStands, texture) ->
+                      new GenderArmor(resistance, tightness, true, hideBreasts, armorStands.orElse(!hideBreasts && resistance == 1f), texture)
+                )
+          )
+    ).codec();
 
     /**
      * <p>Determines whether this {@link IGenderArmor} "covers" the breasts or if it has an open front ({@code false}) like the elytra.</p>
@@ -126,9 +137,7 @@ public interface IGenderArmor {
      * @return The relevant {@link IBreastArmorTexture}
      *
      * @implNote Defaults to {@link IBreastArmorTexture#DEFAULT}
-     *
      * @see IBreastArmorTexture
-     *
      * @since 4.0.0
      */
     @NotNull

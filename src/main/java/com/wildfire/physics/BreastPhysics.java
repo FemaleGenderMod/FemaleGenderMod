@@ -68,7 +68,7 @@ public class BreastPhysics {
         if (entity instanceof ArmorStand) {
             if (entityConfig.getGender().canHaveBreasts()) {
                 this.breastSize = entityConfig.getBustSize();
-                if (!entityConfig.getArmorPhysicsOverride()) {
+                if (!entityConfig.getArmorPhysicsOverride() && armor.coversBreasts()) {
                     float tightness = Mth.clamp(armor.tightness(), 0, 1);
                     this.breastSize *= 1 - 0.15F * tightness;
                 }
@@ -94,7 +94,7 @@ public class BreastPhysics {
 
         if (!entityConfig.getGender().canHaveBreasts()) {
             targetBreastSize = 0;
-        } else if (!entityConfig.getArmorPhysicsOverride()) { //skip resistance if physics is overridden
+        } else if (!entityConfig.getArmorPhysicsOverride() && armor.coversBreasts()) { //skip resistance if physics is overridden
             float tightness = Mth.clamp(armor.tightness(), 0, 1);
             //Scale breast size by how tight the armor is, clamping at a max adjustment of shrinking by 0.15
             targetBreastSize *= 1 - 0.15F * tightness;
@@ -106,7 +106,8 @@ public class BreastPhysics {
         this.prePos = entity.position();
 
         float bounceIntensity = (targetBreastSize * 3f) * Math.round((entityConfig.getBounceMultiplier() * 3) * 100) / 100f;
-        if (!entityConfig.getArmorPhysicsOverride()) { //skip resistance if physics is overridden
+        if (!entityConfig.getArmorPhysicsOverride() && armor.coversBreasts()) {
+            //skip resistance if physics is overridden or the breasts are not covered
             float resistance = Mth.clamp(armor.physicsResistance(), 0, 1);
             //Adjust bounce intensity by physics resistance of the worn armor
             bounceIntensity *= 1 - resistance;

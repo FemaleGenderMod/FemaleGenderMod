@@ -26,7 +26,7 @@ public record GenderArmor(
      * Default implementation used when the player {@link net.minecraft.world.item.ItemStack#isEmpty() isn't wearing a chestplate},
      * or if the worn chestplate specifies that it doesn't cover the breasts.
      */
-    public static final IGenderArmor EMPTY = new GenderArmor(0f, 0f, false, false, false, BreastArmorTexture.DEFAULT);
+    public static final IGenderArmor EMPTY = new GenderArmor(0F, 0F, false, false, false, BreastArmorTexture.DEFAULT);
 
     public GenderArmor(float physicsResistance, float tightness, boolean armorStandsCopySettings) {
         this(physicsResistance, tightness, true, false, armorStandsCopySettings, IBreastArmorTexture.DEFAULT);

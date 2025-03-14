@@ -21,6 +21,7 @@ package com.wildfire.client;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.wildfire.api.IGenderArmor;
 import com.wildfire.client.gui.SyncedPlayersLayer;
 import com.wildfire.client.gui.screen.WardrobeBrowserScreen;
 import com.wildfire.client.gui.screen.WildfireFirstTimeSetupScreen;
@@ -381,17 +382,17 @@ public class WildfireGenderClient {
                         slot = equipable.getEquipmentSlot();
                     }
                 }
-                if (slot == EquipmentSlot.CHEST) {
-                    float physResistance = WildfireHelper.getArmorConfig(stack).physicsResistance();
-                    event.addTooltipLines(WildfireLang.ARMOR_TOOLTIP.translateColored(ChatFormatting.LIGHT_PURPLE, Math.floor(physResistance * 100) / 100f));
-                }
-
                 //TODO - 1.21.4: Switch to this
-                /*Equippable equippable = stack.get(DataComponentTypes.EQUIPPABLE);
-                if (equippable != null && equippable.slot() == EquipmentSlot.CHEST) {
-                    float physResistance = WildfireHelper.getArmorConfig(stack).physicsResistance();
-                    event.addTooltipLines(WildfireLang.ARMOR_TOOLTIP.translateColored(ChatFormatting.LIGHT_PURPLE, Math.floor(physResistance * 100) / 100f));
-                }*/
+                //Equippable equippable = stack.get(DataComponentTypes.EQUIPPABLE);
+                //if (equippable != null && equippable.slot() == EquipmentSlot.CHEST) {
+                if (slot == EquipmentSlot.CHEST) {
+                    IGenderArmor armorConfig = WildfireHelper.getArmorConfig(stack);
+                    //TODO - 1.21: should we skip this when the config always hides breasts?
+                    if (armorConfig.coversBreasts()) {
+                        float physResistance = armorConfig.physicsResistance();
+                        event.addTooltipLines(WildfireLang.ARMOR_TOOLTIP.translateColored(ChatFormatting.LIGHT_PURPLE, Math.floor(physResistance * 100) / 100f));
+                    }
+                }
             }
         }
     }

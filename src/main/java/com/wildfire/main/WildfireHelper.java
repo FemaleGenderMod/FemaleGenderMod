@@ -18,9 +18,6 @@
 
 package com.wildfire.main;
 
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.wildfire.api.IGenderArmor;
 import com.wildfire.api.WildfireAPI;
 import com.wildfire.api.impl.GenderArmor;
@@ -33,13 +30,12 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public class WildfireHelper {
 
-    //TODO - 1.21: Re-evaluate this
+    //TODO - 1.21: Re-evaluate this, and probably inline them into the provider
     public static final IGenderArmor LEATHER = new GenderArmor(0.3F, 0.5F, false);
     public static final IGenderArmor CHAIN_MAIL = new GenderArmor(0.5F, 0.2F, false);
     public static final IGenderArmor GOLD = new GenderArmor(0.85F, 0, true);

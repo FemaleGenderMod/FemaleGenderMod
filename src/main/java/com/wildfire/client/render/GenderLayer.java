@@ -107,7 +107,7 @@ public class GenderLayer<ENTITY extends LivingEntity, MODEL extends HumanoidMode
 			ItemStack armorStack = entity.getItemBySlot(EquipmentSlot.CHEST);
 			//Note: When the stack is empty the helper will fall back to an implementation that returns the proper data
 			IGenderArmor genderArmor = WildfireHelper.getArmorConfig(armorStack);
-			boolean isChestplateOccupied = genderArmor.coversBreasts();
+			final boolean isChestplateOccupied = genderArmor.coversBreasts();
 			if (genderArmor.alwaysHidesBreasts() || !entityConfig.showBreastsInArmor() && isChestplateOccupied) {
 				//If the armor always hides breasts or there is armor and the player configured breasts
 				// to be hidden when wearing armor, we can just exit early rather than doing any calculations
@@ -182,13 +182,13 @@ public class GenderLayer<ENTITY extends LivingEntity, MODEL extends HumanoidMode
 			breastSize = bSize + 0.5f * Math.abs(bSize - 0.7f) * 2f;
 
 			//If the armor physics is overridden ignore resistance
-			float resistance = entityConfig.getArmorPhysicsOverride() ? 0 : Mth.clamp(genderArmor.physicsResistance(), 0, 1);
+			float resistance = entityConfig.getArmorPhysicsOverride() || !isChestplateOccupied ? 0 : Mth.clamp(genderArmor.physicsResistance(), 0, 1);
 			//Note: We only check if the breathing animation should be enabled if the chestplate's physics resistance
 			// is less than or equal to 0.5 so that if we won't be rendering it we can avoid doing extra calculations
 			boolean breathingAnimation = entityConfig.canBreathe() && resistance <= 0.5F &&
                                          (!entity.isUnderWater() || MobEffectUtil.hasWaterBreathing(entity) ||
 										  entity.level().getBlockState(BlockPos.containing(entity.getX(), entity.getEyeY(), entity.getZ())).is(Blocks.BUBBLE_COLUMN));
-			boolean bounceEnabled = entityConfig.hasBreastPhysics() && (!isChestplateOccupied || resistance < 1); //oh, you found this?
+			boolean bounceEnabled = entityConfig.hasBreastPhysics() && resistance < 1; //oh, you found this?
 
 			int overlay = LivingEntityRenderer.getOverlayCoords(entity, 0);
 			HumanoidModel<ENTITY> model = getParentModel();
