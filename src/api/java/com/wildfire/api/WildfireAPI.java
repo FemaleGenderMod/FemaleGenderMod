@@ -19,11 +19,15 @@
 package com.wildfire.api;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.stream.IntStream;
 import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.capabilities.ItemCapability;
+import net.neoforged.neoforge.common.util.TriState;
 import org.joml.Vector2i;
 import org.joml.Vector2ic;
 
@@ -39,7 +43,6 @@ public final class WildfireAPI {
      */
     public static final ItemCapability<IGenderArmor, Void> GENDER_ARMOR_CAPABILITY = ItemCapability.createVoid(ResourceLocation.fromNamespaceAndPath(MODID, "gender_armor"), IGenderArmor.class);
 
-
     private static final Codec<Vector2ic> VECTOR_2I_LEGACY_CODEC = RecordCodecBuilder.create(instance -> instance.group(
           Codec.INT.fieldOf("x").forGetter(Vector2ic::x),
           Codec.INT.fieldOf("y").forGetter(Vector2ic::y)
@@ -48,4 +51,27 @@ public final class WildfireAPI {
           stream -> Util.fixedSize(stream, 2).map(Vector2i::new),
           vec2i -> IntStream.of(vec2i.x(), vec2i.y())
     ), VECTOR_2I_LEGACY_CODEC);
+
+    //TODO - 1.21.4: Switch to vanilla's tristate
+    static final PrimitiveCodec<TriState> TRISTATE = new PrimitiveCodec<>() {
+        @Override
+        public <T> DataResult<TriState> read(final DynamicOps<T> ops, final T input) {
+            return DataResult.success(ops.getBooleanValue(input)
+                  .map(v -> v ? TriState.TRUE : TriState.FALSE)
+                  .result().orElse(TriState.DEFAULT));
+        }
+
+        @Override
+        public <T> T write(final DynamicOps<T> ops, final TriState value) {
+            if (value == TriState.DEFAULT) {
+                return ops.empty();
+            }
+            return ops.createBoolean(value == TriState.TRUE);
+        }
+
+        @Override
+        public String toString() {
+            return "TriState";
+        }
+    };
 }

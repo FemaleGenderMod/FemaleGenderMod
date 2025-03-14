@@ -39,29 +39,6 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public class WildfireHelper {
 
-    //TODO - 1.21.4: Switch to vanilla's tristate
-    public static final PrimitiveCodec<TriState> TRISTATE = new PrimitiveCodec<>() {
-        @Override
-        public <T> DataResult<TriState> read(final DynamicOps<T> ops, final T input) {
-            return DataResult.success(ops.getBooleanValue(input)
-                  .map(v -> v ? TriState.TRUE : TriState.FALSE)
-                  .result().orElse(TriState.DEFAULT));
-        }
-
-        @Override
-        public <T> T write(final DynamicOps<T> ops, final TriState value) {
-            if (value == TriState.DEFAULT) {
-                return ops.empty();
-            }
-            return ops.createBoolean(value == TriState.TRUE);
-        }
-
-        @Override
-        public String toString() {
-            return "TriState";
-        }
-    };
-
     //TODO - 1.21: Re-evaluate this
     public static final IGenderArmor LEATHER = new GenderArmor(0.3F, 0.5F, false);
     public static final IGenderArmor CHAIN_MAIL = new GenderArmor(0.5F, 0.2F, false);

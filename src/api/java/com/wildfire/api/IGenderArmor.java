@@ -21,7 +21,6 @@ package com.wildfire.api;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.wildfire.api.impl.GenderArmor;
-import com.wildfire.main.WildfireHelper;
 import net.neoforged.neoforge.common.util.TriState;
 import org.jetbrains.annotations.NotNull;
 
@@ -39,7 +38,7 @@ public interface IGenderArmor {
                 .forGetter(IGenderArmor::coversBreasts),
           Codec.BOOL.optionalFieldOf("hide_breasts", false)
                 .forGetter(IGenderArmor::alwaysHidesBreasts),
-          WildfireHelper.TRISTATE.optionalFieldOf("render_on_armor_stands", TriState.DEFAULT)
+          WildfireAPI.TRISTATE.optionalFieldOf("render_on_armor_stands", TriState.DEFAULT)
                 .forGetter(armor -> armor.armorStandsCopySettings() ? TriState.TRUE : TriState.FALSE),
           IBreastArmorTexture.CODEC.optionalFieldOf("texture", IBreastArmorTexture.DEFAULT)
                 .forGetter(IGenderArmor::texture)

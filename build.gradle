@@ -16,6 +16,58 @@ tasks.named('wrapper', Wrapper) {
     distributionType = Wrapper.DistributionType.BIN
 }
 
+sourceSets {
+    api {
+        //The API has no resources
+        resources.srcDirs = []
+    }
+    main {
+        resources {
+            //Add the generated main module resources
+            srcDirs += 'src/datagen/generated'
+            //But exclude the cache of the generated data from what gets built
+            exclude '.cache'
+        }
+        compileClasspath += api.output
+        runtimeClasspath += api.output
+    }
+    datagen {
+        java.srcDirs = ['src/datagen/java']
+        resources.srcDirs = ['src/datagen/resources']
+        compileClasspath += api.output + main.output
+    }
+
+    // These source-sets only exist for the sake of assembling a dependency graph
+    // for IntelliJ. Each of these will become an IntelliJ module when the project is imported,
+    // and will be set as the "main module" for the IntelliJ runs. A compile dependency
+    // on the other source sets is enough, since runtime classpath is managed by MDG anyway.
+    runMain {
+        runtimeClasspath += main.runtimeClasspath + api.runtimeClasspath
+        compileClasspath += main.output + api.output
+    }
+    runData {
+        compileClasspath += runMain.compileClasspath + datagen.compileClasspath
+        runtimeClasspath += runMain.runtimeClasspath + datagen.runtimeClasspath
+    }
+}
+
+configurations { configContainer ->
+    //Make sure all our sub source set stuff extends the proper base methods so that
+    // they can see all the dependencies we have in dependencies including forge
+    extendConfigurations(implementation, apiImplementation, datagenImplementation)
+    extendConfigurations(compileOnly, apiCompileOnly, datagenCompileOnly)
+    extendConfigurations(runtimeOnly, apiRuntimeOnly, datagenRuntimeOnly)
+    extendConfigurations(localRuntime, apiLocalRuntime)
+    sourceSets.main.runtimeClasspath += localRuntime
+    sourceSets.api.runtimeClasspath += apiLocalRuntime
+}
+
+static void extendConfigurations(Configuration base, Configuration... configurations) {
+    for (def configuration : configurations) {
+        configuration.extendsFrom(base)
+    }
+}
+
 project.base.archivesName = project.archives_base_name
 version = "neoforge-${minecraft_version}-${mod_version}"
 group = project.maven_group
@@ -25,18 +77,28 @@ java {
         languageVersion.set(JavaLanguageVersion.of("${java_version}"))
         vendor.set(JvmVendorSpec.JETBRAINS)
     }
+    withSourcesJar()
 }
 
 println("Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}")
 
 neoForge {
-    version = neo_version
+    enable {
+        version = neo_version
+        enabledSourceSets = sourceSets // All source sets use Minecraft code
+    }
 
     accessTransformers.from(file('src/main/resources/META-INF/accesstransformer.cfg'))
 
     mods {
         wildfire_gender {
             sourceSet(sourceSets.main)
+            sourceSet(sourceSets.api)
+        }
+        wildfire_gender_datagen {
+            sourceSet(sourceSets.main)
+            sourceSet(sourceSets.api)
+            sourceSet(sourceSets.datagen)
         }
     }
 }
@@ -54,7 +116,7 @@ neoForge.runs {
             jvmArguments.addAll('-XX:+IgnoreUnrecognizedVMOptions', '-XX:+AllowEnhancedClassRedefinition')
         }
 
-        sourceSet = sourceSets.main
+        sourceSet = sourceSets.runMain
     }
     client {
         client()
@@ -71,6 +133,14 @@ neoForge.runs {
     }
     server {
         server()
+    }
+    data {
+        data()
+        programArguments.addAll('--all', '--output', project.file('src/datagen/generated/').getAbsolutePath(),
+                '--mod', 'wildfire_gender', '--existing', project.file('src/main/resources/').getAbsolutePath())
+
+        sourceSet = sourceSets.runData
+        loadedMods = [neoForge.mods.wildfire_gender_datagen]
     }
 }
 
@@ -125,10 +195,8 @@ tasks.named('processResources', ProcessResources) {
 //Make the various classes tasks depend on the corresponding replaceResources tasks in addition to the default processResources tasks they depend on
 tasks.named('classes') { dependsOn(replaceResources) }
 
-// Example for how to get properties into the manifest for reading at runtime.
-tasks.named('jar', Jar) {
-    duplicatesStrategy = DuplicatesStrategy.FAIL
-    manifest.attributes([
+def getManifestAttributes() {
+    return [
             'Specification-Title'     : project.name,
             'Specification-Vendor'    : 'Wildfire',
             'Specification-Version'   : "${mod_version}",
@@ -137,13 +205,42 @@ tasks.named('jar', Jar) {
             'Implementation-Vendor'   : 'Wildfire',
             'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
             'Automatic-Module-Name'   : 'wildfire_gender'
-    ])
+    ]
+}
+
+tasks.named('jar', Jar) {
+    duplicatesStrategy = DuplicatesStrategy.FAIL
+    from([sourceSets.api.output, sourceSets.main.output])
+    manifest.attributes(getManifestAttributes())
+}
+
+def sourcesJar = tasks.named('sourcesJar', Jar) {
+    dependsOn(classes, apiClasses)
+    duplicatesStrategy = DuplicatesStrategy.FAIL
+    //Note: Already contains main source set's sources by default
+    from(sourceSets.api.allJava)
+    manifest.attributes(getManifestAttributes())
+}
+
+def apiJar = tasks.register('apiJar', Jar) {
+    duplicatesStrategy = DuplicatesStrategy.FAIL
+    archiveClassifier.set("api")
+    from(sourceSets.api.output)
+    manifest.attributes(getManifestAttributes())
+}
+
+artifacts {
+    archives(apiJar)
+    archives(jar)
+    archives(sourcesJar)
 }
 
 publishing {
     publications { PublicationContainer publicationContainer ->
         publicationContainer.register('mavenJava', MavenPublication) { MavenPublication publication ->
-            artifact(jar)
+            publication.groupId = project.group
+            publication.version = project.version
+            publication.artifacts = [apiJar, jar, sourcesJar]
         }
     }
     repositories {
