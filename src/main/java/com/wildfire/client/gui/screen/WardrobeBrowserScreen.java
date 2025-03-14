@@ -99,7 +99,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
             }
         }));
 
-        addRenderableWidget(new WildfireButton(this.width / 2 - 36, y - 63, 157, 20, WildfireLang.APPEARANCE_SETTINGS.translate().append(CommonComponents.ELLIPSIS),
+        addRenderableWidget(new WildfireButton(this.width / 2 - 36, y - 63, 157, 20, TextComponentUtil.build(WildfireLang.APPEARANCE_SETTINGS, CommonComponents.ELLIPSIS),
               button -> minecraft.setScreen(new WildfireBreastCustomizationScreen(WardrobeBrowserScreen.this, this.playerUUID))
         )).active = plr.getGender().canHaveBreasts();
 

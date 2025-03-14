@@ -18,12 +18,7 @@
 
 package com.wildfire.main.config.enums;
 
-import java.util.function.IntFunction;
-import net.minecraft.util.ByIdMap;
-
 public enum SyncVerbosity {
 	DEFAULT,
 	SHOW_FETCHES;
-
-	public static final IntFunction<SyncVerbosity> BY_ID = ByIdMap.continuous(SyncVerbosity::ordinal, values(), ByIdMap.OutOfBoundsStrategy.CLAMP);
 }

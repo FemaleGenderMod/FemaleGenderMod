@@ -48,15 +48,9 @@ public class GeneralClientConfig {
 
 	private GeneralClientConfig() {
 		ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
-		builder.comment("Client Config. This config only exists on the client")
-			  .translation("wildfire_gender.config.client")
-			  .push("client");
-
 		disableRendering = builder.comment("Global override to disable all rendering related to the mod (including in gender menus)")
-			  .translation("wildfire_gender.config.client.disable_rendering")
 			  .define("disableRendering", false);
 		disableSoundReplacement = builder.comment("Global override to disable replacing sounds of players with female variants")
-			  .translation("wildfire_gender.config.client.disable_sound_replacement")
 			  .define("disableSoundReplacement", false);
 
 		//TODO - 1.21: Comments and translations for these
@@ -68,7 +62,6 @@ public class GeneralClientConfig {
 		alwaysShowList = builder.defineEnum("alwaysShowList", ShowPlayerListMode.MOD_UI_ONLY);
 		armorStat = builder.define("armorStat", true);
 
-		builder.pop();
 		configSpec = builder.build();
 	}
 

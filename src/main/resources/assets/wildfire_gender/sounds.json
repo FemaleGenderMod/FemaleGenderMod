@@ -1,7 +1,0 @@
-{
-	"female_hurt": {
-		"category": "player",
-		"subtitle": "wildfire_gender.hurt.female",
-		"sounds": [ "wildfire_gender:female_damage", "wildfire_gender:female_damage2" ]
-	}
-}

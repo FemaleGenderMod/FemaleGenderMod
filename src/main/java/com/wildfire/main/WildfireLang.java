@@ -24,7 +24,16 @@ import org.jetbrains.annotations.NotNull;
 //TODO - 1.21: Data generate the values for this enum
 //TODO - 1.21: Organize this enum
 public enum WildfireLang implements ILangEntry {
+    MOD_NAME("wildfire_gender.name"),
+    PACK_DESCRIPTION("wildfire_gender.pack_description"),
+
+    KEY_CATEGORY("category.wildfire_gender.generic"),
+    KEY_CONFIG("key.wildfire_gender.gender_menu"),
+    KEY_TOGGLE("key.wildfire_gender.toggle"),
+
     ARMOR_TOOLTIP("armor", "tooltip"),
+
+    HURT_SOUND_SUBTITLE("hurt", "female"),
 
     PLAYER_LIST_MODE("wildfire_gender.always_show_list"),
     PLAYER_LIST_MODE_MOD_UI("always_show_list", "mod_ui_only"),
@@ -61,6 +70,9 @@ public enum WildfireLang implements ILangEntry {
     BREAST_CUSTOMIZATION_TAB_CUSTOMIZATION("breast_customization", "tab_customization"),
     BREAST_CUSTOMIZATION_TAB_PHYSICS("breast_customization", "tab_physics"),
     BREAST_CUSTOMIZATION_TAB_MISC("breast_customization", "tab_miscellaneous"),
+    //Presets TODO: Use these?
+    PRESETS_ADD_NEW("breast_customization", "presets.add_new"),
+    PRESETS_DELETE("breast_customization", "presets.delete"),
 
     WARDROBE("wardrobe", "title"),
     WARDROBE_PLAYERS_USING("wardrobe", "players_using_mod"),

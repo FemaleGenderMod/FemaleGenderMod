@@ -6,7 +6,7 @@ issueTrackerURL = "https://github.com/WildfireRomeo/WildfireFemaleGenderMod/issu
 [[mods]]
     modId = "wildfire_gender"
     version = "${file.jarVersion}"
-    displayName = "Wildfire's Female Gender Mod"
+    displayName = "Female Gender Mod"
     #updateJSONURL="https://change.me.example.invalid/updates.json"
     displayURL = "https://www.curseforge.com/minecraft/mc-mods/female-gender-neoforge"
     logoFile = "logo.png"

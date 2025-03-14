@@ -1,0 +1,7 @@
+{
+  "wildfire_gender.char_settings.hide_in_armor": "Hide In Armour: %$1s",
+  "wildfire_gender.char_settings.override_armor_physics": "Armour Physics: %$1s",
+  "wildfire_gender.char_settings.show_armor_stat": "Show Armour Tooltip: %$1s",
+  "wildfire_gender.tooltip.override_armor_physics.line1": "Breast physics will no longer be reduced/suppressed by your equipped armour while enabled",
+  "wildfire_gender.tooltip.override_armor_physics.line2": "This is intended for use with resource packs that hide armour, or any similar minimal armour packs"
+}

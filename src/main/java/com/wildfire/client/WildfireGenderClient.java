@@ -36,6 +36,7 @@ import com.wildfire.main.config.GeneralClientConfig;
 import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.networking.ServerboundSyncPacket;
+import com.wildfire.main.text.IHasTranslationKey;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -102,33 +103,19 @@ public class WildfireGenderClient {
     public static final CompletableFuture<Map<UUID, ContributorNametag>> CONTRIBUTOR_NAMETAGS = CloudSync.getContributors();
     public static WildfireGenderClient INSTANCE;
 
-    public final KeyMapping configKey = new KeyMapping("key.wildfire_gender.gender_menu", GLFW.GLFW_KEY_G, "category.wildfire_gender.generic") {
-        @Override
-        public void setDown(boolean value) {
-            if (value && !isDown()) {
-                //When the key goes from not down to down try to open the wardrobe screen
-                Minecraft minecraft = Minecraft.getInstance();
-                if (minecraft.screen == null && minecraft.player != null) {
-                    if (GeneralClientConfig.INSTANCE.firstTimeLoad.get() && CloudSync.isAvailable()) {
-                        minecraft.setScreen(new WildfireFirstTimeSetupScreen(null, minecraft.player.getUUID()));
-                    } else {
-                        minecraft.setScreen(new WardrobeBrowserScreen(null, minecraft.player.getUUID()));
-                    }
-                }
+    //TODO - 1.21: Re-evaluate this conflict context
+    public final KeyMapping configKey = createKey(WildfireLang.KEY_CONFIG, KeyConflictContext.UNIVERSAL, GLFW.GLFW_KEY_G, () -> {
+        //When the key goes from not down to down try to open the wardrobe screen
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.screen == null && minecraft.player != null) {
+            if (GeneralClientConfig.INSTANCE.firstTimeLoad.get() && CloudSync.isAvailable()) {
+                minecraft.setScreen(new WildfireFirstTimeSetupScreen(null, minecraft.player.getUUID()));
+            } else {
+                minecraft.setScreen(new WardrobeBrowserScreen(null, minecraft.player.getUUID()));
             }
-            super.setDown(value);
         }
-    };
-    public final KeyMapping toggleKey = new KeyMapping("key.wildfire_gender.toggle", KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM,
-          GLFW.GLFW_KEY_UNKNOWN, "category.wildfire_gender.generic") {
-        @Override
-        public void setDown(boolean value) {
-            if (value && !isDown()) {
-                INSTANCE.renderBreasts ^= true;
-            }
-            super.setDown(value);
-        }
-    };
+    });
+    public final KeyMapping toggleKey = createKey(WildfireLang.KEY_TOGGLE, KeyConflictContext.IN_GAME, GLFW.GLFW_KEY_UNKNOWN, () -> INSTANCE.renderBreasts ^= true);
 
     //TODO: Eventually we may want to replace this with a map or something and replace things like drowning sounds with other drowning sounds
     private final Set<SoundEvent> playerHurtSounds = Set.of(
@@ -158,6 +145,18 @@ public class WildfireGenderClient {
         NeoForge.EVENT_BUS.addListener(this::onRenderNameTag);
         NeoForge.EVENT_BUS.addListener(this::onRenderAttributes);
         NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, this::onPlaySound);
+    }
+
+    private static KeyMapping createKey(IHasTranslationKey name, KeyConflictContext conflictContext, int keyCode, Runnable onPress) {
+        return new KeyMapping(name.getTranslationKey(), conflictContext, InputConstants.Type.KEYSYM, keyCode, WildfireLang.KEY_CATEGORY.getTranslationKey()) {
+            @Override
+            public void setDown(boolean value) {
+                if (value && !isDown()) {
+                    onPress.run();
+                }
+                super.setDown(value);
+            }
+        };
     }
 
     public static CompletableFuture<@Nullable PlayerConfig> loadGenderInfo(UUID uuid, boolean markForSync, boolean bypassQueue) {

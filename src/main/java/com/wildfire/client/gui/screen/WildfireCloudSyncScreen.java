@@ -130,10 +130,8 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
         //TODO - 1.21: Validate these are correct
         drawScrollingString(graphics, getTitle(), x - 79, y - 11, TextAlignment.LEFT, 0x444444, 141, 0, false);
         drawScrollingString(graphics, WildfireLang.CLOUD_STATUS_LOG.translate(), x - 79, y + 48, TextAlignment.LEFT, 0x444444, 95, 0, false);
-		/*GuiHelper.drawScrollableTextWithoutShadow(TextAlignment.LEFT, graphics, font, getTitle(),
-				x - 79, y - 12, x - 79 + 141, y - 11 + 10, 0x444444);
-		GuiHelper.drawScrollableTextWithoutShadow(TextAlignment.LEFT, graphics, font, Component.translatable("wildfire_gender.cloud.status_log"),
-				x - 79, y + 47, x - 79 + 95, y + 48 + 10, 0x444444);*/
+		/*GuiHelper.drawScrollableTextWithoutShadow(TextAlignment.LEFT, graphics, font, getTitle(), x - 79, y - 12, x - 79 + 141, y - 11 + 10, 0x444444);
+		GuiHelper.drawScrollableTextWithoutShadow(TextAlignment.LEFT, graphics, font, WildfireLang.CLOUD_STATUS_LOG.translate(), x - 79, y + 47, x - 79 + 95, y + 48 + 10, 0x444444);*/
 
         int lineHeight = font().lineHeight;
         for (int i = SyncLog.SYNC_LOG.size() - 1; i >= 0; i--) {
