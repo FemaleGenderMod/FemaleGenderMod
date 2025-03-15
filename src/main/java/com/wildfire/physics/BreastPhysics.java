@@ -19,9 +19,9 @@
 package com.wildfire.physics;
 
 import com.wildfire.api.IGenderArmor;
-import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.entitydata.EntityConfig;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.HumanoidArm;
@@ -39,6 +39,7 @@ import net.minecraft.world.phys.Vec3;
 
 public class BreastPhysics {
 
+    private final RandomSource random = RandomSource.create();
     private final EntityConfig entityConfig;
 
     //X-Axis
@@ -117,13 +118,14 @@ public class BreastPhysics {
         }
 
         if (!entityConfig.getBreasts().isUniboob()) {
-            bounceIntensity = bounceIntensity * WildfireHelper.randFloat(0.5f, 1.5f);
+            //TODO - 1.21: Do we want to try and make it so that the max is inclusive?
+            bounceIntensity = bounceIntensity * Mth.randomBetween(random, 0.5f, 1.5f);
         }
         double vertVelocity = entity.getDeltaMovement().y;
         // Randomize which side the breast will angle toward when the player jumps/has upward velocity applied to them,
         // or stops falling
         if ((lastVerticalMoveVelocity <= 0 && vertVelocity > 0) || (lastVerticalMoveVelocity < 0 && vertVelocity == 0)) {
-            randomB = entity.level().random.nextBoolean() ? -1 : 1;
+            randomB = random.nextBoolean() ? -1 : 1;
         }
         lastVerticalMoveVelocity = vertVelocity;
 
@@ -170,8 +172,11 @@ public class BreastPhysics {
             }
             case Minecart cart -> {
                 float speed = (float) cart.getDeltaMovement().lengthSqr();
-                if (Math.random() * speed < 0.5f && speed > 0.2f) {
-                    this.targetBounceY = (Math.random() > 0.5 ? -bounceIntensity : bounceIntensity) / 6f;
+                if (random.nextDouble() * speed < 0.5f && speed > 0.2f) {
+                    this.targetBounceY = bounceIntensity / 6f;
+                    if (random.nextBoolean()) {
+                        this.targetBounceY = -this.targetBounceY;
+                    }
                     this.targetBounceY += breastWeight;
                 }
             }
@@ -221,7 +226,12 @@ public class BreastPhysics {
             // consistently apply even with short swing durations, such as with haste
             int everyNthTick = Mth.clamp(swingDuration - 1, 1, 5);
             if (entity.swinging && entity.tickCount % everyNthTick == 0) {
-                this.targetBounceY += (Math.random() > 0.5 ? -0.25f : 0.25f) * amplifier * bounceIntensity;
+                float amplifiedBounce = 0.25f * amplifier * bounceIntensity;
+                if (random.nextBoolean()) {
+                    this.targetBounceY -= amplifiedBounce;
+                } else {
+                    this.targetBounceY += amplifiedBounce;
+                }
                 // The regular amplifier here makes this look relatively unnatural at high levels of mining fatigue,
                 // so instead we're increasing the potency of negative amplifiers (and decreasing positive amplifiers),
                 // and clamping this at a lower range than normal.

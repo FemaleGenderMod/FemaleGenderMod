@@ -24,7 +24,6 @@ import com.wildfire.api.impl.GenderArmor;
 import com.wildfire.client.resources.GenderArmorResourceManager;
 import com.wildfire.main.networking.ClientboundSyncPacket;
 import com.wildfire.main.networking.ServerboundSyncPacket;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ArmorItem;
@@ -35,10 +34,6 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public class WildfireHelper {
-
-    public static float randFloat(float min, float max) {
-        return (float) ThreadLocalRandom.current().nextDouble(min, (double) max + 1);
-    }
 
     //TODO - 1.21: Expose as a helper to the API
     public static IGenderArmor getArmorConfig(ItemStack stack) {
