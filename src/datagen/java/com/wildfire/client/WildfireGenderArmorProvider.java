@@ -21,7 +21,6 @@ package com.wildfire.client;
 import com.wildfire.api.data.GenderArmorProvider;
 import com.wildfire.api.impl.GenderArmor;
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.WildfireHelper;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
@@ -36,12 +35,12 @@ public class WildfireGenderArmorProvider extends GenderArmorProvider {
 
     @Override
     protected void addDefaults(HolderLookup.Provider lookupProvider) {
-        add(ArmorMaterials.LEATHER, WildfireHelper.LEATHER);
-        add(ArmorMaterials.CHAIN, WildfireHelper.CHAIN_MAIL);
-        add(ArmorMaterials.GOLD, WildfireHelper.GOLD);
-        add(ArmorMaterials.IRON, WildfireHelper.IRON);
-        add(ArmorMaterials.DIAMOND, WildfireHelper.DIAMOND);
-        add(ArmorMaterials.NETHERITE, WildfireHelper.NETHERITE);
+        add(ArmorMaterials.LEATHER, new GenderArmor(0.3F, 0.5F, false));
+        add(ArmorMaterials.CHAIN, new GenderArmor(0.5F, 0.2F, false));
+        add(ArmorMaterials.GOLD, new GenderArmor(0.85F, 0, true));
+        add(ArmorMaterials.IRON, new GenderArmor(1, 0, true));
+        add(ArmorMaterials.DIAMOND, new GenderArmor(1, 0, true));
+        add(ArmorMaterials.NETHERITE, new GenderArmor(1, 0, true));
         //TODO - 1.21.4: EquipmentAssets.ELYTRA
         add(ResourceLocation.withDefaultNamespace("elytra"), GenderArmor.EMPTY);
     }

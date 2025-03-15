@@ -21,6 +21,7 @@ package com.wildfire.main;
 import com.wildfire.api.IGenderArmor;
 import com.wildfire.api.WildfireAPI;
 import com.wildfire.api.impl.GenderArmor;
+import com.wildfire.client.resources.GenderArmorResourceManager;
 import com.wildfire.main.networking.ClientboundSyncPacket;
 import com.wildfire.main.networking.ServerboundSyncPacket;
 import java.util.concurrent.ThreadLocalRandom;
@@ -35,27 +36,25 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public class WildfireHelper {
 
-    //TODO - 1.21: Re-evaluate this, and probably inline them into the provider
-    public static final IGenderArmor LEATHER = new GenderArmor(0.3F, 0.5F, false);
-    public static final IGenderArmor CHAIN_MAIL = new GenderArmor(0.5F, 0.2F, false);
-    public static final IGenderArmor GOLD = new GenderArmor(0.85F, 0, true);
-    public static final IGenderArmor IRON = new GenderArmor(1, 0, true);
-    public static final IGenderArmor DIAMOND = new GenderArmor(1, 0, true);
-    public static final IGenderArmor NETHERITE = new GenderArmor(1, 0, true);
-
     public static float randFloat(float min, float max) {
         return (float) ThreadLocalRandom.current().nextDouble(min, (double) max + 1);
     }
 
+    //TODO - 1.21: Expose as a helper to the API
     public static IGenderArmor getArmorConfig(ItemStack stack) {
         if (stack.isEmpty()) {
             return GenderArmor.EMPTY;
+        }
+        IGenderArmor genderArmor = GenderArmorResourceManager.get(stack);
+        if (genderArmor != null) {
+            return genderArmor;
         }
         //TODO - 1.21: Deprecate doing it via the capability
         IGenderArmor capability = stack.getCapability(WildfireAPI.GENDER_ARMOR_CAPABILITY);
         if (capability != null) {
             return capability;
         }
+        //TODO - 1.21: Change this to check if the stack is equippable
         //Note: Vanilla armor will be handled above, as we attach the capability to the corresponding items
         if (stack.getItem() instanceof ArmorItem armorItem && armorItem.getType() == ArmorItem.Type.CHESTPLATE) {
             //If it is an armor item, use our fallback value
@@ -68,14 +67,13 @@ public class WildfireHelper {
         return GenderArmor.EMPTY;
     }
 
+    @SuppressWarnings("removal")
+    @Deprecated(forRemoval = true, since = "4.0.0")
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
         //Expose our defaults for vanilla chest pieces so that if another mod wants to query the values they can easily do so
-        event.registerItem(WildfireAPI.GENDER_ARMOR_CAPABILITY, (stack, context) -> LEATHER, Items.LEATHER_CHESTPLATE);
-        event.registerItem(WildfireAPI.GENDER_ARMOR_CAPABILITY, (stack, context) -> CHAIN_MAIL, Items.CHAINMAIL_CHESTPLATE);
-        event.registerItem(WildfireAPI.GENDER_ARMOR_CAPABILITY, (stack, context) -> GOLD, Items.GOLDEN_CHESTPLATE);
-        event.registerItem(WildfireAPI.GENDER_ARMOR_CAPABILITY, (stack, context) -> IRON, Items.IRON_CHESTPLATE);
-        event.registerItem(WildfireAPI.GENDER_ARMOR_CAPABILITY, (stack, context) -> DIAMOND, Items.DIAMOND_CHESTPLATE);
-        event.registerItem(WildfireAPI.GENDER_ARMOR_CAPABILITY, (stack, context) -> NETHERITE, Items.NETHERITE_CHESTPLATE);
+        //Note: This will return null on the server, but we don't really care about that as this is mostly just for legacy support of any mods that might be trying to query it
+        event.registerItem(WildfireAPI.GENDER_ARMOR_CAPABILITY, (stack, context) -> GenderArmorResourceManager.get(stack), Items.LEATHER_CHESTPLATE,
+              Items.CHAINMAIL_CHESTPLATE, Items.GOLDEN_CHESTPLATE, Items.IRON_CHESTPLATE, Items.DIAMOND_CHESTPLATE, Items.NETHERITE_CHESTPLATE);
     }
 
     public static void registerPackets(RegisterPayloadHandlersEvent event) {

@@ -138,7 +138,7 @@ public class WildfireGenderClient {
         modEventBus.addListener(this::registerKeybindings);
         modEventBus.addListener(this::registerOverlays);
         modEventBus.addListener(this::registerReloadListeners);
-        NeoForge.EVENT_BUS.addListener(this::onGUI);
+        NeoForge.EVENT_BUS.addListener(this::onClientTick);
         NeoForge.EVENT_BUS.addListener(this::onEntityTick);
         NeoForge.EVENT_BUS.addListener(this::connect);
         NeoForge.EVENT_BUS.addListener(this::onEntityLeave);
@@ -257,7 +257,7 @@ public class WildfireGenderClient {
         event.registerAbove(VanillaGuiLayers.CAMERA_OVERLAYS, WildfireGender.rl("player_list"), SyncedPlayersLayer.INSTANCE);
     }
 
-    private void onGUI(ClientTickEvent.Post evt) {
+    private void onClientTick(ClientTickEvent.Post evt) {
         Player player = Minecraft.getInstance().player;
         if (Minecraft.getInstance().level == null || player == null) {
             return;
@@ -308,6 +308,7 @@ public class WildfireGenderClient {
         if (evt.getLevel().isClientSide) {
             // note that we don't attempt to unload players; they're instead only ever unloaded once we leave a world
             //TODO - 1.21: FIXME, we don't seem to be invalidating the cache of other players when they disconnect
+            // I think we might need an event in ClientPacketListener#handlePlayerInfoRemove
             EntityConfig.CACHE.invalidate(evt.getEntity().getUUID());
         }
     }

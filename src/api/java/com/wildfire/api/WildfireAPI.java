@@ -36,7 +36,10 @@ public final class WildfireAPI {
 
     /**
      * Item capability used for gender armor.
+     *
+     * @deprecated Define gender armor via data packs. This can be created with {@link com.wildfire.api.data.GenderArmorProvider}
      */
+    @Deprecated(forRemoval = true, since = "4.0.0")
     public static final ItemCapability<IGenderArmor, Void> GENDER_ARMOR_CAPABILITY = ItemCapability.createVoid(ResourceLocation.fromNamespaceAndPath(MODID, "gender_armor"), IGenderArmor.class);
 
     private static final Codec<Vector2ic> VECTOR_2I_LEGACY_CODEC = RecordCodecBuilder.create(instance -> instance.group(
