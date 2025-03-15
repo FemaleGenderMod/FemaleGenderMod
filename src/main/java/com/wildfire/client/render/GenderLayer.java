@@ -21,7 +21,9 @@ package com.wildfire.client.render;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.wildfire.api.IBreastArmorTexture;
 import com.wildfire.api.IGenderArmor;
+import com.wildfire.api.impl.BreastArmorTexture;
 import com.wildfire.main.entitydata.Breasts;
 import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.config.GeneralClientConfig;
@@ -30,6 +32,7 @@ import com.wildfire.physics.BreastPhysics;
 import com.wildfire.client.render.WildfireModelRenderer.BreastModelBox;
 import com.wildfire.client.render.WildfireModelRenderer.OverlayModelBox;
 import com.wildfire.client.render.WildfireModelRenderer.PositionTextureVertex;
+import java.util.Objects;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -69,20 +72,21 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
+import org.joml.Vector2ic;
 import org.joml.Vector3f;
 
-//TODO - 1.21: Figure out how to resolve the changes made in GenderArmorLayer and taking advantage of the IBreastArmorTexture
 public class GenderLayer<ENTITY extends LivingEntity, MODEL extends HumanoidModel<ENTITY>> extends RenderLayer<ENTITY, MODEL> {
 
 	private static final OverlayModelBox lBreastWear = new OverlayModelBox(true,64, 64, 17, 34, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, false);
 	private static final OverlayModelBox rBreastWear = new OverlayModelBox(false,64, 64, 21, 34, 0, 0.0F, 0F, 4, 5, 3, 0.0F, false);
-	private static final BreastModelBox lBoobArmor = new BreastModelBox(64, 32, 16, 17, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, false);
-	private static final BreastModelBox rBoobArmor = new BreastModelBox(64, 32, 20, 17, 0, 0.0F, 0F, 4, 5, 3, 0.0F, false);
 
 	private final TextureAtlas armorTrimAtlas;
 
 	private BreastModelBox lBreast, rBreast;
+	private BreastModelBox lBoobArmor, rBoobArmor;
 	private float preBreastSize, preBreastOffsetZ;
+	@NotNull
+	private IBreastArmorTexture textureData = BreastArmorTexture.DEFAULT;
 
 	public GenderLayer(RenderLayerParent<ENTITY, MODEL> renderer, ModelManager modelManager) {
 		super(renderer);
@@ -91,6 +95,9 @@ public class GenderLayer<ENTITY extends LivingEntity, MODEL extends HumanoidMode
 		// this can't be static or final as we need the ability to resize this during render time
 		lBreast = new BreastModelBox(64, 64, 16, 17, -4F, 0.0F, 0F, 4, 5, 4, 0.0F, false);
 		rBreast = new BreastModelBox(64, 64, 20, 17, 0, 0.0F, 0F, 4, 5, 4, 0.0F, false);
+
+		lBoobArmor = new BreastModelBox(64, 32, 16, 17, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, false);
+		rBoobArmor = new BreastModelBox(64, 32, 20, 17, 0, 0.0F, 0F, 4, 5, 3, 0.0F, false);
 	}
 
 	@Override
@@ -147,7 +154,7 @@ public class GenderLayer<ENTITY extends LivingEntity, MODEL extends HumanoidMode
 			float outwardAngle = (Math.round(breasts.getCleavage() * 100f) / 100f) * 100f;
 			outwardAngle = Math.min(outwardAngle, 10);
 
-			resizeBox(bSize, breastOffsetZ);
+			resizeBox(genderArmor, bSize, breastOffsetZ);
 
 			//Note: We only render if the entity is not visible to the player, so we can assume it is visible to the player
 			float overlayAlpha = entity.isInvisible() ? 0.15F : 1;
@@ -205,7 +212,7 @@ public class GenderLayer<ENTITY extends LivingEntity, MODEL extends HumanoidMode
 		}
 	}
 
-	protected void resizeBox(float breastSize, float breastOffsetZ) {
+	protected void resizeBox(IGenderArmor genderArmor, float breastSize, float breastOffsetZ) {
 		float reducer = -1;
 		if (breastSize < 0.84f) reducer++;
 		if (breastSize < 0.72f) reducer++;
@@ -216,7 +223,17 @@ public class GenderLayer<ENTITY extends LivingEntity, MODEL extends HumanoidMode
 			preBreastSize = breastSize;
 			preBreastOffsetZ = breastOffsetZ;
 		}
-	}
+
+        if (genderArmor.coversBreasts() && !Objects.equals(textureData, genderArmor.texture())) {
+            textureData = genderArmor.texture();
+            Vector2ic texSize = textureData.textureSize();
+			Vector2ic lUV = textureData.leftUv();
+			Vector2ic dim = textureData.dimensions();
+            lBoobArmor = new BreastModelBox(texSize.x(), texSize.y(), lUV.x(), lUV.y(), -4F, 0.0F, 0F, dim.x(), dim.y(), 3, 0.0F, false);
+			Vector2ic rUV = textureData.rightUv();
+            rBoobArmor = new BreastModelBox(texSize.x(), texSize.y(), rUV.x(), rUV.y(), 0, 0.0F, 0F, dim.x(), dim.y(), 3, 0.0F, false);
+        }
+    }
 
 	private void renderBreastWithTransforms(ENTITY entity, HumanoidModel<ENTITY> model, ItemStack armorStack, PoseStack matrixStack, MultiBufferSource bufferSource,
 		@Nullable RenderType breastRenderType, int light, int overlay, float alpha, boolean bounceEnabled, float physPositionX, float physPositionY, float bounceRotation,
