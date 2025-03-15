@@ -12,7 +12,7 @@ issueTrackerURL = "https://github.com/WildfireRomeo/WildfireFemaleGenderMod/issu
     logoFile = "logo.png"
     credits = "A2 76, Arcti_cc, BluelightAmelia, celeste, diademiemi, IzzyBizzy45, Kichura, PinguinLars, Powerless001, pupnewfster, RacoonDog"
     authors = "WildfireRomeo"
-    description = "The primary goal of this mod is to enhance your Minecraft player's appearance by adding breasts, providing a distinctive look compared to the standard model."
+    description = "Adds extra customization options to the player model by adding breasts for a more feminine appearance."
     displayTest = "IGNORE_SERVER_VERSION"
 
 [[dependencies.wildfire_gender]]

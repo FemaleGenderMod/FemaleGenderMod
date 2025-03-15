@@ -47,9 +47,6 @@
 
 	"wildfire_gender.slider.bounce": "Intenzita houpání: %sx",
 	"wildfire_gender.slider.floppy": "Hybnost: %s%%",
-	"wildfire_gender.slider.min_bounce": "Proč mám vůbec zaplou fyziku?",
-	"wildfire_gender.slider.max_bounce": "Anime fyzika!!!",
-	"wildfire_gender.tooltip.bounce_warning": "Vysoké hodnoty 'Intenzity houpání' budou vypadat velmi nepřirozeně!",
 
 	"wildfire_gender.cancer_awareness.title": "Hej, právě probíhá měsíc povědomí o rakovině prsu!",
 	"wildfire_gender.cancer_awareness.description": "Klikni sem pro podpoření §dNadace Susan G. Komen§f!"

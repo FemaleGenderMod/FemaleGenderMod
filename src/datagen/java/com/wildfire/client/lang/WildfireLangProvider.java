@@ -25,8 +25,7 @@ public class WildfireLangProvider extends BaseLanguageProvider {
         //	"wildfire_gender.label.on": "On"
 
         addPackData(WildfireLang.MOD_NAME, WildfireLang.PACK_DESCRIPTION);
-        //TODO - 1.21: Re-evaluate this, as the thing this mirrors might have changed somewhere else
-        addModInfo("The primary goal of this mod is to enhance your Minecraft player's appearance by adding breasts, providing a distinctive look compared to the standard model.");
+        addModInfo("Adds extra customization options to the player model by adding breasts for a more feminine appearance.");
 
         add(WildfireLang.KEY_CATEGORY, "Female Gender Mod");
         add(WildfireLang.KEY_CONFIG, "Female Gender Menu");

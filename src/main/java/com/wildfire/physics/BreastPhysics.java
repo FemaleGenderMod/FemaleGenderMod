@@ -64,7 +64,10 @@ public class BreastPhysics {
      * @apiNote Only call on the client
      */
     public void update(LivingEntity entity, IGenderArmor armor) {
-        // always suppress the full physics calculations on armor stands
+        // TODO there's a lot of unused code here; this function should also ideally be broken up to make reading
+        // 		through it not as much of a chore (especially the vehicle physics)
+
+        //always suppress the full physics calculations on armor stands
         if (entity instanceof ArmorStand) {
             if (entityConfig.getGender().canHaveBreasts()) {
                 this.breastSize = entityConfig.getBustSize();
@@ -153,8 +156,8 @@ public class BreastPhysics {
         }
 
         //button option for extra entities
-        if (entity.getVehicle() != null) {
-            if (entity.getVehicle() instanceof Boat boat) {
+        switch (entity.getVehicle()) {
+            case Boat boat -> {
                 int rowTime = (int) boat.getRowingTime(0, entity.walkAnimation.position());
                 int rowTime2 = (int) boat.getRowingTime(1, entity.walkAnimation.position());
 
@@ -164,29 +167,35 @@ public class BreastPhysics {
                 if (rotationL < -1 || rotationR < -0.6f) {
                     this.targetBounceY = bounceIntensity / 3.25f;
                 }
-            } else if (entity.getVehicle() instanceof Minecart cart) {
+            }
+            case Minecart cart -> {
                 float speed = (float) cart.getDeltaMovement().lengthSqr();
                 if (Math.random() * speed < 0.5f && speed > 0.2f) {
                     this.targetBounceY = (Math.random() > 0.5 ? -bounceIntensity : bounceIntensity) / 6f;
                     this.targetBounceY += breastWeight;
                 }
-            } else if (entity.getVehicle() instanceof AbstractHorse horse) {
+            }
+            case AbstractHorse horse -> {
                 float movement = (float) horse.getDeltaMovement().length();
                 if (horse.tickCount % clampMovement(movement) == 5 && movement > 0.05f) {
                     this.targetBounceY = bounceIntensity / 4f;
                     this.targetBounceY += breastWeight;
                 }
-            } else if (entity.getVehicle() instanceof Pig pig) {
+            }
+            case Pig pig -> {
                 float movement = (float) pig.getDeltaMovement().length();
                 if (pig.tickCount % clampMovement(movement) == 5 && movement > 0.002f) {
                     this.targetBounceY = (bounceIntensity * Mth.clamp(movement * 75, 0.1f, 1f)) / 4f;
                     this.targetBounceY += breastWeight;
                 }
-            } else if (entity.getVehicle() instanceof Strider strider) {
+            }
+            case Strider strider -> {
                 double heightOffset = (double) strider.getBbHeight() - 0.19
                                       + (double) (0.12F * Mth.cos(strider.walkAnimation.position() * 1.5f)
                                                   * 2F * Math.min(0.25F, strider.walkAnimation.speed()));
                 this.targetBounceY += ((float) (heightOffset * 3f) - 4.5f) * bounceIntensity;
+            }
+            case null, default -> {
             }
         }
 
@@ -195,26 +204,31 @@ public class BreastPhysics {
         // as any faster and the arm effectively doesn't swing at all; we check the previous tick's swing duration for
         // reasons explained later on in this block
         if ((swingDuration > 1 || lastSwingDuration > 1) && pose != Pose.SLEEPING) {
-            float amplifier = 0f;
+            float rawAmplifier = 0f;
             if (swingDuration < 6) {
-                amplifier = 0.15f * (6 - swingDuration);
+                rawAmplifier = 0.15f * (6 - swingDuration);
             } else if (swingDuration > 6) {
-                amplifier = -0.067f * (swingDuration - 6);
+                rawAmplifier = -0.055f * (swingDuration - 6);
             }
-            // Cap our amplifier at the swing durations of Mining Fatigue III/Haste II
-            amplifier = Mth.clamp(1 + amplifier, 0.6f, 1.3f);
+            // Cap our amplifier at the swing durations of Mining Fatigue IV/Haste II
+            float amplifier = Mth.clamp(1 + rawAmplifier, 0.6f, 1.3f);
+
+            HumanoidArm swingingArm = entity.swingingArm == InteractionHand.MAIN_HAND ? entity.getMainArm() : entity.getMainArm().getOpposite();
+            int swingTickDelta = entity.swingTime - lastSwingTick;
+            float swingProgress = distanceFromMedian(0, lastSwingDuration, Mth.clamp(lastSwingTick, 0, lastSwingDuration));
+            HumanoidArm swingingToward = swingProgress > -0.2f ? swingingArm.getOpposite() : swingingArm;
 
             // consistently apply even with short swing durations, such as with haste
             int everyNthTick = Mth.clamp(swingDuration - 1, 1, 5);
             if (entity.swinging && entity.tickCount % everyNthTick == 0) {
-                float hasteMult = Mth.clamp(everyNthTick / 5f, 0.4f, 1f);
-                this.targetBounceY += (Math.random() > 0.5 ? -0.25f : 0.25f) * amplifier * bounceIntensity * hasteMult;
-                this.targetBounceX = (0.5f * bounceIntensity) * (entity.getMainArm() == HumanoidArm.RIGHT ? 1f : -1f);
+                this.targetBounceY += (Math.random() > 0.5 ? -0.25f : 0.25f) * amplifier * bounceIntensity;
+                // The regular amplifier here makes this look relatively unnatural at high levels of mining fatigue,
+                // so instead we're increasing the potency of negative amplifiers (and decreasing positive amplifiers),
+                // and clamping this at a lower range than normal.
+                // The effective range of these numbers is around the swing durations of Mining Fatigue V to Haste II.
+                var xAmp = Mth.clamp(1 + (rawAmplifier * (rawAmplifier < 0 ? 1.625f : 0.8f)), 0.25f, 1.225f);
+                this.targetBounceX = (0.325f * xAmp * bounceIntensity) * (swingingArm == HumanoidArm.RIGHT ? -1f : 1f);
             }
-
-            int swingTickDelta = entity.swingTime - lastSwingTick;
-            float swingProgress = distanceFromMedian(0, lastSwingDuration, Mth.clamp(lastSwingTick, 0, lastSwingDuration));
-            HumanoidArm swingingArm = entity.swingingArm == InteractionHand.MAIN_HAND ? entity.getMainArm() : entity.getMainArm().getOpposite();
 
             if (swingTickDelta < 0 && lastSwingTick != lastSwingDuration - 1) {
                 // Add a bit of counter-rotation back toward the currently swinging arm if the previous arm swing
@@ -222,11 +236,10 @@ public class BreastPhysics {
                 // Note that we don't check if the player's arm is currently swinging here to account for cases like
                 // haste being used to reset a player's swing; one notable example of this is Wynncraft's spell casting,
                 // which applies haste to the player when a spell is successfully cast.
-                this.targetRotVel += (swingingArm == HumanoidArm.RIGHT ? -2.5f : 2.5f) * Math.abs(swingProgress) * bounceIntensity;
+                this.targetRotVel += (swingingArm == HumanoidArm.RIGHT ? -4f : 4f) * Math.abs(swingProgress) * bounceIntensity;
             } else if (entity.swinging && swingDuration > 1) {
                 // Otherwise if the swing animation isn't interrupted, attempt to rotate slightly counter to the
                 // direction that the body is currently moving
-                HumanoidArm swingingToward = swingProgress > 0f ? swingingArm.getOpposite() : swingingArm;
                 this.targetRotVel += (swingingToward == HumanoidArm.RIGHT ? -0.2f : 0.2f) * amplifier * bounceIntensity;
             }
             lastSwingTick = entity.swingTime;
@@ -319,7 +332,7 @@ public class BreastPhysics {
     private static boolean vehicleSuppressesRotation(Entity vehicle) {
         // while you aren't able to normally ride chickens in vanilla, it is still possible through
         // means like /ride, and as chickens attempt to force the rider's body yaw to the same yaw
-        // as the chicken (which is likely intended only for baby zombies), this results in unintended
+        // as the chicken (which is likely intended only for baby zombies), which results in unintended
         // behavior with what we're doing
         return vehicle instanceof Chicken ||
                // unsaddled horses (and llamas, which also extend AbstractDonkeyEntity?) also break rotation
@@ -340,17 +353,14 @@ public class BreastPhysics {
                vehicle.getVisualRotationYInDegrees() == rider.getVisualRotationYInDegrees();
     }
 
-    private static float calcRotation(LivingEntity entity, float bounceIntensity) {
+    private float calcRotation(LivingEntity entity, float bounceIntensity) {
         Entity vehicle = entity.getVehicle();
         if (vehicle != null) {
             if (vehicleSuppressesRotation(vehicle)) {
                 return 0f;
             } else if (shouldUseVehicleYaw(entity, vehicle)) {
-                if (vehicle instanceof LivingEntity livingVehicle) {
-                    return -((livingVehicle.yBodyRot - livingVehicle.yBodyRotO) / 15f) * bounceIntensity;
-                } else {
-                    return -((vehicle.getYRot() - vehicle.yRotO) / 15f) * bounceIntensity;
-                }
+                float previous = vehicle instanceof LivingEntity living ? living.yBodyRotO : vehicle.yRotO;
+                return -((vehicle.getVisualRotationYInDegrees() - previous) / 15f) * bounceIntensity;
             }
         }
 
@@ -360,8 +370,8 @@ public class BreastPhysics {
     /**
      * Return the distance from the median of the two provided boundary points from a given point
      *
-     * @param p1    Lower boundary point
-     * @param p2    Upper boundary point
+     * @param p1    Lower boundary point (inclusive)
+     * @param p2    Upper boundary point (inclusive)
      * @param point The target point within the range of {@code p1} and {@code p2} to get the distance from the median of
      *
      * @return A {@code float} indicating how far the provided {@code point} is from the median of the two boundary points, with {@code 1f} being at the median exactly,

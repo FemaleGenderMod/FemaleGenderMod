@@ -52,10 +52,6 @@
 
   	"wildfire_gender.slider.bounce": "Сикерү интенсивлыгы: ×%s",
   	"wildfire_gender.slider.floppy": "Имчәк моменты: %s%%",
-  	"wildfire_gender.slider.min_bounce": "Нигә физика гомумән кушылды?",
-  	"wildfire_gender.slider.max_bounce": "Анимедагы имчәлек физикасы!!!",
-  	"wildfire_gender.tooltip.bounce_warning": "«Сикерү интенсивлыгы» югары кыйммәтендә табигый булмаган рәвештә күренәчәк!",
 
-  	"wildfire_gender.cancer_awareness.title": "Әй, бу имчәкнең ракы турында хәбәрдарлыкның ае!",
-	  "wildfire_gender.coming_soon": "Тиздән"
+  	"wildfire_gender.cancer_awareness.title": "Әй, бу имчәкнең ракы турында хәбәрдарлыкның ае!"
 }

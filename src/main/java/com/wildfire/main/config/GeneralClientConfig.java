@@ -45,6 +45,7 @@ public class GeneralClientConfig {
 	public final EnumValue<SyncVerbosity> syncLogVerbosity;
 	public final EnumValue<ShowPlayerListMode> alwaysShowList;
 	public final BooleanValue armorStat;
+	public final BooleanValue hideOwnContributorTag;
 
 	private GeneralClientConfig() {
 		ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -61,6 +62,7 @@ public class GeneralClientConfig {
 		syncLogVerbosity = builder.defineEnum("syncLogVerbosity", SyncVerbosity.DEFAULT);
 		alwaysShowList = builder.defineEnum("alwaysShowList", ShowPlayerListMode.MOD_UI_ONLY);
 		armorStat = builder.define("armorStat", true);
+		hideOwnContributorTag = builder.define("hideOwnContributorTag", false);
 
 		configSpec = builder.build();
 	}

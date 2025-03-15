@@ -19,11 +19,14 @@
 package com.wildfire.main.cloud;
 
 import com.wildfire.main.text.TextComponentUtil;
+import java.util.Objects;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
 public record ContributorNametag(String text, @Nullable Integer color) {
-	private static final int DEFAULT_COLOR = 0xFF55FF; // ChatFormatting.LIGHT_PURPLE
+	// requireNonNull() to help IDEs figure out that @Nullable only applies to non-color Formatting entries
+	private static final int DEFAULT_COLOR = Objects.requireNonNull(ChatFormatting.GOLD.getColor());
 
 	public Component asText() {
 		return TextComponentUtil.getString(this.text).withColor(color == null ? DEFAULT_COLOR : color);

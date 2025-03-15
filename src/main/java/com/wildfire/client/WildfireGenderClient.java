@@ -67,7 +67,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Equipable;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
@@ -85,6 +84,7 @@ import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RenderNameTagEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.PlayLevelSoundEvent;
@@ -197,6 +197,10 @@ public class WildfireGenderClient {
 
     @Nullable
     private Component getNametag(UUID uuid) {
+        Player clientPlayer = Minecraft.getInstance().player;
+        if (GeneralClientConfig.INSTANCE.hideOwnContributorTag.get() && clientPlayer != null && uuid.equals(clientPlayer.getUUID())) {
+            return null;
+        }
         ContributorNametag custom;
         try {
             custom = CONTRIBUTOR_NAMETAGS.getNow(Collections.emptyMap()).get(uuid);
@@ -250,8 +254,7 @@ public class WildfireGenderClient {
     }
 
     private void registerOverlays(RegisterGuiLayersEvent event) {
-        //TODO - 1.21: Figure out whether this should be above, below, and where it should be in the stack
-        event.registerAboveAll(WildfireGender.rl("synced_players"), SyncedPlayersLayer.INSTANCE);
+        event.registerAbove(VanillaGuiLayers.CAMERA_OVERLAYS, WildfireGender.rl("player_list"), SyncedPlayersLayer.INSTANCE);
     }
 
     private void onGUI(ClientTickEvent.Post evt) {
@@ -364,33 +367,30 @@ public class WildfireGenderClient {
     private void onRenderAttributes(AddAttributeTooltipsEvent event) {
         ItemStack stack = event.getStack();
         if (stack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY).showInTooltip()) {
-            //TODO - 1.21: Do we really only want to do this for armor items?
-            if (stack.getItem() instanceof ArmorItem) {
+            EquipmentSlot slot = stack.getEquipmentSlot();
+            if (slot == null) {
+                Equipable equipable = Equipable.get(stack);
+                if (equipable != null) {
+                    slot = equipable.getEquipmentSlot();
+                }
+            }
+            //TODO - 1.21.4: Switch to this
+            //Equippable equippable = stack.get(DataComponentTypes.EQUIPPABLE);
+            //if (equippable != null && equippable.slot() == EquipmentSlot.CHEST) {
+            if (slot == EquipmentSlot.CHEST) {
                 Player player = event.getContext().player();
                 if (player == null || !GeneralClientConfig.INSTANCE.armorStat.get()) {
                     return;
                 }
-                PlayerConfig playerConfig = WildfireGender.getPlayerById(player.getUUID());
-                if (playerConfig == null || !playerConfig.getGender().canHaveBreasts()) {
-                    return;
-                }
-
-                EquipmentSlot slot = stack.getEquipmentSlot();
-                if (slot == null) {
-                    Equipable equipable = Equipable.get(stack);
-                    if (equipable != null) {
-                        slot = equipable.getEquipmentSlot();
-                    }
-                }
-                //TODO - 1.21.4: Switch to this
-                //Equippable equippable = stack.get(DataComponentTypes.EQUIPPABLE);
-                //if (equippable != null && equippable.slot() == EquipmentSlot.CHEST) {
-                if (slot == EquipmentSlot.CHEST) {
-                    IGenderArmor armorConfig = WildfireHelper.getArmorConfig(stack);
-                    //TODO - 1.21: should we skip this when the config always hides breasts?
-                    if (armorConfig.coversBreasts()) {
+                IGenderArmor armorConfig = WildfireHelper.getArmorConfig(stack);
+                //TODO - 1.21: should we skip this when the config always hides breasts?
+                //Don't show a +0 tooltip on items that don't interact with physics (e.g. Elytra)
+                if (armorConfig.coversBreasts() || armorConfig.physicsResistance() == 0) {
+                    PlayerConfig playerConfig = WildfireGender.getPlayerById(player.getUUID());
+                    if (playerConfig != null && playerConfig.getGender().canHaveBreasts()) {
                         float physResistance = armorConfig.physicsResistance();
-                        event.addTooltipLines(WildfireLang.ARMOR_TOOLTIP.translateColored(ChatFormatting.LIGHT_PURPLE, Math.floor(physResistance * 100) / 100f));
+                        event.addTooltipLines(WildfireLang.ARMOR_TOOLTIP.translateColored(ChatFormatting.LIGHT_PURPLE,
+                              ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(physResistance)));
                     }
                 }
             }
