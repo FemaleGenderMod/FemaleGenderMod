@@ -31,6 +31,7 @@ import com.wildfire.client.resources.GenderArmorResourceManager;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.WildfireLang;
+import com.wildfire.main.WildfireSounds;
 import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.cloud.ContributorNametag;
 import com.wildfire.main.config.GeneralClientConfig;
@@ -134,6 +135,10 @@ public class WildfireGenderClient {
     public WildfireGenderClient(ModContainer modContainer, IEventBus modEventBus) {
         INSTANCE = this;
         modContainer.registerConfig(Type.CLIENT, GeneralClientConfig.INSTANCE.configSpec, "WildfireGender/client.toml");
+        //Note: We intentionally only register the sound events on the client, as if the client has extra sound events it works
+        // but if the server has extra, then the connection fails
+        WildfireSounds.SOUND_EVENTS.register(modEventBus);
+
         modEventBus.addListener(this::entityLayers);
         modEventBus.addListener(this::registerKeybindings);
         modEventBus.addListener(this::registerOverlays);

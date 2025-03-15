@@ -49,8 +49,7 @@ public enum ShowPlayerListMode implements IHasEnumNameTextComponent {
 
 	public Tooltip tooltip() {
 		if (this == TAB_LIST_OPEN) {
-			//TODO - 1.21: Component#keybind ??
-			return Tooltip.create(tooltip.translate(Minecraft.getInstance().options.keyPlayerList.getTranslatedKeyMessage()));
+			return Tooltip.create(tooltip.translate(Component.keybind(Minecraft.getInstance().options.keyPlayerList.getName())));
 		}
 		return Tooltip.create(tooltip.translate());
 	}

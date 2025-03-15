@@ -18,17 +18,17 @@
 
 package com.wildfire.main;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 public final class WildfireSounds {
 
 	private WildfireSounds() {
 	}
 
-	private static final ResourceLocation femaleHurt = WildfireGender.rl("female_hurt");
-	public static SoundEvent FEMALE_HURT = SoundEvent.createVariableRangeEvent(femaleHurt);
-	//Note: We don't register the sound event as that isn't necessary for it to play, and I believe the registry would sync
-	//TODO: ^ this should be tested at some point
-	//TODO - 1.21: NeoForgeRegistriesSetup.VANILLA_SYNC_REGISTRIES doesn't sync the sound event registry, so we might as well register it
+	public static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(Registries.SOUND_EVENT, WildfireGender.MODID);
+
+	public static final DeferredHolder<SoundEvent, SoundEvent> FEMALE_HURT = SOUND_EVENTS.register("female_hurt", SoundEvent::createVariableRangeEvent);
 }

@@ -107,7 +107,6 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
               button -> minecraft.setScreen(new WildfireCloudSyncScreen(this, this.playerUUID))) {
             @Override
             protected void renderContents(@NotNull GuiGraphics graphics) {
-                //TODO - 1.21.4: RenderType::guiTextured,
                 graphics.blit(CLOUD_ICON, getX() + 2, getY() + 2, 0, 0, 20, 14, 32, 26, 32, 26);
             }
         };
@@ -133,7 +132,6 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
             case Gender.FEMALE -> BACKGROUND_FEMALE;
             case Gender.OTHER -> BACKGROUND_OTHER;
         };
-        //TODO - 1.21.4: RenderType::guiTextured,
         graphics.blit(backgroundTexture, x - 136, y - 69, 0, 0, 268, 124, 512, 512);
 
         if (minecraft != null && minecraft.level != null) {
@@ -159,7 +157,6 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
             graphics.fill(x - 159, bcaY + 106, x + 159, bcaY + 136, 0x55000000);
             //TODO - 1.21: Validate this formats the component properly
             graphics.drawString(font, TextComponentUtil.build(ChatFormatting.BOLD, ChatFormatting.ITALIC, WildfireLang.CANCER_AWARENESS), this.width / 2 - 148, bcaY + 117, 0xFFFFFF, false);
-            //TODO - 1.21.4: RenderType::guiTextured,
             graphics.blit(TXTR_RIBBON, x + 130, bcaY + 109, 26, 26, 0, 0, 20, 20, 20, 20);
             y += 30;
         }

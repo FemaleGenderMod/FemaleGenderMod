@@ -19,6 +19,7 @@ import com.wildfire.main.text.IHasTextComponent.IHasEnumNameTextComponent;
 import io.netty.buffer.ByteBuf;
 import java.util.function.IntFunction;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -38,10 +39,10 @@ public enum Gender implements IHasEnumNameTextComponent {
 
     private final Component name;
     @Nullable
-    private final SoundEvent hurtSound;
+    private final Holder<SoundEvent> hurtSound;
     private final boolean canHaveBreasts;
 
-    Gender(Component name, boolean canHaveBreasts, @Nullable SoundEvent hurtSound) {
+    Gender(Component name, boolean canHaveBreasts, @Nullable Holder<SoundEvent> hurtSound) {
         this.name = name;
         this.canHaveBreasts = canHaveBreasts;
         this.hurtSound = hurtSound;
@@ -49,7 +50,7 @@ public enum Gender implements IHasEnumNameTextComponent {
 
     @Nullable
     public SoundEvent getHurtSound() {
-        return hurtSound;
+        return hurtSound == null ? null : hurtSound.value();
     }
 
     public boolean canHaveBreasts() {

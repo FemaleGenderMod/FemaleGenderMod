@@ -313,11 +313,9 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
         };
 
         if (backgroundTexture != null) {
-            //TODO - 1.21.4: RenderType::guiTextured,
             graphics.blit(backgroundTexture, (this.width - 272) / 2, (this.height - 138) / 2, 0, 0, 272, 130, 512, 512);
         }
 
-        //TODO - 1.21.4: RenderType::guiTextured,
         graphics.blit(currentTab.background, (this.width) / 2 - 42, (this.height) / 2 - 43, 0, 0, 178, currentTab.backgroundHeight, 512, 512);
 
         int x = this.width / 2;

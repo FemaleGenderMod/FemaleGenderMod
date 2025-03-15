@@ -44,7 +44,6 @@ public class WildfireHelper {
         if (genderArmor != null) {
             return genderArmor;
         }
-        //TODO - 1.21: Deprecate doing it via the capability
         IGenderArmor capability = stack.getCapability(WildfireAPI.GENDER_ARMOR_CAPABILITY);
         if (capability != null) {
             return capability;

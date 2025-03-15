@@ -21,7 +21,6 @@ package com.wildfire.main;
 import com.wildfire.main.text.ILangEntry;
 import org.jetbrains.annotations.NotNull;
 
-//TODO - 1.21: Data generate the values for this enum
 //TODO - 1.21: Organize this enum
 public enum WildfireLang implements ILangEntry {
     MOD_NAME("wildfire_gender.name"),
