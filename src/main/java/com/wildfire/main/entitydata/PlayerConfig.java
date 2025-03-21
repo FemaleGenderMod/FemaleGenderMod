@@ -212,6 +212,8 @@ public class PlayerConfig extends EntityConfig {
 		if(override != null) {
 			cfg.removeParameter("armor_physics_override");
 			ClientConfig.INSTANCE.set("armor_physics_override", override);
+			ClientConfig.INSTANCE.save();
+			cfg.save();
 		}
 	}
 
