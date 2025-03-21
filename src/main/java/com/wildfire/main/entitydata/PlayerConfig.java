@@ -28,11 +28,17 @@ import com.wildfire.main.config.types.ConfigKey;
 import com.wildfire.main.config.Configuration;
 import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.config.ClientConfig;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Nullables;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -49,7 +55,6 @@ public class PlayerConfig extends EntityConfig {
 	private final Configuration cfg;
 	protected boolean hurtSounds = Configuration.HURT_SOUNDS.getDefault();
 	protected boolean holidayThemes = Configuration.HOLIDAY_THEMES.getDefault();
-	protected boolean armorPhysOverride = Configuration.ARMOR_PHYSICS_OVERRIDE.getDefault();
 	protected boolean showBreastsInArmor = Configuration.SHOW_IN_ARMOR.getDefault();
 
 	/**
@@ -121,12 +126,14 @@ public class PlayerConfig extends EntityConfig {
 		return updateValue(Configuration.BREAST_PHYSICS, value, v -> this.breastPhysics = v);
 	}
 
+	/**
+	 * @apiNote The value this method returns has been moved to {@link ClientConfig}, and this method is only
+	 * 			retained for compatibility with mods that use this as a mixin target.
+	 */
+	@ApiStatus.Obsolete
+	@Environment(EnvType.CLIENT)
 	public boolean getArmorPhysicsOverride() {
-		return armorPhysOverride;
-	}
-
-	public boolean updateArmorPhysicsOverride(boolean value) {
-		return updateValue(Configuration.ARMOR_PHYSICS_OVERRIDE, value, v -> this.armorPhysOverride = v);
+		return ClientConfig.INSTANCE.get(ClientConfig.ARMOR_PHYSICS_OVERRIDE);
 	}
 
 	public boolean showBreastsInArmor() {
@@ -147,14 +154,6 @@ public class PlayerConfig extends EntityConfig {
 
 	public SyncStatus getSyncStatus() {
 		return this.syncStatus;
-	}
-
-	/**
-	 * @deprecated Use {@link #toJson()} instead
-	 */
-	@Deprecated
-	public static JsonObject toJsonObject(PlayerConfig plr) {
-		return plr.toJson();
 	}
 
 	/**
@@ -197,18 +196,23 @@ public class PlayerConfig extends EntityConfig {
 		if(markForSync) {
 			this.needsSync = true;
 		}
+		if(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+			migrateArmorPhysicsOverride();
+		}
 	}
 
-	/**
-	 * @deprecated Use {@link #loadFromDisk(boolean)} instead
-	 */
-	@Deprecated(forRemoval = true)
-	public static PlayerConfig loadCachedPlayer(UUID uuid, boolean markForSync) {
-		PlayerConfig plr = WildfireGender.getPlayerById(uuid);
-		if (plr != null && plr.hasLocalConfig()) {
-			plr.loadFromDisk(markForSync);
+	@Environment(EnvType.CLIENT)
+	private void migrateArmorPhysicsOverride() {
+		var clientPlayer = MinecraftClient.getInstance().player;
+		if(!Objects.equals(uuid, Nullables.map(clientPlayer, PlayerEntity::getUuid))) {
+			return;
 		}
-		return plr;
+
+		var override = cfg.get("armor_physics_override");
+		if(override != null) {
+			cfg.removeParameter("armor_physics_override");
+			ClientConfig.INSTANCE.set("armor_physics_override", override);
+		}
 	}
 
 	/**
@@ -273,7 +277,7 @@ public class PlayerConfig extends EntityConfig {
 	 * @param json The {@link JsonObject} to merge with the existing config for this player
 	 */
 	public void updateFromJson(@NotNull JsonObject json) {
-		json.asMap().forEach(this.cfg.SAVE_VALUES::add);
+		json.asMap().forEach(this.cfg::set);
 		loadFromConfig(false);
 		this.syncStatus = SyncStatus.SYNCED;
 	}

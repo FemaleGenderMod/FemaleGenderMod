@@ -116,7 +116,7 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 					WildfireGender.LOGGER.error("Failed to perform initial sync from the cloud", e);
 					return;
 				}
-				PlayerConfig.saveGenderInfo(clientConfig);
+				clientConfig.save();
 				// don't immediately re-sync the data we just got back to the cloud
 				clientConfig.needsCloudSync = false;
 			} else {

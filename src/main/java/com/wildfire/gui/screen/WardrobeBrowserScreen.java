@@ -92,7 +92,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 			};
 			if (plr.updateGender(gender)) {
 				button.setMessage(getGenderLabel(gender));
-				PlayerConfig.saveGenderInfo(plr);
+				plr.save();
 				clearAndInit();
 			}
 		}));

@@ -36,6 +36,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -159,6 +160,11 @@ public class EntityConfig {
 		return breastPhysics;
 	}
 
+	/**
+	 * @apiNote See {@link PlayerConfig#getArmorPhysicsOverride()} for the reasoning behind this being {@link ApiStatus.Obsolete @Obsolete}
+	 */
+	@ApiStatus.Obsolete
+	@Environment(EnvType.CLIENT)
 	public boolean getArmorPhysicsOverride() {
 		return false;
 	}

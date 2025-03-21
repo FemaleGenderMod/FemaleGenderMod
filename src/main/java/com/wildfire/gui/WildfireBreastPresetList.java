@@ -152,7 +152,7 @@ public class WildfireBreastPresetList extends EntryListWidget<WildfireBreastPres
                 plr.getBreasts().updateZOffset(nInfo.data.get(BreastPresetConfiguration.BREASTS_OFFSET_Z));
                 plr.getBreasts().updateCleavage(nInfo.data.get(BreastPresetConfiguration.BREASTS_CLEAVAGE));
                 plr.getBreasts().updateUniboob(nInfo.data.get(BreastPresetConfiguration.BREASTS_UNIBOOB));
-                PlayerConfig.saveGenderInfo(plr);
+                plr.save();
             });
         }
 

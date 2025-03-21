@@ -34,6 +34,8 @@ public class ClientConfig extends AbstractConfiguration {
     // note: this option is not intended to be saved in any persistent manner
     public static boolean RENDER_BREASTS = true;
 
+    public static final BooleanConfigKey ARMOR_PHYSICS_OVERRIDE = new BooleanConfigKey("armor_physics_override", false);
+
     public static final BooleanConfigKey FIRST_TIME_LOAD = new BooleanConfigKey("firstTimeLoad", true);
     public static final BooleanConfigKey CLOUD_SYNC_ENABLED = new BooleanConfigKey("cloud_sync", false);
     public static final BooleanConfigKey AUTOMATIC_CLOUD_SYNC = new BooleanConfigKey("sync_player_data", false);
@@ -46,6 +48,7 @@ public class ClientConfig extends AbstractConfiguration {
     public static final BooleanConfigKey ARMOR_STAT = new BooleanConfigKey("armor_stat", true);
 
     static {
+        INSTANCE.setDefault(ARMOR_PHYSICS_OVERRIDE);
         INSTANCE.setDefault(FIRST_TIME_LOAD);
         INSTANCE.setDefault(CLOUD_SYNC_ENABLED);
         INSTANCE.setDefault(AUTOMATIC_CLOUD_SYNC);
