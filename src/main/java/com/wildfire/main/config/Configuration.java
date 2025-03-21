@@ -71,7 +71,9 @@ public class Configuration extends AbstractConfiguration {
 			new RegisteredKey<>(BREAST_PHYSICS, PlayerConfig::hasBreastPhysics, PlayerConfig::updateBreastPhysics),
 			new RegisteredKey<>(SHOW_IN_ARMOR, PlayerConfig::showBreastsInArmor, PlayerConfig::updateShowBreastsInArmor),
 			new RegisteredKey<>(BOUNCE_MULTIPLIER, PlayerConfig::getBounceMultiplier, PlayerConfig::updateBounceMultiplier),
-			new RegisteredKey<>(FLOPPY_MULTIPLIER, PlayerConfig::getFloppiness, PlayerConfig::updateFloppiness)
+			new RegisteredKey<>(FLOPPY_MULTIPLIER, PlayerConfig::getFloppiness, PlayerConfig::updateFloppiness),
+
+			new RegisteredKey<>(HOLIDAY_THEMES, PlayerConfig::hasHolidayThemes, PlayerConfig::updateHolidayThemes)
 	);
 
 	public Configuration(String cfgName) {
