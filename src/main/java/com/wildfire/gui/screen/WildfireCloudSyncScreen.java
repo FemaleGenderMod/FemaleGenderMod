@@ -25,7 +25,7 @@ import com.wildfire.main.WildfireLocalization;
 import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.cloud.SyncLog;
 import com.wildfire.main.cloud.SyncingTooFrequentlyException;
-import com.wildfire.main.config.GlobalConfig;
+import com.wildfire.main.config.ClientConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
@@ -63,20 +63,20 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
 		this.addDrawableChild(new WildfireButton(xPos, yPos, 157, 20,
 				Text.translatable("wildfire_gender.cloud.status", CloudSync.isEnabled() ? WildfireLocalization.ENABLED : WildfireLocalization.DISABLED),
 				button -> {
-					var config = GlobalConfig.INSTANCE;
-					config.set(GlobalConfig.CLOUD_SYNC_ENABLED, !config.get(GlobalConfig.CLOUD_SYNC_ENABLED));
+					var config = ClientConfig.INSTANCE;
+					config.set(ClientConfig.CLOUD_SYNC_ENABLED, !config.get(ClientConfig.CLOUD_SYNC_ENABLED));
 					button.setMessage(Text.translatable("wildfire_gender.cloud.status", CloudSync.isEnabled() ? WildfireLocalization.ENABLED : WildfireLocalization.DISABLED));
 					ref.btnAutomaticSync.setActive(CloudSync.isEnabled());
-					ref.btnAutomaticSync.setMessage(Text.translatable("wildfire_gender.cloud.automatic", CloudSync.isEnabled() ? (GlobalConfig.INSTANCE.get(GlobalConfig.AUTOMATIC_CLOUD_SYNC) ? WildfireLocalization.ENABLED : WildfireLocalization.DISABLED) : WildfireLocalization.OFF));
-					ref.btnSyncNow.visible = GlobalConfig.INSTANCE.get(GlobalConfig.CLOUD_SYNC_ENABLED);
+					ref.btnAutomaticSync.setMessage(Text.translatable("wildfire_gender.cloud.automatic", CloudSync.isEnabled() ? (ClientConfig.INSTANCE.get(ClientConfig.AUTOMATIC_CLOUD_SYNC) ? WildfireLocalization.ENABLED : WildfireLocalization.DISABLED) : WildfireLocalization.OFF));
+					ref.btnSyncNow.visible = ClientConfig.INSTANCE.get(ClientConfig.CLOUD_SYNC_ENABLED);
 				}));
 
 		this.addDrawableChild(ref.btnAutomaticSync = new WildfireButton(xPos, yPos + 20, 157, 20,
-				Text.translatable("wildfire_gender.cloud.automatic", CloudSync.isEnabled() ? (GlobalConfig.INSTANCE.get(GlobalConfig.AUTOMATIC_CLOUD_SYNC) ? WildfireLocalization.ENABLED : WildfireLocalization.DISABLED) : WildfireLocalization.OFF),
+				Text.translatable("wildfire_gender.cloud.automatic", CloudSync.isEnabled() ? (ClientConfig.INSTANCE.get(ClientConfig.AUTOMATIC_CLOUD_SYNC) ? WildfireLocalization.ENABLED : WildfireLocalization.DISABLED) : WildfireLocalization.OFF),
 				button -> {
-					var config = GlobalConfig.INSTANCE;
-					var newVal = !config.get(GlobalConfig.AUTOMATIC_CLOUD_SYNC);
-					config.set(GlobalConfig.AUTOMATIC_CLOUD_SYNC, newVal);
+					var config = ClientConfig.INSTANCE;
+					var newVal = !config.get(ClientConfig.AUTOMATIC_CLOUD_SYNC);
+					config.set(ClientConfig.AUTOMATIC_CLOUD_SYNC, newVal);
 					button.setMessage(Text.translatable("wildfire_gender.cloud.automatic", newVal ? WildfireLocalization.ENABLED : WildfireLocalization.DISABLED));
 				}));
 		ref.btnAutomaticSync.setTooltip(Tooltip.of(Text.empty()
@@ -88,7 +88,7 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
 		ref.btnSyncNow = new WildfireButton(xPos + 98, yPos + 42, 60, 15, Text.translatable("wildfire_gender.cloud.sync"), this::sync);
 		//btnSyncNow.setTooltip(Tooltip.of(Text.empty()
 		//		.append(Text.literal("Sync Server data is cached for a minimum time of 30 minutes. If you do not see any changes please try to re-sync later."))));
-		ref.btnSyncNow.visible = GlobalConfig.INSTANCE.get(GlobalConfig.CLOUD_SYNC_ENABLED);
+		ref.btnSyncNow.visible = ClientConfig.INSTANCE.get(ClientConfig.CLOUD_SYNC_ENABLED);
 		this.addDrawableChild(ref.btnSyncNow);
 
 		this.addDrawableChild(new WildfireButton(this.width / 2 + 73, yPos - 11, 9, 9, Text.literal("X"),
@@ -157,7 +157,7 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
 
 	@Override
 	public void close() {
-		GlobalConfig.INSTANCE.save();
+		ClientConfig.INSTANCE.save();
 		super.close();
 	}
 }

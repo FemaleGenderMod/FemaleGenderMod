@@ -24,10 +24,10 @@ import com.wildfire.main.config.types.BooleanConfigKey;
 import com.wildfire.main.config.types.EnumConfigKey;
 import com.wildfire.main.config.types.StringConfigKey;
 
-public class GlobalConfig extends AbstractConfiguration {
-    public static final GlobalConfig INSTANCE = new GlobalConfig();
+public class ClientConfig extends AbstractConfiguration {
+    public static final ClientConfig INSTANCE = new ClientConfig();
 
-    private GlobalConfig() {
+    private ClientConfig() {
         super(".", "wildfire_gender");
     }
 

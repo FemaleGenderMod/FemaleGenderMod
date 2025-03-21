@@ -21,9 +21,6 @@ package com.wildfire.gui.screen;
 import com.wildfire.gui.GuiUtils;
 import com.wildfire.gui.WildfireButton;
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.WildfireGenderClient;
-import com.wildfire.main.config.GlobalConfig;
-import com.wildfire.main.entitydata.PlayerConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
@@ -34,10 +31,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
-import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 
 @Environment(EnvType.CLIENT)
 public class WildfireCloudDetailsScreen extends BaseWildfireScreen {

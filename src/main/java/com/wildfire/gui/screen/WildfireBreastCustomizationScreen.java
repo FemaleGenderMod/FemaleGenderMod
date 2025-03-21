@@ -24,7 +24,7 @@ import com.wildfire.gui.WildfireButton;
 import com.wildfire.gui.WildfireSlider;
 import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.config.GlobalConfig;
+import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.entitydata.Breasts;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.config.Configuration;
@@ -246,13 +246,13 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
             }
         }));
 
-        var config = GlobalConfig.INSTANCE;
+        var config = ClientConfig.INSTANCE;
 
         this.addDrawableChild(btnShowTooltips = new WildfireButton(this.width / 2 - 36, tabOffsetY + 70, 166, 20,
-                Text.translatable("wildfire_gender.char_settings.show_armor_stat", config.get(GlobalConfig.ARMOR_STAT) ? ENABLED : DISABLED), button -> {
-            config.set(GlobalConfig.ARMOR_STAT, !config.get(GlobalConfig.ARMOR_STAT));
+                Text.translatable("wildfire_gender.char_settings.show_armor_stat", config.get(ClientConfig.ARMOR_STAT) ? ENABLED : DISABLED), button -> {
+            config.set(ClientConfig.ARMOR_STAT, !config.get(ClientConfig.ARMOR_STAT));
             config.save();
-            button.setMessage(Text.translatable("wildfire_gender.char_settings.show_armor_stat", config.get(GlobalConfig.ARMOR_STAT) ? ENABLED : DISABLED));
+            button.setMessage(Text.translatable("wildfire_gender.char_settings.show_armor_stat", config.get(ClientConfig.ARMOR_STAT) ? ENABLED : DISABLED));
         }));
 
         this.addDrawableChild(btnHolidayThemes = new WildfireButton(this.width / 2 - 36, tabOffsetY + 94, 166, 20,

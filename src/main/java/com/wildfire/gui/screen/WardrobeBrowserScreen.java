@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 
 import com.wildfire.gui.WildfireButton;
 import com.wildfire.main.cloud.CloudSync;
-import com.wildfire.main.config.GlobalConfig;
+import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -73,16 +73,16 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 
 		WildfireButton listButton;
 		this.addDrawableChild(listButton = new WildfireButton(126, 4, 185, 10,
-			Text.translatable("wildfire_gender.always_show_list", GlobalConfig.INSTANCE.get(GlobalConfig.ALWAYS_SHOW_LIST).text()),
+			Text.translatable("wildfire_gender.always_show_list", ClientConfig.INSTANCE.get(ClientConfig.ALWAYS_SHOW_LIST).text()),
 			button -> {
-				var config = GlobalConfig.INSTANCE;
-				var newVal = config.get(GlobalConfig.ALWAYS_SHOW_LIST).next();
-				config.set(GlobalConfig.ALWAYS_SHOW_LIST, newVal);
+				var config = ClientConfig.INSTANCE;
+				var newVal = config.get(ClientConfig.ALWAYS_SHOW_LIST).next();
+				config.set(ClientConfig.ALWAYS_SHOW_LIST, newVal);
 				config.save();
 				button.setMessage(Text.translatable("wildfire_gender.always_show_list", newVal.text()));
 				button.setTooltip(newVal.tooltip());
 			}));
-		listButton.setTooltip(GlobalConfig.INSTANCE.get(GlobalConfig.ALWAYS_SHOW_LIST).tooltip());
+		listButton.setTooltip(ClientConfig.INSTANCE.get(ClientConfig.ALWAYS_SHOW_LIST).tooltip());
 
 		this.addDrawableChild(new WildfireButton(this.width / 2 - 130, this.height / 2 + 33, 80, 15, plr.getGender().getDisplayName(), button -> {
 			Gender gender = switch (plr.getGender()) {

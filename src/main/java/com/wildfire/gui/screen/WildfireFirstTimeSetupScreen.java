@@ -22,8 +22,7 @@ import com.wildfire.gui.GuiUtils;
 import com.wildfire.gui.WildfireButton;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireGenderClient;
-import com.wildfire.main.WildfireHelper;
-import com.wildfire.main.config.GlobalConfig;
+import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -34,10 +33,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
-import org.joml.Quaternionf;
 
-import java.text.Normalizer;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -74,11 +70,11 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 		this.addDrawableChild(new WildfireButton(x + 3, y + 74, 128, 20,
 				ENABLE_CLOUD_SYNCING,
 				button -> {
-					var config = GlobalConfig.INSTANCE;
+					var config = ClientConfig.INSTANCE;
 					//Enable both settings, they can always disable automatic later? TBD
-					config.set(GlobalConfig.CLOUD_SYNC_ENABLED, true);
-					config.set(GlobalConfig.AUTOMATIC_CLOUD_SYNC, true);
-					config.set(GlobalConfig.FIRST_TIME_LOAD, false);
+					config.set(ClientConfig.CLOUD_SYNC_ENABLED, true);
+					config.set(ClientConfig.AUTOMATIC_CLOUD_SYNC, true);
+					config.set(ClientConfig.FIRST_TIME_LOAD, false);
 
 					button.active = false;
 					button.setMessage(Text.literal("..."));
@@ -92,10 +88,10 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 		this.addDrawableChild(ref.no = new WildfireButton(x - 131, y + 74, 128, 20,
 				DISABLE_CLOUD_SYNCING,
 				button -> {
-					var config = GlobalConfig.INSTANCE;
-					config.set(GlobalConfig.CLOUD_SYNC_ENABLED, false);
-					config.set(GlobalConfig.AUTOMATIC_CLOUD_SYNC, false);
-					config.set(GlobalConfig.FIRST_TIME_LOAD, false);
+					var config = ClientConfig.INSTANCE;
+					config.set(ClientConfig.CLOUD_SYNC_ENABLED, false);
+					config.set(ClientConfig.AUTOMATIC_CLOUD_SYNC, false);
+					config.set(ClientConfig.FIRST_TIME_LOAD, false);
 
 					client.setScreen(new WardrobeBrowserScreen(null, client.player.getUuid()));
 				}));
@@ -181,6 +177,6 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 
 	@Override
 	public void removed() {
-		GlobalConfig.INSTANCE.save();
+		ClientConfig.INSTANCE.save();
 	}
 }

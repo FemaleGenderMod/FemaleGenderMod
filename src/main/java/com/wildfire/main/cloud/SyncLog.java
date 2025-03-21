@@ -18,7 +18,7 @@
 
 package com.wildfire.main.cloud;
 
-import com.wildfire.main.config.GlobalConfig;
+import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.config.enums.SyncVerbosity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.ColorHelper;
@@ -32,7 +32,7 @@ public final class SyncLog {
 	public static final List<Entry> SYNC_LOG = new ArrayList<>();
 
 	public static int verbosity() {
-		return GlobalConfig.INSTANCE.get(GlobalConfig.SYNC_VERBOSITY).ordinal();
+		return ClientConfig.INSTANCE.get(ClientConfig.SYNC_VERBOSITY).ordinal();
 	}
 
 	public static void add(Text text, SyncVerbosity verbosity) {

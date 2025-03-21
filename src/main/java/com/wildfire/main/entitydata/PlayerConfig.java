@@ -27,7 +27,7 @@ import com.wildfire.main.cloud.SyncLog;
 import com.wildfire.main.config.types.ConfigKey;
 import com.wildfire.main.config.Configuration;
 import com.wildfire.main.config.enums.Gender;
-import com.wildfire.main.config.GlobalConfig;
+import com.wildfire.main.config.ClientConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
@@ -288,7 +288,7 @@ public class PlayerConfig extends EntityConfig {
 		if(client.player == null || !this.uuid.equals(client.player.getUuid())) return;
 		if(!needsCloudSync) return;
 		if(client.currentScreen instanceof BaseWildfireScreen) return;
-		if(!GlobalConfig.INSTANCE.get(GlobalConfig.AUTOMATIC_CLOUD_SYNC)) return;
+		if(!ClientConfig.INSTANCE.get(ClientConfig.AUTOMATIC_CLOUD_SYNC)) return;
 		if(CloudSync.syncOnCooldown()) return;
 
 		CompletableFuture.runAsync(() -> {
