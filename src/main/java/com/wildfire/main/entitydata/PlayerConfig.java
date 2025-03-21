@@ -24,9 +24,9 @@ import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireLocalization;
 import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.cloud.SyncLog;
-import com.wildfire.main.config.ConfigKey;
+import com.wildfire.main.config.types.ConfigKey;
 import com.wildfire.main.config.Configuration;
-import com.wildfire.main.Gender;
+import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.config.GlobalConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
@@ -64,7 +64,6 @@ public class PlayerConfig extends EntityConfig {
 	public PlayerConfig(UUID uuid) {
 		super(uuid);
 		this.cfg = new Configuration(this.uuid.toString());
-		this.cfg.set(Configuration.USERNAME, this.uuid);
 		this.cfg.setDefault(Configuration.GENDER);
 		this.cfg.setDefault(Configuration.BUST_SIZE);
 		this.cfg.setDefault(Configuration.HURT_SOUNDS);
@@ -254,7 +253,6 @@ public class PlayerConfig extends EntityConfig {
 	 */
 	public static void saveGenderInfo(PlayerConfig plr) {
 		Configuration config = plr.getConfig();
-		config.set(Configuration.USERNAME, plr.uuid);
 		config.set(Configuration.GENDER, plr.getGender());
 		config.set(Configuration.BUST_SIZE, plr.getBustSize());
 		config.set(Configuration.HURT_SOUNDS, plr.hasHurtSounds());

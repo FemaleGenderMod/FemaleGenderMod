@@ -24,7 +24,7 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.wildfire.api.IGenderArmor;
 import com.wildfire.api.WildfireAPI;
-import com.wildfire.main.config.FloatConfigKey;
+import com.wildfire.main.config.types.FloatConfigKey;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;

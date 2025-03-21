@@ -19,7 +19,7 @@
 package com.wildfire.gui.screen;
 
 import com.wildfire.gui.GuiUtils;
-import com.wildfire.main.Gender;
+import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.WildfireGender;
 
 import java.util.*;

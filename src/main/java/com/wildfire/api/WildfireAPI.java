@@ -22,7 +22,7 @@ import com.wildfire.main.WildfireGenderClient;
 import com.wildfire.main.config.Configuration;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.Gender;
+import com.wildfire.main.config.enums.Gender;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
