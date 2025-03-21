@@ -18,6 +18,7 @@
 
 package com.wildfire.main.config;
 
+import com.google.gson.JsonObject;
 import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.config.functions.BreastGetter;
 import com.wildfire.main.config.functions.BreastSetter;
@@ -88,6 +89,10 @@ public class Configuration extends AbstractConfiguration {
 			// java isn't quite smart enough to do all of this for us, but it is smart enough to cast the setter
 			// for us, so long as we give it enough of a hint with the getter.
 			this(key, (PlayerGetter<T>) getter, setter);
+		}
+
+		public void dump(PlayerConfig config, JsonObject obj) {
+			key.save(obj, config.getConfig().get(key));
 		}
 
 		public void writeToConfig(PlayerConfig player) {

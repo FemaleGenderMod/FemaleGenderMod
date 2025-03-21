@@ -63,29 +63,12 @@ public class PlayerConfig extends EntityConfig {
 
 	public PlayerConfig(UUID uuid) {
 		super(uuid);
-		this.cfg = new Configuration(this.uuid.toString());
-		this.cfg.setDefault(Configuration.GENDER);
-		this.cfg.setDefault(Configuration.BUST_SIZE);
-		this.cfg.setDefault(Configuration.HURT_SOUNDS);
-
-		this.cfg.setDefault(Configuration.BREASTS_OFFSET_X);
-		this.cfg.setDefault(Configuration.BREASTS_OFFSET_Y);
-		this.cfg.setDefault(Configuration.BREASTS_OFFSET_Z);
-		this.cfg.setDefault(Configuration.BREASTS_UNIBOOB);
-		this.cfg.setDefault(Configuration.BREASTS_CLEAVAGE);
-
-		this.cfg.setDefault(Configuration.BREAST_PHYSICS);
-		this.cfg.setDefault(Configuration.ARMOR_PHYSICS_OVERRIDE);
-		this.cfg.setDefault(Configuration.SHOW_IN_ARMOR);
-		this.cfg.setDefault(Configuration.BOUNCE_MULTIPLIER);
-		this.cfg.setDefault(Configuration.FLOPPY_MULTIPLIER);
-		this.cfg.setDefault(Configuration.VOICE_PITCH);
-
-		this.cfg.setDefault(Configuration.HOLIDAY_THEMES);
+		cfg = new Configuration(uuid.toString());
+		cfg.setDefaults();
 
 		// Real players always have a UUID of version 4; if this isn't the case, then this is undeniably
 		// an NPC player entity.
-		if(uuid.version() != 4) this.holidayThemes = false;
+		if(uuid.version() != 4) holidayThemes = false;
 	}
 
 	// this shouldn't ever be called on players, but just to be safe, override with a noop.
@@ -175,14 +158,15 @@ public class PlayerConfig extends EntityConfig {
 	}
 
 	/**
-	 * Returns a copy of the player's current configuration. Note that there are no guarantees of any values being valid
-	 * (either type or number ranges), as this taken directly from the loaded JSON file, which may have been modified
-	 * by the user.
+	 * Returns a copy of the player's current configuration; the stored values are guaranteed to be valid for
+	 * the associated {@link ConfigKey}, and does not include any unrecognized keys.
 	 *
 	 * @return A new copy of the player's {@link JsonObject saved config values}
 	 */
 	public JsonObject toJson() {
-		return cfg.SAVE_VALUES.deepCopy();
+		var json = new JsonObject();
+		Configuration.KEYS.forEach(key -> key.dump(this, json));
+		return json;
 	}
 
 	/**
@@ -209,25 +193,7 @@ public class PlayerConfig extends EntityConfig {
 	 * @param markForSync {@code true} if {@link #needsSync} should be set to true
 	 */
 	public void loadFromConfig(boolean markForSync) {
-		updateGender(cfg.get(Configuration.GENDER));
-		updateBustSize(cfg.get(Configuration.BUST_SIZE));
-		updateHurtSounds(cfg.get(Configuration.HURT_SOUNDS));
-		updateVoicePitch(cfg.get(Configuration.VOICE_PITCH));
-		updateHolidayThemes(cfg.get(Configuration.HOLIDAY_THEMES));
-
-		//physics
-		updateBreastPhysics(cfg.get(Configuration.BREAST_PHYSICS));
-		updateShowBreastsInArmor(cfg.get(Configuration.SHOW_IN_ARMOR));
-		updateArmorPhysicsOverride(cfg.get(Configuration.ARMOR_PHYSICS_OVERRIDE));
-		updateBounceMultiplier(cfg.get(Configuration.BOUNCE_MULTIPLIER));
-		updateFloppiness(cfg.get(Configuration.FLOPPY_MULTIPLIER));
-
-		breasts.updateXOffset(cfg.get(Configuration.BREASTS_OFFSET_X));
-		breasts.updateYOffset(cfg.get(Configuration.BREASTS_OFFSET_Y));
-		breasts.updateZOffset(cfg.get(Configuration.BREASTS_OFFSET_Z));
-		breasts.updateUniboob(cfg.get(Configuration.BREASTS_UNIBOOB));
-		breasts.updateCleavage(cfg.get(Configuration.BREASTS_CLEAVAGE));
-
+		Configuration.KEYS.forEach(key -> key.writeToPlayer(this));
 		if(markForSync) {
 			this.needsSync = true;
 		}
@@ -236,7 +202,7 @@ public class PlayerConfig extends EntityConfig {
 	/**
 	 * @deprecated Use {@link #loadFromDisk(boolean)} instead
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true)
 	public static PlayerConfig loadCachedPlayer(UUID uuid, boolean markForSync) {
 		PlayerConfig plr = WildfireGender.getPlayerById(uuid);
 		if (plr != null && plr.hasLocalConfig()) {
@@ -246,35 +212,29 @@ public class PlayerConfig extends EntityConfig {
 	}
 
 	/**
-	 * Save the settings stored in the provided {@link PlayerConfig} to the underlying {@link Configuration},
-	 * and then {@link Configuration#save() attempt to save it to disk}.
-	 *
-	 * @param plr The {@link PlayerConfig} to save
+	 * Write all known {@link ConfigKey}s from this {@link PlayerConfig} to the underlying {@link Configuration}
 	 */
+	public void writeToConfig() {
+		Configuration.KEYS.forEach(key -> key.writeToConfig(this));
+	}
+
+	/**
+	 * Saves the settings stored in this {@link PlayerConfig} to the underlying {@link Configuration},
+	 * and then attempts to {@link Configuration#save() save to disk}.
+	 */
+	public void save() {
+		writeToConfig();
+		getConfig().save();
+		needsSync = true;
+		needsCloudSync = true;
+	}
+
+	/**
+	 * @deprecated Use {@code plr.save()} instead
+	 */
+	@Deprecated(forRemoval = true)
 	public static void saveGenderInfo(PlayerConfig plr) {
-		Configuration config = plr.getConfig();
-		config.set(Configuration.GENDER, plr.getGender());
-		config.set(Configuration.BUST_SIZE, plr.getBustSize());
-		config.set(Configuration.HURT_SOUNDS, plr.hasHurtSounds());
-		config.set(Configuration.VOICE_PITCH, plr.getVoicePitch());
-		config.set(Configuration.HOLIDAY_THEMES, plr.hasHolidayThemes());
-
-		//physics
-		config.set(Configuration.BREAST_PHYSICS, plr.hasBreastPhysics());
-		config.set(Configuration.SHOW_IN_ARMOR, plr.showBreastsInArmor());
-		config.set(Configuration.ARMOR_PHYSICS_OVERRIDE, plr.getArmorPhysicsOverride());
-		config.set(Configuration.BOUNCE_MULTIPLIER, plr.getBounceMultiplier());
-		config.set(Configuration.FLOPPY_MULTIPLIER, plr.getFloppiness());
-
-		config.set(Configuration.BREASTS_OFFSET_X, plr.getBreasts().getXOffset());
-		config.set(Configuration.BREASTS_OFFSET_Y, plr.getBreasts().getYOffset());
-		config.set(Configuration.BREASTS_OFFSET_Z, plr.getBreasts().getZOffset());
-		config.set(Configuration.BREASTS_UNIBOOB, plr.getBreasts().isUniboob());
-		config.set(Configuration.BREASTS_CLEAVAGE, plr.getBreasts().getCleavage());
-
-		config.save();
-		plr.needsSync = true;
-		plr.needsCloudSync = true;
+		plr.save();
 	}
 
 	@Override
