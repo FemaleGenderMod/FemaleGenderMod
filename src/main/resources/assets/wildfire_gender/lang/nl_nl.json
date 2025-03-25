@@ -114,10 +114,10 @@
 	"wildfire_gender.details.next_page": "Volgende Pagina",
 	"wildfire_gender.details.prev_page": "Vorige Pagina",
 
-	"wildfire_gender.cloud_details.title": "Online Synchronisatie Server Informatie"
+	"wildfire_gender.cloud_details.title": "Online Synchronisatie Server Informatie",
 	"wildfire_gender.nametag.creator": "Female Gender Mod Maker",
-	"wildfire_gender.nametag.contributor": "Female Gender Mod Bijdrager"
-	
+	"wildfire_gender.nametag.contributor": "Female Gender Mod Bijdrager",
+
 	"wildfire_gender.misc.holiday_themes": "Feestdagen Thema: %s",
 	"wildfire_gender.tooltip.holiday_themes.line1": "Wanneer aangezet, zal deze functie automatisch cosmetica weergeven zoals Kerst muts en andere feestdagen gerelateerde voorwerpen tijdens die feestdagen."
 }

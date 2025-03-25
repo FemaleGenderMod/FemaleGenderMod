@@ -37,7 +37,7 @@ public enum Gender {
 	MALE(Text.translatable("wildfire_gender.label.male").formatted(Formatting.BLUE), false, null),
 	OTHER(Text.translatable("wildfire_gender.label.other").formatted(Formatting.GREEN), true, WildfireSounds.FEMALE_HURT);
 
-	public static final IntFunction<Gender> BY_ID = ValueLists.createIdToValueFunction(Gender::ordinal, values(), ValueLists.OutOfBoundsHandling.WRAP);
+	public static final IntFunction<Gender> BY_ID = ValueLists.createIndexToValueFunction(Gender::ordinal, values(), ValueLists.OutOfBoundsHandling.WRAP);
 	public static final PacketCodec<ByteBuf, Gender> CODEC = PacketCodecs.indexed(BY_ID, Gender::ordinal);
 
 	private final Text name;

@@ -14,7 +14,7 @@
 	"wildfire_gender.player_list.bounce_multiplier": "Bounce Multiplier: %sx",
 	"wildfire_gender.player_list.breast_momentum": "Breast Momentum: %s%%",
 	"wildfire_gender.player_list.female_sounds": "Female Sounds: %s",
-	"wildfire_gender.wardrobe.players_using_mod": "Players Using the Mod:",
+	"wildfire_gender.wardrobe.players_using_mod": "Synced Players:",
 
 	"wildfire_gender.always_show_list": "Show Synced Players: %s",
 	"wildfire_gender.always_show_list.mod_ui_only": "This screen",

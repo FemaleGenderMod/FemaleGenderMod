@@ -11,11 +11,11 @@
     "LivingEntityMixin",
     "PlayerEntityRendererMixin",
     "accessors.EquipmentRendererAccessor",
+    "accessors.LivingEntityRendererAccessor",
     "accessors.TextureManagerAccessor",
     "accessors.TrimSpriteKeyConstructorAccessor",
     "renderstate.LivingEntityRendererMixin",
     "renderstate.LivingEntityRenderStateMixin",
-
     "cape.PlayerListEntryMixin",
     "cape.SkinTexturesWildfireImplMixin",
     "cape.SkinTexturesMixin"

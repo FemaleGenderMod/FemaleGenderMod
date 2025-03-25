@@ -71,7 +71,7 @@ public class HolidayFeaturesRenderer extends FeatureRenderer<PlayerEntityRenderS
 			}
 
 			ModelPart mPart = getContextModel().head;
-			matrixStack.translate(mPart.pivotX * 0.0625f, mPart.pivotY * 0.0625f, mPart.pivotZ * 0.0625f);
+			matrixStack.translate(mPart.originX * 0.0625f, mPart.originY * 0.0625f, mPart.originZ * 0.0625f);
 			if(mPart.roll != 0.0F || mPart.yaw != 0.0F || mPart.pitch != 0.0F) {
 				matrixStack.multiply(new Quaternionf().rotationZYX(mPart.roll, mPart.yaw, mPart.pitch));
 			}

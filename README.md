@@ -1,22 +1,26 @@
+<div align="center">
+
 ![Mod Banner](https://i.imgur.com/WLCTnCK.png)
-# Wildfire's Female Gender Mod
 
-### Description
-The Female Gender Mod introduces a small but significant visual enhancement to your Minecraft character: the addition of breasts for a more feminine appearance.
+# Female Gender Mod
 
-### Key Features
-- Feminine Appearance: Adds breasts to your character model, creating a more distinctive and personalized look.
-- Armor Adjustments: Updates armor visuals to reflect the new body shape, ensuring seamless integration with your character’s appearance.
-- Client-Side Mod: Fully client-side, allowing compatibility with most servers while preserving gameplay mechanics.
-- Cloud Sync (New in 4.0): Synchronize your settings across multiple devices effortlessly with the new cloud sync feature, ensuring your customizations stay consistent wherever you play.
-- Optional Server Support: Install on servers to synchronize character visuals between players for a cohesive multiplayer experience.
+![Cloud sync player count badge](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fwfgm.celestialfault.dev%2Fstats&query=synced_users&label=Cloud%20synced%20players)
 
-This mod focuses on enhancing your Minecraft character's appearance with minimal impact on gameplay, offering a subtle but meaningful change for players seeking more representation and individuality.
+</div>
+
+This mod adds extra customization options to the player model by adding breasts for a more feminine appearance.
+
+This mod is primarily client-sided, but your settings will also be automatically synced with other connected players
+if the mod is also installed on the server.
+
+The mod also features cloud sync support (as of 4.0 on 1.21.2+) to allow for syncing your customization settings
+to other players on servers that don't have the mod installed.
 
 ## Default Controls
 
-G - Open Wildfire's Gender Menu
+G - Open Customization Settings
 
 ## License
 
-Wildfire's Female Gender Mod is licensed under GNU LGPLv3, a free and open-source license. For more information, please see the [license file](https://github.com/WildfireRomeo/WildfireFemaleGenderMod/blob/fabric-1.20.2/LICENSE).
+The Female Gender Mod is licensed under the GNU LGPLv3, a free and open-source license. For more information,
+please see the [license file](./LICENSE).

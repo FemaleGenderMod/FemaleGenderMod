@@ -22,6 +22,6 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 public interface SkinTexturesWildfire {
-    void overrideCapeTexture(@Nullable Identifier texture);
-    @Nullable Identifier getOverriddenCapeTexture();
+    void wildfiregender$overrideCapeTexture(@Nullable Identifier texture);
+    @Nullable Identifier wildfiregender$getOverriddenCapeTexture();
 }

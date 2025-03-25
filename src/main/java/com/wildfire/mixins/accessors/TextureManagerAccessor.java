@@ -18,12 +18,15 @@
 
 package com.wildfire.mixins.accessors;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.resource.ResourceManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(TextureManager.class)
+@Environment(EnvType.CLIENT)
 public interface TextureManagerAccessor {
     @Accessor
     ResourceManager getResourceContainer();

@@ -78,8 +78,8 @@
 
 
 	"wildfire_gender.cloud_settings": "paramètres de synchronisation du Cloud",
-	"wildfire_gender.cloud.available_online": "Cloud Sync",
-	"wildfire_gender.cloud.unavailable_offline": "La synchronisation du Cloud n'est pas disponible car vous n'êtes pas connecté à un compte microsoft.",
+	"wildfire_gender.cloud.tooltip": "Cloud Sync",
+	"wildfire_gender.cloud.unavailable.invalid_account": "La synchronisation du Cloud n'est pas disponible car vous n'êtes pas connecté à un compte microsoft.",
 	"wildfire_gender.cloud.status": "Status de la Synchonalisation: %s",
 	"wildfire_gender.cloud.automatic": "Synchonalisation automatique: %s",
 	"wildfire_gender.cloud.automatic.tooltip.line1": "Si activé, votre configuration sera automatiquement synchronisée avec le cloud après toute modification.",
@@ -91,8 +91,6 @@
 
 	"wildfire_gender.cloud.syncing.success": "Synchronisé",
 	"wildfire_gender.cloud.syncing.fail": "Synchonalisation échouée",
-	"wildfire_gender.cloud.disclaimer.line1": "Le serveur de synchronisation des données peut mettre jusqu'à 30 minutes pour actualiser les données.",
-	"wildfire_gender.cloud.disclaimer.line2": "Si les modifications ne sont pas visibles, veuillez réessayer de resynchroniser plus tard.",
 
 	"wildfire_gender.sync_log.authenticating": "Authentication...",
 	"wildfire_gender.sync_log.authentication_success": "Authentication réussi.",

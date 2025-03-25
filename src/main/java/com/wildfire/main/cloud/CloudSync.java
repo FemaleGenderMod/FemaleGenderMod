@@ -170,9 +170,16 @@ public final class CloudSync {
 	public static CompletableFuture<Map<UUID, ContributorNametag>> getContributors() {
 		return CompletableFuture.supplyAsync(() -> {
 			var request = createRequest(URI.create(getCloudServer() + "/contributors")).GET().build();
-			var response = CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString()).join();
-			if(response.statusCode() != 200) {
-				WildfireGender.LOGGER.warn("Couldn't fetch contributor nametags: server responded {}", response.statusCode());
+
+			HttpResponse<String> response;
+			try {
+				response = CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString()).join();
+				if(response.statusCode() != 200) {
+					WildfireGender.LOGGER.warn("Couldn't fetch contributor nametags: server responded {}", response.statusCode());
+					return Map.of();
+				}
+			} catch(Exception e) {
+				WildfireGender.LOGGER.warn("Couldn't fetch contributor nametags", e);
 				return Map.of();
 			}
 

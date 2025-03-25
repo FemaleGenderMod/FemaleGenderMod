@@ -29,6 +29,7 @@ import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
+@SuppressWarnings("unused")
 @Mixin(LivingEntityRenderState.class)
 @Implements(@Interface(iface = RenderStateEntityCapture.class, prefix = "wildfire_gender$"))
 @Environment(EnvType.CLIENT)

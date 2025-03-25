@@ -21,6 +21,7 @@ package com.wildfire.main;
 import com.google.gson.JsonObject;
 import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.cloud.ContributorNametag;
+import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.networking.WildfireSync;
 import com.wildfire.resources.GenderArmorResourceManager;
@@ -28,6 +29,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -90,6 +92,11 @@ public class WildfireGenderClient implements ClientModInitializer {
 	}
 
 	public static @Nullable Text getNametag(UUID uuid) {
+		var clientPlayer = MinecraftClient.getInstance().player;
+		if(ClientConfig.INSTANCE.get(ClientConfig.HIDE_OWN_CONTRIBUTOR_TAG) && clientPlayer != null && uuid.equals(clientPlayer.getUuid())) {
+			return null;
+		}
+
 		ContributorNametag custom;
 		try {
 			custom = WildfireGenderClient.CONTRIBUTOR_NAMETAGS.getNow(Map.of()).get(uuid);

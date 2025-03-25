@@ -26,5 +26,5 @@ public enum SyncVerbosity {
 	DEFAULT,
 	SHOW_FETCHES;
 
-	public static final IntFunction<SyncVerbosity> BY_ID = ValueLists.createIdToValueFunction(SyncVerbosity::ordinal, values(), ValueLists.OutOfBoundsHandling.CLAMP);
+	public static final IntFunction<SyncVerbosity> BY_ID = ValueLists.createIndexToValueFunction(SyncVerbosity::ordinal, values(), ValueLists.OutOfBoundsHandling.CLAMP);
 }

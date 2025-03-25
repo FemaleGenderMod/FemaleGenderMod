@@ -39,7 +39,8 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
 import net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRendererRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
@@ -60,6 +61,7 @@ import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.decoration.ArmorStandEntity;
@@ -71,6 +73,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -134,7 +137,11 @@ public final class WildfireEventHandler {
 		ClientPlayConnectionEvents.DISCONNECT.register(WildfireEventHandler::clientDisconnect);
 		ClientPlayConnectionEvents.JOIN.register(WildfireEventHandler::clientJoin);
 		LivingEntityFeatureRendererRegistrationCallback.EVENT.register(WildfireEventHandler::registerRenderLayers);
-		HudRenderCallback.EVENT.register(WildfireEventHandler::renderHud);
+		HudLayerRegistrationCallback.EVENT.register(layeredDrawer -> layeredDrawer.attachLayerAfter(
+				IdentifiedLayer.MISC_OVERLAYS,
+				Identifier.of(WildfireGender.MODID, "player_list"),
+				WildfireEventHandler::renderHud
+		));
 		ArmorStatsTooltipEvent.EVENT.register(WildfireEventHandler::renderTooltip);
 		EntityHurtSoundEvent.EVENT.register(WildfireEventHandler::onEntityHurt);
 		EntityTickEvent.EVENT.register(WildfireEventHandler::onEntityTick);
@@ -173,8 +180,11 @@ public final class WildfireEventHandler {
 
 		var equippableComponent = item.get(DataComponentTypes.EQUIPPABLE);
 		if(equippableComponent != null && equippableComponent.slot() == EquipmentSlot.CHEST) {
-			float physResistance = (WildfireHelper.getArmorConfig(item).physicsResistance());
-			tooltipAppender.accept(Text.translatable("wildfire_gender.armor.tooltip", Math.floor(physResistance * 100f) / 100f).formatted(Formatting.LIGHT_PURPLE));
+			var config = WildfireHelper.getArmorConfig(item);
+			// don't show a +0 tooltip on items that don't interact with physics (e.g. Elytra)
+			if(!config.coversBreasts() || config.physicsResistance() == 0f) return;
+			var formatted = AttributeModifiersComponent.DECIMAL_FORMAT.format(config.physicsResistance());
+			tooltipAppender.accept(Text.translatable("wildfire_gender.armor.tooltip", formatted).formatted(Formatting.LIGHT_PURPLE));
 		}
 	}
 

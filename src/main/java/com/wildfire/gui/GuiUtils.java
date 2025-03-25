@@ -111,7 +111,7 @@ public final class GuiUtils {
 		float k = entity.bodyYaw;
 		float l = entity.getYaw();
 		float m = entity.getPitch();
-		float n = entity.prevHeadYaw;
+		float n = entity.lastHeadYaw;
 		float o = entity.headYaw;
 
 		ctx.getMatrices().push();
@@ -122,14 +122,14 @@ public final class GuiUtils {
 		entity.setYaw(180.0F + i * 40.0F);
 		entity.setPitch(-j * 20.0F);
 		entity.headYaw = entity.getYaw();
-		entity.prevHeadYaw = entity.getYaw();
+		entity.lastHeadYaw = entity.getYaw();
 		// divide by entity scale to ensure that we always draw the entity at a consistent size
 		float renderSize = size / entity.getScale();
 		InventoryScreen.drawEntity(ctx, x, y, renderSize, new Vector3f(), quaternionf, quaternionf2, entity);
 		entity.bodyYaw = k;
 		entity.setYaw(l);
 		entity.setPitch(m);
-		entity.prevHeadYaw = n;
+		entity.lastHeadYaw = n;
 		entity.headYaw = o;
 		ctx.getMatrices().pop();
 	}

@@ -30,7 +30,7 @@ public enum ShowPlayerListMode {
 	TAB_LIST_OPEN,
 	ALWAYS;
 
-	public static final IntFunction<ShowPlayerListMode> BY_ID = ValueLists.createIdToValueFunction(ShowPlayerListMode::ordinal, values(), ValueLists.OutOfBoundsHandling.WRAP);
+	public static final IntFunction<ShowPlayerListMode> BY_ID = ValueLists.createIndexToValueFunction(ShowPlayerListMode::ordinal, values(), ValueLists.OutOfBoundsHandling.WRAP);
 
 	public ShowPlayerListMode next() {
 		return BY_ID.apply(this.ordinal() + 1);

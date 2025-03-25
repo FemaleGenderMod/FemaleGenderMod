@@ -3,7 +3,7 @@
   "id": "wildfire_gender",
   "version": "${version}+${minecraft_version}",
   "name": "Female Gender Mod",
-  "description": "The primary goal of this mod is to enhance your Minecraft player's appearance by adding breasts, providing a distinctive look compared to the standard model.",
+  "description": "Adds extra customization options to the player model by adding breasts for a more feminine appearance",
   "authors": [
     "WildfireRomeo"
   ],
@@ -48,7 +48,7 @@
     "fabric-rendering-v1": "*",
     "fabric-resource-loader-v0": "*",
     "fabric-registry-sync-v0": "*",
-    "minecraft": ">=1.21.4 <1.22",
+    "minecraft": ">=1.21.5-beta.2 <1.22",
     "java": ">=21"
   },
   "conflicts": {

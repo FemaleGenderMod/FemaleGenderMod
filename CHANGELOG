@@ -1,17 +1,20 @@
-Creating this to keep track of most major changes made without having to sift through the commits.
+UNRELEASED
+- Port to 1.21.5
+- Fix holiday cosmetics causing rendering issues
+- Holiday cosmetics should no longer appear on NPC players
+- Breast physics will now swing a bit more to the sides when punching
+- Fixed pure white leather armor not using the correct color
 
 VERSION 4.3.3
 - Holiday themed cosmetics (initial implementation)
 
 VERSION 4.3.2
-- Contributor nametags
-- Contributor capes
-- Armor tooltip modifications
+- Added nametags and capes for mod contributors
+- Chestplates will now display their breast physics reduction values in the armor stats tooltip
 
 VERSION 4.3.1
 - Added Horizontal Breast Physics (if that makes any sense lol)
 - Added a Secret
-
 
 VERSION 4.3
 - Added BluelightAmelia to Contributors

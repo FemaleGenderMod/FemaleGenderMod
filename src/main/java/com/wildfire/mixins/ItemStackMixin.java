@@ -18,17 +18,15 @@
 
 package com.wildfire.mixins;
 
-import com.llamalad7.mixinextras.sugar.Local;
 import com.wildfire.events.ArmorStatsTooltipEvent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.component.type.AttributeModifiersComponent;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -42,14 +40,11 @@ import java.util.function.Consumer;
 abstract class ItemStackMixin {
 	@Shadow public abstract Item getItem();
 
-	@Inject(
-			method = "appendAttributeModifiersTooltip",
-			at = @At("TAIL")
-	)
-	public void wildfiregender$armorStats(Consumer<Text> textConsumer, @Nullable PlayerEntity player, CallbackInfo ci, @Local AttributeModifiersComponent attributeModifiersComponent) {
-		if(!attributeModifiersComponent.showInTooltip() || attributeModifiersComponent.modifiers().isEmpty()) return;
-		if(this.getItem() instanceof ArmorItem) {
-			ArmorStatsTooltipEvent.EVENT.invoker().appendTooltips((ItemStack)(Object)this, textConsumer, player);
+	@Inject(method = "appendAttributeModifiersTooltip", at = @At("TAIL"))
+	public void wildfiregender$armorStats(Consumer<Text> textConsumer, TooltipDisplayComponent displayComponent, PlayerEntity player, CallbackInfo ci) {
+		var item = (ItemStack)(Object)this;
+		if(item.get(DataComponentTypes.EQUIPPABLE) != null && displayComponent.shouldDisplay(DataComponentTypes.ATTRIBUTE_MODIFIERS)) {
+			ArmorStatsTooltipEvent.EVENT.invoker().appendTooltips(item, textConsumer, player);
 		}
 	}
 }

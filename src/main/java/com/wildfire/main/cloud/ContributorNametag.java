@@ -21,11 +21,15 @@ package com.wildfire.main.cloud;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 @Environment(EnvType.CLIENT)
 public record ContributorNametag(String text, @Nullable Integer color) {
-	private static final int DEFAULT_COLOR = 16733695; // Formatting.LIGHT_PURPLE
+	// requireNonNull() to help IDEs figure out that @Nullable only applies to non-color Formatting entries
+	private static final int DEFAULT_COLOR = Objects.requireNonNull(Formatting.GOLD.getColorValue());
 
 	public Text asText() {
 		return Text.literal(this.text).withColor(color == null ? DEFAULT_COLOR : color);

@@ -18,7 +18,6 @@
 
 package com.wildfire.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.wildfire.main.config.types.FloatConfigKey;
 import it.unimi.dsi.fastutil.floats.Float2ObjectFunction;
 import it.unimi.dsi.fastutil.floats.FloatConsumer;
@@ -127,8 +126,6 @@ public class WildfireSlider extends ClickableWidget {
 	@Override
 	protected void renderWidget(DrawContext ctx, int mouseX, int mouseY, float delta) {
 		if (this.visible) {
-			RenderSystem.disableDepthTest();
-
 			int xP = getX() + 2;
 			ctx.fill(xP - 2, getY(), getX() + this.width, getY() + this.height, 0x222222 + (128 << 24));
 			int xPos = getX() + 2 + (int) (this.value * (float)(this.width - 3));
@@ -139,7 +136,6 @@ public class WildfireSlider extends ClickableWidget {
 				int xPos2 = this.getX() + 3 + (int) (this.value * (float) (this.width - 4));
 				ctx.fill(xPos2 - 2, getY() + 1, xPos2, getY() + this.height - 1, 0xFFFFFF + (120 << 24));
 			}
-			RenderSystem.enableDepthTest();
 			TextRenderer font = MinecraftClient.getInstance().textRenderer;
 			int i = this.getX() + 2;
 			int j = this.getX() + this.getWidth() - 2;

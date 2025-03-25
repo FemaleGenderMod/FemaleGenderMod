@@ -40,9 +40,6 @@
 
   "wildfire_gender.slider.bounce": "Інтенсивність пружності: %s%%",
   "wildfire_gender.slider.floppy": "Імпульс грудей: %s%%",
-  "wildfire_gender.slider.min_bounce": "Чому фізика взагалі включена?",
-  "wildfire_gender.slider.max_bounce": "Аніме фізика грудей!!!",
-  "wildfire_gender.tooltip.bounce_warning": "Встановлення «Інтенсивності пружності» на високе значення виглядатиме дуже неприродно!",
 
   "wildfire_gender.cancer_awareness.title": "Привіт, сьогодні Місяць боротьби з раком молочної залози!"
 }

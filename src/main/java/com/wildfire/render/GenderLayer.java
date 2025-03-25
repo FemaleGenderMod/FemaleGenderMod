@@ -24,10 +24,10 @@ import com.wildfire.main.entitydata.Breasts;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.entitydata.EntityConfig;
+import com.wildfire.mixins.accessors.LivingEntityRendererAccessor;
 import com.wildfire.physics.BreastPhysics;
 import com.wildfire.render.WildfireModelRenderer.BreastModelBox;
 import com.wildfire.render.WildfireModelRenderer.OverlayModelBox;
-import com.wildfire.render.WildfireModelRenderer.PositionTextureVertex;
 
 import java.lang.Math;
 import java.util.Objects;
@@ -49,7 +49,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 import org.jetbrains.annotations.Nullable;
 import org.joml.*;
@@ -93,34 +92,23 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 	}
 
 	/**
-	 * Copy of {@code LivingEntityRenderer#getRenderLayer}
+	 * Convenience method around {@link LivingEntityRendererAccessor#invokeGetRenderLayer}
 	 */
 	private @Nullable RenderLayer getRenderLayer(S state) {
 		boolean bodyVisible = !state.invisible;
 		boolean translucent = state.invisible && !state.invisibleToPlayer;
 		boolean glowing = state.hasOutline;
 
-		Identifier texture;
-		if(this.context instanceof LivingEntityRenderer<?, S, M> livingEntityRenderer) {
-			texture = livingEntityRenderer.getTexture(state);
-		} else {
-			throw new IllegalStateException("context renderer is not a LivingEntityRenderer subclass");
-		}
-
-		if(translucent) {
-			return RenderLayer.getItemEntityTranslucentCull(texture);
-		} else if(bodyVisible) {
-			return this.getContextModel().getLayer(texture);
-		} else {
-			return glowing ? RenderLayer.getOutline(texture) : null;
-		}
+		var renderer = (LivingEntityRenderer<?, ?, ?>) context;
+		return ((LivingEntityRendererAccessor) renderer).invokeGetRenderLayer(state, bodyVisible, translucent, glowing);
 	}
 
 	@Override
 	public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, S state, float limbAngle, float limbDistance) {
 		MinecraftClient client = MinecraftClient.getInstance();
 		if(client.player == null) {
-			// we're currently in a menu; we won't have any data loaded to begin with, so just give up early
+			// TODO is it possible to remove this check? does anything this invoke still check
+			//		the client player or world?
 			return;
 		}
 
@@ -151,7 +139,7 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 	protected boolean setupRender(S state, EntityConfig entityConfig) {
 		if(!ClientConfig.RENDER_BREASTS) return false;
 
-		float partialTicks = MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(true);
+		float partialTicks = MinecraftClient.getInstance().getRenderTickCounter().getTickProgress(true);
 		LivingEntity entity = Objects.requireNonNull(getEntity(state), "getEntity()");
 
 		armorStack = state.equippedChestStack;
@@ -241,7 +229,7 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		}
 
 		ModelPart body = model.body;
-		matrixStack.translate(body.pivotX * 0.0625f, body.pivotY * 0.0625f, body.pivotZ * 0.0625f);
+		matrixStack.translate(body.originX * 0.0625f, body.originY * 0.0625f, body.originZ * 0.0625f);
 		if(body.roll != 0.0F || body.yaw != 0.0F || body.pitch != 0.0F) {
 			matrixStack.multiply(new Quaternionf().rotationZYX(body.roll, body.yaw, body.pitch));
 		}
@@ -290,7 +278,7 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 	}
 
 	private void renderBreast(S state, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light,
-	                          int overlay, BreastSide side) {
+							  int overlay, BreastSide side) {
 		RenderLayer breastRenderType = getRenderLayer(state);
 		if(breastRenderType == null) return; // only render if the player is visible in some capacity
 		int alpha = state.invisible ? ColorHelper.channelFromFloat(0.15f) : 255;
@@ -326,12 +314,12 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 									int light, int overlay, int color) {
 		Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
 		Matrix3f matrix3f = matrixStack.peek().getNormalMatrix();
-		for(WildfireModelRenderer.TexturedQuad quad : model.quads) {
+		for(var quad : model.quads) {
 			Vector3f vector3f = new Vector3f(quad.normal.x, quad.normal.y, quad.normal.z).mul(matrix3f);
 			float normalX = vector3f.x;
 			float normalY = vector3f.y;
 			float normalZ = vector3f.z;
-			for(PositionTextureVertex vertex : quad.vertexPositions) {
+			for(var vertex : quad.vertexPositions) {
 				float j = vertex.x() / 16.0F;
 				float k = vertex.y() / 16.0F;
 				float l = vertex.z() / 16.0F;

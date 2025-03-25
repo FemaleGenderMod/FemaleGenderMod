@@ -20,23 +20,15 @@ package com.wildfire.mixins.accessors;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.entity.equipment.EquipmentModel;
-import net.minecraft.client.render.entity.equipment.EquipmentRenderer;
-import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.entity.LivingEntityRenderer;
+import net.minecraft.client.render.entity.state.LivingEntityRenderState;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-import java.util.function.Function;
-
-@Mixin(EquipmentRenderer.class)
+@Mixin(LivingEntityRenderer.class)
 @Environment(EnvType.CLIENT)
-public interface EquipmentRendererAccessor {
-    @Accessor
-    Function<EquipmentRenderer.TrimSpriteKey, Sprite> getTrimSprites();
-
-    @Invoker
-    static int invokeGetDyeColor(EquipmentModel.Layer layer, int dyeColor) {
-        throw new UnsupportedOperationException("Something's gone very seriously wrong if we've gotten here!");
-    }
+public interface LivingEntityRendererAccessor {
+	@Invoker
+	RenderLayer invokeGetRenderLayer(LivingEntityRenderState state, boolean showBody, boolean translucent, boolean showOutline);
 }
