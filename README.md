@@ -3,6 +3,8 @@
 ![Mod Banner](https://i.imgur.com/WLCTnCK.png)
 # Female Gender Mod
 
+![Cloud sync player count badge](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fwfgm.celestialfault.dev%2Fstats&query=synced_users&label=Cloud%20synced%20players)
+
 </div>
 
 This mod adds extra customization options to the player model by adding breasts for a more feminine appearance.

@@ -83,7 +83,7 @@
   "wildfire_gender.tooltip.hurt_sounds": "Your character will play a female hurt sound when taking damage if your gender is set to either Female or Other",
   "wildfire_gender.tooltip.override_armor_physics.line1": "Breast physics will no longer be reduced/suppressed by your equipped armor while enabled",
   "wildfire_gender.tooltip.override_armor_physics.line2": "This is intended for use with resource packs that hide armor, or any similar minimal armor packs",
-  "wildfire_gender.wardrobe.players_using_mod": "Players Using the Mod:",
+  "wildfire_gender.wardrobe.players_using_mod": "Synced Players:",
   "wildfire_gender.wardrobe.slider.breast_size": "Breast Size: %$1s%%",
   "wildfire_gender.wardrobe.slider.depth": "Depth: %$1s",
   "wildfire_gender.wardrobe.slider.height": "Height: %$1s",

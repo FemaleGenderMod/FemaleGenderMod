@@ -72,7 +72,7 @@ public class WildfireLangProvider extends BaseLanguageProvider {
         add(WildfireLang.BREAST_CUSTOMIZATION_TAB_MISC, "Miscellaneous");
 
         add(WildfireLang.WARDROBE, "Female Gender Mod");
-        add(WildfireLang.WARDROBE_PLAYERS_USING, "Players Using the Mod:");
+        add(WildfireLang.WARDROBE_PLAYERS_USING, "Synced Players:");
         add(WildfireLang.WARDROBE_SLIDER_BREAST_SIZE, "Breast Size: %$1s%%");
         add(WildfireLang.WARDROBE_SLIDER_SEPARATION, "Separation: %$1s");
         add(WildfireLang.WARDROBE_SLIDER_HEIGHT, "Height: %$1s");
