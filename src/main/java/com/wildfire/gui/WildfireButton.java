@@ -18,7 +18,6 @@
 
 package com.wildfire.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -62,7 +61,6 @@ public class WildfireButton extends ButtonWidget {
       if(!transparent) ctx.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), clr);
 
       drawInner(ctx, mouseX, mouseY, partialTicks);
-      RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
    }
 
    public WildfireButton setTransparent(boolean b) {

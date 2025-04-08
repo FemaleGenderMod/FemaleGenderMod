@@ -27,7 +27,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,7 +53,7 @@ public final class WildfireAPI {
      * @param  genderArmor the class implementing the {@link IGenderArmor} to apply to the item
      * @see    IGenderArmor
      */
-    @ApiStatus.Obsolete
+    @Deprecated(since = "4.3.5", forRemoval = true)
     public static void addGenderArmor(Item item, IGenderArmor genderArmor) {
         GENDER_ARMORS.put(item, genderArmor);
     }
@@ -94,13 +93,13 @@ public final class WildfireAPI {
      * <p>Use of this method is <b>heavily</b> discouraged, as the mod will already perform this load process when
      * first accessing a player's config; the exact return type of this method may also change between versions.</p>
      *
-     * @deprecated This method may be removed in the future; if you depend on this for any reason,
+     * @deprecated This method will likely be removed in the future; if you depend on this for any reason,
      *             please open an issue explaining your use case.
      *
      * @param  uuid  the uuid of the target {@link PlayerEntity}
      * @param  markForSync {@code true} if player data should be synced to the server upon being loaded; this only has an effect on the client player.
      */
-    @Deprecated(since = "4.3.3")
+    @Deprecated(since = "4.3.3", forRemoval = true)
     @Environment(EnvType.CLIENT)
     public static CompletableFuture<@Nullable PlayerConfig> loadGenderInfo(UUID uuid, boolean markForSync) {
         return WildfireGenderClient.loadGenderInfo(uuid, markForSync, false);
@@ -117,7 +116,7 @@ public final class WildfireAPI {
      *
      * @see #addGenderArmor
      */
-    @ApiStatus.Obsolete
+    @Deprecated(since = "4.3.5", forRemoval = true)
     public static Map<Item, IGenderArmor> getGenderArmors() {
         return GENDER_ARMORS;
     }

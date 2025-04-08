@@ -32,11 +32,11 @@ import com.wildfire.main.config.BreastPresetConfiguration;
 import it.unimi.dsi.fastutil.floats.FloatConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
@@ -345,15 +345,15 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
         };
 
         if(backgroundTexture != null) {
-            ctx.drawTexture(RenderLayer::getGuiTextured, backgroundTexture, (this.width - 272) / 2, (this.height - 138) / 2, 0, 0, 272, 130, 512, 512);
+            ctx.drawTexture(RenderPipelines.GUI_TEXTURED, backgroundTexture, (this.width - 272) / 2, (this.height - 138) / 2, 0, 0, 272, 130, 512, 512);
         }
 
         if(currentTab == 0) {
-            ctx.drawTexture(RenderLayer::getGuiTextured, BACKGROUND_CUSTOMIZATION, (this.width) / 2 - 42, (this.height) / 2 - 43, 0, 0, 178, 80, 512, 512);
+            ctx.drawTexture(RenderPipelines.GUI_TEXTURED, BACKGROUND_CUSTOMIZATION, (this.width) / 2 - 42, (this.height) / 2 - 43, 0, 0, 178, 80, 512, 512);
         } else if(currentTab == 1) {
-            ctx.drawTexture(RenderLayer::getGuiTextured, BACKGROUND_PHYSICS, (this.width) / 2 - 42, (this.height) / 2 - 43, 0, 0, 178, 104, 512, 512);
+            ctx.drawTexture(RenderPipelines.GUI_TEXTURED, BACKGROUND_PHYSICS, (this.width) / 2 - 42, (this.height) / 2 - 43, 0, 0, 178, 104, 512, 512);
         } else if(currentTab == 2) {
-            ctx.drawTexture(RenderLayer::getGuiTextured, BACKGROUND_MISC, (this.width) / 2 - 42, (this.height) / 2 - 43, 0, 0, 178, 128, 512, 512);
+            ctx.drawTexture(RenderPipelines.GUI_TEXTURED, BACKGROUND_MISC, (this.width) / 2 - 42, (this.height) / 2 - 43, 0, 0, 178, 128, 512, 512);
         }
 
         int x = this.width / 2;
@@ -367,8 +367,10 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
             int yP = this.height / 2 + 44;
             PlayerEntity ent = client.world.getPlayerByUuid(this.playerUUID);
             if(ent != null) {
-                ctx.enableScissor(xP - 38, yP - 97, xP + 38, yP + 9);
-                GuiUtils.drawEntityOnScreen(ctx, xP, yP + 60, 70, (xP - mouseX), (yP - 46 - mouseY), ent);
+                // This sucks. In order to position the player properly, we need to trick the player renderer into
+                // thinking the area the player should be rendered is much taller than it actually is.
+                ctx.enableScissor(xP - 38, yP - 79, xP + 38, yP + 9);
+                GuiUtils.drawEntityOnScreenNoScissor(ctx, xP - 38, yP - 79, xP + 38, yP + 69, 70, mouseX, mouseY + 35, ent);
                 ctx.disableScissor();
             }
         }

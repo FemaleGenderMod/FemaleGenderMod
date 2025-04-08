@@ -32,13 +32,13 @@ import com.wildfire.main.config.GlobalConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.tooltip.TooltipState;
 import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.Text;
@@ -113,7 +113,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 		) {
 			@Override
 			protected void drawInner(DrawContext ctx, int mouseX, int mouseY, float partialTicks) {
-				ctx.drawTexture(RenderLayer::getGuiTextured, CLOUD_ICON, getX() + 2, getY() + 2, 0, 0, 20, 14, 32, 26, 32, 26);
+				ctx.drawTexture(RenderPipelines.GUI_TEXTURED, CLOUD_ICON, getX() + 2, getY() + 2, 0, 0, 20, 14, 32, 26, 32, 26);
 			}
 		};
 
@@ -148,15 +148,17 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 			case Gender.OTHER -> BACKGROUND_OTHER;
 		};
 
-		ctx.drawTexture(RenderLayer::getGuiTextured, backgroundTexture, (this.width - 272) / 2, (this.height - 138) / 2, 0, 0, 268, 124, 512, 512);
+		ctx.drawTexture(RenderPipelines.GUI_TEXTURED, backgroundTexture, (this.width - 272) / 2, (this.height - 138) / 2, 0, 0, 268, 124, 512, 512);
 
 		if(client != null && client.world != null) {
 			int xP = this.width / 2 - 90;
 			int yP = this.height / 2 + 18;
 			PlayerEntity ent = client.world.getPlayerByUuid(this.playerUUID);
 			if(ent != null) {
-				ctx.enableScissor(xP - 38, yP - 97, xP + 38, yP + 9);
-				GuiUtils.drawEntityOnScreen(ctx, xP, yP + 60, 70, (xP - mouseX), (yP - 46 - mouseY), ent);
+				// This sucks. In order to position the player properly, we need to trick the player renderer into
+				// thinking the area the player should be rendered is much taller than it actually is.
+				ctx.enableScissor(xP - 38, yP - 79, xP + 38, yP + 9);
+				GuiUtils.drawEntityOnScreenNoScissor(ctx, xP - 38, yP - 79, xP + 38, yP + 69, 70, mouseX, mouseY + 35, ent);
 				ctx.disableScissor();
 			}
 		}
@@ -175,7 +177,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 			int bcaY = y - 45;
 			ctx.fill(x - 159, bcaY + 106, x + 159, bcaY + 136, 0x55000000);
 			ctx.drawTextWithShadow(textRenderer, Text.translatable("wildfire_gender.cancer_awareness.title").formatted(Formatting.BOLD, Formatting.ITALIC), this.width / 2 - 148, bcaY + 117, 0xFFFFFF);
-			ctx.drawTexture(RenderLayer::getGuiTextured, TXTR_RIBBON, x + 130, bcaY + 109, 0, 0, 26, 26, 20, 20, 20, 20);
+			ctx.drawTexture(RenderPipelines.GUI_TEXTURED, TXTR_RIBBON, x + 130, bcaY + 109, 0, 0, 26, 26, 20, 20, 20, 20);
 		}
 
 		//Render in front of the UI when it's open.

@@ -19,7 +19,6 @@
 package com.wildfire.render;
 
 import com.wildfire.api.IBreastArmorTexture;
-import com.wildfire.api.impl.BreastArmorTexture;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.mixins.accessors.EquipmentRendererAccessor;
