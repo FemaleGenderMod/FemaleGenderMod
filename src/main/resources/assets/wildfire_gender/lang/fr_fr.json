@@ -1,7 +1,10 @@
 {
 	"category.wildfire_gender.generic": "Wildfire's Female Gender Mod",
 	"key.wildfire_gender.gender_menu": "Female Gender Menu",
+	"key.wildfire_gender.toggle": "Rendu de la poitrine",
 	"toast.wildfire_gender.get_started": "Appuyer sur '%s' pour commencer!",
+
+	"wildfire_gender.armor.tooltip": "+%s Soutien de la poitrine",
 
 	"wildfire_gender.player_list.title": "Female Gender Mod",
 	"wildfire_gender.player_list.settings_button": "Paramètres",
@@ -23,7 +26,7 @@
 
 	"wildfire_gender.wardrobe.title": "Wildfire's Female Gender Mod",
 	"wildfire_gender.breast_customization.tab_customization": "Personnalisation",
-	"wildfire_gender.breast_customization.tab_physics": "Physique de la poitrine",
+	"wildfire_gender.breast_customization.tab_physics": "Physique des de la poitrine",
 	"wildfire_gender.breast_customization.tab_miscellaneous": "Divers",
 
 	"wildfire_gender.breast_customization.presets.add_new": "Ajouter Nouveau...",
@@ -45,6 +48,7 @@
 	"wildfire_gender.tooltip.override_armor_physics.line2": "Cette option est destinée à être utilisée avec des packs de ressources/mods qui cachent l'armure, ou tout pack d'armure minimal similaire.",
 
 	"wildfire_gender.char_settings.hide_in_armor": "Cacher dans l'armure: %s",
+	"wildfire_gender.char_settings.show_armor_stat": "Infobulle de l'armure: %s",
 	"wildfire_gender.char_settings.hurt_sounds": "Sons de douleur féminins: %s",
 	"wildfire_gender.tooltip.hurt_sounds": "Votre personnage jouera un son de douleur féminin en cas de dégâts si votre genre est défini sur Féminin ou Autre",
 
@@ -80,6 +84,7 @@
 	"wildfire_gender.cloud_settings": "paramètres de synchronisation du Cloud",
 	"wildfire_gender.cloud.tooltip": "Cloud Sync",
 	"wildfire_gender.cloud.unavailable.invalid_account": "La synchronisation du Cloud n'est pas disponible car vous n'êtes pas connecté à un compte microsoft.",
+	"wildfire_gender.cloud.unavailable.offline_server": "La synchronisation du Cloud n'est pas disponible car le serveur auquel vous êtes connecté est en mode hors-ligne.",
 	"wildfire_gender.cloud.status": "Statut de la Synchronisation: %s",
 	"wildfire_gender.cloud.automatic": "Synchronisation automatique: %s",
 	"wildfire_gender.cloud.automatic.tooltip.line1": "Si activé, votre configuration sera automatiquement synchronisée avec le cloud après toute modification.",
@@ -109,5 +114,11 @@
 	"wildfire_gender.details.next_page": "Page Suivante",
 	"wildfire_gender.details.prev_page": "Page Précédente",
 
-	"wildfire_gender.cloud_details.title": "Informations sur le serveur Cloud"
+	"wildfire_gender.cloud_details.title": "Informations sur le serveur Cloud",
+
+	"wildfire_gender.nametag.creator": "Créatrice Female Gender Mod",
+	"wildfire_gender.nametag.contributor": "contributeur.trice du Female Gender Mod ",
+
+	"wildfire_gender.misc.holiday_themes": "Cosmétiques estivales: %s",
+	"wildfire_gender.tooltip.holiday_themes.line1": "Lorsque activé, cette fonctionnalité met automatiquement en avant des cosmétiques comme des chapeaux de Noël et d'autres articles thématiques pendant leurs périodes estivales respectives."
 }
