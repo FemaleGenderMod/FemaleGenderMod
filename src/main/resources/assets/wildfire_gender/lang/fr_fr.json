@@ -65,7 +65,7 @@
 	"wildfire_gender.label.off": "Off",
 	"wildfire_gender.label.yes": "Oui",
 	"wildfire_gender.label.no": "Non",
-	"wildfire_gender.label.with_creator": "Vous jouez sur un serveur avec la créatrice de ce mod!",
+	"wildfire_gender.label.with_creator": "Vous jouez sur un serveur avec le/la créateur.trice de ce mod!",
 	"wildfire_gender.label.with_contributor": "Vous jouez sur un serveur avec un.e contributeur.trice de ce mod!",
 	"wildfire_gender.label.with_both": "Vous jouez sur un serveur avec le créateur et un.e contributeur.trice de ce mod!",
 
@@ -116,7 +116,7 @@
 
 	"wildfire_gender.cloud_details.title": "Informations sur le serveur Cloud",
 
-	"wildfire_gender.nametag.creator": "Créatrice Female Gender Mod",
+	"wildfire_gender.nametag.creator": "Créateur.trice du Female Gender Mod",
 	"wildfire_gender.nametag.contributor": "contributeur.trice du Female Gender Mod ",
 
 	"wildfire_gender.misc.holiday_themes": "Cosmétiques estivales: %s",
