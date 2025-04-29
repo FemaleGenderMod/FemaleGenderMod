@@ -21,12 +21,13 @@ package com.wildfire.render;
 import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.main.entitydata.EntityConfigState;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 // See LivingEntityRenderStateMixin for the actual implementation
 public interface GenderEntityRenderState {
-	@Nullable EntityConfigState getEntityConfig();
-	void setEntityConfig(EntityConfig entityConfig);
+	@NotNull EntityConfigState getEntityConfigState();
+	void updateEntityConfigState(EntityConfig entityConfig);
 
 	boolean isBreathing();
 	void setBreathing(boolean breathing);

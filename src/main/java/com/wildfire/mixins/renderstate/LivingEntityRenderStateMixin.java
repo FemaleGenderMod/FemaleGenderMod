@@ -25,6 +25,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.state.LivingEntityRenderState;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Implements;
 import org.spongepowered.asm.mixin.Interface;
@@ -36,17 +37,17 @@ import org.spongepowered.asm.mixin.Unique;
 @Implements(@Interface(iface = GenderEntityRenderState.class, prefix = "wildfire_gender$"))
 @Environment(EnvType.CLIENT)
 abstract class LivingEntityRenderStateMixin {
-	private @Unique @Nullable EntityConfigState entityConfigState = null;
+	private @Unique final EntityConfigState entityConfigState = new EntityConfigState();
 	private @Unique boolean isBreathing = true;
 	private @Unique @Nullable Text wildfireNametag = null;
 	private @Unique boolean isArmorStand = false;
 
-	public @Nullable EntityConfigState wildfire_gender$getEntityConfig() {
+	public @NotNull EntityConfigState wildfire_gender$getEntityConfigState() {
 		return this.entityConfigState;
 	}
 
-	public void wildfire_gender$setEntityConfig(EntityConfig entityConfig) {
-		this.entityConfigState = entityConfig.toImmutable();
+	public void wildfire_gender$updateEntityConfigState(EntityConfig entityConfig) {
+		this.entityConfigState.update(entityConfig);
 	}
 
 	public boolean wildfire_gender$isBreathing() {

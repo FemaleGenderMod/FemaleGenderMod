@@ -94,9 +94,7 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 		}
 
 		GenderEntityRenderState genderRenderState = (GenderEntityRenderState) state;
-		entityConfigState = genderRenderState.getEntityConfig();
-
-		if (entityConfigState == null) return;
+		entityConfigState = genderRenderState.getEntityConfigState();
 
 		final ItemStack chestplate = state.equippedChestStack;
 		// Check if the worn item in the chest slot is actually equippable in the chest slot, and has a model to render
@@ -156,7 +154,7 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 	protected void setupTransformations(S state, M model, MatrixStack matrixStack, BreastSide side) {
 		super.setupTransformations(state, model, matrixStack, side);
 		if((state instanceof PlayerEntityRenderState playerState && playerState.jacketVisible) ||
-				(state instanceof ArmorStandEntityRenderState && entityConfigState.hasJacketLayer())) {
+				(state instanceof ArmorStandEntityRenderState && entityConfigState.hasJacketLayer)) {
 			matrixStack.translate(0, 0, -0.015f);
 			matrixStack.scale(1.05f, 1.05f, 1.05f);
 		}
