@@ -22,6 +22,9 @@ import com.wildfire.main.Gender;
 import com.wildfire.physics.BreastPhysics;
 import net.minecraft.util.math.MathHelper;
 
+/**
+ * A decoupled render state object that represents a snapshot of a {@link EntityConfig} during a certain frame.
+ */
 public class EntityConfigState {
     public final BreastState breasts = new BreastState();
     public final BreastPhysicsState leftBreastPhysics = new BreastPhysicsState();
@@ -37,6 +40,11 @@ public class EntityConfigState {
     public boolean hasJacketLayer;
     public boolean hasHolidayThemes;
 
+    /**
+     * Updates the data in this render state to match the given {@link EntityConfig}.
+     *
+     * @param entityConfig the entity config
+     */
     public void update(EntityConfig entityConfig) {
         this.breasts.update(entityConfig.getBreasts());
         this.leftBreastPhysics.update(entityConfig.getLeftBreastPhysics());
@@ -49,6 +57,9 @@ public class EntityConfigState {
         this.floppyMultiplier = entityConfig.getFloppiness();
         this.getArmorPhysicsOverride = entityConfig.getArmorPhysicsOverride();
         this.showBreastsInArmor = entityConfig.showBreastsInArmor();
+
+        // Although most entities dont use these two, I dont think they're important enough to warrant having
+        // different render state objects for players and armor stands.
         this.hasJacketLayer = entityConfig.hasJacketLayer();
         this.hasHolidayThemes = entityConfig instanceof PlayerConfig playerConfig && playerConfig.hasHolidayThemes();
     }
