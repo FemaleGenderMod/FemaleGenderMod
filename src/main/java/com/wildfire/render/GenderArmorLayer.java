@@ -21,7 +21,7 @@ package com.wildfire.render;
 import com.wildfire.api.IBreastArmorTexture;
 import com.wildfire.api.impl.BreastArmorTexture;
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.entitydata.EntityConfig;
+import com.wildfire.main.entitydata.EntityConfigState;
 import com.wildfire.mixins.accessors.EquipmentRendererAccessor;
 import com.wildfire.mixins.accessors.TextureManagerAccessor;
 import com.wildfire.mixins.accessors.TrimSpriteKeyConstructorAccessor;
@@ -44,8 +44,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.equipment.EquipmentAsset;
 import net.minecraft.item.equipment.trim.ArmorTrim;
@@ -63,7 +61,7 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 	private final EquipmentModelLoader equipmentModelLoader;
 	protected BreastModelBox lBoobArmor, rBoobArmor;
 	protected static final BreastModelBox lTrim, rTrim;
-	private EntityConfig entityConfig;
+	private EntityConfigState entityConfigState;
 	private @NotNull IBreastArmorTexture textureData = BreastArmorTexture.DEFAULT;
 
 	private static boolean textureExists(Identifier id) {
@@ -95,8 +93,10 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 			return;
 		}
 
-		LivingEntity ent = getEntity(state);
-		if(ent == null) return;
+		GenderEntityRenderState genderRenderState = (GenderEntityRenderState) state;
+		entityConfigState = genderRenderState.getEntityConfig();
+
+		if (entityConfigState == null) return;
 
 		final ItemStack chestplate = state.equippedChestStack;
 		// Check if the worn item in the chest slot is actually equippable in the chest slot, and has a model to render
@@ -108,10 +108,8 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 		if(layers.isEmpty()) return;
 
 		try {
-			entityConfig = EntityConfig.getEntity(ent);
-
-			if(!setupRender(state, entityConfig)) return;
-			if(ent instanceof ArmorStandEntity && !genderArmor.armorStandsCopySettings()) return;
+			if(!setupRender(state, entityConfigState)) return;
+			if(genderRenderState.isArmorStand() && !genderArmor.armorStandsCopySettings()) return;
 
 			int color = DyedColorComponent.getColor(chestplate, 0);
 			boolean glint = chestplate.hasGlint();
@@ -158,7 +156,7 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 	protected void setupTransformations(S state, M model, MatrixStack matrixStack, BreastSide side) {
 		super.setupTransformations(state, model, matrixStack, side);
 		if((state instanceof PlayerEntityRenderState playerState && playerState.jacketVisible) ||
-				(state instanceof ArmorStandEntityRenderState && entityConfig.hasJacketLayer())) {
+				(state instanceof ArmorStandEntityRenderState && entityConfigState.hasJacketLayer())) {
 			matrixStack.translate(0, 0, -0.015f);
 			matrixStack.scale(1.05f, 1.05f, 1.05f);
 		}

@@ -279,10 +279,12 @@ public class PlayerConfig extends EntityConfig {
 		plr.needsCloudSync = true;
 	}
 
+	/* removed because all entity config data has to be queried to create the immutable copy, and this is simpler
 	@Override
 	public boolean hasJacketLayer() {
 		throw new UnsupportedOperationException("PlayerConfig does not support #hasJacketLayer(); use PlayerEntity#isPartVisible instead");
 	}
+	 */
 
 	@ApiStatus.Internal
 	public void attemptCloudSync() {

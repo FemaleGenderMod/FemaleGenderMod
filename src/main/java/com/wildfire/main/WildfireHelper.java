@@ -72,6 +72,11 @@ public final class WildfireHelper {
         return (float) ThreadLocalRandom.current().nextDouble(min, (double) max + 1);
     }
 
+    public static float round(float num, float decimalPlaces) {
+        float factor = (float) Math.pow(10, decimalPlaces);
+        return Math.round(num * factor) / factor;
+    }
+
     @Environment(EnvType.CLIENT)
     public static IGenderArmor getArmorConfig(ItemStack stack) {
         if(stack.isEmpty()) {

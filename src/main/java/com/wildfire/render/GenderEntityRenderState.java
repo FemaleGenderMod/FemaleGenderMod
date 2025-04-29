@@ -18,11 +18,22 @@
 
 package com.wildfire.render;
 
-import net.minecraft.entity.LivingEntity;
+import com.wildfire.main.entitydata.EntityConfig;
+import com.wildfire.main.entitydata.EntityConfigState;
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 // See LivingEntityRenderStateMixin for the actual implementation
-public interface RenderStateEntityCapture {
-	@Nullable LivingEntity getEntity();
-	void setEntity(LivingEntity entity);
+public interface GenderEntityRenderState {
+	@Nullable EntityConfigState getEntityConfig();
+	void setEntityConfig(EntityConfig entityConfig);
+
+	boolean isBreathing();
+	void setBreathing(boolean breathing);
+
+	@Nullable Text getWildfireNametag();
+	void setWildfireNametag(@Nullable Text nametag);
+
+	boolean isArmorStand();
+	void setArmorStand(boolean armorStand);
 }

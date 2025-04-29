@@ -19,6 +19,7 @@
 package com.wildfire.render;
 
 import com.wildfire.main.WildfireGender;
+import com.wildfire.main.entitydata.EntityConfigState;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -30,6 +31,7 @@ import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 
 import java.util.Calendar;
@@ -47,10 +49,10 @@ public class HolidayFeaturesRenderer extends FeatureRenderer<PlayerEntityRenderS
 
 	@Override
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, PlayerEntityRenderState state, float limbAngle, float limbDistance) {
-		var entity = ((RenderStateEntityCapture)state).getEntity();
-		if(entity == null) return;
-		var config = WildfireGender.getPlayerById(entity.getUuid());
-		if(config == null || !config.hasHolidayThemes()) return;
+		GenderEntityRenderState genderRenderState = (GenderEntityRenderState) state;
+
+		@Nullable EntityConfigState entityConfigState = genderRenderState.getEntityConfig();
+		if (entityConfigState == null || !entityConfigState.hasHolidayThemes()) return;
 
 		renderSantaHat(state, matrices, vertexConsumers, light);
 	}

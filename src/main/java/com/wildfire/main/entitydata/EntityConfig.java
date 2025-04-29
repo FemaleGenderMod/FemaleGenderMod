@@ -202,6 +202,13 @@ public class EntityConfig {
 		getRightBreastPhysics().update(entity, armor);
 	}
 
+	/**
+	 * Creates an immutable copy of the current entity config state.
+	 */
+	public EntityConfigState toImmutable() {
+		return new EntityConfigState(this);
+	}
+
 	@Override
 	public String toString() {
 		return "%s(uuid=%s, gender=%s)".formatted(getClass().getCanonicalName(), uuid, gender);

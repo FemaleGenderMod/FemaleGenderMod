@@ -368,10 +368,6 @@ public class BreastPhysics {
 
 	}
 
-	public float getBreastSize(float partialTicks) {
-		return MathHelper.lerp(partialTicks, preBreastSize, breastSize);
-	}
-
 	public float getPrePositionY() {
 		return this.prePositionY;
 	}
@@ -391,6 +387,13 @@ public class BreastPhysics {
 	}
 	public float getPreBounceRotation() {
 		return this.wfg_preBounceRotation;
+	}
+
+	public float getBreastSize() {
+		return this.breastSize;
+	}
+	public float getPreBreastSize() {
+		return this.preBreastSize;
 	}
 
 	private int clampMovement(float movement) {

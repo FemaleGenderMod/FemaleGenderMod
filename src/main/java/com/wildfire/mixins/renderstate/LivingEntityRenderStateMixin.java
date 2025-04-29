@@ -18,11 +18,13 @@
 
 package com.wildfire.mixins.renderstate;
 
-import com.wildfire.render.RenderStateEntityCapture;
+import com.wildfire.main.entitydata.EntityConfig;
+import com.wildfire.main.entitydata.EntityConfigState;
+import com.wildfire.render.GenderEntityRenderState;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.state.LivingEntityRenderState;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Implements;
 import org.spongepowered.asm.mixin.Interface;
@@ -31,16 +33,43 @@ import org.spongepowered.asm.mixin.Unique;
 
 @SuppressWarnings("unused")
 @Mixin(LivingEntityRenderState.class)
-@Implements(@Interface(iface = RenderStateEntityCapture.class, prefix = "wildfire_gender$"))
+@Implements(@Interface(iface = GenderEntityRenderState.class, prefix = "wildfire_gender$"))
 @Environment(EnvType.CLIENT)
 abstract class LivingEntityRenderStateMixin {
-	private @Unique @Nullable LivingEntity wildfire_gender$entity = null;
+	private @Unique @Nullable EntityConfigState entityConfigState = null;
+	private @Unique boolean isBreathing = true;
+	private @Unique @Nullable Text wildfireNametag = null;
+	private @Unique boolean isArmorStand = false;
 
-	public @Nullable LivingEntity wildfire_gender$getEntity() {
-		return wildfire_gender$entity;
+	public @Nullable EntityConfigState wildfire_gender$getEntityConfig() {
+		return this.entityConfigState;
 	}
 
-	public void wildfire_gender$setEntity(LivingEntity entity) {
-		this.wildfire_gender$entity = entity;
+	public void wildfire_gender$setEntityConfig(EntityConfig entityConfig) {
+		this.entityConfigState = entityConfig.toImmutable();
+	}
+
+	public boolean wildfire_gender$isBreathing() {
+		return this.isBreathing;
+	}
+
+	public void wildfire_gender$setBreathing(boolean breathing) {
+		this.isBreathing = breathing;
+	}
+
+	public @Nullable Text wildfire_gender$getWildfireNametag() {
+		return this.wildfireNametag;
+	}
+
+	public void wildfire_gender$setWildfireNametag(@Nullable Text nametag) {
+		this.wildfireNametag = nametag;
+	}
+
+	public boolean wildfire_gender$isArmorStand() {
+		return this.isArmorStand;
+	}
+
+	public void wildfire_gender$setArmorStand(boolean armorStand) {
+		this.isArmorStand = armorStand;
 	}
 }
