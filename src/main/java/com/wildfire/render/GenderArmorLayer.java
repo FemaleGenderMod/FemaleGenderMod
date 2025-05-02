@@ -107,7 +107,7 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 
 		try {
 			if(!setupRender(state, entityConfigState)) return;
-			if(genderRenderState.isArmorStand() && !genderArmor.armorStandsCopySettings()) return;
+			if(state instanceof ArmorStandEntityRenderState && !genderArmor.armorStandsCopySettings()) return;
 
 			int color = DyedColorComponent.getColor(chestplate, 0);
 			boolean glint = chestplate.hasGlint();

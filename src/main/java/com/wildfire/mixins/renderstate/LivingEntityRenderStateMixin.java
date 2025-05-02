@@ -40,7 +40,6 @@ abstract class LivingEntityRenderStateMixin {
 	private @Unique final EntityConfigState entityConfigState = new EntityConfigState();
 	private @Unique boolean isBreathing = true;
 	private @Unique @Nullable Text wildfireNametag = null;
-	private @Unique boolean isArmorStand = false;
 
 	public @NotNull EntityConfigState wildfire_gender$getEntityConfigState() {
 		return this.entityConfigState;
@@ -64,13 +63,5 @@ abstract class LivingEntityRenderStateMixin {
 
 	public void wildfire_gender$setWildfireNametag(@Nullable Text nametag) {
 		this.wildfireNametag = nametag;
-	}
-
-	public boolean wildfire_gender$isArmorStand() {
-		return this.isArmorStand;
-	}
-
-	public void wildfire_gender$setArmorStand(boolean armorStand) {
-		this.isArmorStand = armorStand;
 	}
 }

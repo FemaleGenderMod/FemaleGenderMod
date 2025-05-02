@@ -34,7 +34,4 @@ public interface GenderEntityRenderState {
 
 	@Nullable Text getWildfireNametag();
 	void setWildfireNametag(@Nullable Text nametag);
-
-	boolean isArmorStand();
-	void setArmorStand(boolean armorStand);
 }
