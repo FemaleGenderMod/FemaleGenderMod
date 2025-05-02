@@ -70,10 +70,13 @@ public class GenderRenderState {
         this.armorPhysicsOverride = entityConfig.getArmorPhysicsOverride();
         this.showBreastsInArmor = entityConfig.showBreastsInArmor();
 
-        // Although most entities dont use these two, I dont think they're important enough to warrant having
-        // different render state objects for players and armor stands.
-        this.hasJacketLayer = entityConfig.hasJacketLayer();
-        this.hasHolidayThemes = entityConfig instanceof PlayerConfig playerConfig && playerConfig.hasHolidayThemes();
+        if (entityConfig instanceof PlayerConfig playerConfig) {
+            this.hasJacketLayer = false;
+            this.hasHolidayThemes = playerConfig.hasHolidayThemes();
+        } else {
+            this.hasJacketLayer = entityConfig.hasJacketLayer();
+            this.hasHolidayThemes = false;
+        }
 
         this.isBreathing = !entity.isSubmergedInWater() || StatusEffectUtil.hasWaterBreathing(entity) ||
             entity.getWorld().getBlockState(entity.getBlockPos()).isOf(Blocks.BUBBLE_COLUMN);

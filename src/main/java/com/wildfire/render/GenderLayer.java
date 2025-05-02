@@ -181,8 +181,6 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		breastSize += 0.5f * Math.abs(bSize - 0.7f) * 2f; // Adjust breastSize based on bSize
 
 		float resistance = MathHelper.clamp(genderArmor.physicsResistance(), 0, 1);
-		//Note: We only check if the breathing animation should be enabled if the chestplate's physics resistance
-		// is less than or equal to 0.5 so that if we won't be rendering it we can avoid doing extra calculations
 		breathingAnimation = ((genderRenderState.armorPhysicsOverride || resistance <= 0.5F) && genderRenderState.isBreathing);
 		bounceEnabled = genderRenderState.hasBreastPhysics && (!isChestplateOccupied || resistance < 1); //oh, you found this?
 		return true;
