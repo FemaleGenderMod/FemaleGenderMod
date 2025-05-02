@@ -35,7 +35,7 @@ public class EntityConfigState {
     public boolean hasBreastPhysics;
     public float bounceMultiplier;
     public float floppyMultiplier;
-    public boolean getArmorPhysicsOverride;
+    public boolean armorPhysicsOverride;
     public boolean showBreastsInArmor;
     public boolean hasJacketLayer;
     public boolean hasHolidayThemes;
@@ -55,7 +55,7 @@ public class EntityConfigState {
         this.hasBreastPhysics = entityConfig.hasBreastPhysics();
         this.bounceMultiplier = entityConfig.getBounceMultiplier();
         this.floppyMultiplier = entityConfig.getFloppiness();
-        this.getArmorPhysicsOverride = entityConfig.getArmorPhysicsOverride();
+        this.armorPhysicsOverride = entityConfig.getArmorPhysicsOverride();
         this.showBreastsInArmor = entityConfig.showBreastsInArmor();
 
         // Although most entities dont use these two, I dont think they're important enough to warrant having

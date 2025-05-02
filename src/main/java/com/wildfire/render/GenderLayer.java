@@ -130,7 +130,7 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		armorStack = state.equippedChestStack;
 		//Note: When the stack is empty the helper will fall back to an implementation that returns the proper data
 		genderArmor = WildfireHelper.getArmorConfig(armorStack);
-		isChestplateOccupied = genderArmor.coversBreasts() && !entityConfigState.getArmorPhysicsOverride;
+		isChestplateOccupied = genderArmor.coversBreasts() && !entityConfigState.armorPhysicsOverride;
 		if(genderArmor.alwaysHidesBreasts() || !entityConfigState.showBreastsInArmor && isChestplateOccupied) {
 			//If the armor always hides breasts or there is armor and the player configured breasts
 			// to be hidden when wearing armor, we can just exit early rather than doing any calculations
@@ -185,7 +185,7 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		float resistance = MathHelper.clamp(genderArmor.physicsResistance(), 0, 1);
 		//Note: We only check if the breathing animation should be enabled if the chestplate's physics resistance
 		// is less than or equal to 0.5 so that if we won't be rendering it we can avoid doing extra calculations
-		breathingAnimation = ((entityConfigState.getArmorPhysicsOverride || resistance <= 0.5F) && genderRenderState.isBreathing());
+		breathingAnimation = ((entityConfigState.armorPhysicsOverride || resistance <= 0.5F) && genderRenderState.isBreathing());
 		bounceEnabled = entityConfigState.hasBreastPhysics && (!isChestplateOccupied || resistance < 1); //oh, you found this?
 		return true;
 	}
