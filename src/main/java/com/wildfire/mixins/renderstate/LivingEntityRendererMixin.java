@@ -20,7 +20,7 @@ package com.wildfire.mixins.renderstate;
 
 import com.wildfire.main.WildfireGenderClient;
 import com.wildfire.main.entitydata.EntityConfig;
-import com.wildfire.render.GenderEntityRenderState;
+import com.wildfire.render.GenderEntityRenderStateAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
@@ -51,9 +51,9 @@ abstract class LivingEntityRendererMixin {
 	 */
 	@Inject(method = "updateRenderState(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/client/render/entity/state/LivingEntityRenderState;F)V", at = @At("TAIL"))
 	public void wildfiregender$captureEntityRenderState(LivingEntity entity, LivingEntityRenderState state, float tickDelta, CallbackInfo ci) {
-		GenderEntityRenderState genderRenderState = (GenderEntityRenderState) state;
+		GenderEntityRenderStateAccessor genderRenderState = (GenderEntityRenderStateAccessor) state;
 
-		genderRenderState.updateEntityConfigState(EntityConfig.getEntity(entity));
+		genderRenderState.updateRenderState(EntityConfig.getEntity(entity));
 
 		boolean isBreathing = !entity.isSubmergedInWater() || StatusEffectUtil.hasWaterBreathing(entity) ||
 			entity.getWorld().getBlockState(entity.getBlockPos()).isOf(Blocks.BUBBLE_COLUMN);

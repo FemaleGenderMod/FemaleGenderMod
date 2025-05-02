@@ -47,9 +47,9 @@ public class HolidayFeaturesRenderer extends FeatureRenderer<PlayerEntityRenderS
 
 	@Override
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, PlayerEntityRenderState state, float limbAngle, float limbDistance) {
-		GenderEntityRenderState genderRenderState = (GenderEntityRenderState) state;
+		GenderEntityRenderStateAccessor genderRenderState = (GenderEntityRenderStateAccessor) state;
 
-		GenderRenderState entityConfigState = genderRenderState.getEntityConfigState();
+		GenderRenderState entityConfigState = genderRenderState.getRenderState();
 		if (!entityConfigState.hasHolidayThemes) return;
 
 		renderSantaHat(state, matrices, vertexConsumers, light);

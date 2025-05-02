@@ -24,9 +24,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 // See LivingEntityRenderStateMixin for the actual implementation
-public interface GenderEntityRenderState {
-	@NotNull GenderRenderState getEntityConfigState();
-	void updateEntityConfigState(EntityConfig entityConfig);
+public interface GenderEntityRenderStateAccessor {
+	@NotNull GenderRenderState getRenderState();
+	void updateRenderState(EntityConfig entityConfig);
 
 	boolean isBreathing();
 	void setBreathing(boolean breathing);

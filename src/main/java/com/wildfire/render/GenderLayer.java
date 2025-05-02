@@ -98,8 +98,8 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 			return;
 		}
 
-		GenderEntityRenderState genderRenderState = (GenderEntityRenderState) state;
-		GenderRenderState entityConfigState = genderRenderState.getEntityConfigState();
+		GenderEntityRenderStateAccessor genderRenderState = (GenderEntityRenderStateAccessor) state;
+		GenderRenderState entityConfigState = genderRenderState.getRenderState();
 
 		try {
 			if(!setupRender(state, entityConfigState)) return;
@@ -124,7 +124,7 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		if(!GlobalConfig.RENDER_BREASTS) return false;
 
 		float partialTicks = MinecraftClient.getInstance().getRenderTickCounter().getTickProgress(true);
-		GenderEntityRenderState genderRenderState = (GenderEntityRenderState) state;
+		GenderEntityRenderStateAccessor genderRenderState = (GenderEntityRenderStateAccessor) state;
 
 		armorStack = state.equippedChestStack;
 		//Note: When the stack is empty the helper will fall back to an implementation that returns the proper data

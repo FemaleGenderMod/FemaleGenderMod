@@ -32,7 +32,7 @@ import com.wildfire.main.networking.WildfireSync;
 import com.wildfire.render.GenderArmorLayer;
 import com.wildfire.render.GenderLayer;
 import com.wildfire.render.HolidayFeaturesRenderer;
-import com.wildfire.render.GenderEntityRenderState;
+import com.wildfire.render.GenderEntityRenderStateAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
@@ -150,7 +150,7 @@ public final class WildfireEventHandler {
 
 	@Environment(EnvType.CLIENT)
 	private static void onPlayerNametag(PlayerEntityRenderState state, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, Consumer<Text> renderHelper) {
-		GenderEntityRenderState genderRenderState = (GenderEntityRenderState) state;
+		GenderEntityRenderStateAccessor genderRenderState = (GenderEntityRenderStateAccessor) state;
 		@Nullable Text nametag = genderRenderState.getWildfireNametag();
 
 		if (nametag == null) return;
