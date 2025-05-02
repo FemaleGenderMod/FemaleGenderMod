@@ -49,7 +49,7 @@ public class HolidayFeaturesRenderer extends FeatureRenderer<PlayerEntityRenderS
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, PlayerEntityRenderState state, float limbAngle, float limbDistance) {
 		GenderEntityRenderStateAccessor genderRenderState = (GenderEntityRenderStateAccessor) state;
 
-		GenderRenderState entityConfigState = genderRenderState.getRenderState();
+		GenderRenderState entityConfigState = genderRenderState.wildfire_gender$getRenderState();
 		if (!entityConfigState.hasHolidayThemes) return;
 
 		renderSantaHat(state, matrices, vertexConsumers, light);

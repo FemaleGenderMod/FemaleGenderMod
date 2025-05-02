@@ -93,7 +93,7 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 		}
 
 		GenderEntityRenderStateAccessor genderRenderState = (GenderEntityRenderStateAccessor) state;
-		this.genderRenderState = genderRenderState.getRenderState();
+		this.genderRenderState = genderRenderState.wildfire_gender$getRenderState();
 
 		final ItemStack chestplate = state.equippedChestStack;
 		// Check if the worn item in the chest slot is actually equippable in the chest slot, and has a model to render

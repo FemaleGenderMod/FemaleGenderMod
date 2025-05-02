@@ -26,22 +26,21 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.state.LivingEntityRenderState;
 import net.minecraft.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
-import org.spongepowered.asm.mixin.Implements;
-import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
 @SuppressWarnings("unused")
 @Mixin(LivingEntityRenderState.class)
-@Implements(@Interface(iface = GenderEntityRenderStateAccessor.class, prefix = "wildfire_gender$"))
 @Environment(EnvType.CLIENT)
-abstract class LivingEntityRenderStateMixin {
+abstract class LivingEntityRenderStateMixin implements GenderEntityRenderStateAccessor {
 	private @Unique final GenderRenderState genderRenderState = new GenderRenderState();
 
+	@Override
 	public @NotNull GenderRenderState wildfire_gender$getRenderState() {
 		return this.genderRenderState;
 	}
 
+	@Override
 	public void wildfire_gender$updateRenderState(EntityConfig entityConfig, LivingEntity entity) {
 		this.genderRenderState.update(entityConfig, entity);
 	}

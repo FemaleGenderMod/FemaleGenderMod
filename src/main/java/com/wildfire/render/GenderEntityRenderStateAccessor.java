@@ -24,6 +24,6 @@ import org.jetbrains.annotations.NotNull;
 
 // See LivingEntityRenderStateMixin for the actual implementation
 public interface GenderEntityRenderStateAccessor {
-	@NotNull GenderRenderState getRenderState();
-	void updateRenderState(EntityConfig entityConfig, LivingEntity entity);
+	@NotNull GenderRenderState wildfire_gender$getRenderState();
+	void wildfire_gender$updateRenderState(EntityConfig entityConfig, LivingEntity entity);
 }
