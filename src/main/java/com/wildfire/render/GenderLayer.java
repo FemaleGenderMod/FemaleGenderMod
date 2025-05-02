@@ -120,17 +120,16 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 	 * @return {@code true} if rendering should continue
 	 */
 	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
-	protected boolean setupRender(S state, GenderRenderState entityConfigState) {
+	protected boolean setupRender(S state, GenderRenderState genderRenderState) {
 		if(!GlobalConfig.RENDER_BREASTS) return false;
 
 		float partialTicks = MinecraftClient.getInstance().getRenderTickCounter().getTickProgress(true);
-		GenderEntityRenderStateAccessor genderRenderState = (GenderEntityRenderStateAccessor) state;
 
 		armorStack = state.equippedChestStack;
 		//Note: When the stack is empty the helper will fall back to an implementation that returns the proper data
 		genderArmor = WildfireHelper.getArmorConfig(armorStack);
-		isChestplateOccupied = genderArmor.coversBreasts() && !entityConfigState.armorPhysicsOverride;
-		if(genderArmor.alwaysHidesBreasts() || !entityConfigState.showBreastsInArmor && isChestplateOccupied) {
+		isChestplateOccupied = genderArmor.coversBreasts() && !genderRenderState.armorPhysicsOverride;
+		if(genderArmor.alwaysHidesBreasts() || !genderRenderState.showBreastsInArmor && isChestplateOccupied) {
 			//If the armor always hides breasts or there is armor and the player configured breasts
 			// to be hidden when wearing armor, we can just exit early rather than doing any calculations
 			return false;
@@ -140,14 +139,14 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 			return false;
 		}
 
-		GenderRenderState.BreastState breasts = entityConfigState.breasts;
+		GenderRenderState.BreastState breasts = genderRenderState.breasts;
 		breastOffsetX = WildfireHelper.round(breasts.xOffset, 1);
 		breastOffsetY = -WildfireHelper.round(breasts.yOffset, 1);
 		breastOffsetZ = -WildfireHelper.round(breasts.zOffset, 1);
 
 		isUniboob = breasts.uniboob;
 
-		GenderRenderState.BreastPhysicsState leftPhysicsState = entityConfigState.leftBreastPhysics;
+		GenderRenderState.BreastPhysicsState leftPhysicsState = genderRenderState.leftBreastPhysics;
 		final float bSize = leftPhysicsState.getBreastSize(partialTicks);
 		outwardAngle = Math.round(breasts.cleavage * 100f);
 		outwardAngle = Math.min(outwardAngle, 10);
@@ -162,7 +161,7 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 			rPhysPositionX = lPhysPositionX;
 			rPhysBounceRotation = lPhysBounceRotation;
 		} else {
-			GenderRenderState.BreastPhysicsState rightPhysicsState = entityConfigState.rightBreastPhysics;
+			GenderRenderState.BreastPhysicsState rightPhysicsState = genderRenderState.rightBreastPhysics;
 			rPhysPositionY = rightPhysicsState.getPositionY(partialTicks);
 			rPhysPositionX = rightPhysicsState.getPositionX(partialTicks);
 			rPhysBounceRotation = rightPhysicsState.getBounceRotation(partialTicks);
@@ -184,8 +183,8 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		float resistance = MathHelper.clamp(genderArmor.physicsResistance(), 0, 1);
 		//Note: We only check if the breathing animation should be enabled if the chestplate's physics resistance
 		// is less than or equal to 0.5 so that if we won't be rendering it we can avoid doing extra calculations
-		breathingAnimation = ((entityConfigState.armorPhysicsOverride || resistance <= 0.5F) && genderRenderState.isBreathing());
-		bounceEnabled = entityConfigState.hasBreastPhysics && (!isChestplateOccupied || resistance < 1); //oh, you found this?
+		breathingAnimation = ((genderRenderState.armorPhysicsOverride || resistance <= 0.5F) && genderRenderState.isBreathing);
+		bounceEnabled = genderRenderState.hasBreastPhysics && (!isChestplateOccupied || resistance < 1); //oh, you found this?
 		return true;
 	}
 

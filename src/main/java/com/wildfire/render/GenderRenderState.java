@@ -19,11 +19,17 @@
 package com.wildfire.render;
 
 import com.wildfire.main.Gender;
+import com.wildfire.main.WildfireGenderClient;
 import com.wildfire.main.entitydata.Breasts;
 import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.physics.BreastPhysics;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectUtil;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A decoupled render state object that represents a snapshot of a {@link EntityConfig} during a certain frame.
@@ -43,12 +49,15 @@ public class GenderRenderState {
     public boolean hasJacketLayer;
     public boolean hasHolidayThemes;
 
+    public boolean isBreathing;
+    public @Nullable Text wildfireNametag;
+
     /**
      * Updates the data in this render state to match the given {@link EntityConfig}.
      *
      * @param entityConfig the entity config
      */
-    public void update(EntityConfig entityConfig) {
+    public void update(EntityConfig entityConfig, LivingEntity entity) {
         this.breasts.update(entityConfig.getBreasts());
         this.leftBreastPhysics.update(entityConfig.getLeftBreastPhysics());
         this.rightBreastPhysics.update(entityConfig.getRightBreastPhysics());
@@ -65,6 +74,10 @@ public class GenderRenderState {
         // different render state objects for players and armor stands.
         this.hasJacketLayer = entityConfig.hasJacketLayer();
         this.hasHolidayThemes = entityConfig instanceof PlayerConfig playerConfig && playerConfig.hasHolidayThemes();
+
+        this.isBreathing = !entity.isSubmergedInWater() || StatusEffectUtil.hasWaterBreathing(entity) ||
+            entity.getWorld().getBlockState(entity.getBlockPos()).isOf(Blocks.BUBBLE_COLUMN);
+        this.wildfireNametag = entity.isPlayer() ? WildfireGenderClient.getNametag(entity.getUuid()) : null;
     }
 
     public static class BreastState {

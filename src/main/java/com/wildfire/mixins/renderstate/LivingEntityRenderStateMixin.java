@@ -24,9 +24,8 @@ import com.wildfire.render.GenderEntityRenderStateAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.state.LivingEntityRenderState;
-import net.minecraft.text.Text;
+import net.minecraft.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Implements;
 import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Mixin;
@@ -38,30 +37,12 @@ import org.spongepowered.asm.mixin.Unique;
 @Environment(EnvType.CLIENT)
 abstract class LivingEntityRenderStateMixin {
 	private @Unique final GenderRenderState genderRenderState = new GenderRenderState();
-	private @Unique boolean isBreathing = true;
-	private @Unique @Nullable Text wildfireNametag = null;
 
 	public @NotNull GenderRenderState wildfire_gender$getRenderState() {
 		return this.genderRenderState;
 	}
 
-	public void wildfire_gender$updateRenderState(EntityConfig entityConfig) {
-		this.genderRenderState.update(entityConfig);
-	}
-
-	public boolean wildfire_gender$isBreathing() {
-		return this.isBreathing;
-	}
-
-	public void wildfire_gender$setBreathing(boolean breathing) {
-		this.isBreathing = breathing;
-	}
-
-	public @Nullable Text wildfire_gender$getWildfireNametag() {
-		return this.wildfireNametag;
-	}
-
-	public void wildfire_gender$setWildfireNametag(@Nullable Text nametag) {
-		this.wildfireNametag = nametag;
+	public void wildfire_gender$updateRenderState(EntityConfig entityConfig, LivingEntity entity) {
+		this.genderRenderState.update(entityConfig, entity);
 	}
 }
