@@ -21,7 +21,6 @@ package com.wildfire.render;
 import com.wildfire.api.IBreastArmorTexture;
 import com.wildfire.api.impl.BreastArmorTexture;
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.entitydata.EntityConfigState;
 import com.wildfire.mixins.accessors.EquipmentRendererAccessor;
 import com.wildfire.mixins.accessors.TextureManagerAccessor;
 import com.wildfire.mixins.accessors.TrimSpriteKeyConstructorAccessor;
@@ -61,7 +60,7 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 	private final EquipmentModelLoader equipmentModelLoader;
 	protected BreastModelBox lBoobArmor, rBoobArmor;
 	protected static final BreastModelBox lTrim, rTrim;
-	private EntityConfigState entityConfigState;
+	private GenderRenderState genderRenderState;
 	private @NotNull IBreastArmorTexture textureData = BreastArmorTexture.DEFAULT;
 
 	private static boolean textureExists(Identifier id) {
@@ -94,7 +93,7 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 		}
 
 		GenderEntityRenderState genderRenderState = (GenderEntityRenderState) state;
-		entityConfigState = genderRenderState.getEntityConfigState();
+		this.genderRenderState = genderRenderState.getEntityConfigState();
 
 		final ItemStack chestplate = state.equippedChestStack;
 		// Check if the worn item in the chest slot is actually equippable in the chest slot, and has a model to render
@@ -106,7 +105,7 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 		if(layers.isEmpty()) return;
 
 		try {
-			if(!setupRender(state, entityConfigState)) return;
+			if(!setupRender(state, this.genderRenderState)) return;
 			if(state instanceof ArmorStandEntityRenderState && !genderArmor.armorStandsCopySettings()) return;
 
 			int color = DyedColorComponent.getColor(chestplate, 0);
@@ -154,7 +153,7 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 	protected void setupTransformations(S state, M model, MatrixStack matrixStack, BreastSide side) {
 		super.setupTransformations(state, model, matrixStack, side);
 		if((state instanceof PlayerEntityRenderState playerState && playerState.jacketVisible) ||
-				(state instanceof ArmorStandEntityRenderState && entityConfigState.hasJacketLayer)) {
+				(state instanceof ArmorStandEntityRenderState && genderRenderState.hasJacketLayer)) {
 			matrixStack.translate(0, 0, -0.015f);
 			matrixStack.scale(1.05f, 1.05f, 1.05f);
 		}

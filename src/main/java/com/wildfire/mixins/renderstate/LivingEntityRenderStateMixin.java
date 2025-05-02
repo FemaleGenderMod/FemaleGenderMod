@@ -19,7 +19,7 @@
 package com.wildfire.mixins.renderstate;
 
 import com.wildfire.main.entitydata.EntityConfig;
-import com.wildfire.main.entitydata.EntityConfigState;
+import com.wildfire.render.GenderRenderState;
 import com.wildfire.render.GenderEntityRenderState;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -37,16 +37,16 @@ import org.spongepowered.asm.mixin.Unique;
 @Implements(@Interface(iface = GenderEntityRenderState.class, prefix = "wildfire_gender$"))
 @Environment(EnvType.CLIENT)
 abstract class LivingEntityRenderStateMixin {
-	private @Unique final EntityConfigState entityConfigState = new EntityConfigState();
+	private @Unique final GenderRenderState genderRenderState = new GenderRenderState();
 	private @Unique boolean isBreathing = true;
 	private @Unique @Nullable Text wildfireNametag = null;
 
-	public @NotNull EntityConfigState wildfire_gender$getEntityConfigState() {
-		return this.entityConfigState;
+	public @NotNull GenderRenderState wildfire_gender$getEntityConfigState() {
+		return this.genderRenderState;
 	}
 
 	public void wildfire_gender$updateEntityConfigState(EntityConfig entityConfig) {
-		this.entityConfigState.update(entityConfig);
+		this.genderRenderState.update(entityConfig);
 	}
 
 	public boolean wildfire_gender$isBreathing() {

@@ -16,16 +16,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.main.entitydata;
+package com.wildfire.render;
 
 import com.wildfire.main.Gender;
+import com.wildfire.main.entitydata.Breasts;
+import com.wildfire.main.entitydata.EntityConfig;
+import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.physics.BreastPhysics;
 import net.minecraft.util.math.MathHelper;
 
 /**
  * A decoupled render state object that represents a snapshot of a {@link EntityConfig} during a certain frame.
  */
-public class EntityConfigState {
+public class GenderRenderState {
     public final BreastState breasts = new BreastState();
     public final BreastPhysicsState leftBreastPhysics = new BreastPhysicsState();
     public final BreastPhysicsState rightBreastPhysics = new BreastPhysicsState();

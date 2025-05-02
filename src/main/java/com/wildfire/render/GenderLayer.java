@@ -22,7 +22,6 @@ import com.wildfire.api.IGenderArmor;
 import com.wildfire.main.config.GlobalConfig;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireHelper;
-import com.wildfire.main.entitydata.EntityConfigState;
 import com.wildfire.mixins.accessors.LivingEntityRendererAccessor;
 import com.wildfire.render.WildfireModelRenderer.BreastModelBox;
 import com.wildfire.render.WildfireModelRenderer.OverlayModelBox;
@@ -100,7 +99,7 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		}
 
 		GenderEntityRenderState genderRenderState = (GenderEntityRenderState) state;
-		EntityConfigState entityConfigState = genderRenderState.getEntityConfigState();
+		GenderRenderState entityConfigState = genderRenderState.getEntityConfigState();
 
 		try {
 			if(!setupRender(state, entityConfigState)) return;
@@ -121,7 +120,7 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 	 * @return {@code true} if rendering should continue
 	 */
 	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
-	protected boolean setupRender(S state, EntityConfigState entityConfigState) {
+	protected boolean setupRender(S state, GenderRenderState entityConfigState) {
 		if(!GlobalConfig.RENDER_BREASTS) return false;
 
 		float partialTicks = MinecraftClient.getInstance().getRenderTickCounter().getTickProgress(true);
@@ -141,14 +140,14 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 			return false;
 		}
 
-		EntityConfigState.BreastState breasts = entityConfigState.breasts;
+		GenderRenderState.BreastState breasts = entityConfigState.breasts;
 		breastOffsetX = WildfireHelper.round(breasts.xOffset, 1);
 		breastOffsetY = -WildfireHelper.round(breasts.yOffset, 1);
 		breastOffsetZ = -WildfireHelper.round(breasts.zOffset, 1);
 
 		isUniboob = breasts.uniboob;
 
-		EntityConfigState.BreastPhysicsState leftPhysicsState = entityConfigState.leftBreastPhysics;
+		GenderRenderState.BreastPhysicsState leftPhysicsState = entityConfigState.leftBreastPhysics;
 		final float bSize = leftPhysicsState.getBreastSize(partialTicks);
 		outwardAngle = Math.round(breasts.cleavage * 100f);
 		outwardAngle = Math.min(outwardAngle, 10);
@@ -163,7 +162,7 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 			rPhysPositionX = lPhysPositionX;
 			rPhysBounceRotation = lPhysBounceRotation;
 		} else {
-			EntityConfigState.BreastPhysicsState rightPhysicsState = entityConfigState.rightBreastPhysics;
+			GenderRenderState.BreastPhysicsState rightPhysicsState = entityConfigState.rightBreastPhysics;
 			rPhysPositionY = rightPhysicsState.getPositionY(partialTicks);
 			rPhysPositionX = rightPhysicsState.getPositionX(partialTicks);
 			rPhysBounceRotation = rightPhysicsState.getBounceRotation(partialTicks);
