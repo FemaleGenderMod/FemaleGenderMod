@@ -196,6 +196,8 @@ public class WildfireSlider extends ClickableWidget {
 		private int x, y, width, height;
 		private float min, max;
 		private double value;
+		private Double step = null;
+		private boolean active = true;
 		private Float2ObjectFunction<Text> messageSupplier;
 		private FloatConsumer onUpdate, onSave;
 
@@ -241,8 +243,23 @@ public class WildfireSlider extends ClickableWidget {
 			return this;
 		}
 
+		public Builder active(boolean active) {
+			this.active = active;
+			return this;
+		}
+
+		public Builder step(double step) {
+			this.step = step;
+			return this;
+		}
+
 		public WildfireSlider build() {
-			return new WildfireSlider(x, y, width, height, min, max, value, onUpdate, messageSupplier, onSave);
+			var built = new WildfireSlider(x, y, width, height, min, max, value, onUpdate, messageSupplier, onSave);
+			built.active = active;
+			if(step != null) {
+				built.setArrowKeyStep(step);
+			}
+			return built;
 		}
 	}
 }
