@@ -19,25 +19,17 @@
 package com.wildfire.gui.screen;
 
 import com.wildfire.gui.GuiUtils;
-import com.wildfire.gui.WildfireButton;
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.WildfireGenderClient;
-import com.wildfire.main.config.GlobalConfig;
-import com.wildfire.main.entitydata.PlayerConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
-import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 
 @Environment(EnvType.CLIENT)
 public class WildfireCloudDetailsScreen extends BaseWildfireScreen {
@@ -65,27 +57,22 @@ public class WildfireCloudDetailsScreen extends BaseWildfireScreen {
 
 		currentPage = 0;
 
-		// why must Java be?
-		final var ref = new Object() {
-			WildfireButton no = null;
-		};
-
-		this.addDrawableChild(new WildfireButton(x + 46, y + 74, 76, 20,
-				NEXT_PAGE,
-				button -> {
-					if(currentPage < 1) {
-						currentPage++;
-					}
-				}));
-
-
-		this.addDrawableChild(ref.no = new WildfireButton(x - 128 + 6, y + 74, 76, 20,
-				PREV_PAGE,
-				button -> {
-					if(currentPage > 0) {
-						currentPage--;
-					}
-				}));
+//		this.addDrawableChild(new WildfireButton(x + 46, y + 74, 76, 20,
+//				NEXT_PAGE,
+//				button -> {
+//					if(currentPage < 1) {
+//						currentPage++;
+//					}
+//				}));
+//
+//
+//		this.addDrawableChild(new WildfireButton(x - 128 + 6, y + 74, 76, 20,
+//				PREV_PAGE,
+//				button -> {
+//					if(currentPage > 0) {
+//						currentPage--;
+//					}
+//				}));
 
 		super.init();
 	}
@@ -101,8 +88,6 @@ public class WildfireCloudDetailsScreen extends BaseWildfireScreen {
 	public void render(DrawContext ctx, int mouseX, int mouseY, float delta) {
 		if (client == null || client.world == null) return;
 		super.render(ctx, mouseX, mouseY, delta);
-
-		MatrixStack mStack = ctx.getMatrices();
 
 		int x = this.width / 2;
 		int y = this.height / 2;
