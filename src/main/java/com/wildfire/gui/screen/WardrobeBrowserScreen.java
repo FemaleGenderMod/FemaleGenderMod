@@ -26,7 +26,6 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.wildfire.gui.WildfireButton;
 import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.config.GlobalConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
@@ -66,74 +65,67 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 	}
 
 	@Override
-  	public void init() {
+	public void init() {
 		final var client = Objects.requireNonNull(this.client);
-	    int y = this.height / 2;
+		int y = this.height / 2;
 		PlayerConfig plr = Objects.requireNonNull(getPlayer(), "getPlayer()");
 
-		WildfireButton listButton;
-		this.addDrawableChild(listButton = new WildfireButton(126, 4, 185, 10,
-			Text.translatable("wildfire_gender.always_show_list", GlobalConfig.INSTANCE.get(GlobalConfig.ALWAYS_SHOW_LIST).text()),
-			button -> {
-				var config = GlobalConfig.INSTANCE;
-				var newVal = config.get(GlobalConfig.ALWAYS_SHOW_LIST).next();
-				config.set(GlobalConfig.ALWAYS_SHOW_LIST, newVal);
-				config.save();
-				button.setMessage(Text.translatable("wildfire_gender.always_show_list", newVal.text()));
-				button.setTooltip(newVal.tooltip());
-			}));
-		listButton.setTooltip(GlobalConfig.INSTANCE.get(GlobalConfig.ALWAYS_SHOW_LIST).tooltip());
+		addButton(builder -> builder
+				.message(() -> Text.translatable("wildfire_gender.always_show_list", GlobalConfig.INSTANCE.get(GlobalConfig.ALWAYS_SHOW_LIST).text()))
+				.tooltip(GlobalConfig.INSTANCE.get(GlobalConfig.ALWAYS_SHOW_LIST).tooltip())
+				.position(126, 4)
+				.size(185, 10)
+				.onPress(button -> {
+					var config = GlobalConfig.INSTANCE;
+					var newVal = config.get(GlobalConfig.ALWAYS_SHOW_LIST).next();
+					config.set(GlobalConfig.ALWAYS_SHOW_LIST, newVal);
+					config.save();
+					button.updateMessage();
+					button.setTooltip(newVal.tooltip());
+				}));
 
-		this.addDrawableChild(new WildfireButton(this.width / 2 - 130, this.height / 2 + 33, 80, 15, plr.getGender().getDisplayName(), button -> {
-			Gender gender = switch (plr.getGender()) {
-				case MALE -> Gender.FEMALE;
-				case FEMALE -> Gender.OTHER;
-				case OTHER -> Gender.MALE;
-			};
-			if (plr.updateGender(gender)) {
-				button.setMessage(getGenderLabel(gender));
-				PlayerConfig.saveGenderInfo(plr);
-				clearAndInit();
+		addButton(builder -> builder
+				.message(() -> plr.getGender().getDisplayName())
+				.position(this.width / 2 - 130, this.height / 2 + 33)
+				.size(80, 15)
+				.onPress(button -> {
+					plr.updateGender(plr.getGender().next());
+					PlayerConfig.saveGenderInfo(plr);
+					clearAndInit();
+				}));
+
+		addButton(builder -> builder
+				.message(() -> Text.translatable("wildfire_gender.appearance_settings.title").append("..."))
+				.position(this.width / 2 - 36, this.height / 2 - 63)
+				.size(157, 20)
+				.onPress(button -> {
+					client.setScreen(new WildfireBreastCustomizationScreen(WardrobeBrowserScreen.this, this.playerUUID));
+				})
+				.active(plr.getGender().canHaveBreasts()));
+
+		addButton(builder -> {
+			builder.message(() -> Text.translatable("wildfire_gender.cloud_settings"));
+			builder.position(this.width / 2 - 36, y + 30);
+			builder.size(24, 18);
+			builder.renderer((button, ctx, mouseX, mouseY, partialTicks) -> {
+				ctx.drawTexture(RenderLayer::getGuiTextured, CLOUD_ICON, button.getX() + 2, button.getY() + 2, 0, 0, 20, 14, 32, 26, 32, 26);
+			});
+			builder.onPress(button -> {
+				client.setScreen(new WildfireCloudSyncScreen(this, this.playerUUID));
+			});
+			var cloudUnavailable = CloudSync.unavailableReason();
+			if(cloudUnavailable != null) {
+				builder.tooltip(Tooltip.of(cloudUnavailable.text()));
+				builder.active(false);
+			} else {
+				builder.tooltip(Tooltip.of(Text.translatable("wildfire_gender.cloud.tooltip")));
 			}
-		}));
-
-		WildfireButton btnCharacterPersonalization;
-		this.addDrawableChild(btnCharacterPersonalization = new WildfireButton(this.width / 2 - 36, this.height / 2 - 63, 157, 20, Text.translatable("wildfire_gender.appearance_settings.title").append("..."),
-				button -> client.setScreen(new WildfireBreastCustomizationScreen(WardrobeBrowserScreen.this, this.playerUUID))));
-
-		btnCharacterPersonalization.active = plr.getGender().canHaveBreasts();
-
-		//old menu
-		/*this.addDrawableChild(new WildfireButton(this.width / 2 - 42, y - (plr.getGender().canHaveBreasts() ? 12 : 32), 158, 20, Text.translatable("wildfire_gender.char_settings.title").append("..."),
-				button -> client.setScreen(new WildfireCharacterSettingsScreen(WardrobeBrowserScreen.this, this.playerUUID))));*/
-
-		var cloud = new WildfireButton(
-				this.width / 2 - 36, y + 30, 24, 18, Text.translatable("wildfire_gender.cloud_settings"),
-				button -> client.setScreen(new WildfireCloudSyncScreen(this, this.playerUUID))
-		) {
-			@Override
-			protected void drawInner(DrawContext ctx, int mouseX, int mouseY, float partialTicks) {
-				ctx.drawTexture(RenderLayer::getGuiTextured, CLOUD_ICON, getX() + 2, getY() + 2, 0, 0, 20, 14, 32, 26, 32, 26);
-			}
-		};
-
-		var cloudUnavailable = CloudSync.unavailableReason();
-		if(cloudUnavailable != null) {
-			cloud.setTooltip(Tooltip.of(cloudUnavailable.text()));
-			cloud.setActive(false);
-		} else {
-			cloud.setTooltip(Tooltip.of(Text.translatable("wildfire_gender.cloud.tooltip")));
-		}
-		this.addDrawableChild(cloud);
+		});
 
 		/*this.addDrawableChild(new WildfireButton(this.width / 2 + 111, y - 63, 9, 9, Text.literal("X"),
 			button -> close(), text -> GuiUtils.doneNarrationText()));*/
 
-	    super.init();
-  	}
-
-	private Text getGenderLabel(Gender gender) {
-		return Text.translatable("wildfire_gender.label.gender").append(" - ").append(gender.getDisplayName());
+		super.init();
 	}
 
 	@Override
@@ -178,7 +170,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 			ctx.drawTexture(RenderLayer::getGuiTextured, TXTR_RIBBON, x + 130, bcaY + 109, 0, 0, 26, 26, 20, 20, 20, 20);
 		}
 
-		//Render in front of the UI when it's open.
+		// Render the synced player list on top of the UI
 		List<PlayerListEntry> syncedPlayers = collectPlayerEntries();
 		GuiUtils.drawSyncedPlayers(ctx, textRenderer, syncedPlayers);
 

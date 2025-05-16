@@ -35,17 +35,20 @@ import java.util.function.Supplier;
 @Environment(EnvType.CLIENT)
 public class WildfireButton extends ButtonWidget {
 
+   private final @Nullable ButtonRenderer renderer;
    private final Supplier<Text> messageSupplier;
    public boolean transparent = false;
 
    public WildfireButton(int x, int y, int w, int h, Text text, ButtonWidget.PressAction onPress, NarrationSupplier narrationSupplier) {
       super(x, y, w, h, text, onPress, narrationSupplier);
       messageSupplier = () -> text;
+      this.renderer = null;
    }
 
-   public WildfireButton(int x, int y, int w, int h, Supplier<Text> text, ButtonWidget.PressAction onPress, NarrationSupplier narrationSupplier) {
+   private WildfireButton(int x, int y, int w, int h, Supplier<Text> text, ButtonWidget.PressAction onPress, NarrationSupplier narrationSupplier, ButtonRenderer renderer) {
       super(x, y, w, h, text.get(), onPress, narrationSupplier);
       messageSupplier = text;
+      this.renderer = renderer;
    }
 
    public WildfireButton(int x, int y, int w, int h, Text text, ButtonWidget.PressAction onPress) {
@@ -61,6 +64,10 @@ public class WildfireButton extends ButtonWidget {
    }
 
    protected void drawInner(DrawContext ctx, int mouseX, int mouseY, float partialTicks) {
+      if(renderer != null) {
+         renderer.render(this, ctx, mouseX, mouseY, partialTicks);
+         return;
+      }
       MinecraftClient minecraft = MinecraftClient.getInstance();
       TextRenderer font = minecraft.textRenderer;
       int textColor = active ? 0xFFFFFF : 0x666666;
@@ -95,6 +102,8 @@ public class WildfireButton extends ButtonWidget {
       private PressAction onPress;
       private NarrationSupplier narrationSupplier = DEFAULT_NARRATION_SUPPLIER;
       private Tooltip tooltip = null;
+      private ButtonRenderer renderer = null;
+      private boolean active = true;
 
       public Builder message(@NotNull Supplier<Text> messageSupplier) {
          this.messageSupplier = messageSupplier;
@@ -128,8 +137,19 @@ public class WildfireButton extends ButtonWidget {
          return this;
       }
 
+      public Builder active(boolean active) {
+         this.active = active;
+         return this;
+      }
+
+      public Builder renderer(@Nullable ButtonRenderer renderer) {
+         this.renderer = renderer;
+         return this;
+      }
+
       public WildfireButton build() {
-         var built = new WildfireButton(x, y, width, height, messageSupplier, onPress, narrationSupplier);
+         var built = new WildfireButton(x, y, width, height, messageSupplier, onPress, narrationSupplier, renderer);
+         built.setActive(active);
          if(tooltip != null) {
             built.setTooltip(tooltip);
          }
@@ -144,5 +164,10 @@ public class WildfireButton extends ButtonWidget {
       }
 
       void onPress(WildfireButton button);
+   }
+
+   @FunctionalInterface
+   public interface ButtonRenderer {
+      void render(WildfireButton button, DrawContext ctx, int mouseX, int mouseY, float partialTicks);
    }
 }
