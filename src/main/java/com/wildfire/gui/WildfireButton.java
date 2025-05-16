@@ -39,20 +39,10 @@ public class WildfireButton extends ButtonWidget {
    private final Supplier<Text> messageSupplier;
    public boolean transparent = false;
 
-   public WildfireButton(int x, int y, int w, int h, Text text, ButtonWidget.PressAction onPress, NarrationSupplier narrationSupplier) {
-      super(x, y, w, h, text, onPress, narrationSupplier);
-      messageSupplier = () -> text;
-      this.renderer = null;
-   }
-
-   private WildfireButton(int x, int y, int w, int h, Supplier<Text> text, ButtonWidget.PressAction onPress, NarrationSupplier narrationSupplier, ButtonRenderer renderer) {
+   private WildfireButton(int x, int y, int w, int h, Supplier<Text> text, ButtonWidget.PressAction onPress, NarrationSupplier narrationSupplier, @Nullable ButtonRenderer renderer) {
       super(x, y, w, h, text.get(), onPress, narrationSupplier);
       messageSupplier = text;
       this.renderer = renderer;
-   }
-
-   public WildfireButton(int x, int y, int w, int h, Text text, ButtonWidget.PressAction onPress) {
-      this(x, y, w, h, text, onPress, DEFAULT_NARRATION_SUPPLIER);
    }
 
    public void updateMessage() {

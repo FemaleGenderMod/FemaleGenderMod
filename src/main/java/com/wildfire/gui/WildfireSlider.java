@@ -49,12 +49,7 @@ public class WildfireSlider extends ClickableWidget {
 
 	private double arrowKeyStep = 0.05;
 
-	public WildfireSlider(int xPos, int yPos, int width, int height, FloatConfigKey config, double currentVal, FloatConsumer valueUpdate,
-	                      Float2ObjectFunction<Text> messageUpdate, FloatConsumer onSave) {
-		this(xPos, yPos, width, height, config.getMinInclusive(), config.getMaxInclusive(), currentVal, valueUpdate, messageUpdate, onSave);
-	}
-
-	public WildfireSlider(int xPos, int yPos, int width, int height, double minVal, double maxVal, double currentVal, FloatConsumer valueUpdate,
+	private WildfireSlider(int xPos, int yPos, int width, int height, double minVal, double maxVal, double currentVal, FloatConsumer valueUpdate,
 	                      Float2ObjectFunction<Text> messageUpdate, FloatConsumer onSave) {
 		super(xPos, yPos, width, height, Text.empty());
 		this.minValue = minVal;

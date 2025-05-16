@@ -139,21 +139,21 @@ public class WildfireBreastPresetList extends EntryListWidget<WildfireBreastPres
     public class Entry extends EntryListWidget.Entry<WildfireBreastPresetList.Entry> {
         private final Identifier thumbnail;
         public final BreastPresetListEntry nInfo;
-        private final WildfireButton btnOpenGUI;
+        private WildfireButton btnOpenGUI;
 
         private Entry(final BreastPresetListEntry nInfo) {
             this.nInfo = nInfo;
             this.thumbnail = nInfo.ident;
-            btnOpenGUI = new WildfireButton(0, 0, getRowWidth() - 6, itemHeight, Text.empty(), button -> {
-                PlayerConfig plr = Objects.requireNonNull(parent.getPlayer(), "getPlayer()");
-                plr.updateBustSize(nInfo.data.get(BreastPresetConfiguration.BUST_SIZE));
-                plr.getBreasts().updateXOffset(nInfo.data.get(BreastPresetConfiguration.BREASTS_OFFSET_X));
-                plr.getBreasts().updateYOffset(nInfo.data.get(BreastPresetConfiguration.BREASTS_OFFSET_Y));
-                plr.getBreasts().updateZOffset(nInfo.data.get(BreastPresetConfiguration.BREASTS_OFFSET_Z));
-                plr.getBreasts().updateCleavage(nInfo.data.get(BreastPresetConfiguration.BREASTS_CLEAVAGE));
-                plr.getBreasts().updateUniboob(nInfo.data.get(BreastPresetConfiguration.BREASTS_UNIBOOB));
-                PlayerConfig.saveGenderInfo(plr);
-            });
+//            btnOpenGUI = new WildfireButton(0, 0, getRowWidth() - 6, itemHeight, Text.empty(), button -> {
+//                PlayerConfig plr = Objects.requireNonNull(parent.getPlayer(), "getPlayer()");
+//                plr.updateBustSize(nInfo.data.get(BreastPresetConfiguration.BUST_SIZE));
+//                plr.getBreasts().updateXOffset(nInfo.data.get(BreastPresetConfiguration.BREASTS_OFFSET_X));
+//                plr.getBreasts().updateYOffset(nInfo.data.get(BreastPresetConfiguration.BREASTS_OFFSET_Y));
+//                plr.getBreasts().updateZOffset(nInfo.data.get(BreastPresetConfiguration.BREASTS_OFFSET_Z));
+//                plr.getBreasts().updateCleavage(nInfo.data.get(BreastPresetConfiguration.BREASTS_CLEAVAGE));
+//                plr.getBreasts().updateUniboob(nInfo.data.get(BreastPresetConfiguration.BREASTS_UNIBOOB));
+//                PlayerConfig.saveGenderInfo(plr);
+//            });
         }
 
         @Override
