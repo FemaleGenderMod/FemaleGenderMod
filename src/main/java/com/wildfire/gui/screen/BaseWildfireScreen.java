@@ -18,14 +18,18 @@
 
 package com.wildfire.gui.screen;
 
+import com.wildfire.gui.WildfireButton;
+import com.wildfire.gui.WildfireSlider;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.WildfireGender;
+
+import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -49,6 +53,19 @@ public abstract class BaseWildfireScreen extends Screen {
         super(title);
         this.parent = parent;
         this.playerUUID = uuid;
+    }
+
+    protected WildfireButton addButton(Consumer<WildfireButton.Builder> builder) {
+        var buttonBuilder = new WildfireButton.Builder();
+        builder.accept(buttonBuilder);
+        return addDrawableChild(buttonBuilder.build());
+    }
+
+    protected WildfireSlider addSlider(Consumer<WildfireSlider.Builder> builder) {
+        var sliderBuilder = new WildfireSlider.Builder();
+        sliderBuilder.save(ignored -> PlayerConfig.saveGenderInfo(Objects.requireNonNull(getPlayer(), "getPlayer()")));
+        builder.accept(sliderBuilder);
+        return addDrawableChild(sliderBuilder.build());
     }
 
     public @Nullable PlayerConfig getPlayer() {
