@@ -186,6 +186,9 @@ public final class CloudSync {
 
 			try {
 				var json = GSON.fromJson(response.body(), JsonObject.class);
+				// TODO an array map currently fits best as the sync server currently (as of writing this)
+				//		only returns a very small number of contributors, but this should be changed
+				//		to use an OpenHashMap in the future if this changes
 				var map = new Object2ObjectArrayMap<UUID, ContributorNametag>();
 				json.asMap().forEach((k, v) -> map.put(UUID.fromString(k), GSON.fromJson(v, ContributorNametag.class)));
 				return Collections.unmodifiableMap(map);
