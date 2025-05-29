@@ -148,7 +148,6 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 		//TODO: Vertical scroll bar for longer text?
 		GuiUtils.drawCenteredTextWrapped(ctx, textRenderer, DESCRIPTION, x + 32, y + 2, (int) ((256-65)), 0xFFFFFF);
 
-		// TODO this changed in 25w15a and I don't know if this works the same  - celeste
 		mStack.pushMatrix();
 		mStack.translate(x, y + 47);
 		mStack.scale(new Vector2f(0.8f, 0.8f));

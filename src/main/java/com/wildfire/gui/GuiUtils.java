@@ -64,7 +64,6 @@ public final class GuiUtils {
 		ctx.drawText(textRenderer, text, centeredX, y, color, false);
 	}
 
-
 	public static void drawCenteredText(DrawContext ctx, TextRenderer textRenderer, OrderedText text, int x, int y, int color) {
 		int centeredX = x - textRenderer.getWidth(text) / 2;
 		ctx.drawText(textRenderer, text, centeredX, y, color, false);

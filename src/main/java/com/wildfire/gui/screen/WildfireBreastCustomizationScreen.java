@@ -18,7 +18,6 @@
 
 package com.wildfire.gui.screen;
 
-import com.wildfire.gui.GuiUtils;
 import com.wildfire.gui.WildfireBreastPresetList;
 import com.wildfire.gui.WildfireButton;
 import com.wildfire.gui.WildfireSlider;
@@ -35,9 +34,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -362,18 +359,7 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
         //ctx.fill(x + 29, y - 63 - 21, x + 189, y - 60, 0x55000000);
         ctx.drawText(textRenderer, getTitle(), x - textRenderer.getWidth(getTitle()) / 2, y - 82, 0xFFFFFF, false);
 
-        if(client != null && client.world != null) {
-            int xP = this.width / 2 - 90;
-            int yP = this.height / 2 + 44;
-            PlayerEntity ent = client.world.getPlayerByUuid(this.playerUUID);
-            if(ent != null) {
-                // This sucks. In order to position the player properly, we need to trick the player renderer into
-                // thinking the area the player should be rendered is much taller than it actually is.
-                ctx.enableScissor(xP - 38, yP - 79, xP + 38, yP + 9);
-                GuiUtils.drawEntityOnScreenNoScissor(ctx, xP - 38, yP - 79, xP + 38, yP + 69, 70, mouseX, mouseY + 35, ent);
-                ctx.disableScissor();
-            }
-        }
+        renderPlayerInFrame(ctx, this.width / 2 - 90, this.height / 2 + 44, mouseX, mouseY);
     }
 
     @Override

@@ -72,7 +72,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -196,22 +195,9 @@ public final class WildfireEventHandler {
 			return;
 		}
 
-		/*if(MinecraftClient.getInstance().player != null) {
-			PlayerConfig pCfg = WildfireGender.getPlayerById(MinecraftClient.getInstance().player.getUuid());
-			if(pCfg != null) {
-				context.drawText(textRenderer, "Physics Debug", 5, 5, 0xFFFFFF, true);
-				context.drawText(textRenderer, "Position: " + pCfg.getLeftBreastPhysics().getPositionX() + "," + pCfg.getLeftBreastPhysics().getPositionY(), 5, 15, 0xFFFFFF, true);
-				context.drawText(textRenderer, "Breast Size: " + pCfg.getLeftBreastPhysics().getBreastSize(tickCounter.getTickDelta(false)), 5, 35, 0xFFFFFF, true);
-			}
-		}*/
-		boolean shouldShow = switch(GlobalConfig.INSTANCE.get(GlobalConfig.ALWAYS_SHOW_LIST)) {
-			case MOD_UI_ONLY -> false;
-			case TAB_LIST_OPEN -> MinecraftClient.getInstance().options.playerListKey.isPressed();
-			case ALWAYS -> true;
-		};
-		if(!shouldShow) return;
-
-		GuiUtils.drawSyncedPlayers(context, textRenderer, collectPlayerEntries());
+		if(GlobalConfig.INSTANCE.get(GlobalConfig.ALWAYS_SHOW_LIST).isVisible()) {
+			GuiUtils.drawSyncedPlayers(context, textRenderer, collectPlayerEntries());
+		}
 	}
 
 	/**
@@ -371,7 +357,6 @@ public final class WildfireEventHandler {
 			component.write(player.getWorld().getRegistryManager(), item);
 		}
 	}
-
 
 	public static List<PlayerListEntry> collectPlayerEntries() {
 		if(MinecraftClient.getInstance().player == null) return new ArrayList<>();

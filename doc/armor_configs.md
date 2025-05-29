@@ -14,10 +14,10 @@ The full schema with default values is as follows:
   "hide_breasts": false,
   "render_on_armor_stands": null, // true if resistance == 1
   "texture": {
-    "texture_size": {"x": 64, "y": 32},
-    "dimensions": {"x": 4, "y": 5},
-    "left_uv": {"x": 16, "y": 17},
-    "right_uv": {"x": -1, "y": -1} // defaults to left_uv added with the x value of dimensions
+    "texture_size": [64, 32],
+    "dimensions": [4, 5],
+    "left_uv": [16, 17],
+    "right_uv": [-1, -1] // defaults to left_uv added with the x value of dimensions
   }
 }
 ```
@@ -65,7 +65,8 @@ Defaults to `true` *only* if `resistance` is `1.0` if unset.
 
 ### `texture`
 
-Object containing various texture-related overrides; note that all values **must** contain both `x` *and* `y` if specified.
+Object containing various texture-related overrides. All texture position values listed below may be specified as either
+`{"x": x, "y": y}` or `[x, y]`.
 
 #### `texture_size`
 
@@ -74,20 +75,20 @@ Controls the armor sprite's texture size.
 Note that if your sprite is simply an upscaled resolution of the vanilla sprite (such as 128x64, 256x128, etc.)
 you do *not* need to modify this or any other texture values, as it'll already handle that automatically.
 
-Defaults to `{"x": 64, "y": 32}` if unset.
+Defaults to `[64, 32]` if unset.
 
 #### `dimensions`
 
 Controls how large an area the breasts should grab from the sprite for *each breast*; this means that this value's
 X is *half* of the total sprite area to render.
 
-Defaults to `{"x": 4, "y": 5}` if unset.
+Defaults to `[4, 5]` if unset.
 
 #### `left_uv`
 
 Controls where the left breast should start rendering this armor from.
 
-Defaults to `{"x": 16, "y": 17}` if unset.
+Defaults to `[16, 17]` if unset.
 
 #### `right_uv`
 

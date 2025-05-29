@@ -20,23 +20,22 @@ package com.wildfire.api.impl;
 
 import com.wildfire.api.IBreastArmorTexture;
 import org.jetbrains.annotations.NotNull;
-import com.wildfire.api.Vec2i;
+import org.joml.Vector2ic;
 
 /**
  * Default record implementation of {@link IBreastArmorTexture} used for resource pack entries
  *
  * @see IBreastArmorTexture
  */
-public record BreastArmorTexture(@NotNull Vec2i textureSize, @NotNull Vec2i leftUv, @NotNull Vec2i rightUv, @NotNull Vec2i dimensions) implements IBreastArmorTexture {
+public record BreastArmorTexture(
+		@NotNull Vector2ic textureSize,
+		@NotNull Vector2ic leftUv,
+		@NotNull Vector2ic rightUv,
+		@NotNull Vector2ic dimensions
+) implements IBreastArmorTexture {
 	/**
-	 * Default breast texture values, intended for armors compatible with the vanilla armor renderer.
+	 * @deprecated Use {@link IBreastArmorTexture#DEFAULT} instead
 	 */
-	public static final IBreastArmorTexture DEFAULT = new Default();
-
-	/**
-	 * Dummy implementation of {@link IBreastArmorTexture}; simply defers to the default interface implementations for all methods.
-	 */
-	public static final class Default implements IBreastArmorTexture {
-		private Default() {}
-	}
+	@Deprecated
+	public static final IBreastArmorTexture DEFAULT = IBreastArmorTexture.DEFAULT;
 }

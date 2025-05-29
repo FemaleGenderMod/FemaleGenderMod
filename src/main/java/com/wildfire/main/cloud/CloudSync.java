@@ -33,6 +33,7 @@ import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.config.GlobalConfig;
 import com.wildfire.main.config.enums.SyncVerbosity;
 import com.wildfire.main.entitydata.PlayerConfig;
+import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
@@ -185,7 +186,7 @@ public final class CloudSync {
 
 			try {
 				var json = GSON.fromJson(response.body(), JsonObject.class);
-				var map = new HashMap<UUID, ContributorNametag>();
+				var map = new Object2ObjectArrayMap<UUID, ContributorNametag>();
 				json.asMap().forEach((k, v) -> map.put(UUID.fromString(k), GSON.fromJson(v, ContributorNametag.class)));
 				return Collections.unmodifiableMap(map);
 			} catch(Exception e) {
