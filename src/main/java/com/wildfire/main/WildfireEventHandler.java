@@ -151,7 +151,7 @@ public final class WildfireEventHandler {
 	@Environment(EnvType.CLIENT)
 	private static void onPlayerNametag(PlayerEntityRenderState state, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, Consumer<Text> renderHelper) {
 		GenderEntityRenderStateAccessor genderRenderState = (GenderEntityRenderStateAccessor) state;
-		@Nullable Text nametag = genderRenderState.wildfire_gender$getRenderState().wildfireNametag;
+		@Nullable Text nametag = genderRenderState.wildfire_gender$getRenderState().nametag;
 
 		if (nametag == null) return;
 

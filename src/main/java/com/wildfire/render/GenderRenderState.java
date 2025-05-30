@@ -50,7 +50,7 @@ public class GenderRenderState {
     public boolean hasHolidayThemes;
 
     public boolean isBreathing;
-    public @Nullable Text wildfireNametag;
+    public @Nullable Text nametag;
 
     /**
      * Updates the data in this render state to match the given entity.
@@ -81,7 +81,7 @@ public class GenderRenderState {
 
         this.isBreathing = !entity.isSubmergedInWater() || StatusEffectUtil.hasWaterBreathing(entity) ||
             entity.getWorld().getBlockState(entity.getBlockPos()).isOf(Blocks.BUBBLE_COLUMN);
-        this.wildfireNametag = entity.isPlayer() ? WildfireGenderClient.getNametag(entity.getUuid()) : null;
+        this.nametag = entity.isPlayer() ? WildfireGenderClient.getNametag(entity.getUuid()) : null;
     }
 
     public static class BreastState {
