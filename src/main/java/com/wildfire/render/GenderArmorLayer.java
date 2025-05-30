@@ -36,7 +36,6 @@ import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.state.ArmorStandEntityRenderState;
 import net.minecraft.client.render.entity.state.BipedEntityRenderState;
-import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
@@ -152,8 +151,7 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 	@Override
 	protected void setupTransformations(S state, M model, MatrixStack matrixStack, BreastSide side) {
 		super.setupTransformations(state, model, matrixStack, side);
-		if((state instanceof PlayerEntityRenderState playerState && playerState.jacketVisible) ||
-				(state instanceof ArmorStandEntityRenderState && genderRenderState.hasJacketLayer)) {
+		if (genderRenderState.hasJacketLayer) {
 			matrixStack.translate(0, 0, -0.015f);
 			matrixStack.scale(1.05f, 1.05f, 1.05f);
 		}

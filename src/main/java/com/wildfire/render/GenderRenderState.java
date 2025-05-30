@@ -27,6 +27,8 @@ import com.wildfire.physics.BreastPhysics;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectUtil;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerModelPart;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
@@ -72,7 +74,7 @@ public class GenderRenderState {
         this.showBreastsInArmor = entityConfig.showBreastsInArmor();
 
         if (entityConfig instanceof PlayerConfig playerConfig) {
-            this.hasJacketLayer = false;
+            this.hasJacketLayer = ((PlayerEntity) entity).isPartVisible(PlayerModelPart.JACKET);
             this.hasHolidayThemes = playerConfig.hasHolidayThemes();
         } else {
             this.hasJacketLayer = entityConfig.hasJacketLayer();
