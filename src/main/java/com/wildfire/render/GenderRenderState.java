@@ -53,9 +53,10 @@ public class GenderRenderState {
     public @Nullable Text wildfireNametag;
 
     /**
-     * Updates the data in this render state to match the given {@link EntityConfig}.
+     * Updates the data in this render state to match the given entity.
      *
      * @param entityConfig the entity config
+     * @param entity the entity associated with the config
      */
     public void update(EntityConfig entityConfig, LivingEntity entity) {
         this.breasts.update(entityConfig.getBreasts());
