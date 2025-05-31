@@ -25,7 +25,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.state.LivingEntityRenderState;
 import net.minecraft.entity.LivingEntity;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
@@ -33,15 +33,16 @@ import org.spongepowered.asm.mixin.Unique;
 @Mixin(LivingEntityRenderState.class)
 @Environment(EnvType.CLIENT)
 abstract class LivingEntityRenderStateMixin implements GenderEntityRenderStateAccessor {
-	private @Unique final GenderRenderState genderRenderState = new GenderRenderState();
+	private @Unique GenderRenderState genderRenderState = null;
 
 	@Override
-	public @NotNull GenderRenderState wildfire_gender$getRenderState() {
+	public @Nullable GenderRenderState wildfire_gender$getRenderState() {
 		return this.genderRenderState;
 	}
 
 	@Override
 	public void wildfire_gender$updateRenderState(EntityConfig entityConfig, LivingEntity entity) {
+		if (this.genderRenderState == null) this.genderRenderState = new GenderRenderState();
 		this.genderRenderState.update(entityConfig, entity);
 	}
 }

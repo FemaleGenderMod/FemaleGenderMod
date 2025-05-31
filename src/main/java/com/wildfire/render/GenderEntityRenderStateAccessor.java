@@ -20,10 +20,10 @@ package com.wildfire.render;
 
 import com.wildfire.main.entitydata.EntityConfig;
 import net.minecraft.entity.LivingEntity;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 // See LivingEntityRenderStateMixin for the actual implementation
 public interface GenderEntityRenderStateAccessor {
-	@NotNull GenderRenderState wildfire_gender$getRenderState();
+	@Nullable GenderRenderState wildfire_gender$getRenderState();
 	void wildfire_gender$updateRenderState(EntityConfig entityConfig, LivingEntity entity);
 }

@@ -99,7 +99,8 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		}
 
 		GenderEntityRenderStateAccessor genderRenderState = (GenderEntityRenderStateAccessor) state;
-		GenderRenderState entityConfigState = genderRenderState.wildfire_gender$getRenderState();
+		@Nullable GenderRenderState entityConfigState = genderRenderState.wildfire_gender$getRenderState();
+		if (entityConfigState == null) return;
 
 		try {
 			if(!setupRender(state, entityConfigState)) return;

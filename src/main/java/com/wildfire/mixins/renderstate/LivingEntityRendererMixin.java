@@ -35,7 +35,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 abstract class LivingEntityRendererMixin {
 	@Inject(method = "updateRenderState(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/client/render/entity/state/LivingEntityRenderState;F)V", at = @At("TAIL"))
 	public void wildfiregender$captureEntityRenderState(LivingEntity entity, LivingEntityRenderState state, float tickDelta, CallbackInfo ci) {
-		GenderEntityRenderStateAccessor genderRenderState = (GenderEntityRenderStateAccessor) state;
-		genderRenderState.wildfire_gender$updateRenderState(EntityConfig.getEntity(entity), entity);
+		if (EntityConfig.isSupportedEntity(entity)) {
+			GenderEntityRenderStateAccessor genderRenderState = (GenderEntityRenderStateAccessor) state;
+			genderRenderState.wildfire_gender$updateRenderState(EntityConfig.getEntity(entity), entity);
+		}
 	}
 }
