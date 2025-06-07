@@ -125,8 +125,7 @@ public class CapeProvider {
             WildfireGender.LOGGER.debug("Got cape texture");
 
             var id = Identifier.of(WildfireGender.MODID, "cape/" + player.getId().toString().replace("-", ""));
-            var texture = new NativeImageBackedTexture(id::toString, image);
-            MinecraftClient.getInstance().getTextureManager().registerTexture(id, texture);
+            register(id, image).join();
 
             return id;
         } catch(FileNotFoundException e) {
@@ -139,6 +138,13 @@ public class CapeProvider {
             WildfireGender.LOGGER.error("Failed to fetch cape texture", e);
             return null;
         }
+    }
+
+    private static CompletableFuture<Void> register(final Identifier id, final NativeImage image) {
+        return MinecraftClient.getInstance().submit(() -> {
+            var texture = new NativeImageBackedTexture(id::toString, image);
+            MinecraftClient.getInstance().getTextureManager().registerTexture(id, texture);
+        });
     }
 
     private CapeProvider() {
