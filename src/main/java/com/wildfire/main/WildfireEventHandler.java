@@ -39,8 +39,9 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRendererRegistrationCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -72,6 +73,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -100,7 +102,7 @@ public final class WildfireEventHandler {
 			// this has to be wrapped in a lambda to ensure that a dedicated server won't crash during startup
 			// while executing this static block
 			CONFIG_KEYBIND = Util.make(() -> {
-				// TODO this now conflicts with the Quick Actions key from vanilla as of 1.21.6-pre1
+				// FIXME this now conflicts with the Quick Actions key from vanilla as of 1.21.6-pre1
 				KeyBinding keybind = new KeyBinding("key.wildfire_gender.gender_menu", GLFW.GLFW_KEY_G, "category.wildfire_gender.generic");
 				KeyBindingHelper.registerKeyBinding(keybind);
 				return keybind;
@@ -136,13 +138,11 @@ public final class WildfireEventHandler {
 		ClientPlayConnectionEvents.DISCONNECT.register(WildfireEventHandler::clientDisconnect);
 		ClientPlayConnectionEvents.JOIN.register(WildfireEventHandler::clientJoin);
 		LivingEntityFeatureRendererRegistrationCallback.EVENT.register(WildfireEventHandler::registerRenderLayers);
-		// FIXME temporarily use deprecated hud render event until fabric's newer hud layer system is ported
-		HudRenderCallback.EVENT.register(WildfireEventHandler::renderHud);
-//		HudLayerRegistrationCallback.EVENT.register(layeredDrawer -> layeredDrawer.attachLayerAfter(
-//				IdentifiedLayer.MISC_OVERLAYS,
-//				Identifier.of(WildfireGender.MODID, "player_list"),
-//				WildfireEventHandler::renderHud
-//		));
+		HudElementRegistry.attachElementAfter(
+				VanillaHudElements.MISC_OVERLAYS,
+				Identifier.of(WildfireGender.MODID, "player_list"),
+				WildfireEventHandler::renderHud
+		);
 		ArmorStatsTooltipEvent.EVENT.register(WildfireEventHandler::renderTooltip);
 		EntityHurtSoundEvent.EVENT.register(WildfireEventHandler::onEntityHurt);
 		EntityTickEvent.EVENT.register(WildfireEventHandler::onEntityTick);
@@ -160,11 +160,10 @@ public final class WildfireEventHandler {
 		float translationAmt = switch(player.getPose()) {
 			case EntityPose.CROUCHING -> 0.8f;
 			case EntityPose.SLEEPING -> 0.125f;
-			case EntityPose.SWIMMING -> 0.3f;
-			case EntityPose.GLIDING -> 0.3f;
+			case EntityPose.SWIMMING, EntityPose.GLIDING -> 0.3f;
 			case EntityPose.SITTING -> 0.275f; //not tested; sitting on a pig doesn't work apparently.
-            default -> 0.95f;
-        };
+			default -> 0.95f;
+		};
 		matrixStack.translate(0f, translationAmt, 0f);
 		matrixStack.scale(0.5f, 0.5f, 0.5f);
 		renderHelper.accept(nametag);
