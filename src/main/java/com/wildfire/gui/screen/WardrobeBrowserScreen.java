@@ -19,6 +19,7 @@
 package com.wildfire.gui.screen;
 
 import com.wildfire.gui.GuiUtils;
+import com.wildfire.gui.SyncedPlayerList;
 import com.wildfire.main.Gender;
 import com.wildfire.main.WildfireGender;
 
@@ -44,8 +45,6 @@ import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-
-import static com.wildfire.main.WildfireEventHandler.collectPlayerEntries;
 
 @Environment(EnvType.CLIENT)
 public class WardrobeBrowserScreen extends BaseWildfireScreen {
@@ -164,9 +163,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 			ctx.drawTexture(RenderPipelines.GUI_TEXTURED, TXTR_RIBBON, x + 130, bcaY + 109, 0, 0, 26, 26, 20, 20, 20, 20);
 		}
 
-		//Render in front of the UI when it's open.
-		List<PlayerListEntry> syncedPlayers = collectPlayerEntries();
-		GuiUtils.drawSyncedPlayers(ctx, textRenderer, syncedPlayers);
+		SyncedPlayerList.drawSyncedPlayers(ctx, textRenderer);
 	}
 
 	private void drawCreatorContributorText(DrawContext ctx, int mouseX, int mouseY, int creatorY) {

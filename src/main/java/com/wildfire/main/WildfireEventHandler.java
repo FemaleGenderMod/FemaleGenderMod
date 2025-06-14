@@ -20,6 +20,7 @@ package com.wildfire.main;
 
 import com.wildfire.events.*;
 import com.wildfire.gui.GuiUtils;
+import com.wildfire.gui.SyncedPlayerList;
 import com.wildfire.gui.screen.WardrobeBrowserScreen;
 import com.wildfire.gui.screen.WildfireFirstTimeSetupScreen;
 import com.wildfire.main.cloud.CloudSync;
@@ -49,8 +50,6 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -59,8 +58,8 @@ import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
@@ -79,8 +78,6 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -196,7 +193,7 @@ public final class WildfireEventHandler {
 		}
 
 		if(GlobalConfig.INSTANCE.get(GlobalConfig.ALWAYS_SHOW_LIST).isVisible()) {
-			GuiUtils.drawSyncedPlayers(context, textRenderer, collectPlayerEntries());
+			SyncedPlayerList.drawSyncedPlayers(context, textRenderer);
 		}
 	}
 
@@ -356,18 +353,5 @@ public final class WildfireEventHandler {
 		if(component != null) {
 			component.write(player.getWorld().getRegistryManager(), item);
 		}
-	}
-
-	public static List<PlayerListEntry> collectPlayerEntries() {
-		if(MinecraftClient.getInstance().player == null) return new ArrayList<>();
-		ClientPlayerEntity player = MinecraftClient.getInstance().player;
-		return player.networkHandler.getListedPlayerListEntries().stream()
-				.filter(entry -> !entry.getProfile().getId().equals(player.getUuid()))
-				.filter(entry -> {
-					var cfg = WildfireGender.getPlayerById(entry.getProfile().getId());
-					return cfg != null && cfg.getSyncStatus() != PlayerConfig.SyncStatus.UNKNOWN;
-				})
-				.limit(40L)
-				.toList();
 	}
 }
