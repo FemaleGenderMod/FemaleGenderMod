@@ -19,6 +19,7 @@
 package com.wildfire.gui.screen;
 
 import com.wildfire.gui.GuiUtils;
+import com.wildfire.gui.SyncedPlayerList;
 import com.wildfire.main.Gender;
 import com.wildfire.main.WildfireGender;
 
@@ -32,21 +33,18 @@ import com.wildfire.main.config.GlobalConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.tooltip.TooltipState;
 import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-
-import static com.wildfire.main.WildfireEventHandler.collectPlayerEntries;
 
 @Environment(EnvType.CLIENT)
 public class WardrobeBrowserScreen extends BaseWildfireScreen {
@@ -66,9 +64,9 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 	}
 
 	@Override
-  	public void init() {
-		final var client = Objects.requireNonNull(this.client);
-	    int y = this.height / 2;
+	public void init() {
+		final var client = Objects.requireNonNull(this.client, "client");
+		int y = this.height / 2;
 		PlayerConfig plr = Objects.requireNonNull(getPlayer(), "getPlayer()");
 
 		WildfireButton listButton;
@@ -85,11 +83,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 		listButton.setTooltip(GlobalConfig.INSTANCE.get(GlobalConfig.ALWAYS_SHOW_LIST).tooltip());
 
 		this.addDrawableChild(new WildfireButton(this.width / 2 - 130, this.height / 2 + 33, 80, 15, plr.getGender().getDisplayName(), button -> {
-			Gender gender = switch (plr.getGender()) {
-				case MALE -> Gender.FEMALE;
-				case FEMALE -> Gender.OTHER;
-				case OTHER -> Gender.MALE;
-			};
+			var gender = plr.getGender().next();
 			if (plr.updateGender(gender)) {
 				button.setMessage(getGenderLabel(gender));
 				PlayerConfig.saveGenderInfo(plr);
@@ -113,7 +107,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 		) {
 			@Override
 			protected void drawInner(DrawContext ctx, int mouseX, int mouseY, float partialTicks) {
-				ctx.drawTexture(RenderLayer::getGuiTextured, CLOUD_ICON, getX() + 2, getY() + 2, 0, 0, 20, 14, 32, 26, 32, 26);
+				ctx.drawTexture(RenderPipelines.GUI_TEXTURED, CLOUD_ICON, getX() + 2, getY() + 2, 0, 0, 20, 14, 32, 26, 32, 26);
 			}
 		};
 
@@ -129,8 +123,8 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 		/*this.addDrawableChild(new WildfireButton(this.width / 2 + 111, y - 63, 9, 9, Text.literal("X"),
 			button -> close(), text -> GuiUtils.doneNarrationText()));*/
 
-	    super.init();
-  	}
+		super.init();
+	}
 
 	private Text getGenderLabel(Gender gender) {
 		return Text.translatable("wildfire_gender.label.gender").append(" - ").append(gender.getDisplayName());
@@ -148,25 +142,16 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 			case Gender.OTHER -> BACKGROUND_OTHER;
 		};
 
-		ctx.drawTexture(RenderLayer::getGuiTextured, backgroundTexture, (this.width - 272) / 2, (this.height - 138) / 2, 0, 0, 268, 124, 512, 512);
+		ctx.drawTexture(RenderPipelines.GUI_TEXTURED, backgroundTexture, (this.width - 272) / 2, (this.height - 138) / 2, 0, 0, 268, 124, 512, 512);
 
-		if(client != null && client.world != null) {
-			int xP = this.width / 2 - 90;
-			int yP = this.height / 2 + 18;
-			PlayerEntity ent = client.world.getPlayerByUuid(this.playerUUID);
-			if(ent != null) {
-				ctx.enableScissor(xP - 38, yP - 97, xP + 38, yP + 9);
-				GuiUtils.drawEntityOnScreen(ctx, xP, yP + 60, 70, (xP - mouseX), (yP - 46 - mouseY), ent);
-				ctx.disableScissor();
-			}
-		}
+		renderPlayerInFrame(ctx, this.width / 2 - 90, this.height / 2 + 18, mouseX, mouseY);
 	}
 
 	@Override
 	public void render(DrawContext ctx, int mouseX, int mouseY, float delta) {
 		super.render(ctx, mouseX, mouseY, delta);
 		int x = this.width / 2;
-	    int y = this.height / 2;
+		int y = this.height / 2;
 		ctx.drawText(textRenderer, getTitle(), x - textRenderer.getWidth(getTitle()) / 2, y - 82, 0xFFFFFF, false);
 
 		drawCreatorContributorText(ctx, mouseX, mouseY, y + 65 + (isBreastCancerAwarenessMonth ? 30 : 0));
@@ -175,13 +160,10 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 			int bcaY = y - 45;
 			ctx.fill(x - 159, bcaY + 106, x + 159, bcaY + 136, 0x55000000);
 			ctx.drawTextWithShadow(textRenderer, Text.translatable("wildfire_gender.cancer_awareness.title").formatted(Formatting.BOLD, Formatting.ITALIC), this.width / 2 - 148, bcaY + 117, 0xFFFFFF);
-			ctx.drawTexture(RenderLayer::getGuiTextured, TXTR_RIBBON, x + 130, bcaY + 109, 0, 0, 26, 26, 20, 20, 20, 20);
+			ctx.drawTexture(RenderPipelines.GUI_TEXTURED, TXTR_RIBBON, x + 130, bcaY + 109, 0, 0, 26, 26, 20, 20, 20, 20);
 		}
 
-		//Render in front of the UI when it's open.
-		List<PlayerListEntry> syncedPlayers = collectPlayerEntries();
-		GuiUtils.drawSyncedPlayers(ctx, textRenderer, syncedPlayers);
-
+		SyncedPlayerList.drawSyncedPlayers(ctx, textRenderer);
 	}
 
 	private void drawCreatorContributorText(DrawContext ctx, int mouseX, int mouseY, int creatorY) {
@@ -221,7 +203,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 					.toList();
 
 			contribTooltip.setTooltip(Tooltip.of(Texts.join(contributorNames, Text.literal("\n"))));
-			contribTooltip.render(true, true, ScreenRect.empty());
+			contribTooltip.render(ctx, mouseX, mouseY, true, true, ScreenRect.empty());
 		}
 	}
 }
