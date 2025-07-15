@@ -24,21 +24,17 @@ import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireLocalization;
 import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.cloud.SyncLog;
-import com.wildfire.main.config.types.ConfigKey;
+import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.config.Configuration;
 import com.wildfire.main.config.enums.Gender;
-import com.wildfire.main.config.ClientConfig;
+import com.wildfire.main.config.types.ConfigKey;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Nullables;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -195,25 +191,6 @@ public class PlayerConfig extends EntityConfig {
 		Configuration.KEYS.forEach(key -> key.writeToPlayer(this));
 		if(markForSync) {
 			this.needsSync = true;
-		}
-		if(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
-			migrateArmorPhysicsOverride();
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	private void migrateArmorPhysicsOverride() {
-		var clientPlayer = MinecraftClient.getInstance().player;
-		if(!Objects.equals(uuid, Nullables.map(clientPlayer, PlayerEntity::getUuid))) {
-			return;
-		}
-
-		var override = cfg.get("armor_physics_override");
-		if(override != null) {
-			cfg.removeParameter("armor_physics_override");
-			ClientConfig.INSTANCE.set("armor_physics_override", override);
-			ClientConfig.INSTANCE.save();
-			cfg.save();
 		}
 	}
 
