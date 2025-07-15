@@ -26,10 +26,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.EntryListWidget;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -164,7 +164,7 @@ public class WildfireBreastPresetList extends EntryListWidget<WildfireBreastPres
             TextRenderer font = MinecraftClient.getInstance().textRenderer;
             //ctx.fill(x, y, x + entryWidth, y + entryHeight, 0x55005555);
 
-            ctx.drawTexture(RenderLayer::getGuiTextured, thumbnail, x + 2, y + 2, 0, 0, 28, 28, 28, 28);
+            ctx.drawTexture(RenderPipelines.GUI_TEXTURED, thumbnail, x + 2, y + 2, 0, 0, 28, 28, 28, 28);
 
             ctx.drawText(font, Text.of(nInfo.name), x + 34, y + 4, 0xFFFFFFFF, false);
             //ctx.drawText(font, Text.translatable("07/25/2023 1:19 AM").formatted(Formatting.ITALIC), x + 34, y + 20, 0xFF888888, false);

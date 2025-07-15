@@ -24,13 +24,41 @@ import com.wildfire.api.impl.BreastArmorTexture;
 import com.wildfire.api.impl.GenderArmor;
 import com.wildfire.main.WildfireHelper;
 import net.minecraft.util.TriState;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Implement this on a custom class for your chestplates or items that go in the chest slot to configure how it interacts with breast rendering.
+ * Interface supplying values to determine how an armor piece interacts with a wearer's breasts
  */
 public interface IGenderArmor {
+    /**
+     * Default implementation used to represent armor types that lack any configuration
+     */
+    IGenderArmor DEFAULT = new IGenderArmor() {
+    };
 
+    /**
+     * Default implementation used when the player {@link net.minecraft.item.ItemStack#isEmpty() isn't wearing a chestplate},
+     * or if the worn chestplate specifies that it doesn't cover the breasts.
+     */
+    IGenderArmor EMPTY = new IGenderArmor() {
+        @Override
+        public boolean coversBreasts() {
+            return false;
+        }
+
+        @Override
+        public float physicsResistance() {
+            return 0;
+        }
+
+        @Override
+        public boolean armorStandsCopySettings() {
+            return false;
+        }
+    };
+
+    @ApiStatus.Internal
     Codec<IGenderArmor> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             WildfireHelper.boundedFloat(0f, 1f)
                     .optionalFieldOf("resistance", 0.5f)
@@ -48,11 +76,11 @@ public interface IGenderArmor {
                     .optionalFieldOf("render_on_armor_stands", TriState.DEFAULT)
                     .forGetter(armor -> armor.armorStandsCopySettings() ? TriState.TRUE : TriState.FALSE),
             IBreastArmorTexture.CODEC
-                    .optionalFieldOf("texture", BreastArmorTexture.DEFAULT)
+                    .optionalFieldOf("texture", IBreastArmorTexture.DEFAULT)
                     .forGetter(IGenderArmor::texture)
     ).apply(instance, (resistance, tightness, covers, hideBreasts, armorStands, texture) -> {
         if(!covers) {
-            return GenderArmor.EMPTY;
+            return EMPTY;
         }
         return new GenderArmor(resistance, tightness, true, hideBreasts, armorStands.asBoolean(resistance == 1f), texture);
     }));
@@ -63,7 +91,7 @@ public interface IGenderArmor {
      * <p>If this returns {@code false} the breast armor layer will not be rendered while this item is worn, as if
      * the item simply didn't exist.</p>
      *
-     * @return {@code true} if the breasts are covered.
+     * @return {@code true} if this armor piece covers the wearer's breasts in any capacity.
      *
      * @implNote Defaults to {@code true}.
      */
@@ -78,7 +106,7 @@ public interface IGenderArmor {
      * <p>This is intended for armors that may have custom rendering that is not compatible with how breasts render
      * and would just lead to clipping or other unintended behavior.</p>
      *
-     * @return {@code true} to hide the breasts regardless of what {@code showBreastsInArmor} is set to.
+     * @return {@code true} to always hide the breasts of players wearing this armor piece.
      *
      * @implNote Defaults to {@code false}.
      */
@@ -118,7 +146,7 @@ public interface IGenderArmor {
      * armor piece is equipped onto an armor stand.</p>
      *
      * <p>This is designed for armor types that are metallic in nature, and not armor types that would (realistically)
-     * be flexible enough to accommodate for a player's breasts on their own (such as Leather and Chain).</p>
+     * be flexible enough to accommodate for the wearer's breasts on their own (such as Leather and Chain).</p>
      *
      * @return {@code true} to copy the equipping player's breast settings onto this armor type when equipped onto
      *         armor stands, and render the relevant breast settings on the armor stand.
@@ -138,12 +166,12 @@ public interface IGenderArmor {
      *
      * @return The relevant {@link IBreastArmorTexture}
      *
-     * @implNote Defaults to {@link BreastArmorTexture#DEFAULT}
+     * @implNote Defaults to {@link IBreastArmorTexture#DEFAULT}
      *
      * @see IBreastArmorTexture
      * @see BreastArmorTexture
      */
     default @NotNull IBreastArmorTexture texture() {
-        return BreastArmorTexture.DEFAULT;
+        return IBreastArmorTexture.DEFAULT;
     }
 }

@@ -28,6 +28,7 @@ import com.wildfire.main.WildfireGenderClient;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.toast.Toast;
@@ -94,9 +95,9 @@ public class WildfireToast implements Toast {
     @Override
     public void draw(DrawContext context, TextRenderer textRenderer, long startTime) {
         int i = this.getHeight();
-        context.drawGuiTexture(RenderLayer::getGuiTextured, TEXTURE, 0, 0, this.getWidth(), i);
+        context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, 0, this.getWidth(), i);
 
-        context.drawTexture(RenderLayer::getGuiTextured, ICON, 6, 6, 0, 0, 20, 20, 20, 20, 20, 20);
+        context.drawTexture(RenderPipelines.GUI_TEXTURED, ICON, 6, 6, 0, 0, 20, 20, 20, 20, 20, 20);
         int j = this.text.size() * 11;
         int k = 7 + (this.getTextHeight() - j) / 2;
 

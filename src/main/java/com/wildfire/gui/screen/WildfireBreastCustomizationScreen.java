@@ -19,7 +19,6 @@
 package com.wildfire.gui.screen;
 
 import com.wildfire.events.EntityHurtSoundEvent;
-import com.wildfire.gui.GuiUtils;
 import com.wildfire.gui.WildfireSlider;
 import com.wildfire.main.Gender;
 import com.wildfire.main.WildfireGender;
@@ -33,7 +32,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -317,22 +316,13 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
         };
 
         if(backgroundTexture != null) {
-            ctx.drawTexture(RenderLayer::getGuiTextured, backgroundTexture, (this.width - 272) / 2, (this.height - 138) / 2, 0, 0, 272, 130, 512, 512);
+            ctx.drawTexture(RenderPipelines.GUI_TEXTURED, backgroundTexture, (this.width - 272) / 2, (this.height - 138) / 2, 0, 0, 272, 130, 512, 512);
         }
 
-        ctx.drawTexture(RenderLayer::getGuiTextured, currentTab.background, (this.width) / 2 - 42, (this.height) / 2 - 43, 0, 0, 178, currentTab.backgroundHeight, 512, 512);
+        ctx.drawTexture(RenderPipelines.GUI_TEXTURED, currentTab.background, (this.width) / 2 - 42, (this.height) / 2 - 43, 0, 0, 178, currentTab.backgroundHeight, 512, 512);
         ctx.drawText(textRenderer, getTitle(), (width / 2) - textRenderer.getWidth(getTitle()) / 2, (height / 2) - 82, 0xFFFFFF, false);
 
-        if(client != null && client.world != null) {
-            int xP = this.width / 2 - 90;
-            int yP = this.height / 2 + 44;
-            PlayerEntity ent = client.world.getPlayerByUuid(this.playerUUID);
-            if(ent != null) {
-                ctx.enableScissor(xP - 38, yP - 97, xP + 38, yP + 9);
-                GuiUtils.drawEntityOnScreen(ctx, xP, yP + 60, 70, (xP - mouseX), (yP - 46 - mouseY), ent);
-                ctx.disableScissor();
-            }
-        }
+        renderPlayerInFrame(ctx, this.width / 2 - 90, this.height / 2 + 44, mouseX, mouseY);
     }
 
     @Override

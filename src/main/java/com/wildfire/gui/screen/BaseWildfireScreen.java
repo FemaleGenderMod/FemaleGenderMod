@@ -20,6 +20,7 @@ package com.wildfire.gui.screen;
 
 import com.wildfire.gui.WildfireButton;
 import com.wildfire.gui.WildfireSlider;
+import com.wildfire.gui.GuiUtils;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.WildfireGender;
 
@@ -29,6 +30,7 @@ import java.util.function.Consumer;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -47,7 +49,7 @@ public abstract class BaseWildfireScreen extends Screen {
     protected static final Identifier KEIRA_NETHERITE = Identifier.of(WildfireGender.MODID, "textures/gui/mascot/keira_netherite.png");
     protected static final int KEIRA_WIDTH = 610;
     protected static final int KEIRA_HEIGHT = 736;
-    //Keira test ctx.drawTexture(RenderLayer::getGuiTextured, KEIRA_LOOK, x, y, 0, 0, 26, 26, KEIRA_WIDTH, KEIRA_HEIGHT, KEIRA_WIDTH, KEIRA_HEIGHT);
+    //Keira test ctx.drawTexture(RenderPipelines.GUI_TEXTURED, KEIRA_LOOK, x, y, 0, 0, 26, 26, KEIRA_WIDTH, KEIRA_HEIGHT, KEIRA_WIDTH, KEIRA_HEIGHT);
 
     protected BaseWildfireScreen(Text title, Screen parent, UUID uuid) {
         super(title);
@@ -72,6 +74,16 @@ public abstract class BaseWildfireScreen extends Screen {
         return WildfireGender.getPlayerById(this.playerUUID);
     }
 
+    protected void renderPlayerInFrame(DrawContext ctx, int xP, int yP, int mouseX, int mouseY) {
+        var player = Objects.requireNonNull(client).player;
+        if(player == null) return;
+        // This sucks. In order to position the player properly, we need to trick the player renderer into
+        // thinking the area the player should be rendered is much taller than it actually is.
+        ctx.enableScissor(xP - 38, yP - 79, xP + 38, yP + 9);
+        GuiUtils.drawEntityOnScreenNoScissor(ctx, xP - 38, yP - 79, xP + 38, yP + 69, 70, mouseX, mouseY + 35, player);
+        ctx.disableScissor();
+    }
+
     @Override
     public boolean shouldPause() {
         return false;
@@ -79,6 +91,6 @@ public abstract class BaseWildfireScreen extends Screen {
 
     @Override
     public void close() {
-        client.setScreen(parent);
+        Objects.requireNonNull(client).setScreen(parent);
     }
 }
