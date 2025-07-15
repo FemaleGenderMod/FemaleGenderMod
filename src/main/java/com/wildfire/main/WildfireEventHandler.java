@@ -100,7 +100,7 @@ public final class WildfireEventHandler {
 			// while executing this static block
 			CONFIG_KEYBIND = Util.make(() -> {
 				// FIXME this now conflicts with the Quick Actions key from vanilla as of 1.21.6-pre1
-				KeyBinding keybind = new KeyBinding("key.wildfire_gender.gender_menu", GLFW.GLFW_KEY_G, "category.wildfire_gender.generic");
+				KeyBinding keybind = new KeyBinding("key.wildfire_gender.gender_menu", GLFW.GLFW_KEY_H, "category.wildfire_gender.generic");
 				KeyBindingHelper.registerKeyBinding(keybind);
 				return keybind;
 			});
