@@ -28,9 +28,9 @@ public class WildfireLocalization {
     public static final Text DISABLED = Text.translatable("wildfire_gender.label.disabled").formatted(Formatting.RED);
     public static final Text OFF = Text.translatable("wildfire_gender.label.off");
 
-    public static final Text SYNC_LOG_AUTHENTICATING = Text.translatable("wildfire_gender.sync_log.authenticating");
+    public static final Text SYNC_LOG_AUTHENTICATING_MOJANG = Text.translatable("wildfire_gender.sync_log.authenticating_mojang");
+    public static final Text SYNC_LOG_AUTHENTICATING_CLOUD_SYNC = Text.translatable("wildfire_gender.sync_log.authenticating_sync");
     public static final Text SYNC_LOG_AUTHENTICATION_FAILED = Text.translatable("wildfire_gender.sync_log.authentication_failed");
-    public static final Text SYNC_LOG_AUTHENTICATION_SUCCESS = Text.translatable("wildfire_gender.sync_log.authentication_success");
     public static final Text SYNC_LOG_REAUTHENTICATING = Text.translatable("wildfire_gender.sync_log.reauthenticating");
     public static final Text SYNC_LOG_ATTEMPTING_SYNC = Text.translatable("wildfire_gender.sync_log.attempting_sync");
     public static final Text SYNC_LOG_SYNC_SUCCESS = Text.translatable("wildfire_gender.sync_log.sync_success");

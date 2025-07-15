@@ -26,25 +26,33 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Supplier;
 
 @Environment(EnvType.CLIENT)
 public class WildfireButton extends ButtonWidget {
 
+   private final @Nullable ButtonRenderer renderer;
+   private final Supplier<Text> messageSupplier;
    public boolean transparent = false;
 
-   public WildfireButton(int x, int y, int w, int h, Text text, ButtonWidget.PressAction onPress, NarrationSupplier narrationSupplier) {
-      super(x, y, w, h, text, onPress, narrationSupplier);
+   private WildfireButton(int x, int y, int w, int h, Supplier<Text> text, ButtonWidget.PressAction onPress, NarrationSupplier narrationSupplier, @Nullable ButtonRenderer renderer) {
+      super(x, y, w, h, text.get(), onPress, narrationSupplier);
+      messageSupplier = text;
+      this.renderer = renderer;
    }
-   public WildfireButton(int x, int y, int w, int h, Text text, ButtonWidget.PressAction onPress) {
-      this(x, y, w, h, text, onPress, DEFAULT_NARRATION_SUPPLIER);
 
-   }
-   public WildfireButton(int x, int y, int w, int h, Text text, ButtonWidget.PressAction onPress, Tooltip tooltip) {
-      this(x, y, w, h, text, onPress, DEFAULT_NARRATION_SUPPLIER);
-      setTooltip(tooltip);
+   public void updateMessage() {
+      setMessage(messageSupplier.get());
    }
 
    protected void drawInner(DrawContext ctx, int mouseX, int mouseY, float partialTicks) {
+      if(renderer != null) {
+         renderer.render(this, ctx, mouseX, mouseY, partialTicks);
+         return;
+      }
       MinecraftClient minecraft = MinecraftClient.getInstance();
       TextRenderer font = minecraft.textRenderer;
       int textColor = active ? 0xFFFFFF : 0x666666;
@@ -70,5 +78,80 @@ public class WildfireButton extends ButtonWidget {
    public WildfireButton setActive(boolean b) {
       this.active = b;
       return this;
+   }
+
+   public static final class Builder {
+      private Supplier<Text> messageSupplier;
+      private int x, y, width, height;
+      private PressAction onPress;
+      private NarrationSupplier narrationSupplier = DEFAULT_NARRATION_SUPPLIER;
+      private Tooltip tooltip = null;
+      private ButtonRenderer renderer = null;
+      private boolean active = true;
+
+      public Builder message(@NotNull Supplier<Text> messageSupplier) {
+         this.messageSupplier = messageSupplier;
+         return this;
+      }
+
+      public Builder position(int x, int y) {
+         this.x = x;
+         this.y = y;
+         return this;
+      }
+
+      public Builder size(int width, int height) {
+         this.width = width;
+         this.height = height;
+         return this;
+      }
+
+      public Builder onPress(@NotNull PressAction onPress) {
+         this.onPress = onPress;
+         return this;
+      }
+
+      public Builder narration(@NotNull NarrationSupplier narrationSupplier) {
+         this.narrationSupplier = narrationSupplier;
+         return this;
+      }
+
+      public Builder tooltip(@Nullable Tooltip tooltip) {
+         this.tooltip = tooltip;
+         return this;
+      }
+
+      public Builder active(boolean active) {
+         this.active = active;
+         return this;
+      }
+
+      public Builder renderer(@Nullable ButtonRenderer renderer) {
+         this.renderer = renderer;
+         return this;
+      }
+
+      public WildfireButton build() {
+         var built = new WildfireButton(x, y, width, height, messageSupplier, onPress, narrationSupplier, renderer);
+         built.setActive(active);
+         if(tooltip != null) {
+            built.setTooltip(tooltip);
+         }
+         return built;
+      }
+   }
+
+   @FunctionalInterface
+   public interface PressAction extends ButtonWidget.PressAction {
+      default void onPress(ButtonWidget button) {
+         onPress((WildfireButton) button);
+      }
+
+      void onPress(WildfireButton button);
+   }
+
+   @FunctionalInterface
+   public interface ButtonRenderer {
+      void render(WildfireButton button, DrawContext ctx, int mouseX, int mouseY, float partialTicks);
    }
 }

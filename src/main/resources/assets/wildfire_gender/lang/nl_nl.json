@@ -97,13 +97,12 @@
 	"wildfire_gender.cloud.syncing.success": "Gesynchroniseerd",
 	"wildfire_gender.cloud.syncing.fail": "Synchronisatie Niet Gelukt",
 
-	"wildfire_gender.sync_log.authenticating": "Account Verifiëren...",
-	"wildfire_gender.sync_log.authentication_success": "Verificatie Gelukt.",
+	"wildfire_gender.sync_log.authenticating_mojang": "Verifiëren met Mojang...",
+	"wildfire_gender.sync_log.authenticating_sync": "Verifiëren met online synchronisatie",
 	"wildfire_gender.sync_log.authentication_failed": "Verificatie Gefaald.",
-	"wildfire_gender.sync_log.reauthenticating": "Account Opnieuw Verifiëren...",
+	"wildfire_gender.sync_log.reauthenticating": "Opnieuw Verifiëren...",
 
 	"wildfire_gender.sync_log.failed_to_sync_data": "Gefaald om Data te Sychroniseren.",
-	"wildfire_gender.sync_log.sync_to_cloud": "Data Online Sychroniseren...",
 	"wildfire_gender.sync_log.attempting_sync": "Profiel Sychroniseren...",
 	"wildfire_gender.sync_log.sync_success": "Sychronisatie Gelukt.",
 	"wildfire_gender.sync_log.sync_too_frequently": "Sychronisatie Tarief is Beperkt.",

@@ -19,7 +19,6 @@
 package com.wildfire.gui.screen;
 
 import com.wildfire.gui.GuiUtils;
-import com.wildfire.gui.WildfireButton;
 import com.wildfire.main.WildfireGender;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -58,27 +57,22 @@ public class WildfireCloudDetailsScreen extends BaseWildfireScreen {
 
 		currentPage = 0;
 
-		// why must Java be?
-		final var ref = new Object() {
-			WildfireButton no = null;
-		};
-
-		this.addDrawableChild(new WildfireButton(x + 46, y + 74, 76, 20,
-				NEXT_PAGE,
-				button -> {
-					if(currentPage < 1) {
-						currentPage++;
-					}
-				}));
-
-
-		this.addDrawableChild(ref.no = new WildfireButton(x - 128 + 6, y + 74, 76, 20,
-				PREV_PAGE,
-				button -> {
-					if(currentPage > 0) {
-						currentPage--;
-					}
-				}));
+//		this.addDrawableChild(new WildfireButton(x + 46, y + 74, 76, 20,
+//				NEXT_PAGE,
+//				button -> {
+//					if(currentPage < 1) {
+//						currentPage++;
+//					}
+//				}));
+//
+//
+//		this.addDrawableChild(new WildfireButton(x - 128 + 6, y + 74, 76, 20,
+//				PREV_PAGE,
+//				button -> {
+//					if(currentPage > 0) {
+//						currentPage--;
+//					}
+//				}));
 
 		super.init();
 	}

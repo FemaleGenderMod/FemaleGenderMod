@@ -41,9 +41,9 @@ public final class ArmorStandInteractEvents {
 		}
 	});
 
-	// this doesn't have the same chest slot item guarantee as the above event purely because checking that
-	// is a lot more work, when all we're using this for is checking if we need to remove our nbt from the item,
-	// which is already only applicable to chest items.
+	// this doesn't have the same chest slot item guarantee as the above event purely because the only use case
+	// we have for this event is removing our nbt from the removed items, which is already only applicable
+	// to chest slot items, and safely no-ops otherwise.
 	/**
 	 * Event invoked when an item is removed from an armor stand
 	 *
