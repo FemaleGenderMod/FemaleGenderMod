@@ -219,8 +219,8 @@ public final class CloudSync {
 				throw new IllegalStateException("Cannot get a new auth token while the client player is unset");
 			}
 			if(auth == null || auth.isExpired() || auth.isInvalidForClientPlayer()) {
-				WildfireGender.LOGGER.info("Obtaining new authentication token from the cloud sync server");
-				SyncLog.add(WildfireLocalization.SYNC_LOG_AUTHENTICATING);
+				WildfireGender.LOGGER.info("Authenticating with Mojang session servers");
+				SyncLog.add(WildfireLocalization.SYNC_LOG_AUTHENTICATING_MOJANG);
 
 				var serverId = generateServerId();
 				var session = client.getSession();
@@ -228,9 +228,12 @@ public final class CloudSync {
 				try {
 					client.getSessionService().joinServer(Objects.requireNonNull(session.getUuidOrNull()), session.getAccessToken(), serverId);
 				} catch(AuthenticationException e) {
+					SyncLog.add(WildfireLocalization.SYNC_LOG_AUTHENTICATION_FAILED);
 					throw new RuntimeException(e);
 				}
 
+				WildfireGender.LOGGER.info("Obtaining new authentication token from the cloud sync server");
+				SyncLog.add(WildfireLocalization.SYNC_LOG_AUTHENTICATING_CLOUD_SYNC);
 				var query = HttpAuthenticationService.buildQuery(Map.of("serverId", serverId, "username", session.getUsername()));
 				var uri = URI.create(getCloudServer() + "/auth?" + query);
 				var request = createRequest(uri).GET().build();
@@ -245,9 +248,6 @@ public final class CloudSync {
 					WildfireGender.LOGGER.warn("Authenticated account {} does not match the current player ({}); you likely have a misbehaving account switcher mod installed!", auth.account(), client.player.getUuid());
 				}
 				WildfireGender.LOGGER.info("Obtained authentication token for {}, expiry {}", auth.account(), auth.expires());
-				if(!auth.isInvalidForClientPlayer()) { //TODO: This might not need to be here.
-					SyncLog.add(WildfireLocalization.SYNC_LOG_AUTHENTICATION_SUCCESS);
-				}
 			}
 		}
 		return auth.token();

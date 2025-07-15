@@ -42,8 +42,6 @@ import java.util.concurrent.CompletionException;
 @Environment(EnvType.CLIENT)
 public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 
-	//TODO: PROPER TRANSLATIONS
-
 	private static final Text TITLE = Text.translatable("wildfire_gender.first_time_setup.title").formatted(Formatting.UNDERLINE);
 	private static final Text DESCRIPTION = Text.translatable("wildfire_gender.first_time_setup.description");
 	private static final Text NOTICE = Text.translatable("wildfire_gender.first_time_setup.notice");
@@ -62,16 +60,16 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 		int x = this.width / 2;
 		int y = this.height / 2;
 
-		// why must Java be?
+		final var config = ClientConfig.INSTANCE;
 		final var ref = new Object() {
 			WildfireButton no = null;
 		};
 
-		this.addDrawableChild(new WildfireButton(x + 3, y + 74, 128, 20,
-				ENABLE_CLOUD_SYNCING,
-				button -> {
-					var config = ClientConfig.INSTANCE;
-					//Enable both settings, they can always disable automatic later? TBD
+		addButton(builder -> builder
+				.message(() -> ENABLE_CLOUD_SYNCING)
+				.position(x + 3, y + 74)
+				.size(128, 20)
+				.onPress(button -> {
 					config.set(ClientConfig.CLOUD_SYNC_ENABLED, true);
 					config.set(ClientConfig.AUTOMATIC_CLOUD_SYNC, true);
 					config.set(ClientConfig.FIRST_TIME_LOAD, false);
@@ -85,10 +83,11 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 				}));
 
 
-		this.addDrawableChild(ref.no = new WildfireButton(x - 131, y + 74, 128, 20,
-				DISABLE_CLOUD_SYNCING,
-				button -> {
-					var config = ClientConfig.INSTANCE;
+		ref.no = addButton(builder -> builder
+				.message(() -> DISABLE_CLOUD_SYNCING)
+				.position(x - 131, y + 74)
+				.size(128, 20)
+				.onPress(button -> {
 					config.set(ClientConfig.CLOUD_SYNC_ENABLED, false);
 					config.set(ClientConfig.AUTOMATIC_CLOUD_SYNC, false);
 					config.set(ClientConfig.FIRST_TIME_LOAD, false);

@@ -32,6 +32,7 @@ import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
@@ -48,12 +49,7 @@ public class WildfireSlider extends ClickableWidget {
 
 	private double arrowKeyStep = 0.05;
 
-	public WildfireSlider(int xPos, int yPos, int width, int height, FloatConfigKey config, double currentVal, FloatConsumer valueUpdate,
-	                      Float2ObjectFunction<Text> messageUpdate, FloatConsumer onSave) {
-		this(xPos, yPos, width, height, config.getMinInclusive(), config.getMaxInclusive(), currentVal, valueUpdate, messageUpdate, onSave);
-	}
-
-	public WildfireSlider(int xPos, int yPos, int width, int height, double minVal, double maxVal, double currentVal, FloatConsumer valueUpdate,
+	private WildfireSlider(int xPos, int yPos, int width, int height, double minVal, double maxVal, double currentVal, FloatConsumer valueUpdate,
 	                      Float2ObjectFunction<Text> messageUpdate, FloatConsumer onSave) {
 		super(xPos, yPos, width, height, Text.empty());
 		this.minValue = minVal;
@@ -189,5 +185,76 @@ public class WildfireSlider extends ClickableWidget {
 		this.value = MathHelper.clamp(this.value, 0, 1);
 		applyValue();
 		updateMessage();
+	}
+
+	public static final class Builder {
+		private int x, y, width, height;
+		private float min, max;
+		private double value;
+		private Double step = null;
+		private boolean active = true;
+		private Float2ObjectFunction<Text> messageSupplier;
+		private FloatConsumer onUpdate, onSave;
+
+		public Builder message(@NotNull Float2ObjectFunction<Text> messageSupplier) {
+			this.messageSupplier = messageSupplier;
+			return this;
+		}
+
+		public Builder position(int x, int y) {
+			this.x = x;
+			this.y = y;
+			return this;
+		}
+
+		public Builder size(int width, int height) {
+			this.width = width;
+			this.height = height;
+			return this;
+		}
+
+		public Builder update(@NotNull FloatConsumer onUpdate) {
+			this.onUpdate = onUpdate;
+			return this;
+		}
+
+		public Builder save(@NotNull FloatConsumer onSave) {
+			this.onSave = onSave;
+			return this;
+		}
+
+		public Builder range(@NotNull FloatConfigKey key) {
+			return range(key.getMinInclusive(), key.getMaxInclusive());
+		}
+
+		public Builder range(float min, float max) {
+			this.min = min;
+			this.max = max;
+			return this;
+		}
+
+		public Builder current(double value) {
+			this.value = value;
+			return this;
+		}
+
+		public Builder active(boolean active) {
+			this.active = active;
+			return this;
+		}
+
+		public Builder step(double step) {
+			this.step = step;
+			return this;
+		}
+
+		public WildfireSlider build() {
+			var built = new WildfireSlider(x, y, width, height, min, max, value, onUpdate, messageSupplier, onSave);
+			built.active = active;
+			if(step != null) {
+				built.setArrowKeyStep(step);
+			}
+			return built;
+		}
 	}
 }
