@@ -44,6 +44,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 
 @Environment(EnvType.CLIENT)
 public class WardrobeBrowserScreen extends BaseWildfireScreen {
@@ -187,7 +188,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 		}
 
 		int textWidth = textRenderer.getWidth(text);
-		GuiUtils.drawCenteredTextWrapped(ctx, this.textRenderer, text, this.width / 2, creatorY, 300, 0xFF00FF);
+		GuiUtils.drawCenteredTextWrapped(ctx, this.textRenderer, text, this.width / 2, creatorY, 300, ColorHelper.fullAlpha(0xFF00FF));
 
 		// Render a tooltip with the relevant player names when hovered over
 		int lines = (int) Math.ceil(textWidth / 300.0);
