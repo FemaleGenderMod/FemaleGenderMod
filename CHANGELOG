@@ -1,4 +1,7 @@
 UNRELEASED
+- Port to 1.21.6
+
+VERSION 4.3.4
 - Port to 1.21.5
 - Fix holiday cosmetics causing rendering issues
 - Holiday cosmetics should no longer appear on NPC players

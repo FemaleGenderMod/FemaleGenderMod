@@ -103,6 +103,7 @@ public class WildfireGenderClient implements ClientModInitializer {
 		} catch(Exception e) {
 			custom = null;
 		}
+
 		if(custom != null) {
 			return custom.asText();
 		} else if(WildfireGender.CREATOR_UUID.equals(uuid)) {
@@ -110,6 +111,7 @@ public class WildfireGenderClient implements ClientModInitializer {
 		} else if(WildfireGender.CONTRIBUTOR_UUIDS.contains(uuid)) {
 			return Text.translatable("wildfire_gender.nametag.contributor").formatted(Formatting.GOLD);
 		}
+
 		return null;
 	}
 }

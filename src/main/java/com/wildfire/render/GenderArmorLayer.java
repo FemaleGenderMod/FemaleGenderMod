@@ -19,7 +19,6 @@
 package com.wildfire.render;
 
 import com.wildfire.api.IBreastArmorTexture;
-import com.wildfire.api.impl.BreastArmorTexture;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.mixins.accessors.EquipmentRendererAccessor;
@@ -64,7 +63,7 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 	protected BreastModelBox lBoobArmor, rBoobArmor;
 	protected static final BreastModelBox lTrim, rTrim;
 	private EntityConfig entityConfig;
-	private @NotNull IBreastArmorTexture textureData = BreastArmorTexture.DEFAULT;
+	private @NotNull IBreastArmorTexture textureData = IBreastArmorTexture.DEFAULT;
 
 	private static boolean textureExists(Identifier id) {
 		var texManager = MinecraftClient.getInstance().getTextureManager();

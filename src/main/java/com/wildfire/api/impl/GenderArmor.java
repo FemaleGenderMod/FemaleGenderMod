@@ -35,20 +35,14 @@ public record GenderArmor(
 		IBreastArmorTexture texture
 ) implements IGenderArmor {
 	/**
-	 * Default implementation used to represent armor types that lack any configuration
+	 * @deprecated Use {@link IGenderArmor#DEFAULT} instead
 	 */
-	public static final IGenderArmor DEFAULT = new Default();
+	@Deprecated
+	public static final IGenderArmor DEFAULT = IGenderArmor.DEFAULT;
 
 	/**
-	 * Default implementation used when the player {@link net.minecraft.item.ItemStack#isEmpty() isn't wearing a chestplate},
-	 * or if the worn chestplate specifies that it doesn't cover the breasts.
+	 * @deprecated Use {@link IGenderArmor#EMPTY} instead
 	 */
-	public static final IGenderArmor EMPTY = new GenderArmor(0f, 0f, false, false, false, BreastArmorTexture.DEFAULT);
-
-	/**
-	 * Dummy implementation of {@link IGenderArmor}; simply defers to the default interface implementations for all methods.
-	 */
-	public static final class Default implements IGenderArmor {
-		private Default() {}
-	}
+	@Deprecated
+	public static final IGenderArmor EMPTY = IGenderArmor.EMPTY;
 }

@@ -36,6 +36,14 @@ public enum ShowPlayerListMode {
 		return BY_ID.apply(this.ordinal() + 1);
 	}
 
+	public boolean isVisible() {
+		return switch(this) {
+			case MOD_UI_ONLY -> false;
+			case TAB_LIST_OPEN -> MinecraftClient.getInstance().options.playerListKey.isPressed();
+			case ALWAYS -> true;
+		};
+	}
+
 	public Text text() {
 		return Text.translatable("wildfire_gender.always_show_list." + name().toLowerCase());
 	}

@@ -33,6 +33,8 @@ import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.config.enums.SyncVerbosity;
 import com.wildfire.main.entitydata.PlayerConfig;
+import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
@@ -55,6 +57,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>Utility class for managing syncing player data to/from the cloud, even if the current connected server doesn't
@@ -175,19 +178,24 @@ public final class CloudSync {
 			try {
 				response = CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString()).join();
 				if(response.statusCode() != 200) {
-					WildfireGender.LOGGER.warn("Couldn't fetch contributor nametags: server responded {}", response.statusCode());
+					WildfireGender.LOGGER.warn("Couldn't fetch contributor list: server responded {}", response.statusCode());
 					return Map.of();
 				}
 			} catch(Exception e) {
-				WildfireGender.LOGGER.warn("Couldn't fetch contributor nametags", e);
+				WildfireGender.LOGGER.warn("Couldn't fetch contributor list", e);
 				return Map.of();
 			}
 
 			try {
 				var json = GSON.fromJson(response.body(), JsonObject.class);
-				var map = new HashMap<UUID, ContributorNametag>();
-				json.asMap().forEach((k, v) -> map.put(UUID.fromString(k), GSON.fromJson(v, ContributorNametag.class)));
-				return Collections.unmodifiableMap(map);
+				var interim = json.asMap()
+						.entrySet()
+						.stream()
+						.collect(Collectors.toMap(
+								entry -> UUID.fromString(entry.getKey()),
+								entry -> GSON.fromJson(entry.getValue(), ContributorNametag.class)
+						));
+				return Collections.unmodifiableMap(interim.size() <= 8 ? new Object2ObjectArrayMap<>(interim) : new Object2ObjectOpenHashMap<>(interim));
 			} catch(Exception e) {
 				WildfireGender.LOGGER.error("Failed to parse contributor list", e);
 				return Map.of();

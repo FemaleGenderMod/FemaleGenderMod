@@ -109,5 +109,8 @@
 	"wildfire_gender.details.next_page": "Sig. Página",
 	"wildfire_gender.details.prev_page": "Ant. Página",
 
-	"wildfire_gender.cloud_details.title": "Información del Servidor en la Nube"
+	"wildfire_gender.cloud_details.title": "Información del Servidor en la Nube",
+        "wildfire_gender.misc.holiday_themes": "Temas Festivos: %s",
+	"wildfire_gender.tooltip.holiday_themes.line1": "Al activarse ésta función automáticamente mostrará cosméticos como un gorro de Santa o otros accesorios en sus respectivas festividades."
 }
+

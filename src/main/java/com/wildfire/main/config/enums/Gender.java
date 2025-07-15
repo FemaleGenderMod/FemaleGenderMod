@@ -61,4 +61,12 @@ public enum Gender {
 	public boolean canHaveBreasts() {
 		return canHaveBreasts;
 	}
+
+	public Gender next() {
+		return switch(this) {
+			case MALE -> FEMALE;
+			case FEMALE -> OTHER;
+			case OTHER -> MALE;
+		};
+	}
 }

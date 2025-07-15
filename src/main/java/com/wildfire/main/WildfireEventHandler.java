@@ -19,7 +19,7 @@
 package com.wildfire.main;
 
 import com.wildfire.events.*;
-import com.wildfire.gui.GuiUtils;
+import com.wildfire.gui.SyncedPlayerList;
 import com.wildfire.gui.screen.WardrobeBrowserScreen;
 import com.wildfire.gui.screen.WildfireFirstTimeSetupScreen;
 import com.wildfire.main.cloud.CloudSync;
@@ -39,9 +39,9 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
-import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
 import net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRendererRegistrationCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -49,8 +49,6 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -59,8 +57,8 @@ import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
@@ -79,8 +77,6 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -102,6 +98,7 @@ public final class WildfireEventHandler {
 			// this has to be wrapped in a lambda to ensure that a dedicated server won't crash during startup
 			// while executing this static block
 			CONFIG_KEYBIND = Util.make(() -> {
+				// FIXME this now conflicts with the Quick Actions key from vanilla as of 1.21.6-pre1
 				KeyBinding keybind = new KeyBinding("key.wildfire_gender.gender_menu", GLFW.GLFW_KEY_G, "category.wildfire_gender.generic");
 				KeyBindingHelper.registerKeyBinding(keybind);
 				return keybind;
@@ -137,11 +134,11 @@ public final class WildfireEventHandler {
 		ClientPlayConnectionEvents.DISCONNECT.register(WildfireEventHandler::clientDisconnect);
 		ClientPlayConnectionEvents.JOIN.register(WildfireEventHandler::clientJoin);
 		LivingEntityFeatureRendererRegistrationCallback.EVENT.register(WildfireEventHandler::registerRenderLayers);
-		HudLayerRegistrationCallback.EVENT.register(layeredDrawer -> layeredDrawer.attachLayerAfter(
-				IdentifiedLayer.MISC_OVERLAYS,
+		HudElementRegistry.attachElementAfter(
+				VanillaHudElements.MISC_OVERLAYS,
 				Identifier.of(WildfireGender.MODID, "player_list"),
 				WildfireEventHandler::renderHud
-		));
+		);
 		ArmorStatsTooltipEvent.EVENT.register(WildfireEventHandler::renderTooltip);
 		EntityHurtSoundEvent.EVENT.register(WildfireEventHandler::onEntityHurt);
 		EntityTickEvent.EVENT.register(WildfireEventHandler::onEntityTick);
@@ -159,11 +156,10 @@ public final class WildfireEventHandler {
 		float translationAmt = switch(player.getPose()) {
 			case EntityPose.CROUCHING -> 0.8f;
 			case EntityPose.SLEEPING -> 0.125f;
-			case EntityPose.SWIMMING -> 0.3f;
-			case EntityPose.GLIDING -> 0.3f;
+			case EntityPose.SWIMMING, EntityPose.GLIDING -> 0.3f;
 			case EntityPose.SITTING -> 0.275f; //not tested; sitting on a pig doesn't work apparently.
-            default -> 0.95f;
-        };
+			default -> 0.95f;
+		};
 		matrixStack.translate(0f, translationAmt, 0f);
 		matrixStack.scale(0.5f, 0.5f, 0.5f);
 		renderHelper.accept(nametag);
@@ -195,22 +191,9 @@ public final class WildfireEventHandler {
 			return;
 		}
 
-		/*if(MinecraftClient.getInstance().player != null) {
-			PlayerConfig pCfg = WildfireGender.getPlayerById(MinecraftClient.getInstance().player.getUuid());
-			if(pCfg != null) {
-				context.drawText(textRenderer, "Physics Debug", 5, 5, 0xFFFFFF, true);
-				context.drawText(textRenderer, "Position: " + pCfg.getLeftBreastPhysics().getPositionX() + "," + pCfg.getLeftBreastPhysics().getPositionY(), 5, 15, 0xFFFFFF, true);
-				context.drawText(textRenderer, "Breast Size: " + pCfg.getLeftBreastPhysics().getBreastSize(tickCounter.getTickDelta(false)), 5, 35, 0xFFFFFF, true);
-			}
-		}*/
-		boolean shouldShow = switch(ClientConfig.INSTANCE.get(ClientConfig.ALWAYS_SHOW_LIST)) {
-			case MOD_UI_ONLY -> false;
-			case TAB_LIST_OPEN -> MinecraftClient.getInstance().options.playerListKey.isPressed();
-			case ALWAYS -> true;
-		};
-		if(!shouldShow) return;
-
-		GuiUtils.drawSyncedPlayers(context, textRenderer, collectPlayerEntries());
+		if(ClientConfig.INSTANCE.get(ClientConfig.ALWAYS_SHOW_LIST).isVisible()) {
+			SyncedPlayerList.drawSyncedPlayers(context, textRenderer);
+		}
 	}
 
 	/**
@@ -369,19 +352,5 @@ public final class WildfireEventHandler {
 		if(component != null) {
 			component.write(player.getWorld().getRegistryManager(), item);
 		}
-	}
-
-
-	public static List<PlayerListEntry> collectPlayerEntries() {
-		if(MinecraftClient.getInstance().player == null) return new ArrayList<>();
-		ClientPlayerEntity player = MinecraftClient.getInstance().player;
-		return player.networkHandler.getListedPlayerListEntries().stream()
-				.filter(entry -> !entry.getProfile().getId().equals(player.getUuid()))
-				.filter(entry -> {
-					var cfg = WildfireGender.getPlayerById(entry.getProfile().getId());
-					return cfg != null && cfg.getSyncStatus() != PlayerConfig.SyncStatus.UNKNOWN;
-				})
-				.limit(40L)
-				.toList();
 	}
 }
