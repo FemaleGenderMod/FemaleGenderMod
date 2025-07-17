@@ -101,6 +101,10 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 	private CompletableFuture<Void> doInitialSync() {
 		var client = Objects.requireNonNull(this.client);
 		var clientUUID = client.player.getUuid();
+
+		WildfireGender.CACHE.asMap().values()
+			.removeIf(config -> !config.hasLocalConfig());
+
 		return CompletableFuture.runAsync(() -> {
 			var clientConfig = WildfireGender.getOrAddPlayerById(clientUUID);
 			if(!clientConfig.hasLocalConfig()) {
