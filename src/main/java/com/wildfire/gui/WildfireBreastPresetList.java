@@ -26,10 +26,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.EntryListWidget;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -139,21 +139,21 @@ public class WildfireBreastPresetList extends EntryListWidget<WildfireBreastPres
     public class Entry extends EntryListWidget.Entry<WildfireBreastPresetList.Entry> {
         private final Identifier thumbnail;
         public final BreastPresetListEntry nInfo;
-        private final WildfireButton btnOpenGUI;
+        private WildfireButton btnOpenGUI;
 
         private Entry(final BreastPresetListEntry nInfo) {
             this.nInfo = nInfo;
             this.thumbnail = nInfo.ident;
-            btnOpenGUI = new WildfireButton(0, 0, getRowWidth() - 6, itemHeight, Text.empty(), button -> {
-                PlayerConfig plr = Objects.requireNonNull(parent.getPlayer(), "getPlayer()");
-                plr.updateBustSize(nInfo.data.get(BreastPresetConfiguration.BUST_SIZE));
-                plr.getBreasts().updateXOffset(nInfo.data.get(BreastPresetConfiguration.BREASTS_OFFSET_X));
-                plr.getBreasts().updateYOffset(nInfo.data.get(BreastPresetConfiguration.BREASTS_OFFSET_Y));
-                plr.getBreasts().updateZOffset(nInfo.data.get(BreastPresetConfiguration.BREASTS_OFFSET_Z));
-                plr.getBreasts().updateCleavage(nInfo.data.get(BreastPresetConfiguration.BREASTS_CLEAVAGE));
-                plr.getBreasts().updateUniboob(nInfo.data.get(BreastPresetConfiguration.BREASTS_UNIBOOB));
-                PlayerConfig.saveGenderInfo(plr);
-            });
+//            btnOpenGUI = new WildfireButton(0, 0, getRowWidth() - 6, itemHeight, Text.empty(), button -> {
+//                PlayerConfig plr = Objects.requireNonNull(parent.getPlayer(), "getPlayer()");
+//                plr.updateBustSize(nInfo.data.get(BreastPresetConfiguration.BUST_SIZE));
+//                plr.getBreasts().updateXOffset(nInfo.data.get(BreastPresetConfiguration.BREASTS_OFFSET_X));
+//                plr.getBreasts().updateYOffset(nInfo.data.get(BreastPresetConfiguration.BREASTS_OFFSET_Y));
+//                plr.getBreasts().updateZOffset(nInfo.data.get(BreastPresetConfiguration.BREASTS_OFFSET_Z));
+//                plr.getBreasts().updateCleavage(nInfo.data.get(BreastPresetConfiguration.BREASTS_CLEAVAGE));
+//                plr.getBreasts().updateUniboob(nInfo.data.get(BreastPresetConfiguration.BREASTS_UNIBOOB));
+//                PlayerConfig.saveGenderInfo(plr);
+//            });
         }
 
         @Override
@@ -164,7 +164,7 @@ public class WildfireBreastPresetList extends EntryListWidget<WildfireBreastPres
             TextRenderer font = MinecraftClient.getInstance().textRenderer;
             //ctx.fill(x, y, x + entryWidth, y + entryHeight, 0x55005555);
 
-            ctx.drawTexture(RenderLayer::getGuiTextured, thumbnail, x + 2, y + 2, 0, 0, 28, 28, 28, 28);
+            ctx.drawTexture(RenderPipelines.GUI_TEXTURED, thumbnail, x + 2, y + 2, 0, 0, 28, 28, 28, 28);
 
             ctx.drawText(font, Text.of(nInfo.name), x + 34, y + 4, 0xFFFFFFFF, false);
             //ctx.drawText(font, Text.translatable("07/25/2023 1:19 AM").formatted(Formatting.ITALIC), x + 34, y + 20, 0xFF888888, false);

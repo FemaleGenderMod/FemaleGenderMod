@@ -297,7 +297,6 @@ public class PlayerConfig extends EntityConfig {
 			try {
 				CloudSync.sync(this).join();
 				WildfireGender.LOGGER.info("Synced player data to the cloud");
-				SyncLog.add(WildfireLocalization.SYNC_LOG_SYNC_TO_CLOUD);
 			} catch(Exception e) {
 				WildfireGender.LOGGER.error("Failed to sync player data", e);
 				SyncLog.add(WildfireLocalization.SYNC_LOG_FAILED_TO_SYNC_DATA);
