@@ -103,7 +103,7 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 		var clientUUID = client.player.getUuid();
 
 		WildfireGender.CACHE.asMap().values()
-			.removeIf(config -> config.syncStatus == PlayerConfig.SyncStatus.SYNCED);
+			.removeIf(config -> config.syncStatus == PlayerConfig.SyncStatus.UNKNOWN);
 
 		return CompletableFuture.runAsync(() -> {
 			var clientConfig = WildfireGender.getOrAddPlayerById(clientUUID);
