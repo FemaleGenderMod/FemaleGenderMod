@@ -18,6 +18,7 @@ to other players on servers that don't have the mod installed.
 
 ## Default Controls
 H - Open Customization Settings
+
 [Pre 1.21.6] G - Open Customization Settings
 
 ## License
