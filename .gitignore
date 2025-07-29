@@ -19,6 +19,12 @@ classes/
 *.ipr
 *.iws
 
+#Minecraft
+run/
+runV2/
+dependencies/
+src/main/generated/.cache/
+
 # VSCode
 
 .settings/

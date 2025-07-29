@@ -32,4 +32,11 @@ public record GenderArmor(
         boolean armorStandsCopySettings,
         IBreastArmorTexture texture
 ) implements IGenderArmor {
+	public GenderArmor(float physicsResistance, float tightness) {
+		this(physicsResistance, tightness, true, false, physicsResistance == 1f, IBreastArmorTexture.DEFAULT);
+	}
+
+	public GenderArmor(float physicsResistance, float tightness, boolean armorStandsCopySettings) {
+		this(physicsResistance, tightness, true, false, armorStandsCopySettings, IBreastArmorTexture.DEFAULT);
+	}
 }

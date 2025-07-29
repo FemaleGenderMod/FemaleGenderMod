@@ -8,9 +8,7 @@ from pathlib import Path
 # JSON decode errors in any of these files should cause a build to fail
 critical = [
     "src/main/resources/fabric.mod.json",
-    "src/main/resources/wildfire_gender.mixins.json",
-    "src/main/resources/assets/wildfire_gender/sounds.json",
-    "src/main/resources/assets/wildfire_gender/lang/en_us.json",
+    "src/main/resources/wildfire_gender.mixins.json"
 ]
 should_fail = False
 
@@ -38,7 +36,7 @@ for file in jsons:
 if should_fail:
     exit(1)
 
-with open("src/main/resources/assets/wildfire_gender/lang/en_us.json") as f:
+with open("src/main/generated/assets/wildfire_gender/lang/en_us.json") as f:
     root_translations = json.load(f)
 
 for translation in glob("src/main/resources/assets/wildfire_gender/lang/*.json"):

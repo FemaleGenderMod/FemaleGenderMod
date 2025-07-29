@@ -23,6 +23,7 @@ dependencies {
     implementation("net.fabricmc:fabric-loader:${project.property("loader_version")}")
 
     implementation(platform("net.fabricmc.fabric-api:fabric-api-bom:${property("dependencies.fabric")}"))
+    implementation("net.fabricmc.fabric-api:fabric-data-generation-api-v1")
     implementation("net.fabricmc.fabric-api:fabric-networking-api-v1")
     implementation("net.fabricmc.fabric-api:fabric-key-mapping-api-v1")
     implementation("net.fabricmc.fabric-api:fabric-lifecycle-events-v1")
@@ -79,6 +80,12 @@ loom {
     }
 
     accessWidenerPath = sc.process(rootProject.file("src/main/resources/wildfire_gender.accesswidener"), "build/dev.aw")
+}
+
+fabricApi {
+    configureDataGeneration {
+        client = true
+    }
 }
 
 tasks.jar {
