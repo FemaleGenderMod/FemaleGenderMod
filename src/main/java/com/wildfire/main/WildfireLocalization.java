@@ -38,6 +38,10 @@ public class WildfireLocalization {
     public static final Text SYNC_LOG_FAILED_TO_SYNC_DATA = Text.translatable("wildfire_gender.sync_log.failed_to_sync_data");
     public static final Text SYNC_LOG_SYNC_TO_CLOUD = Text.translatable("wildfire_gender.sync_log.sync_to_cloud");
 
+    public static final Text SYNC_LOG_DELETED = Text.translatable("wildfire_gender.sync_log.data_deleted");
+    public static final Text SYNC_LOG_DELETION_FAILED = Text.translatable("wildfire_gender.sync_log.data_deletion_failed");
+    public static final Text SYNC_LOG_NO_PROFILE_TO_DELETE = Text.translatable("wildfire_gender.sync_log.no_data_to_delete");
+
     public static final Text SYNC_LOG_GET_SINGLE_PROFILE = Text.translatable("wildfire_gender.sync_log.get_single_profile");
     public static final Text SYNC_LOG_GET_MULTIPLE_PROFILES = Text.translatable("wildfire_gender.sync_log.get_multiple_profiles");
 

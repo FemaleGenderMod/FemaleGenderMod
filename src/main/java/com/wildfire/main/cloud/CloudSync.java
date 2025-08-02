@@ -314,6 +314,32 @@ public final class CloudSync {
 	}
 
 	/**
+	 * Request that the cloud sync server delete the data stored for the provided client player.
+	 *
+	 * @param config The config of the client player
+	 *
+	 * @return A {@link CompletableFuture} indicating when the process has finished, or with an exception if
+	 *         the request failed.
+	 */
+	public static CompletableFuture<Void> deleteProfile(PlayerConfig config) {
+		return CompletableFuture.runAsync(() -> {
+			var token = getAuthToken();
+			var url = URI.create(getCloudServer() + "/" + config.uuid);
+			var request = createRequest(url).DELETE().header("Auth-Token", token).build();
+			var response = CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString()).join();
+			if(response.statusCode() == 404) {
+				SyncLog.add(WildfireLocalization.SYNC_LOG_NO_PROFILE_TO_DELETE);
+				return;
+			} else if(response.statusCode() >= 400) {
+				SyncLog.add(WildfireLocalization.SYNC_LOG_DELETION_FAILED);
+				throw new RuntimeException("Server responded " + response.statusCode() + ": " + response.body());
+			}
+			WildfireGender.LOGGER.debug("Deleted cloud sync profile");
+			SyncLog.add(WildfireLocalization.SYNC_LOG_DELETED);
+		}, EXECUTOR);
+	}
+
+	/**
 	 * Fetch player data from the sync server
 	 *
 	 * @param uuid The UUID of the player to get data for

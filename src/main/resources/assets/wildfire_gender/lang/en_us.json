@@ -79,6 +79,8 @@
 	"wildfire_gender.first_time_setup.notice": "You can always change this setting later in the mod menu.",
 	"wildfire_gender.first_time_setup.enable": "Enable Cloud Syncing",
 	"wildfire_gender.first_time_setup.disable": "Disable Cloud Syncing",
+	"wildfire_gender.first_time_setup.enable.tooltip.line1": "With cloud sync enabled, your configuration will be stored and provided to other players even if you don't currently have the mod installed.",
+	"wildfire_gender.first_time_setup.enable.tooltip.line2": "You can delete your cloud sync profile at any point in the Cloud Sync settings menu after turning it off.",
 
 	"wildfire_gender.cloud_settings": "Cloud Sync Server Settings",
 	"wildfire_gender.cloud.tooltip": "Cloud Sync",
@@ -88,13 +90,17 @@
 	"wildfire_gender.cloud.automatic": "Automatic Sync: %s",
 	"wildfire_gender.cloud.automatic.tooltip.line1": "While enabled, your config will automatically be synced to the cloud after making any changes.",
 	"wildfire_gender.cloud.automatic.tooltip.line2": "You can still sync manually with the button below if this is disabled.",
+
 	"wildfire_gender.cloud.sync": "Sync Now",
 	"wildfire_gender.cloud.syncing": "Syncing...",
-
-	"wildfire_gender.cloud.status_log": "Status Log",
-
 	"wildfire_gender.cloud.syncing.success": "Synced",
 	"wildfire_gender.cloud.syncing.fail": "Sync Failed",
+
+	"wildfire_gender.cloud.delete": "Delete",
+	"wildfire_gender.cloud.deleted": "Deleted",
+	"wildfire_gender.cloud.delete_failed": "Delete Failed",
+
+	"wildfire_gender.cloud.status_log": "Status Log",
 
 	"wildfire_gender.sync_log.authenticating_mojang": "Authenticating with Mojang...",
 	"wildfire_gender.sync_log.authenticating_sync": "Authenticating with cloud sync...",
@@ -105,6 +111,10 @@
 	"wildfire_gender.sync_log.attempting_sync": "Syncing profile...",
 	"wildfire_gender.sync_log.sync_success": "Sync successful.",
 	"wildfire_gender.sync_log.sync_too_frequently": "Sync rate limited.",
+
+	"wildfire_gender.sync_log.data_deleted": "Deleted cloud sync profile.",
+	"wildfire_gender.sync_log.data_deletion_failed": "Failed to delete cloud sync profile.",
+	"wildfire_gender.sync_log.no_data_to_delete": "No cloud sync profile found.",
 
 	"wildfire_gender.sync_log.get_single_profile": "Retrieving profile...",
 	"wildfire_gender.sync_log.get_multiple_profiles": "Retrieving batch of profiles...",
