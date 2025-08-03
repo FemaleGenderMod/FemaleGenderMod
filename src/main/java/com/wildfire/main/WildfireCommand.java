@@ -18,6 +18,7 @@
 
 package com.wildfire.main;
 
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.config.enums.SyncVerbosity;
@@ -29,6 +30,7 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
@@ -44,38 +46,39 @@ import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.arg
 @Environment(EnvType.CLIENT)
 public class WildfireCommand {
 	static void init() {
-		ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
-			dispatcher.register(
-					ClientCommandManager.literal("fgm")
-							.then(ClientCommandManager.literal("invalidatecache")
-									.executes(WildfireCommand::invalidateCache))
-							.then(ClientCommandManager.literal("lookentity")
-									.executes(WildfireCommand::getEntityLookingAt))
-							.then(ClientCommandManager.literal("cache")
-									.executes(WildfireCommand::getUsers))
-							.then(ClientCommandManager.literal("debug")
-									.executes(WildfireCommand::debugCommand))
-							.then(ClientCommandManager.literal("verbosity")
-									.then(argument("level", new SyncVerbosity.SyncVerbosityArgumentType())
-											.executes(WildfireCommand::setLogLevel)))
-			);
-		});
+		ClientCommandRegistrationCallback.EVENT.register(WildfireCommand::register);
+	}
+
+	private static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess registry) {
+		dispatcher.register(
+				ClientCommandManager.literal("fgm")
+						.then(ClientCommandManager.literal("invalidatecache")
+								.executes(WildfireCommand::invalidateCache))
+						.then(ClientCommandManager.literal("lookentity")
+								.executes(WildfireCommand::getEntityLookingAt))
+						.then(ClientCommandManager.literal("cache")
+								.executes(WildfireCommand::getUsers))
+						.then(ClientCommandManager.literal("debug")
+								.executes(WildfireCommand::debugCommand))
+						.then(ClientCommandManager.literal("verbosity")
+								.then(argument("level", new SyncVerbosity.SyncVerbosityArgumentType())
+										.executes(WildfireCommand::setLogLevel)))
+		);
 	}
 
 	private static int getEntityLookingAt(CommandContext<FabricClientCommandSource> ctx) {
-		MinecraftClient client = MinecraftClient.getInstance();
-		if (client.player == null || client.world == null) return 0;
+		var player = ctx.getSource().getPlayer();
 
 		double reachDistance = 10.0D; // how far to check
-		Vec3d eyePos = client.player.getCameraPosVec(1.0F);
-		Vec3d lookVec = client.player.getRotationVec(1.0F);
+		Vec3d eyePos = player.getCameraPosVec(1.0F);
+		Vec3d lookVec = player.getRotationVec(1.0F);
 		Vec3d reachVec = eyePos.add(lookVec.multiply(reachDistance));
 
 		EntityHitResult entityHitResult = ProjectileUtil.raycast(
-				client.player,
+				player,
 				eyePos,
 				reachVec,
-				client.player.getBoundingBox().stretch(lookVec.multiply(reachDistance)).expand(1.0D),
+				player.getBoundingBox().stretch(lookVec.multiply(reachDistance)).expand(1.0D),
 				entity -> !entity.isSpectator() && entity.isAlive(),
 				reachDistance * reachDistance
 		);
@@ -87,7 +90,6 @@ public class WildfireCommand {
 			WildfireHelper.logCommand(ctx, "Type: " + target.getType());
 			WildfireHelper.logCommand(ctx, "Class: " + target.getClass());
 			WildfireHelper.logCommand(ctx, "Renderer: " + MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(target));
-
 		} else {
 			WildfireHelper.logCommand(ctx, "No entity in sight.");
 		}
@@ -105,38 +107,37 @@ public class WildfireCommand {
 	}
 
 	private static int getUsers(CommandContext<FabricClientCommandSource> ctx) {
-		if (MinecraftClient.getInstance().world != null) {
-			ctx.getSource().sendFeedback(Text.literal("Players Cached (" + WildfireGender.CACHE.size() + "):"));
+		var world = ctx.getSource().getWorld();
+		ctx.getSource().sendFeedback(Text.literal("Players Cached (" + WildfireGender.CACHE.size() + "):"));
 
-			for (Map.Entry<UUID, PlayerConfig> entry : WildfireGender.CACHE.asMap().entrySet()) {
-				PlayerConfig plrConfig = entry.getValue();
-				if (plrConfig != null) {
-					PlayerEntity plr = MinecraftClient.getInstance().world.getPlayerByUuid(plrConfig.uuid);
-					if (plr != null) {
-						ctx.getSource().sendFeedback(
-								Text.empty().append(plr.getDisplayName()).append(" - ").append(plrConfig.getGender().getDisplayName())
-						);
-					}
-				}
-			}
-
-			ctx.getSource().sendFeedback(Text.literal("Entities Cached (" + EntityConfig.CACHE.size() + "):"));
-
-			for (Map.Entry<UUID, EntityConfig> entry : EntityConfig.CACHE.asMap().entrySet()) {
-				EntityConfig entityConfig = entry.getValue();
-				if (entityConfig != null) {
-					Entity entity = MinecraftClient.getInstance().world.getEntity(entityConfig.uuid);
-					if (entity != null) {
-						ctx.getSource().sendFeedback(
-								Text.empty().append(entity.getDisplayName()).append(" - ").append(entityConfig.getGender().getDisplayName())
-						);
-					}
+		for (Map.Entry<UUID, PlayerConfig> entry : WildfireGender.CACHE.asMap().entrySet()) {
+			PlayerConfig plrConfig = entry.getValue();
+			if (plrConfig != null) {
+				PlayerEntity plr = world.getPlayerByUuid(plrConfig.uuid);
+				if (plr != null) {
+					ctx.getSource().sendFeedback(
+							Text.empty().append(plr.getDisplayName()).append(" - ").append(plrConfig.getGender().getDisplayName())
+					);
 				}
 			}
 		}
+
+		ctx.getSource().sendFeedback(Text.literal("Entities Cached (" + EntityConfig.CACHE.size() + "):"));
+
+		for (Map.Entry<UUID, EntityConfig> entry : EntityConfig.CACHE.asMap().entrySet()) {
+			EntityConfig entityConfig = entry.getValue();
+			if (entityConfig != null) {
+				Entity entity = world.getEntity(entityConfig.uuid);
+				if (entity != null) {
+					ctx.getSource().sendFeedback(
+							Text.empty().append(entity.getDisplayName()).append(" - ").append(entityConfig.getGender().getDisplayName())
+					);
+				}
+			}
+		}
+
 		return 1;
 	}
-
 
 	private static int invalidateCache(CommandContext<FabricClientCommandSource> ctx) {
 		WildfireGender.CACHE.invalidateAll();
@@ -148,7 +149,7 @@ public class WildfireCommand {
 
 	private static int debugCommand(CommandContext<FabricClientCommandSource> ctx) {
 		ClientConfig.INSTANCE.set(ClientConfig.DEBUG_MODE, !ClientConfig.INSTANCE.get(ClientConfig.DEBUG_MODE));
-		WildfireHelper.logCommand(ctx, "Debug Mode: " + (ClientConfig.INSTANCE.get(ClientConfig.DEBUG_MODE)?"Enabled":"Disabled"));
+		WildfireHelper.logCommand(ctx, "Debug mode: " + (ClientConfig.INSTANCE.get(ClientConfig.DEBUG_MODE) ? "Enabled" : "Disabled"));
 		ClientConfig.INSTANCE.save();
 		return 1;
 	}
