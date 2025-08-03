@@ -20,9 +20,9 @@ package com.wildfire.gui.screen;
 
 import com.wildfire.events.EntityHurtSoundEvent;
 import com.wildfire.gui.WildfireSlider;
-import com.wildfire.main.Gender;
+import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.config.GlobalConfig;
+import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.config.Configuration;
 import net.fabricmc.api.EnvType;
@@ -166,7 +166,7 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .size(FULL_WIDTH, 20)
                 .onPress(button -> {
                     plr.updateBreastPhysics(!plr.hasBreastPhysics());
-                    PlayerConfig.saveGenderInfo(plr);
+                    plr.save();
                     button.updateMessage();
                     ref.bounceSlider.active = plr.hasBreastPhysics();
                     ref.floppySlider.active = plr.hasBreastPhysics();
@@ -180,18 +180,21 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .size(FULL_WIDTH, 20)
                 .onPress(button -> {
                     breasts.updateUniboob(!breasts.isUniboob());
-                    PlayerConfig.saveGenderInfo(plr);
+                    plr.save();
                     button.updateMessage();
                 })
                 .active(plr.hasBreastPhysics()));
 
         ref.overridePhysics = addButton(builder -> builder
-                .message(() -> Text.translatable("wildfire_gender.char_settings.override_armor_physics", plr.getArmorPhysicsOverride() ? ENABLED : DISABLED))
+                .message(() -> {
+                    var value = ClientConfig.INSTANCE.get(ClientConfig.ARMOR_PHYSICS_OVERRIDE);
+                    return Text.translatable("wildfire_gender.char_settings.override_armor_physics", value ? ENABLED : DISABLED);
+                })
                 .position(this.width / 2 - 36, tabOffsetY + 70)
                 .size(FULL_WIDTH, 20)
                 .onPress(button -> {
-                    plr.updateArmorPhysicsOverride(!plr.getArmorPhysicsOverride());
-                    PlayerConfig.saveGenderInfo(plr);
+                    ClientConfig.INSTANCE.toggle(ClientConfig.ARMOR_PHYSICS_OVERRIDE);
+                    ClientConfig.INSTANCE.save();
                     button.updateMessage();
                 })
                 .tooltip(Tooltip.of(Text.translatable("wildfire_gender.tooltip.override_armor_physics.line1")
@@ -222,7 +225,7 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
 
     private void initMiscTab(final int tabOffsetY) {
         final var plr = Objects.requireNonNull(getPlayer(), "getPlayer()");
-        final var config = GlobalConfig.INSTANCE;
+        final var config = ClientConfig.INSTANCE;
         final var ref = new Object() {
             ClickableWidget pitchSlider;
         };
@@ -233,7 +236,7 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .size(FULL_WIDTH, 20)
                 .onPress(button -> {
                     plr.updateHurtSounds(!plr.hasHurtSounds());
-                    PlayerConfig.saveGenderInfo(plr);
+                    plr.save();
                     ref.pitchSlider.active = plr.hasHurtSounds();
                     button.updateMessage();
                 })
@@ -247,7 +250,7 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .current(plr.getVoicePitch())
                 .update(plr::updateVoicePitch)
                 .save(value -> {
-                    PlayerConfig.saveGenderInfo(plr);
+                    plr.save();
                     var clientPlayer = Objects.requireNonNull(client).player;
                     if(clientPlayer != null) {
                         EntityHurtSoundEvent.EVENT.invoker().onHurt(clientPlayer, clientPlayer.getDamageSources().generic());
@@ -262,16 +265,16 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .size(FULL_WIDTH, 20)
                 .onPress(button -> {
                     plr.updateShowBreastsInArmor(!plr.showBreastsInArmor());
-                    PlayerConfig.saveGenderInfo(plr);
+                    plr.save();
                     button.updateMessage();
                 }));
 
         addButton(builder -> builder
-                .message(() -> Text.translatable("wildfire_gender.char_settings.show_armor_stat", config.get(GlobalConfig.ARMOR_STAT) ? ENABLED : DISABLED))
+                .message(() -> Text.translatable("wildfire_gender.char_settings.show_armor_stat", config.get(ClientConfig.ARMOR_STAT) ? ENABLED : DISABLED))
                 .position(this.width / 2 - 36, tabOffsetY + 70)
                 .size(FULL_WIDTH, 20)
                 .onPress(button -> {
-                    config.set(GlobalConfig.ARMOR_STAT, !config.get(GlobalConfig.ARMOR_STAT));
+                    config.toggle(ClientConfig.ARMOR_STAT);
                     config.save();
                     button.updateMessage();
                 }));
@@ -282,7 +285,7 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .size(FULL_WIDTH, 20)
                 .onPress(button -> {
                     plr.updateHolidayThemes(!plr.hasHolidayThemes());
-                    PlayerConfig.saveGenderInfo(plr);
+                    plr.save();
                     button.updateMessage();
                 })
                 .tooltip(Tooltip.of(Text.translatable("wildfire_gender.tooltip.holiday_themes.line1"))));

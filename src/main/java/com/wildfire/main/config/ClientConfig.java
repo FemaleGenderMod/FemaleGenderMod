@@ -20,16 +20,21 @@ package com.wildfire.main.config;
 
 import com.wildfire.main.config.enums.ShowPlayerListMode;
 import com.wildfire.main.config.enums.SyncVerbosity;
+import com.wildfire.main.config.types.BooleanConfigKey;
+import com.wildfire.main.config.types.EnumConfigKey;
+import com.wildfire.main.config.types.StringConfigKey;
 
-public class GlobalConfig extends AbstractConfiguration {
-    public static final GlobalConfig INSTANCE = new GlobalConfig();
+public class ClientConfig extends AbstractConfiguration {
+    public static final ClientConfig INSTANCE = new ClientConfig();
 
-    private GlobalConfig() {
+    private ClientConfig() {
         super(".", "wildfire_gender");
     }
 
     // note: this option is not intended to be saved in any persistent manner
     public static boolean RENDER_BREASTS = true;
+
+    public static final BooleanConfigKey ARMOR_PHYSICS_OVERRIDE = new BooleanConfigKey("armor_physics_override", false);
 
     public static final BooleanConfigKey FIRST_TIME_LOAD = new BooleanConfigKey("firstTimeLoad", true);
     public static final BooleanConfigKey CLOUD_SYNC_ENABLED = new BooleanConfigKey("cloud_sync", false);
@@ -45,6 +50,7 @@ public class GlobalConfig extends AbstractConfiguration {
     public static final BooleanConfigKey HIDE_OWN_CONTRIBUTOR_TAG = new BooleanConfigKey("hide_own_contributor_nametag", false);
 
     static {
+        INSTANCE.setDefault(ARMOR_PHYSICS_OVERRIDE);
         INSTANCE.setDefault(FIRST_TIME_LOAD);
         INSTANCE.setDefault(CLOUD_SYNC_ENABLED);
         INSTANCE.setDefault(AUTOMATIC_CLOUD_SYNC);

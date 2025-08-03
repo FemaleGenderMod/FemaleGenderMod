@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.main.config;
+package com.wildfire.main.config.types;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -29,6 +29,10 @@ public abstract class ConfigKey<TYPE> {
     protected ConfigKey(String key, TYPE defaultValue) {
         this.key = key;
         this.defaultValue = defaultValue;
+    }
+
+    public String getKey() {
+        return key;
     }
 
     public TYPE getDefault() {

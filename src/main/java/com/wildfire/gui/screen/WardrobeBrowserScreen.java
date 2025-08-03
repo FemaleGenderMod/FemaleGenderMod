@@ -20,7 +20,7 @@ package com.wildfire.gui.screen;
 
 import com.wildfire.gui.GuiUtils;
 import com.wildfire.gui.SyncedPlayerList;
-import com.wildfire.main.Gender;
+import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.WildfireGender;
 
 import java.util.*;
@@ -28,7 +28,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.wildfire.main.cloud.CloudSync;
-import com.wildfire.main.config.GlobalConfig;
+import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -70,14 +70,14 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 		PlayerConfig plr = Objects.requireNonNull(getPlayer(), "getPlayer()");
 
 		addButton(builder -> builder
-				.message(() -> Text.translatable("wildfire_gender.always_show_list", GlobalConfig.INSTANCE.get(GlobalConfig.ALWAYS_SHOW_LIST).text()))
-				.tooltip(GlobalConfig.INSTANCE.get(GlobalConfig.ALWAYS_SHOW_LIST).tooltip())
+				.message(() -> Text.translatable("wildfire_gender.always_show_list", ClientConfig.INSTANCE.get(ClientConfig.ALWAYS_SHOW_LIST).text()))
+				.tooltip(ClientConfig.INSTANCE.get(ClientConfig.ALWAYS_SHOW_LIST).tooltip())
 				.position(126, 4)
 				.size(185, 10)
 				.onPress(button -> {
-					var config = GlobalConfig.INSTANCE;
-					var newVal = config.get(GlobalConfig.ALWAYS_SHOW_LIST).next();
-					config.set(GlobalConfig.ALWAYS_SHOW_LIST, newVal);
+					var config = ClientConfig.INSTANCE;
+					var newVal = config.get(ClientConfig.ALWAYS_SHOW_LIST).next();
+					config.set(ClientConfig.ALWAYS_SHOW_LIST, newVal);
 					config.save();
 					button.updateMessage();
 					button.setTooltip(newVal.tooltip());
@@ -89,7 +89,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 				.size(80, 15)
 				.onPress(button -> {
 					plr.updateGender(plr.getGender().next());
-					PlayerConfig.saveGenderInfo(plr);
+					plr.save();
 					clearAndInit();
 				}));
 

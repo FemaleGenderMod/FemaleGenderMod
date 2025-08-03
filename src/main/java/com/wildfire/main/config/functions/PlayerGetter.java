@@ -16,32 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.main.config;
+package com.wildfire.main.config.functions;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+import com.wildfire.main.entitydata.PlayerConfig;
 
-import java.util.function.IntFunction;
-
-public class EnumConfigKey<TYPE extends Enum<TYPE>> extends ConfigKey<TYPE> {
-	private final IntFunction<TYPE> ordinal;
-
-	public EnumConfigKey(String key, TYPE defaultValue, IntFunction<TYPE> ordinalMapper) {
-		super(key, defaultValue);
-		this.ordinal = ordinalMapper;
-	}
-
-	@Override
-	protected TYPE read(JsonElement element) {
-		if(element instanceof JsonPrimitive prim && prim.isNumber()) {
-			return ordinal.apply(prim.getAsInt());
-		}
-		return defaultValue;
-	}
-
-	@Override
-	public void save(JsonObject object, TYPE value) {
-		object.addProperty(key, value.ordinal());
-	}
+@FunctionalInterface
+public interface PlayerGetter<T> {
+	T get(PlayerConfig player);
 }

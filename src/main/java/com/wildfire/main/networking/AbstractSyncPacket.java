@@ -21,7 +21,7 @@ package com.wildfire.main.networking;
 import com.mojang.datafixers.util.Function7;
 import com.wildfire.main.entitydata.Breasts;
 import com.wildfire.main.entitydata.PlayerConfig;
-import com.wildfire.main.Gender;
+import com.wildfire.main.config.enums.Gender;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;

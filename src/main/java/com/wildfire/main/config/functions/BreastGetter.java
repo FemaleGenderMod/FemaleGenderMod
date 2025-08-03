@@ -16,23 +16,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.main.config;
+package com.wildfire.main.config.functions;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
-import com.wildfire.main.Gender;
+import com.wildfire.main.entitydata.Breasts;
+import com.wildfire.main.entitydata.PlayerConfig;
 
-public class GenderConfigKey extends EnumConfigKey<Gender> {
-    public GenderConfigKey(String key) {
-        super(key, Gender.MALE, Gender.BY_ID);
-    }
+@FunctionalInterface
+public interface BreastGetter<T> extends PlayerGetter<T> {
+	T get(Breasts player);
 
-    @Override
-    protected Gender read(JsonElement element) {
-        // TODO is this still necessary? only extraordinarily old configs should still have this as a boolean
-        if(element instanceof JsonPrimitive primitive && primitive.isBoolean()) {
-            return primitive.getAsBoolean() ? Gender.MALE : Gender.FEMALE;
-        }
-        return super.read(element);
-    }
+	@Override
+	default T get(PlayerConfig player) {
+		return get(player.getBreasts());
+	}
 }

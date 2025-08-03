@@ -18,17 +18,30 @@
 
 package com.wildfire.main.config;
 
-import java.nio.charset.StandardCharsets;
-import java.util.UUID;
+import com.google.gson.JsonObject;
+import com.wildfire.main.config.enums.Gender;
+import com.wildfire.main.config.functions.BreastGetter;
+import com.wildfire.main.config.functions.BreastSetter;
+import com.wildfire.main.config.functions.PlayerGetter;
+import com.wildfire.main.config.functions.PlayerSetter;
+import com.wildfire.main.config.types.BooleanConfigKey;
+import com.wildfire.main.config.types.ConfigKey;
+import com.wildfire.main.config.types.EnumConfigKey;
+import com.wildfire.main.config.types.FloatConfigKey;
+import com.wildfire.main.entitydata.Breasts;
+import com.wildfire.main.entitydata.PlayerConfig;
+import org.jetbrains.annotations.Unmodifiable;
+
+import java.util.List;
 
 public class Configuration extends AbstractConfiguration {
 
 	private static final String CONFIG_DIR = "WildfireGender";
 
-	public static final UUIDConfigKey USERNAME = new UUIDConfigKey("username", UUID.nameUUIDFromBytes("UNKNOWN".getBytes(StandardCharsets.UTF_8)));
-	public static final GenderConfigKey GENDER = new GenderConfigKey("gender");
+	public static final EnumConfigKey<Gender> GENDER = new EnumConfigKey<>("gender", Gender.MALE, Gender.BY_ID);
 	public static final FloatConfigKey BUST_SIZE = new FloatConfigKey("bust_size", 0.6F, 0, 0.8f);
 	public static final BooleanConfigKey HURT_SOUNDS = new BooleanConfigKey("hurt_sounds", true);
+	public static final FloatConfigKey VOICE_PITCH = new FloatConfigKey("voice_pitch", 1F, 0.8f, 1.2f);
 
 	public static final FloatConfigKey BREASTS_OFFSET_X = new FloatConfigKey("breasts_xOffset", 0.0F, -1, 1);
 	public static final FloatConfigKey BREASTS_OFFSET_Y = new FloatConfigKey("breasts_yOffset", 0.0F, -1, 1);
@@ -37,17 +50,57 @@ public class Configuration extends AbstractConfiguration {
 	public static final FloatConfigKey BREASTS_CLEAVAGE = new FloatConfigKey("breasts_cleavage", 0, 0, 0.1F);
 
 	public static final BooleanConfigKey BREAST_PHYSICS = new BooleanConfigKey("breast_physics", true);
-	public static final BooleanConfigKey ARMOR_PHYSICS_OVERRIDE = new BooleanConfigKey("armor_physics_override", false);
 	public static final BooleanConfigKey SHOW_IN_ARMOR = new BooleanConfigKey("show_in_armor", true);
 	public static final FloatConfigKey BOUNCE_MULTIPLIER = new FloatConfigKey("bounce_multiplier", 0.333F, 0, 0.5f);
 	public static final FloatConfigKey FLOPPY_MULTIPLIER = new FloatConfigKey("floppy_multiplier", 0.75F, 0.25f, 1);
 
-	public static final FloatConfigKey VOICE_PITCH = new FloatConfigKey("voice_pitch", 1F, 0.8f, 1.2f);
-
-	//Render holiday themes on the player.
 	public static final BooleanConfigKey HOLIDAY_THEMES = new BooleanConfigKey("holiday_themes", true);
+
+	public static final @Unmodifiable List<RegisteredKey<?>> KEYS = List.of(
+			new RegisteredKey<>(GENDER, PlayerConfig::getGender, PlayerConfig::updateGender),
+			new RegisteredKey<>(BUST_SIZE, PlayerConfig::getBustSize, PlayerConfig::updateBustSize),
+			new RegisteredKey<>(HURT_SOUNDS, PlayerConfig::hasHurtSounds, PlayerConfig::updateHurtSounds),
+			new RegisteredKey<>(VOICE_PITCH, PlayerConfig::getVoicePitch, PlayerConfig::updateVoicePitch),
+
+			new RegisteredKey<>(BREASTS_OFFSET_X, Breasts::getXOffset, Breasts::updateXOffset),
+			new RegisteredKey<>(BREASTS_OFFSET_Y, Breasts::getYOffset, Breasts::updateYOffset),
+			new RegisteredKey<>(BREASTS_OFFSET_Z, Breasts::getZOffset, Breasts::updateZOffset),
+			new RegisteredKey<>(BREASTS_UNIBOOB, Breasts::isUniboob, Breasts::updateUniboob),
+			new RegisteredKey<>(BREASTS_CLEAVAGE, Breasts::getCleavage, Breasts::updateCleavage),
+
+			new RegisteredKey<>(BREAST_PHYSICS, PlayerConfig::hasBreastPhysics, PlayerConfig::updateBreastPhysics),
+			new RegisteredKey<>(SHOW_IN_ARMOR, PlayerConfig::showBreastsInArmor, PlayerConfig::updateShowBreastsInArmor),
+			new RegisteredKey<>(BOUNCE_MULTIPLIER, PlayerConfig::getBounceMultiplier, PlayerConfig::updateBounceMultiplier),
+			new RegisteredKey<>(FLOPPY_MULTIPLIER, PlayerConfig::getFloppiness, PlayerConfig::updateFloppiness),
+
+			new RegisteredKey<>(HOLIDAY_THEMES, PlayerConfig::hasHolidayThemes, PlayerConfig::updateHolidayThemes)
+	);
 
 	public Configuration(String cfgName) {
 		super(CONFIG_DIR, cfgName);
+	}
+
+	public void setDefaults() {
+		KEYS.stream().map(RegisteredKey::key).forEach(this::setDefault);
+	}
+
+	public record RegisteredKey<T>(ConfigKey<T> key, PlayerGetter<T> getter, PlayerSetter<T> setter) {
+		RegisteredKey(ConfigKey<T> key, BreastGetter<T> getter, BreastSetter<T> setter) {
+			// java isn't quite smart enough to do all of this for us, but it is smart enough to cast the setter
+			// for us, so long as we give it enough of a hint with the getter.
+			this(key, (PlayerGetter<T>) getter, setter);
+		}
+
+		public void dump(PlayerConfig config, JsonObject obj) {
+			key.save(obj, config.getConfig().get(key));
+		}
+
+		public void writeToConfig(PlayerConfig player) {
+			player.getConfig().set(key, getter.get(player));
+		}
+
+		public void writeToPlayer(PlayerConfig player) {
+			setter.set(player, player.getConfig().get(key));
+		}
 	}
 }

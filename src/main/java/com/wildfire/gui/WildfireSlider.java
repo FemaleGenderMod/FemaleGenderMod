@@ -18,7 +18,7 @@
 
 package com.wildfire.gui;
 
-import com.wildfire.main.config.FloatConfigKey;
+import com.wildfire.main.config.types.FloatConfigKey;
 import it.unimi.dsi.fastutil.floats.Float2ObjectFunction;
 import it.unimi.dsi.fastutil.floats.FloatConsumer;
 import net.fabricmc.api.EnvType;

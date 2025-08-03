@@ -65,7 +65,7 @@ public abstract class BaseWildfireScreen extends Screen {
 
     protected WildfireSlider addSlider(Consumer<WildfireSlider.Builder> builder) {
         var sliderBuilder = new WildfireSlider.Builder();
-        sliderBuilder.save(ignored -> PlayerConfig.saveGenderInfo(Objects.requireNonNull(getPlayer(), "getPlayer()")));
+        sliderBuilder.save(ignored -> Objects.requireNonNull(getPlayer(), "getPlayer()").save());
         builder.accept(sliderBuilder);
         return addDrawableChild(sliderBuilder.build());
     }

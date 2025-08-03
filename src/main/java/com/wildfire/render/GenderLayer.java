@@ -19,7 +19,7 @@
 package com.wildfire.render;
 
 import com.wildfire.api.IGenderArmor;
-import com.wildfire.main.config.GlobalConfig;
+import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.entitydata.Breasts;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireHelper;
@@ -137,7 +137,7 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 	 */
 	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 	protected boolean setupRender(S state, EntityConfig entityConfig) {
-		if(!GlobalConfig.RENDER_BREASTS) return false;
+		if(!ClientConfig.RENDER_BREASTS) return false;
 
 		float partialTicks = MinecraftClient.getInstance().getRenderTickCounter().getTickProgress(true);
 		LivingEntity entity = Objects.requireNonNull(getEntity(state), "getEntity()");

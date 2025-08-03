@@ -19,12 +19,11 @@
 package com.wildfire.main;
 
 import com.wildfire.events.*;
-import com.wildfire.gui.GuiUtils;
 import com.wildfire.gui.SyncedPlayerList;
 import com.wildfire.gui.screen.WardrobeBrowserScreen;
 import com.wildfire.gui.screen.WildfireFirstTimeSetupScreen;
 import com.wildfire.main.cloud.CloudSync;
-import com.wildfire.main.config.GlobalConfig;
+import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.entitydata.BreastDataComponent;
 import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
@@ -171,7 +170,7 @@ public final class WildfireEventHandler {
 
 	@Environment(EnvType.CLIENT)
 	private static void renderTooltip(ItemStack item, Consumer<Text> tooltipAppender, @Nullable PlayerEntity player) {
-		if(player == null || !GlobalConfig.INSTANCE.get(GlobalConfig.ARMOR_STAT)) return;
+		if(player == null || !ClientConfig.INSTANCE.get(ClientConfig.ARMOR_STAT)) return;
 		var playerConfig = WildfireGender.getPlayerById(player.getUuid());
 		if(playerConfig == null || !playerConfig.getGender().canHaveBreasts()) return;
 
@@ -192,7 +191,7 @@ public final class WildfireEventHandler {
 			return;
 		}
 
-		if(GlobalConfig.INSTANCE.get(GlobalConfig.ALWAYS_SHOW_LIST).isVisible()) {
+		if(ClientConfig.INSTANCE.get(ClientConfig.ALWAYS_SHOW_LIST).isVisible()) {
 			SyncedPlayerList.drawSyncedPlayers(context, textRenderer);
 		}
 	}
@@ -247,10 +246,10 @@ public final class WildfireEventHandler {
 		}
 
 		if(TOGGLE_KEYBIND.wasPressed() && client.currentScreen == null) {
-			GlobalConfig.RENDER_BREASTS ^= true;
+			ClientConfig.RENDER_BREASTS ^= true;
 		}
 		if(CONFIG_KEYBIND.wasPressed() && client.currentScreen == null) {
-			if(GlobalConfig.INSTANCE.get(GlobalConfig.FIRST_TIME_LOAD) && CloudSync.isAvailable()) {
+			if(ClientConfig.INSTANCE.get(ClientConfig.FIRST_TIME_LOAD) && CloudSync.isAvailable()) {
 				client.setScreen(new WildfireFirstTimeSetupScreen(null, client.player.getUuid()));
 			} else {
 				client.setScreen(new WardrobeBrowserScreen(null, client.player.getUuid()));

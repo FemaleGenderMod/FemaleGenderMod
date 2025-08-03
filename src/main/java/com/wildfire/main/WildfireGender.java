@@ -25,7 +25,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.mojang.logging.LogUtils;
-import com.wildfire.main.config.GlobalConfig;
+import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.networking.WildfireSync;
 import net.fabricmc.api.ModInitializer;
@@ -81,7 +81,7 @@ public class WildfireGender implements ModInitializer {
 	public void onInitialize() {
 		WildfireSync.register();
 		WildfireEventHandler.registerCommonEvents();
-		GlobalConfig.INSTANCE.load();
+		ClientConfig.INSTANCE.load();
 	}
 
 	public static @Nullable PlayerConfig getPlayerById(UUID id) {

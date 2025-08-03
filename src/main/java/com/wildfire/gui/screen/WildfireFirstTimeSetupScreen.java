@@ -22,7 +22,7 @@ import com.wildfire.gui.GuiUtils;
 import com.wildfire.gui.WildfireButton;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireGenderClient;
-import com.wildfire.main.config.GlobalConfig;
+import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -61,7 +61,7 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 		int x = this.width / 2;
 		int y = this.height / 2;
 
-		final var config = GlobalConfig.INSTANCE;
+		final var config = ClientConfig.INSTANCE;
 		final var ref = new Object() {
 			WildfireButton no = null;
 		};
@@ -71,9 +71,9 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 				.position(x + 3, y + 74)
 				.size(128, 20)
 				.onPress(button -> {
-					config.set(GlobalConfig.CLOUD_SYNC_ENABLED, true);
-					config.set(GlobalConfig.AUTOMATIC_CLOUD_SYNC, true);
-					config.set(GlobalConfig.FIRST_TIME_LOAD, false);
+					config.set(ClientConfig.CLOUD_SYNC_ENABLED, true);
+					config.set(ClientConfig.AUTOMATIC_CLOUD_SYNC, true);
+					config.set(ClientConfig.FIRST_TIME_LOAD, false);
 
 					button.active = false;
 					button.setMessage(Text.literal("..."));
@@ -89,9 +89,9 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 				.position(x - 131, y + 74)
 				.size(128, 20)
 				.onPress(button -> {
-					config.set(GlobalConfig.CLOUD_SYNC_ENABLED, false);
-					config.set(GlobalConfig.AUTOMATIC_CLOUD_SYNC, false);
-					config.set(GlobalConfig.FIRST_TIME_LOAD, false);
+					config.set(ClientConfig.CLOUD_SYNC_ENABLED, false);
+					config.set(ClientConfig.AUTOMATIC_CLOUD_SYNC, false);
+					config.set(ClientConfig.FIRST_TIME_LOAD, false);
 
 					client.setScreen(new WardrobeBrowserScreen(null, client.player.getUuid()));
 				}));
@@ -120,7 +120,7 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 					WildfireGender.LOGGER.error("Failed to perform initial sync from the cloud", e);
 					return;
 				}
-				PlayerConfig.saveGenderInfo(clientConfig);
+				clientConfig.save();
 				// don't immediately re-sync the data we just got back to the cloud
 				clientConfig.needsCloudSync = false;
 			} else {
@@ -180,6 +180,6 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 
 	@Override
 	public void removed() {
-		GlobalConfig.INSTANCE.save();
+		ClientConfig.INSTANCE.save();
 	}
 }

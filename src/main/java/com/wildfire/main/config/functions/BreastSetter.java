@@ -16,24 +16,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.main.config;
+package com.wildfire.main.config.functions;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.wildfire.main.entitydata.Breasts;
+import com.wildfire.main.entitydata.PlayerConfig;
 
-public class BooleanConfigKey extends ConfigKey<Boolean> {
+@FunctionalInterface
+public interface BreastSetter<T> extends PlayerSetter<T> {
+	Object set(Breasts player, T value);
 
-    public BooleanConfigKey(String key, boolean defaultValue) {
-        super(key, defaultValue);
-    }
-
-    @Override
-    protected Boolean read(JsonElement element) {
-        return element.isJsonPrimitive() ? element.getAsJsonPrimitive().getAsBoolean() : defaultValue;
-    }
-
-    @Override
-    public void save(JsonObject object, Boolean value) {
-        object.addProperty(key, value);
-    }
+	@Override
+	default Object set(PlayerConfig player, T value) {
+		return set(player.getBreasts(), value);
+	}
 }

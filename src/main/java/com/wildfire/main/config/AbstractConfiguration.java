@@ -24,8 +24,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonWriter;
 import com.wildfire.main.WildfireGender;
+import com.wildfire.main.config.types.BooleanConfigKey;
+import com.wildfire.main.config.types.ConfigKey;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileReader;
@@ -39,8 +43,8 @@ public abstract class AbstractConfiguration {
 
 	private static final TypeAdapter<JsonObject> ADAPTER = new Gson().getAdapter(JsonObject.class);
 
-	private final File CFG_FILE;
-	public JsonObject SAVE_VALUES = new JsonObject();
+	private final File cfgFile;
+	private final JsonObject saveValues = new JsonObject();
 
 	protected AbstractConfiguration(String directory, String cfgName) {
 		Path saveDir = FabricLoader.getInstance().getConfigDir().resolve(directory);
@@ -51,7 +55,7 @@ public abstract class AbstractConfiguration {
 				WildfireGender.LOGGER.error("Failed to create config directory", e);
 			}
 		}
-		CFG_FILE = saveDir.resolve(cfgName + ".json").toFile();
+		cfgFile = saveDir.resolve(cfgName + ".json").toFile();
 	}
 
 	public static boolean supportsSaving() {
@@ -59,47 +63,63 @@ public abstract class AbstractConfiguration {
 	}
 
 	public <TYPE> void set(ConfigKey<TYPE> key, TYPE value) {
-		key.save(SAVE_VALUES, value);
+		key.save(saveValues, value);
 	}
 
 	public <TYPE> TYPE get(ConfigKey<TYPE> key) {
-		return key.read(SAVE_VALUES);
+		return key.read(saveValues);
+	}
+
+	public boolean toggle(BooleanConfigKey key) {
+		var newValue = !get(key);
+		set(key, newValue);
+		return newValue;
+	}
+
+	@ApiStatus.Internal
+	public @Nullable JsonElement get(String key) {
+		return saveValues.get(key);
+	}
+
+	@ApiStatus.Internal
+	public void set(String key, JsonElement element) {
+		saveValues.add(key, element);
 	}
 
 	public <TYPE> void setDefault(ConfigKey<TYPE> key) {
-		if(!SAVE_VALUES.has(key.key)) {
-			set(key, key.defaultValue);
+		if(!saveValues.has(key.getKey())) {
+			set(key, key.getDefault());
 		}
 	}
 
 	public void removeParameter(ConfigKey<?> key) {
-		removeParameter(key.key);
+		removeParameter(key.getKey());
 	}
 
 	public void removeParameter(String key) {
-		SAVE_VALUES.remove(key);
+		saveValues.remove(key);
 	}
 
 	public boolean exists() {
-		return CFG_FILE.exists();
+		return cfgFile.exists();
 	}
 
 	public void save() {
 		if(!supportsSaving()) return;
-		try(FileWriter writer = new FileWriter(CFG_FILE); JsonWriter jsonWriter = new JsonWriter(writer)) {
+		try(FileWriter writer = new FileWriter(cfgFile); JsonWriter jsonWriter = new JsonWriter(writer)) {
 			jsonWriter.setIndent("\t");
-			ADAPTER.write(jsonWriter, SAVE_VALUES);
+			ADAPTER.write(jsonWriter, saveValues);
 		} catch (IOException e) {
 			WildfireGender.LOGGER.error("Failed to save config file", e);
 		}
 	}
 
 	public void load() {
-		if(!supportsSaving() || !CFG_FILE.exists()) return;
-		try(FileReader configurationFile = new FileReader(CFG_FILE)) {
+		if(!supportsSaving() || !cfgFile.exists()) return;
+		try(FileReader configurationFile = new FileReader(cfgFile)) {
 			JsonObject obj = new Gson().fromJson(configurationFile, JsonObject.class);
 			for(Map.Entry<String, JsonElement> entry : obj.entrySet()) {
-				SAVE_VALUES.add(entry.getKey(), entry.getValue());
+				saveValues.add(entry.getKey(), entry.getValue());
 			}
 		} catch(IOException e) {
 			WildfireGender.LOGGER.error("Failed to load config file", e);
