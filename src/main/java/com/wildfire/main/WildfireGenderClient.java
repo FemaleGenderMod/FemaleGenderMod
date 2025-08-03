@@ -54,6 +54,7 @@ public class WildfireGenderClient implements ClientModInitializer {
 		WildfireSync.registerClient();
 		WildfireEventHandler.registerClientEvents();
 		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(GenderArmorResourceManager.INSTANCE);
+		WildfireCommand.init();
 	}
 
 	public static CompletableFuture<@Nullable PlayerConfig> loadGenderInfo(UUID uuid, boolean markForSync, boolean bypassQueue) {
