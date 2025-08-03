@@ -18,7 +18,6 @@
 
 package com.wildfire.main;
 
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.config.enums.SyncVerbosity;
@@ -49,28 +48,16 @@ public class WildfireCommand {
 			dispatcher.register(
 					ClientCommandManager.literal("fgm")
 							.then(ClientCommandManager.literal("invalidatecache")
-									.executes(WildfireCommand::invalidateCache)
-							)
+									.executes(WildfireCommand::invalidateCache))
 							.then(ClientCommandManager.literal("lookentity")
-									.executes(WildfireCommand::getEntityLookingAt)
-							)
+									.executes(WildfireCommand::getEntityLookingAt))
 							.then(ClientCommandManager.literal("cache")
-									.executes(WildfireCommand::getUsers)
-							)
+									.executes(WildfireCommand::getUsers))
 							.then(ClientCommandManager.literal("debug")
-									.executes(WildfireCommand::debugCommand)
-							)
+									.executes(WildfireCommand::debugCommand))
 							.then(ClientCommandManager.literal("verbosity")
-									.then(argument("level", StringArgumentType.string())
-											.suggests((ctx, builder) -> {
-												for (SyncVerbosity level : SyncVerbosity.values()) {
-													builder.suggest(level.name());
-												}
-												return builder.buildFuture();
-											})
-											.executes(WildfireCommand::setLogLevel)
-									)
-							)
+									.then(argument("level", new SyncVerbosity.SyncVerbosityArgumentType())
+											.executes(WildfireCommand::setLogLevel)))
 			);
 		});
 	}
@@ -107,11 +94,10 @@ public class WildfireCommand {
 		return 1;
 	}
 
-	//COMMANDS BELOW
 	public static int setLogLevel(CommandContext<FabricClientCommandSource> ctx) {
-		String level = StringArgumentType.getString(ctx, "level");
+		SyncVerbosity level = ctx.getArgument("level", SyncVerbosity.class);
 
-		ClientConfig.INSTANCE.set(ClientConfig.SYNC_VERBOSITY, SyncVerbosity.valueOf(level));
+		ClientConfig.INSTANCE.set(ClientConfig.SYNC_VERBOSITY, level);
 		ClientConfig.INSTANCE.save();
 
 		WildfireHelper.logCommand(ctx, "Log level set to: " + level);
