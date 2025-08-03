@@ -22,6 +22,7 @@ import com.google.common.cache.Cache;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.wildfire.gui.screen.WardrobeBrowserScreen;
 import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.config.enums.SyncVerbosity;
 import com.wildfire.main.entitydata.EntityConfig;
@@ -56,24 +57,30 @@ public class WildfireCommand {
 	}
 
 	private static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess registry) {
-		dispatcher.register(
-				ClientCommandManager.literal("fgm")
-						.then(ClientCommandManager.literal("invalidatecache")
-								.executes(WildfireCommand::invalidateCache))
-						.then(ClientCommandManager.literal("lookentity")
-								.executes(WildfireCommand::getEntityLookingAt))
-						.then(ClientCommandManager.literal("cache")
-								.then(argument("allPlayers", BoolArgumentType.bool())
-										.executes(WildfireCommand::getUsers)
-										.then(argument("showEntities", BoolArgumentType.bool())
-												.executes(WildfireCommand::getUsers)))
-								.executes(WildfireCommand::getUsers))
-						.then(ClientCommandManager.literal("debug")
-								.executes(WildfireCommand::debugCommand))
-						.then(ClientCommandManager.literal("verbosity")
-								.then(argument("level", new SyncVerbosity.SyncVerbosityArgumentType())
-										.executes(WildfireCommand::setLogLevel)))
-		);
+		var debug = ClientCommandManager.literal("debug")
+				.then(ClientCommandManager.literal("invalidatecache")
+						.executes(WildfireCommand::invalidateCache))
+				.then(ClientCommandManager.literal("target")
+						.executes(WildfireCommand::getEntityLookingAt))
+				.then(ClientCommandManager.literal("cache")
+						.then(argument("allPlayers", BoolArgumentType.bool())
+								.executes(WildfireCommand::getUsers)
+								.then(argument("showEntities", BoolArgumentType.bool())
+										.executes(WildfireCommand::getUsers)))
+						.executes(WildfireCommand::getUsers))
+				.then(ClientCommandManager.literal("debughud")
+						.executes(WildfireCommand::debugCommand))
+				.then(ClientCommandManager.literal("syncverbosity")
+						.then(argument("level", new SyncVerbosity.SyncVerbosityArgumentType())
+								.executes(WildfireCommand::setLogLevel)));
+
+		var root = dispatcher.register(ClientCommandManager.literal("femalegender")
+				.executes(WildfireCommand::openConfig)
+				.then(debug));
+
+		dispatcher.register(ClientCommandManager.literal("fgm")
+				.executes(WildfireCommand::openConfig)
+				.redirect(root));
 	}
 
 	@SuppressWarnings("SameParameterValue")
@@ -83,6 +90,14 @@ public class WildfireCommand {
 			value = ctx.getArgument(name, clazz);
 		} catch(IllegalArgumentException ignored) {}
 		return value;
+	}
+
+	private static int openConfig(CommandContext<FabricClientCommandSource> ctx) {
+		final var client = ctx.getSource().getClient();
+		final var player = ctx.getSource().getPlayer();
+		// the .send() is necessary as otherwise the chat screen will simply immediately close the opened screen
+		client.send(() -> WardrobeBrowserScreen.open(client, player));
+		return 1;
 	}
 
 	private static int getEntityLookingAt(CommandContext<FabricClientCommandSource> ctx) {

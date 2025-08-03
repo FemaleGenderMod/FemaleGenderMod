@@ -32,12 +32,14 @@ import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.tooltip.TooltipState;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.Text;
@@ -61,6 +63,14 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 
 	public WardrobeBrowserScreen(Screen parent, UUID uuid) {
 		super(Text.translatable("wildfire_gender.wardrobe.title"), parent, uuid);
+	}
+
+	public static void open(MinecraftClient client, ClientPlayerEntity player) {
+		if(ClientConfig.INSTANCE.get(ClientConfig.FIRST_TIME_LOAD) && CloudSync.isAvailable()) {
+			client.setScreen(new WildfireFirstTimeSetupScreen(null, player.getUuid()));
+		} else {
+			client.setScreen(new WardrobeBrowserScreen(null, player.getUuid()));
+		}
 	}
 
 	@Override

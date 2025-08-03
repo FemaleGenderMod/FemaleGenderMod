@@ -271,11 +271,7 @@ public final class WildfireEventHandler {
 			ClientConfig.RENDER_BREASTS ^= true;
 		}
 		if(CONFIG_KEYBIND.wasPressed() && client.currentScreen == null) {
-			if(ClientConfig.INSTANCE.get(ClientConfig.FIRST_TIME_LOAD) && CloudSync.isAvailable()) {
-				client.setScreen(new WildfireFirstTimeSetupScreen(null, client.player.getUuid()));
-			} else {
-				client.setScreen(new WardrobeBrowserScreen(null, client.player.getUuid()));
-			}
+			WardrobeBrowserScreen.open(client, client.player);
 		}
 	}
 
