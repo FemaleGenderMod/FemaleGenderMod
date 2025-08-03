@@ -18,7 +18,6 @@
 
 package com.wildfire.main;
 
-import com.mojang.brigadier.context.CommandContext;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
@@ -26,15 +25,12 @@ import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.wildfire.api.IGenderArmor;
 import com.wildfire.api.WildfireAPI;
 import com.wildfire.main.config.types.FloatConfigKey;
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.item.ItemStack;
 import com.wildfire.resources.GenderArmorResourceManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.TriState;
 import net.minecraft.util.math.MathHelper;
 
@@ -45,13 +41,6 @@ public final class WildfireHelper {
     private WildfireHelper() {
         throw new UnsupportedOperationException();
     }
-
-    @Environment(EnvType.CLIENT)
-    private static final Text COMMAND_PREFIX = Text.empty()
-            .append(Text.literal("[").formatted(Formatting.GRAY))
-            .append(Text.literal("F").formatted(Formatting.LIGHT_PURPLE))
-            .append(Text.literal("GM").formatted(Formatting.WHITE))
-            .append(Text.literal("] ").formatted(Formatting.GRAY));
 
     public static final PrimitiveCodec<TriState> TRISTATE = new PrimitiveCodec<>() {
         @Override
@@ -110,15 +99,5 @@ public final class WildfireHelper {
 
     public static boolean onClient() {
         return FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
-    }
-
-    @Environment(EnvType.CLIENT)
-    public static void logCommand(CommandContext<FabricClientCommandSource> ctx, String text) {
-        ctx.getSource().sendFeedback(Text.empty().append(COMMAND_PREFIX).append(text));
-    }
-
-    @Environment(EnvType.CLIENT)
-    public static void logCommand(CommandContext<FabricClientCommandSource> ctx, Text text) {
-        ctx.getSource().sendFeedback(Text.empty().append(COMMAND_PREFIX).append(text));
     }
 }

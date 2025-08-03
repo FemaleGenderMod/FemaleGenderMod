@@ -39,6 +39,7 @@ import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -52,6 +53,12 @@ import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.arg
 
 @Environment(EnvType.CLIENT)
 public class WildfireCommand {
+	private static final Text COMMAND_PREFIX = Text.empty()
+			.append(Text.literal("[").formatted(Formatting.GRAY))
+			.append(Text.literal("F").formatted(Formatting.LIGHT_PURPLE))
+			.append(Text.literal("GM").formatted(Formatting.WHITE))
+			.append(Text.literal("] ").formatted(Formatting.GRAY));
+
 	static void init() {
 		ClientCommandRegistrationCallback.EVENT.register(WildfireCommand::register);
 	}
@@ -92,6 +99,16 @@ public class WildfireCommand {
 		return value;
 	}
 
+	@Environment(EnvType.CLIENT)
+	public static void send(CommandContext<FabricClientCommandSource> ctx, String text) {
+		ctx.getSource().sendFeedback(Text.empty().append(COMMAND_PREFIX).append(text));
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static void send(CommandContext<FabricClientCommandSource> ctx, Text text) {
+		ctx.getSource().sendFeedback(Text.empty().append(COMMAND_PREFIX).append(text));
+	}
+
 	private static int openConfig(CommandContext<FabricClientCommandSource> ctx) {
 		final var client = ctx.getSource().getClient();
 		final var player = ctx.getSource().getPlayer();
@@ -119,13 +136,13 @@ public class WildfireCommand {
 
 		if (entityHitResult != null && entityHitResult.getEntity() != null) {
 			Entity target = entityHitResult.getEntity();
-			WildfireHelper.logCommand(ctx, "Looking at: " + target.getName().getString());
-			WildfireHelper.logCommand(ctx, "UUID: " + target.getUuidAsString());
-			WildfireHelper.logCommand(ctx, "Type: " + target.getType());
-			WildfireHelper.logCommand(ctx, "Class: " + target.getClass());
-			WildfireHelper.logCommand(ctx, "Renderer: " + MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(target));
+			send(ctx, "Looking at: " + target.getName().getString());
+			send(ctx, "UUID: " + target.getUuidAsString());
+			send(ctx, "Type: " + target.getType());
+			send(ctx, "Class: " + target.getClass());
+			send(ctx, "Renderer: " + MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(target));
 		} else {
-			WildfireHelper.logCommand(ctx, "No entity in sight.");
+			send(ctx, "No entity in sight.");
 		}
 		return 1;
 	}
@@ -136,7 +153,7 @@ public class WildfireCommand {
 		ClientConfig.INSTANCE.set(ClientConfig.SYNC_VERBOSITY, level);
 		ClientConfig.INSTANCE.save();
 
-		WildfireHelper.logCommand(ctx, "Log level set to: " + level);
+		send(ctx, "Log level set to: " + level);
 		return 1;
 	}
 
@@ -146,18 +163,18 @@ public class WildfireCommand {
 
 		var players = dump(WildfireGender.CACHE, ctx.getSource().getWorld(), !allPlayers);
 		if(!players.isEmpty()) {
-			WildfireHelper.logCommand(ctx, "Synced Players (" + players.size() + "):");
+			send(ctx, "Synced Players (" + players.size() + "):");
 			for(var line : players) {
-				WildfireHelper.logCommand(ctx, line);
+				send(ctx, line);
 			}
 		}
 
 		if(showEntities) {
 			var entities = dump(EntityConfig.CACHE, ctx.getSource().getWorld(), false);
 			if(!entities.isEmpty()) {
-				WildfireHelper.logCommand(ctx, "Entities (" + players.size() + "):");
+				send(ctx, "Entities (" + players.size() + "):");
 				for(var line : entities) {
-					WildfireHelper.logCommand(ctx, line);
+					send(ctx, line);
 				}
 			}
 		}
@@ -194,13 +211,13 @@ public class WildfireCommand {
 		WildfireGender.CACHE.invalidateAll();
 		EntityConfig.CACHE.invalidateAll();
 
-		WildfireHelper.logCommand(ctx, "Cache has been invalidated!");
+		send(ctx, "Cache has been invalidated!");
 		return 1;
 	}
 
 	private static int debugCommand(CommandContext<FabricClientCommandSource> ctx) {
 		ClientConfig.INSTANCE.set(ClientConfig.DEBUG_MODE, !ClientConfig.INSTANCE.get(ClientConfig.DEBUG_MODE));
-		WildfireHelper.logCommand(ctx, "Debug mode: " + (ClientConfig.INSTANCE.get(ClientConfig.DEBUG_MODE) ? "Enabled" : "Disabled"));
+		send(ctx, "Debug mode: " + (ClientConfig.INSTANCE.get(ClientConfig.DEBUG_MODE) ? "Enabled" : "Disabled"));
 		ClientConfig.INSTANCE.save();
 		return 1;
 	}
