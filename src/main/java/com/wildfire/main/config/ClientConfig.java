@@ -37,6 +37,7 @@ public class ClientConfig extends AbstractConfiguration {
     public static final BooleanConfigKey ARMOR_PHYSICS_OVERRIDE = new BooleanConfigKey("armor_physics_override", false);
 
     public static final BooleanConfigKey FIRST_TIME_LOAD = new BooleanConfigKey("firstTimeLoad", true);
+    public static final BooleanConfigKey DEBUG_MODE = new BooleanConfigKey("debugMode", false);
     public static final BooleanConfigKey CLOUD_SYNC_ENABLED = new BooleanConfigKey("cloud_sync", false);
     public static final BooleanConfigKey AUTOMATIC_CLOUD_SYNC = new BooleanConfigKey("sync_player_data", false);
     // see CloudSync#DEFAULT_CLOUD_URL for the actual default
@@ -52,6 +53,7 @@ public class ClientConfig extends AbstractConfiguration {
     static {
         INSTANCE.setDefault(ARMOR_PHYSICS_OVERRIDE);
         INSTANCE.setDefault(FIRST_TIME_LOAD);
+        INSTANCE.setDefault(DEBUG_MODE);
         INSTANCE.setDefault(CLOUD_SYNC_ENABLED);
         INSTANCE.setDefault(AUTOMATIC_CLOUD_SYNC);
         INSTANCE.setDefault(CLOUD_SERVER);

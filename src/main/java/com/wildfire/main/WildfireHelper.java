@@ -18,6 +18,7 @@
 
 package com.wildfire.main;
 
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
@@ -25,12 +26,16 @@ import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.wildfire.api.IGenderArmor;
 import com.wildfire.api.WildfireAPI;
 import com.wildfire.main.config.types.FloatConfigKey;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import com.wildfire.resources.GenderArmorResourceManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.TriState;
 import net.minecraft.util.math.MathHelper;
 
@@ -99,5 +104,17 @@ public final class WildfireHelper {
 
     public static boolean onClient() {
         return FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
+    }
+
+    public static void logCommand(CommandContext<FabricClientCommandSource> ctx, String text) {
+
+        Text fgmText =
+            Text.literal("F")
+                .formatted(Formatting.LIGHT_PURPLE)
+            .append(Text.literal("GM")
+                .formatted(Formatting.WHITE)
+            );
+
+        ctx.getSource().sendFeedback(Text.literal("[").formatted(Formatting.GRAY).append(fgmText).append(Text.literal("] ").formatted(Formatting.GRAY)).formatted(Formatting.RESET).append(Text.literal(text)));
     }
 }

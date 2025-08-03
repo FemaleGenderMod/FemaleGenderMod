@@ -77,7 +77,9 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public final class WildfireEventHandler {
@@ -193,6 +195,26 @@ public final class WildfireEventHandler {
 
 		if(ClientConfig.INSTANCE.get(ClientConfig.ALWAYS_SHOW_LIST).isVisible()) {
 			SyncedPlayerList.drawSyncedPlayers(context, textRenderer);
+		}
+
+
+		//DEBUG
+		if(ClientConfig.INSTANCE.get(ClientConfig.DEBUG_MODE)) {
+
+			int i = 0;
+			for (Map.Entry<UUID, PlayerConfig> entry : WildfireGender.CACHE.asMap().entrySet()) {
+				PlayerConfig plrConfig = entry.getValue();
+
+				context.drawText(textRenderer, plrConfig.uuid.toString(), 5, 5 + (i*60), 0xFFFFFFFF, true);
+				context.drawText(textRenderer, Text.literal("Gender: ").append(plrConfig.getGender().getDisplayName()), 5, 5 + 12 + (i*60), 0xFFFFFFFF, true);
+				context.drawText(textRenderer, "Boob Size: " + plrConfig.getBustSize(), 5, 5 + 24 + (i*60), 0xFFFFFFFF, true);
+
+
+				/*WildfireGender.LOGGER.warn("UUID " + uuid);
+				WildfireGender.LOGGER.warn("Gender " + gender.getDisplayName().getString());
+				WildfireGender.LOGGER.warn("Bust Size " + bustSize);*/
+				i++;
+			}
 		}
 	}
 
