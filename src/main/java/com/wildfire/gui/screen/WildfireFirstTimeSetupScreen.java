@@ -32,6 +32,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 import org.joml.Vector2f;
 
 import java.util.Objects;
@@ -140,18 +141,18 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 		int x = this.width / 2;
 		int y = this.height / 2;
 
-		GuiUtils.drawCenteredText(ctx, textRenderer, TITLE, x, y - 24, 4210752);
+		GuiUtils.drawCenteredText(ctx, textRenderer, TITLE, x, y - 24, ColorHelper.fullAlpha(4210752));
 
-		GuiUtils.drawCenteredTextWrapped(ctx, textRenderer, Text.literal("Keira Emberlyn:").formatted(Formatting.LIGHT_PURPLE), x + 32, y - 10, (int) ((256-65)), 0xFFFFFF);
+		GuiUtils.drawCenteredTextWrapped(ctx, textRenderer, Text.literal("Keira Emberlyn:").formatted(Formatting.LIGHT_PURPLE), x + 32, y - 10, (int) ((256-65)), ColorHelper.fullAlpha(0xFFFFFF));
 
 		//TODO: Vertical scroll bar for longer text?
-		GuiUtils.drawCenteredTextWrapped(ctx, textRenderer, DESCRIPTION, x + 32, y + 2, (int) ((256-65)), 0xFFFFFF);
+		GuiUtils.drawCenteredTextWrapped(ctx, textRenderer, DESCRIPTION, x + 32, y + 2, (int) ((256-65)), ColorHelper.fullAlpha(0xFFFFFF));
 
 		mStack.pushMatrix();
 		mStack.translate(x, y + 47);
 		mStack.scale(new Vector2f(0.8f, 0.8f));
 		mStack.translate(-x, (-y) - 47);
-		GuiUtils.drawCenteredTextWrapped(ctx, textRenderer, NOTICE, x, y + 68, (int) ((256-10) * 1.2f), 4210752);
+		GuiUtils.drawCenteredTextWrapped(ctx, textRenderer, NOTICE, x, y + 68, (int) ((256-10) * 1.2f), ColorHelper.fullAlpha(4210752));
 		mStack.popMatrix();
 
 		int keiraX = x - 133;
