@@ -18,7 +18,9 @@
 
 package com.wildfire.main;
 
+import com.google.common.cache.Cache;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.config.enums.SyncVerbosity;
@@ -32,13 +34,17 @@ import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
+import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
@@ -57,6 +63,10 @@ public class WildfireCommand {
 						.then(ClientCommandManager.literal("lookentity")
 								.executes(WildfireCommand::getEntityLookingAt))
 						.then(ClientCommandManager.literal("cache")
+								.then(argument("allPlayers", BoolArgumentType.bool())
+										.executes(WildfireCommand::getUsers)
+										.then(argument("showEntities", BoolArgumentType.bool())
+												.executes(WildfireCommand::getUsers)))
 								.executes(WildfireCommand::getUsers))
 						.then(ClientCommandManager.literal("debug")
 								.executes(WildfireCommand::debugCommand))
@@ -64,6 +74,15 @@ public class WildfireCommand {
 								.then(argument("level", new SyncVerbosity.SyncVerbosityArgumentType())
 										.executes(WildfireCommand::setLogLevel)))
 		);
+	}
+
+	@SuppressWarnings("SameParameterValue")
+	private static <T> T getOrDefault(CommandContext<FabricClientCommandSource> ctx, String name, T defaultValue, Class<T> clazz) {
+		T value = defaultValue;
+		try {
+			value = ctx.getArgument(name, clazz);
+		} catch(IllegalArgumentException ignored) {}
+		return value;
 	}
 
 	private static int getEntityLookingAt(CommandContext<FabricClientCommandSource> ctx) {
@@ -107,36 +126,53 @@ public class WildfireCommand {
 	}
 
 	private static int getUsers(CommandContext<FabricClientCommandSource> ctx) {
-		var world = ctx.getSource().getWorld();
-		ctx.getSource().sendFeedback(Text.literal("Players Cached (" + WildfireGender.CACHE.size() + "):"));
+		boolean allPlayers = getOrDefault(ctx, "allPlayers", false, Boolean.class);
+		boolean showEntities = getOrDefault(ctx, "showEntities", false, Boolean.class);
 
-		for (Map.Entry<UUID, PlayerConfig> entry : WildfireGender.CACHE.asMap().entrySet()) {
-			PlayerConfig plrConfig = entry.getValue();
-			if (plrConfig != null) {
-				PlayerEntity plr = world.getPlayerByUuid(plrConfig.uuid);
-				if (plr != null) {
-					ctx.getSource().sendFeedback(
-							Text.empty().append(plr.getDisplayName()).append(" - ").append(plrConfig.getGender().getDisplayName())
-					);
-				}
+		var players = dump(WildfireGender.CACHE, ctx.getSource().getWorld(), !allPlayers);
+		if(!players.isEmpty()) {
+			WildfireHelper.logCommand(ctx, "Synced Players (" + players.size() + "):");
+			for(var line : players) {
+				WildfireHelper.logCommand(ctx, line);
 			}
 		}
 
-		ctx.getSource().sendFeedback(Text.literal("Entities Cached (" + EntityConfig.CACHE.size() + "):"));
-
-		for (Map.Entry<UUID, EntityConfig> entry : EntityConfig.CACHE.asMap().entrySet()) {
-			EntityConfig entityConfig = entry.getValue();
-			if (entityConfig != null) {
-				Entity entity = world.getEntity(entityConfig.uuid);
-				if (entity != null) {
-					ctx.getSource().sendFeedback(
-							Text.empty().append(entity.getDisplayName()).append(" - ").append(entityConfig.getGender().getDisplayName())
-					);
+		if(showEntities) {
+			var entities = dump(EntityConfig.CACHE, ctx.getSource().getWorld(), false);
+			if(!entities.isEmpty()) {
+				WildfireHelper.logCommand(ctx, "Entities (" + players.size() + "):");
+				for(var line : entities) {
+					WildfireHelper.logCommand(ctx, line);
 				}
 			}
 		}
 
 		return 1;
+	}
+
+	private static List<Text> dump(Cache<UUID, ? extends EntityConfig> cache, @NotNull World world, boolean ignoreEmptyConfig) {
+		List<Text> lines = new ArrayList<>();
+		for(var entry : cache.asMap().entrySet()) {
+			var uuid = entry.getKey();
+			var config = entry.getValue();
+			if(config == null) {
+				continue;
+			}
+			if(config instanceof PlayerConfig playerConfig && playerConfig.getSyncStatus() == PlayerConfig.SyncStatus.UNKNOWN && ignoreEmptyConfig) {
+				continue;
+			}
+			var entity = world.getEntity(uuid);
+			if(entity == null) continue;
+
+			var info = Texts.join(config.getDebugInfo(), Text.literal("\n"), Text::literal);
+
+			lines.add(Text.empty()
+					.append(entity.getDisplayName())
+					.append(" - ")
+					.append(config.getGender().getDisplayName())
+					.styled(style -> style.withHoverEvent(new HoverEvent.ShowText(info))));
+		}
+		return lines;
 	}
 
 	private static int invalidateCache(CommandContext<FabricClientCommandSource> ctx) {

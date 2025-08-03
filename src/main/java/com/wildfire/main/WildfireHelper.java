@@ -33,7 +33,6 @@ import net.minecraft.item.ItemStack;
 import com.wildfire.resources.GenderArmorResourceManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.TriState;
@@ -46,6 +45,13 @@ public final class WildfireHelper {
     private WildfireHelper() {
         throw new UnsupportedOperationException();
     }
+
+    @Environment(EnvType.CLIENT)
+    private static final Text COMMAND_PREFIX = Text.empty()
+            .append(Text.literal("[").formatted(Formatting.GRAY))
+            .append(Text.literal("F").formatted(Formatting.LIGHT_PURPLE))
+            .append(Text.literal("GM").formatted(Formatting.WHITE))
+            .append(Text.literal("] ").formatted(Formatting.GRAY));
 
     public static final PrimitiveCodec<TriState> TRISTATE = new PrimitiveCodec<>() {
         @Override
@@ -106,15 +112,13 @@ public final class WildfireHelper {
         return FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
     }
 
+    @Environment(EnvType.CLIENT)
     public static void logCommand(CommandContext<FabricClientCommandSource> ctx, String text) {
+        ctx.getSource().sendFeedback(Text.empty().append(COMMAND_PREFIX).append(text));
+    }
 
-        Text fgmText =
-            Text.literal("F")
-                .formatted(Formatting.LIGHT_PURPLE)
-            .append(Text.literal("GM")
-                .formatted(Formatting.WHITE)
-            );
-
-        ctx.getSource().sendFeedback(Text.literal("[").formatted(Formatting.GRAY).append(fgmText).append(Text.literal("] ").formatted(Formatting.GRAY)).formatted(Formatting.RESET).append(Text.literal(text)));
+    @Environment(EnvType.CLIENT)
+    public static void logCommand(CommandContext<FabricClientCommandSource> ctx, Text text) {
+        ctx.getSource().sendFeedback(Text.empty().append(COMMAND_PREFIX).append(text));
     }
 }

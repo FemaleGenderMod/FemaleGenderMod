@@ -36,11 +36,14 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -211,5 +214,24 @@ public class EntityConfig {
 	@Override
 	public String toString() {
 		return "%s(uuid=%s, gender=%s)".formatted(getClass().getCanonicalName(), uuid, gender);
+	}
+
+	// this is intentionally a List<String> over a List<Text> to allow for use of this in 1.21.9 debug hud entries
+	public List<String> getDebugInfo() {
+		List<String> info = new ArrayList<>();
+
+		info.add("Gender: " + switch(getGender()) {
+			case FEMALE -> Formatting.LIGHT_PURPLE + "Female";
+			case MALE -> Formatting.BLUE + "Male";
+			case OTHER -> Formatting.GREEN + "Other";
+		});
+		info.add("Breast size: " + getBustSize());
+		info.add("Physics enabled: " + hasBreastPhysics());
+		var breasts = getBreasts();
+		info.add("Uniboob: " + breasts.isUniboob());
+		info.add("Cleavage: " + breasts.getCleavage());
+		info.add("Offsets: (" + breasts.getXOffset() + ", " + breasts.getYOffset() + ", " + breasts.getZOffset() + ")");
+
+		return info;
 	}
 }
