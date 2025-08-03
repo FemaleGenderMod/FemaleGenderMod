@@ -34,14 +34,10 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallba
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
@@ -118,24 +114,9 @@ public class WildfireCommand {
 	}
 
 	private static int getEntityLookingAt(CommandContext<FabricClientCommandSource> ctx) {
-		var player = ctx.getSource().getPlayer();
+		var target = ctx.getSource().getClient().targetedEntity;
 
-		double reachDistance = 10.0D; // how far to check
-		Vec3d eyePos = player.getCameraPosVec(1.0F);
-		Vec3d lookVec = player.getRotationVec(1.0F);
-		Vec3d reachVec = eyePos.add(lookVec.multiply(reachDistance));
-
-		EntityHitResult entityHitResult = ProjectileUtil.raycast(
-				player,
-				eyePos,
-				reachVec,
-				player.getBoundingBox().stretch(lookVec.multiply(reachDistance)).expand(1.0D),
-				entity -> !entity.isSpectator() && entity.isAlive(),
-				reachDistance * reachDistance
-		);
-
-		if (entityHitResult != null && entityHitResult.getEntity() != null) {
-			Entity target = entityHitResult.getEntity();
+		if(target != null) {
 			send(ctx, "Looking at: " + target.getName().getString());
 			send(ctx, "UUID: " + target.getUuidAsString());
 			send(ctx, "Type: " + target.getType());
