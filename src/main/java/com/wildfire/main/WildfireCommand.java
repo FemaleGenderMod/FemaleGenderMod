@@ -41,6 +41,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
+import java.text.Format;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -61,6 +62,15 @@ public class WildfireCommand {
 
 	private static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess registry) {
 		var debug = ClientCommandManager.literal("debug")
+				.executes((ctx) -> {
+					ctx.getSource().sendFeedback(Text.empty().append(COMMAND_PREFIX).append("Debug Commands:"));
+					send(ctx, "invalidatecache", "Invalidates the player/entity cache.");
+					send(ctx, "target", "Show debug info for entity you are looking at.");
+					send(ctx, "cache [allPlayers] [showEntities]", "Display cached entities/players");
+					send(ctx, "hud", "Show/Hide debug HUD (deprecated)");
+					send(ctx, "syncverbosity [level]", "Change Sync Server Logging Verbosity.");
+					return 1;
+				})
 				.then(ClientCommandManager.literal("invalidatecache")
 						.executes(WildfireCommand::invalidateCache))
 				.then(ClientCommandManager.literal("target")
@@ -71,7 +81,7 @@ public class WildfireCommand {
 								.then(argument("showEntities", BoolArgumentType.bool())
 										.executes(WildfireCommand::getUsers)))
 						.executes(WildfireCommand::getUsers))
-				.then(ClientCommandManager.literal("debughud")
+				.then(ClientCommandManager.literal("hud")
 						.executes(WildfireCommand::debugCommand))
 				.then(ClientCommandManager.literal("syncverbosity")
 						.then(argument("level", new SyncVerbosity.SyncVerbosityArgumentType())
@@ -98,6 +108,17 @@ public class WildfireCommand {
 	@Environment(EnvType.CLIENT)
 	public static void send(CommandContext<FabricClientCommandSource> ctx, String text) {
 		ctx.getSource().sendFeedback(Text.empty().append(COMMAND_PREFIX).append(text));
+	}
+
+	//Send chat message as FGM log with command description
+	@Environment(EnvType.CLIENT)
+	public static void send(CommandContext<FabricClientCommandSource> ctx, String cmd, String desc) {
+		ctx.getSource().sendFeedback(
+			Text.empty().append(COMMAND_PREFIX)
+			.append(Text.literal(cmd).formatted(Formatting.BLUE))
+			.append(Text.literal(" - ").formatted(Formatting.RESET))
+			.append(Text.literal(desc).formatted(Formatting.RESET))
+		);
 	}
 
 	@Environment(EnvType.CLIENT)
