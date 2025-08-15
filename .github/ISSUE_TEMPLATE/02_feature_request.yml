@@ -15,6 +15,16 @@ body:
       label: "This is not an existing request"
       description: |
         Please make sure to look through the existing issues to make sure that this request has not been made before.
-      options:
+      options: 
         - label: This request has not been made before
+          required: true
+
+  - type: checkboxes
+    id: checked-faq
+    attributes:
+      label: "This is not mentioned in the faq"
+      description: |
+        Please check if this is not mentioned in the faq before making this request.
+      options:
+        - label: This request is not mentioned in the faq
           required: true
