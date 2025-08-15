@@ -42,7 +42,7 @@ please see the [license file](./LICENSE).
 *This isn't planned anymore, though isn't entirely off the table.*
 
 **5) Can we have larger breasts?**
-*Nope. Stop asking. It isn't happening. You will be kick for asking this first offense, then banned the second offense.*
+*Nope. Stop asking. It isn't happening.*
 
 **6) Will you port to past versions?**
 *I am not providing support for past versions of Minecraft. The mod will only be developed on the most recent version of the game.*
