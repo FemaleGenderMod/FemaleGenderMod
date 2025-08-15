@@ -35,7 +35,7 @@ please see the [license file](./LICENSE).
 *If everyone has **Cloud Sync** enabled, then yes. There is a delay in updating gender settings though, for performance reasons. We are going to actively monitor it to see if we can reduce or even possibly remove the delay in the future.*
 
 **3) What about adding female butts?**
-*No. You will be kick for asking this first offense, then banned the second offense.*
+*No.*
 
 **4) Any plans for additional breast models?**
 ~~*Yeah, I might introduce more breast models down the line. It's on the to-do list but not a top priority. Suggestions for unique ideas are welcome, as long as they're original and don't overlap with other mods.*~~
