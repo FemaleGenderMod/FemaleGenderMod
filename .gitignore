@@ -35,3 +35,6 @@ bin/
 .DS_Store
 .AppleDouble
 .LSOverride
+
+# sdkman
+.sdkmanrc
