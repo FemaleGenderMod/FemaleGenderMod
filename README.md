@@ -30,23 +30,29 @@ please see the [license file](./LICENSE).
 
 <details>
 <summary>1) Can you include a male bulge?</summary>
-This mod is centered around female characters, so a male bulge won't be added. Please refrain from asking. You will be kick for asking this first offense, then banned the second offense.
+
+This mod is centered around female characters, so a male bulge won't be added.
+
 </details>
 
 <details>
 <summary>2) If I were to play on a realm with my friends, and we all used this mod, would they see my character with my settings?</summary>
-If everyone has <b>Cloud Sync</b> enabled, then yes. There is a delay in updating gender settings though, for performance reasons. We are going to actively monitor it to see if we can reduce or even possibly remove the delay in the future.
+
+If everyone has **Cloud Sync** enabled, then yes. There is a delay in updating gender settings though, for performance reasons. We are going to actively monitor it to see if we can reduce or even possibly remove the delay in the future.
+
 </details>
 
 <details>
 <summary>3) What about adding female butts?</summary>
+
 No.
+
 </details>
 
 <details>
 <summary>4) Any plans for additional breast models?</summary>
 
-<s>Yeah, I might introduce more breast models down the line. It's on the to-do list but not a top priority. Suggestions for unique ideas are welcome, as long as they're original and don't overlap with other mods.</s>
+~~Yeah, I might introduce more breast models down the line. It's on the to-do list but not a top priority. Suggestions for unique ideas are welcome, as long as they're original and don't overlap with other mods.~~
 This isn't planned anymore, though isn't entirely off the table.
 
 </details>
