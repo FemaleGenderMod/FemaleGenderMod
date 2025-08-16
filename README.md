@@ -44,7 +44,7 @@ No.
 </details>
 
 <details>
-<summary>4) Any plans for additional breast models?**</summary>
+<summary>4) Any plans for additional breast models?</summary>
 
 <s>Yeah, I might introduce more breast models down the line. It's on the to-do list but not a top priority. Suggestions for unique ideas are welcome, as long as they're original and don't overlap with other mods.</s>
 This isn't planned anymore, though isn't entirely off the table.
