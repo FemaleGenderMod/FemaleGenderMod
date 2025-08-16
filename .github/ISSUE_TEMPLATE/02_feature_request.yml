@@ -14,7 +14,7 @@ body:
     attributes:
       label: "This is not an existing request"
       description: |
-        Please make sure to look through the existing issues and the faq to make sure that this request has not been made before.
+        Please make sure to look through the existing issues and the FAQ to make sure that this request has not been made before.
       options:
-        - label: This request has not been made before and is not mentioned in the faq
+        - label: This request has not been made before, and is not mentioned in the FAQ
           required: true
