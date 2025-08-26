@@ -33,6 +33,9 @@
     ],
     "client": [
       "com.wildfire.main.WildfireGenderClient"
+    ],
+    "modmenu": [
+      "com.wildfire.compat.ModMenuIntegration"
     ]
   },
   "mixins": [

@@ -12,6 +12,7 @@ base {
 
 repositories {
 	maven { url = "https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1" }
+	maven { url = "https://maven.terraformersmc.com/" }
 }
 
 dependencies {
@@ -31,6 +32,11 @@ dependencies {
 	// Allow logging into an actual Minecraft account in a dev env
 	// See https://github.com/DJtheRedstoner/DevAuth
 	modLocalRuntime "me.djtheredstoner:DevAuth-fabric:1.2.1"
+
+	// If you want to load Mod Menu in a development environment, change this to modImplementation
+	// and uncomment the associated Fabric API module.
+	modCompileOnly("com.terraformersmc:modmenu:${project.modmenu_version}")
+	//modRuntimeOnly(fabricApi.module("fabric-screen-api-v1", project.fabric_version))
 }
 
 processResources {
