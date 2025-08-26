@@ -95,6 +95,8 @@ No, I don't want to edit the base game features. The breast model is an added la
 <details>
 <summary>10) Why are my settings not saving?</summary>
 
-You are playing on a Cracked Minecraft account or a server that has offline mode enabled. The player UUID's randomize every time you login. There is no fix for this other than buy the game, or enable online mode for the server.
+If you are using a cracked Minecraft account or playing on a server in offline mode, your player's UUID is randomized whenever you join the game.
+
+We do not officially support this, and as such there are no plans to fix this. 
 
 </details>
