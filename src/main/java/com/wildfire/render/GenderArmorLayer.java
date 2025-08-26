@@ -21,13 +21,13 @@ package com.wildfire.render;
 import com.wildfire.api.IBreastArmorTexture;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.mixins.accessors.EquipmentRendererAccessor;
-import com.wildfire.mixins.accessors.TrimSpriteKeyConstructorAccessor;
 import com.wildfire.render.WildfireModelRenderer.BreastModelBox;
 import com.wildfire.render.ducks.TextureManagerDuck;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
+import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.render.entity.equipment.EquipmentModel;
 import net.minecraft.client.render.entity.equipment.EquipmentModelLoader;
 import net.minecraft.client.render.entity.equipment.EquipmentRenderer;
@@ -35,7 +35,6 @@ import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.state.ArmorStandEntityRenderState;
 import net.minecraft.client.render.entity.state.BipedEntityRenderState;
-import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.DataComponentTypes;
@@ -67,7 +66,8 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 	}
 
 	static {
-		// apply a very slight delta to fix z-fighting with the armor
+		// apply a very slight delta to fix rare layering issues with the normal armor layer
+		// TODO look into how difficult it'd be to replicate Model render priority here
 		lTrim = new BreastModelBox(64, 32, 16, 17, -4F, 0.0F, 0F, 4, 5, 4, 0.001F, false);
 		rTrim = new BreastModelBox(64, 32, 20, 17, 0, 0.0F, 0F, 4, 5, 4, 0.001F, false);
 	}
@@ -81,14 +81,7 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, S state, float limbAngle, float limbDistance) {
-		MinecraftClient client = MinecraftClient.getInstance();
-		if(client.player == null) {
-			// TODO is it possible to remove this check? does anything this invoke still check
-			//		the client player or world?
-			return;
-		}
-
+	public void render(MatrixStack matrixStack, OrderedRenderCommandQueue queue, int light, S state, float limbAngle, float limbDistance) {
 		GenderEntityRenderStateAccessor genderRenderStateAccessor = (GenderEntityRenderStateAccessor) state;
 		this.genderRenderState = genderRenderStateAccessor.wildfire_gender$getRenderState();
 		if (this.genderRenderState == null) return;
@@ -112,14 +105,14 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 			renderSides(state, getContextModel(), matrixStack, side -> {
 				// TODO is there still a need to allow for overriding the armor texture identifier?
 				layers.forEach(layer -> {
-					int layerColor = EquipmentRendererAccessor.invokeGetDyeColor(layer, color);
+					int layerColor = EquipmentRenderer.getDyeColor(layer, color);
 					var texture = layer.getFullTextureId(EquipmentModel.LayerType.HUMANOID);
-					renderBreastArmor(texture, matrixStack, vertexConsumerProvider, light, side, layerColor, glint);
+					renderBreastArmor(texture, matrixStack, queue, state, side, layerColor, glint);
 				});
 
 				var trim = armorStack.get(DataComponentTypes.TRIM);
 				if(trim != null) {
-					renderArmorTrim(asset, matrixStack, vertexConsumerProvider, light, trim, glint, side);
+					renderArmorTrim(asset, matrixStack, queue, state, trim, side, glint);
 				}
 			});
 		} catch(Exception e) {
@@ -159,39 +152,41 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 	}
 
 	// TODO eventually expose some way for mods to override this, maybe through a default impl in IGenderArmor or similar
-	protected void renderBreastArmor(Identifier texture, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider,
-	                                 int light, BreastSide side, int color, boolean glint) {
+	protected void renderBreastArmor(Identifier texture, MatrixStack matrixStack, OrderedRenderCommandQueue queue,
+	                                 S state, BreastSide side, int color, boolean glint) {
 		if(!textureExists(texture)) {
 			return;
 		}
 
-		BreastModelBox armor = side.isLeft ? lBoobArmor : rBoobArmor;
-		RenderLayer armorType = RenderLayer.getArmorCutoutNoCull(texture);
-		VertexConsumer armorVertexConsumer = ItemRenderer.getArmorGlintConsumer(vertexConsumerProvider, armorType, glint);
-		renderBox(armor, matrixStack, armorVertexConsumer, light, OverlayTexture.DEFAULT_UV, ColorHelper.fullAlpha(color));
+		var model = side.isLeft ? lBoobArmor : rBoobArmor;
+		var layer = RenderLayer.getArmorCutoutNoCull(texture);
+		queue.submitCustom(matrixStack, layer, new BreastRenderCommand(model, state, OverlayTexture.DEFAULT_UV, ColorHelper.fullAlpha(color)));
+
+		if(glint) {
+			renderGlint(matrixStack, queue, state, model);
+		}
 	}
 
-	protected void renderArmorTrim(RegistryKey<EquipmentAsset> armorModel, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider,
-								   int light, ArmorTrim trim, boolean hasGlint, BreastSide side) {
-		BreastModelBox trimModelBox = side.isLeft ? lTrim : rTrim;
+	protected void renderArmorTrim(RegistryKey<EquipmentAsset> armorModel, MatrixStack matrixStack, OrderedRenderCommandQueue queue,
+								   S state, ArmorTrim trim, BreastSide side, boolean glint) {
+		var model = side.isLeft ? lTrim : rTrim;
 
 		// this sucks, but it sucks less than simply copy/pasting the entire relevant block of code, and is
 		// (at least theoretically) more compatible with other mods, assuming they simply mixin to TrimSpriteKey
 		// to modify the armor trim sprite location.
-		var key = TrimSpriteKeyConstructorAccessor.newKey(trim, EquipmentModel.LayerType.HUMANOID, armorModel);
+		var key = new EquipmentRenderer.TrimSpriteKey(trim, EquipmentModel.LayerType.HUMANOID, armorModel);
 		Sprite sprite = ((EquipmentRendererAccessor)equipmentRenderer).getTrimSprites().apply(key);
 
-		var buffer = vertexConsumerProvider.getBuffer(TexturedRenderLayers.getArmorTrims(trim.pattern().value().decal()));
-		var vertexConsumer = sprite.getTextureSpecificVertexConsumer(buffer);
-		// Render the armor trim itself
-		renderBox(trimModelBox, matrixStack, vertexConsumer, light, OverlayTexture.DEFAULT_UV, -1);
-		// The enchantment glint however requires special handling; due to how Minecraft's enchant glint rendering works, rendering
-		// it at the same time as the trim itself results in the glint not rendering in sync with the rest of the armor.
-		// We *also* can't simply render the glint for both the trim and armor at the same time, due to the slight delta we apply
-		// to fix z-fighting between the trim and armor - and as such - a glint has to be rendered for each respective layer.
-		if(hasGlint) {
-			var glintBuffer = vertexConsumerProvider.getBuffer(RenderLayer.getArmorEntityGlint());
-			renderBox(trimModelBox, matrixStack, glintBuffer, light, OverlayTexture.DEFAULT_UV, -1);
+		var layer = TexturedRenderLayers.getArmorTrims(trim.pattern().value().decal());
+		queue.submitCustom(matrixStack, layer, BreastRenderCommand.trim(model, state, sprite));
+
+		if(glint) {
+			renderGlint(matrixStack, queue, state, model);
 		}
+	}
+
+	protected void renderGlint(MatrixStack matrixStack, OrderedRenderCommandQueue renderQueue, S state, BreastModelBox box) {
+		var glintLayer = RenderLayer.getArmorEntityGlint();
+		renderQueue.submitCustom(matrixStack, glintLayer, new BreastRenderCommand(box, state, OverlayTexture.DEFAULT_UV, -1));
 	}
 }

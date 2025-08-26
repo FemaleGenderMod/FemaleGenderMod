@@ -47,7 +47,7 @@ abstract class ArmorStandEntityMixin extends LivingEntity {
 	)
 	public ItemStack wildfiregender$attachBreastData(ItemStack stack, @Local(argsOnly = true) EquipmentSlot slot,
 	                                                 @Local(argsOnly = true) PlayerEntity player) {
-		if(player == null || getWorld().isClient() || slot != EquipmentSlot.CHEST || stack.isEmpty()) {
+		if(player == null || getEntityWorld().isClient() || slot != EquipmentSlot.CHEST || stack.isEmpty()) {
 			return stack;
 		}
 
@@ -65,7 +65,7 @@ abstract class ArmorStandEntityMixin extends LivingEntity {
 		index = 1
 	)
 	public ItemStack wildfiregender$removeBreastDataOnReplace(ItemStack stack, @Local(argsOnly = true) PlayerEntity player) {
-		if(!player.getWorld().isClient()) {
+		if(!player.getEntityWorld().isClient()) {
 			ArmorStandInteractEvents.REMOVE.invoker().onRemove(stack);
 		}
 		return stack;
@@ -80,7 +80,7 @@ abstract class ArmorStandEntityMixin extends LivingEntity {
 		index = 2
 	)
 	public ItemStack wildfiregender$removeBreastDataOnBreak(ItemStack stack) {
-		if(!getWorld().isClient()) {
+		if(!getEntityWorld().isClient()) {
 			ArmorStandInteractEvents.REMOVE.invoker().onRemove(stack);
 		}
 		return stack;

@@ -21,7 +21,6 @@ package com.wildfire.main;
 import com.wildfire.events.*;
 import com.wildfire.gui.SyncedPlayerList;
 import com.wildfire.gui.screen.WardrobeBrowserScreen;
-import com.wildfire.gui.screen.WildfireFirstTimeSetupScreen;
 import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.entitydata.BreastDataComponent;
@@ -48,7 +47,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.ArmorStandEntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
@@ -74,9 +72,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 public final class WildfireEventHandler {
@@ -93,17 +89,17 @@ public final class WildfireEventHandler {
 	}
 
 	static {
+		// note that all the Util.make()s are required, as otherwise a dedicated server will crash during
+		// static class initialization due to references to classes that don't exist
 		if(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
-			// this has to be wrapped in a lambda to ensure that a dedicated server won't crash during startup
-			// while executing this static block
+			var category = Util.make(() -> KeyBinding.Category.method_74698(WildfireGender.id("generic")));
 			CONFIG_KEYBIND = Util.make(() -> {
-				// FIXME this now conflicts with the Quick Actions key from vanilla as of 1.21.6-pre1
-				KeyBinding keybind = new KeyBinding("key.wildfire_gender.gender_menu", GLFW.GLFW_KEY_H, "category.wildfire_gender.generic");
+				KeyBinding keybind = new KeyBinding("key.wildfire_gender.gender_menu", GLFW.GLFW_KEY_H, category);
 				KeyBindingHelper.registerKeyBinding(keybind);
 				return keybind;
 			});
 			TOGGLE_KEYBIND = Util.make(() -> {
-				KeyBinding keybind = new KeyBinding("key.wildfire_gender.toggle", GLFW.GLFW_KEY_UNKNOWN, "category.wildfire_gender.generic");
+				KeyBinding keybind = new KeyBinding("key.wildfire_gender.toggle", GLFW.GLFW_KEY_UNKNOWN, category);
 				KeyBindingHelper.registerKeyBinding(keybind);
 				return keybind;
 			});
@@ -145,7 +141,7 @@ public final class WildfireEventHandler {
 	}
 
 	@Environment(EnvType.CLIENT)
-	private static void onPlayerNametag(PlayerEntityRenderState state, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, Consumer<Text> renderHelper) {
+	private static void onPlayerNametag(PlayerEntityRenderState state, MatrixStack matrixStack, Consumer<Text> renderHelper) {
 		GenderEntityRenderStateAccessor genderRenderStateAccessor = (GenderEntityRenderStateAccessor) state;
 
 		@Nullable GenderRenderState genderRenderState = genderRenderStateAccessor.wildfire_gender$getRenderState();
@@ -196,26 +192,6 @@ public final class WildfireEventHandler {
 		if(ClientConfig.INSTANCE.get(ClientConfig.ALWAYS_SHOW_LIST).isVisible()) {
 			SyncedPlayerList.drawSyncedPlayers(context, textRenderer);
 		}
-
-
-		//DEBUG
-		if(ClientConfig.INSTANCE.get(ClientConfig.DEBUG_MODE)) {
-
-			int i = 0;
-			for (Map.Entry<UUID, PlayerConfig> entry : WildfireGender.CACHE.asMap().entrySet()) {
-				PlayerConfig plrConfig = entry.getValue();
-
-				context.drawText(textRenderer, plrConfig.uuid.toString(), 5, 5 + (i*60), 0xFFFFFFFF, true);
-				context.drawText(textRenderer, Text.literal("Gender: ").append(plrConfig.getGender().getDisplayName()), 5, 5 + 12 + (i*60), 0xFFFFFFFF, true);
-				context.drawText(textRenderer, "Boob Size: " + plrConfig.getBustSize(), 5, 5 + 24 + (i*60), 0xFFFFFFFF, true);
-
-
-				/*WildfireGender.LOGGER.warn("UUID " + uuid);
-				WildfireGender.LOGGER.warn("Gender " + gender.getDisplayName().getString());
-				WildfireGender.LOGGER.warn("Bust Size " + bustSize);*/
-				i++;
-			}
-		}
 	}
 
 	/**
@@ -225,7 +201,7 @@ public final class WildfireEventHandler {
 	private static void registerRenderLayers(EntityType<? extends LivingEntity> entityType, LivingEntityRenderer<?, ?, ?> entityRenderer,
 	                                         LivingEntityFeatureRendererRegistrationCallback.RegistrationHelper registrationHelper,
 	                                         EntityRendererFactory.Context context) {
-		if(entityRenderer instanceof PlayerEntityRenderer playerRenderer) {
+		if(entityRenderer instanceof PlayerEntityRenderer<?> playerRenderer) {
 			registrationHelper.register(new GenderLayer<>(playerRenderer));
 			registrationHelper.register(new GenderArmorLayer<>(playerRenderer, context.getEquipmentModelLoader(), context.getEquipmentRenderer()));
 			registrationHelper.register(new HolidayFeaturesRenderer(playerRenderer));
@@ -324,7 +300,7 @@ public final class WildfireEventHandler {
 	private static void onEntityHurt(LivingEntity entity, DamageSource damageSource) {
 		MinecraftClient client = MinecraftClient.getInstance();
 		if(client.player == null || client.world == null) return;
-		if(!(entity instanceof PlayerEntity player) || !player.getWorld().isClient()) return;
+		if(!(entity instanceof PlayerEntity player) || !player.getEntityWorld().isClient()) return;
 
 		PlayerConfig genderPlayer = WildfireGender.getPlayerById(player.getUuid());
 		if(genderPlayer == null || !genderPlayer.hasHurtSounds()) return;
@@ -368,7 +344,7 @@ public final class WildfireEventHandler {
 		// making it impossible to compare against any armor data that isn't registered through the mod API.
 		BreastDataComponent component = BreastDataComponent.fromPlayer(player, playerConfig);
 		if(component != null) {
-			component.write(player.getWorld().getRegistryManager(), item);
+			component.write(item);
 		}
 	}
 }

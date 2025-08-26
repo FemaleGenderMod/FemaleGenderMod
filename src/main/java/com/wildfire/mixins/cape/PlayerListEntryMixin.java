@@ -41,7 +41,7 @@ abstract class PlayerListEntryMixin {
         var cape = CapeProvider.CACHE.getUnchecked(profile);
         var duck = ((SkinTexturesWildfire)(Object)original);
         var tex = cape.getNow(null);
-        duck.wildfiregender$overrideCapeTexture(tex != null && !tex.equals(CapeProvider.NO_CAPE) ? tex : null);
+        duck.wildfiregender$overrideCapeTexture(tex);
         return original;
     }
 }

@@ -21,15 +21,15 @@ package com.wildfire.mixins;
 import com.wildfire.events.PlayerNametagRenderEvent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
+import net.minecraft.client.render.state.CameraRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -42,11 +42,22 @@ abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<PlayerEnti
 		super(ctx, model, shadowRadius);
 	}
 
+	@SuppressWarnings("CodeBlock2Expr")
 	@Inject(
-		method = "renderLabelIfPresent(Lnet/minecraft/client/render/entity/state/PlayerEntityRenderState;Lnet/minecraft/text/Text;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V",
+		method = "renderLabelIfPresent(Lnet/minecraft/client/render/entity/state/PlayerEntityRenderState;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/command/OrderedRenderCommandQueue;Lnet/minecraft/client/render/state/CameraRenderState;)V",
 		at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;push()V", shift = At.Shift.AFTER)
 	)
-	public void wildfiregender$renderNametag(PlayerEntityRenderState state, Text originalText, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, CallbackInfo ci) {
-		PlayerNametagRenderEvent.EVENT.invoker().onRenderNameTag(state, matrixStack, vertexConsumerProvider, (text) -> super.renderLabelIfPresent(state, text, matrixStack, vertexConsumerProvider, light));
+	public void wildfiregender$renderNametag(PlayerEntityRenderState state, MatrixStack matrixStack, OrderedRenderCommandQueue queue, CameraRenderState cameraState, CallbackInfo ci) {
+		PlayerNametagRenderEvent.EVENT.invoker().onRenderNameTag(state, matrixStack, (text) -> {
+			queue.submitLabel(
+					matrixStack,
+					state.nameLabelPos,
+					text,
+					!state.sneaking,
+					state.light,
+					state.squaredDistanceToCamera,
+					cameraState
+			);
+		});
 	}
 }

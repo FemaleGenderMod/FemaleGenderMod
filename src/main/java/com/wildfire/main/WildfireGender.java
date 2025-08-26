@@ -26,6 +26,7 @@ import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.networking.WildfireSync;
 import net.fabricmc.api.ModInitializer;
+import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -91,5 +92,9 @@ public class WildfireGender implements ModInitializer {
 
 	public static @NotNull PlayerConfig getOrAddPlayerById(UUID id) {
 		return CACHE.getUnchecked(id);
+	}
+
+	public static Identifier id(String path) {
+		return Identifier.of(MODID, path);
 	}
 }

@@ -128,6 +128,7 @@ public class EntityConfig {
 	 * @return {@code true} if the mod has support for the provided entity
 	 */
 	public static boolean isSupportedEntity(LivingEntity entity) {
+		// TODO add support for mannequins? this will probably require a lot more work on entity config caches & sync :(
 		return entity instanceof PlayerEntity || entity instanceof ArmorStandEntity;
 	}
 
@@ -216,7 +217,6 @@ public class EntityConfig {
 		return "%s(uuid=%s, gender=%s)".formatted(getClass().getCanonicalName(), uuid, gender);
 	}
 
-	// this is intentionally a List<String> over a List<Text> to allow for use of this in 1.21.9 debug hud entries
 	public List<String> getDebugInfo() {
 		List<String> info = new ArrayList<>();
 

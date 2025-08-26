@@ -35,6 +35,7 @@ import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -258,6 +259,15 @@ public class PlayerConfig extends EntityConfig {
 		json.asMap().forEach(this.cfg::set);
 		loadFromConfig(false);
 		this.syncStatus = SyncStatus.SYNCED;
+	}
+
+	@Override
+	public List<String> getDebugInfo() {
+		var lines = super.getDebugInfo();
+		lines.add(1, "Sync status: " + getSyncStatus());
+		lines.add("Female hurt sounds: " + hasHurtSounds());
+		lines.add("Show in armor: " + showBreastsInArmor());
+		return lines;
 	}
 
 	public enum SyncStatus {

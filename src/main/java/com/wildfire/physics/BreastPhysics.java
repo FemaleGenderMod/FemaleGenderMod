@@ -37,6 +37,8 @@ import net.minecraft.util.math.Vec3d;
 
 public class BreastPhysics {
 
+	public static final float TIGHTNESS_REDUCTION_FACTOR = 0.15F;
+
 	//X-Axis
 	private float bounceVelX = 0, targetBounceX = 0, velocityX = 0, positionX, prePositionX;
 	//Y-Axis
@@ -112,7 +114,7 @@ public class BreastPhysics {
 				this.breastSize = entityConfig.getBustSize();
 				if(!entityConfig.getArmorPhysicsOverride()) {
 					float tightness = MathHelper.clamp(armor.tightness(), 0, 1);
-					this.breastSize *= 1 - 0.15F * tightness;
+					this.breastSize *= 1 - TIGHTNESS_REDUCTION_FACTOR * tightness;
 				}
 				this.preBreastSize = this.breastSize;
 			} else {
@@ -178,7 +180,7 @@ public class BreastPhysics {
 			float tightness = MathHelper.clamp(armor.tightness(), 0, 1);
 			if(entityConfig.getArmorPhysicsOverride()) tightness = 0; //override resistance
 			//Scale breast size by how tight the armor is, clamping at a max adjustment of shrinking by 0.15
-			targetBreastSize *= 1 - 0.15F * tightness;
+			targetBreastSize *= 1 - TIGHTNESS_REDUCTION_FACTOR * tightness;
 		}
 
 		breastSize += (breastSize < targetBreastSize) ? Math.abs(breastSize - targetBreastSize) / 2f : -Math.abs(breastSize - targetBreastSize) / 2f;
@@ -201,7 +203,7 @@ public class BreastPhysics {
 		// Randomize which side the breast will angle toward when the player jumps/has upward velocity applied to them,
 		// or stops falling
 		if((lastVerticalMoveVelocity <= 0 && vertVelocity > 0) || (lastVerticalMoveVelocity < 0 && vertVelocity == 0)) {
-			randomB = entity.getWorld().random.nextBoolean() ? -1 : 1;
+			randomB = entity.getEntityWorld().random.nextBoolean() ? -1 : 1;
 		}
 		lastVerticalMoveVelocity = vertVelocity;
 

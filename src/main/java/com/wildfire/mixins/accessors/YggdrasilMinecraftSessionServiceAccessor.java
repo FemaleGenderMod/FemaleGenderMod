@@ -16,30 +16,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.events;
+package com.wildfire.mixins.accessors;
 
+import com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.event.Event;
-import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-import java.util.function.Consumer;
-
-/**
- * Event invoked before a player's nametag is rendered above their head
- */
-@FunctionalInterface
 @Environment(EnvType.CLIENT)
-public interface PlayerNametagRenderEvent {
-	Event<PlayerNametagRenderEvent> EVENT = EventFactory.createArrayBacked(PlayerNametagRenderEvent.class, listeners -> (state, matrixStack, renderHelper) -> {
-		for(var listener : listeners) {
-			listener.onRenderNameTag(state, matrixStack, renderHelper);
-		}
-	});
-
-	void onRenderNameTag(PlayerEntityRenderState state, MatrixStack matrixStack, Consumer<Text> renderHelper);
+@Mixin(YggdrasilMinecraftSessionService.class)
+public interface YggdrasilMinecraftSessionServiceAccessor {
+	// authlib isn't obfuscated, so no need to remap.
+	@Accessor(remap = false) String getBaseUrl();
 }

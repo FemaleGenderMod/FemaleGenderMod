@@ -18,16 +18,17 @@
 
 package com.wildfire.render;
 
-import com.wildfire.main.Gender;
 import com.wildfire.main.WildfireGenderClient;
+import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.entitydata.Breasts;
 import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.physics.BreastPhysics;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.PlayerLikeEntity;
 import net.minecraft.entity.effect.StatusEffectUtil;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerModelPart;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
@@ -40,6 +41,8 @@ public class GenderRenderState {
     public final BreastState breasts = new BreastState();
     public final BreastPhysicsState leftBreastPhysics = new BreastPhysicsState();
     public final BreastPhysicsState rightBreastPhysics = new BreastPhysicsState();
+
+    public float partialTicks;
 
     public Gender gender;
     public float bustSize;
@@ -65,6 +68,8 @@ public class GenderRenderState {
         this.leftBreastPhysics.update(entityConfig.getLeftBreastPhysics());
         this.rightBreastPhysics.update(entityConfig.getRightBreastPhysics());
 
+        this.partialTicks = MinecraftClient.getInstance().getRenderTickCounter().getTickProgress(true);
+
         this.gender = entityConfig.getGender();
         this.bustSize = entityConfig.getBustSize();
         this.hasBreastPhysics = entityConfig.hasBreastPhysics();
@@ -73,16 +78,20 @@ public class GenderRenderState {
         this.armorPhysicsOverride = entityConfig.getArmorPhysicsOverride();
         this.showBreastsInArmor = entityConfig.showBreastsInArmor();
 
-        if (entityConfig instanceof PlayerConfig playerConfig) {
-            this.hasJacketLayer = ((PlayerEntity) entity).isPartVisible(PlayerModelPart.JACKET);
+        if(entity instanceof PlayerLikeEntity playerLikeEntity) {
+            this.hasJacketLayer = playerLikeEntity.isModelPartVisible(PlayerModelPart.JACKET);
+        } else {
+            this.hasJacketLayer = entityConfig instanceof PlayerConfig || entityConfig.hasJacketLayer();
+        }
+
+        if(entityConfig instanceof PlayerConfig playerConfig) {
             this.hasHolidayThemes = playerConfig.hasHolidayThemes();
         } else {
-            this.hasJacketLayer = entityConfig.hasJacketLayer();
             this.hasHolidayThemes = false;
         }
 
         this.isBreathing = !entity.isSubmergedInWater() || StatusEffectUtil.hasWaterBreathing(entity) ||
-            entity.getWorld().getBlockState(entity.getBlockPos()).isOf(Blocks.BUBBLE_COLUMN);
+            entity.getEntityWorld().getBlockState(entity.getBlockPos()).isOf(Blocks.BUBBLE_COLUMN);
         this.nametag = entity.isPlayer() ? WildfireGenderClient.getNametag(entity.getUuid()) : null;
     }
 
@@ -102,7 +111,7 @@ public class GenderRenderState {
         }
     }
 
-    public static class BreastPhysicsState {
+    public class BreastPhysicsState {
         private float prePositionY, positionY;
         private float prePositionX, positionX;
         private float preBounceRotation, bounceRotation;
@@ -119,19 +128,19 @@ public class GenderRenderState {
             this.breastSize = breastPhysics.getBreastSize();
         }
 
-        public float getPositionY(float partialTicks) {
+        public float getPositionY() {
             return MathHelper.lerp(partialTicks, this.prePositionY, this.positionY);
         }
 
-        public float getPositionX(float partialTicks) {
+        public float getPositionX() {
             return MathHelper.lerp(partialTicks, this.prePositionX, this.positionX);
         }
 
-        public float getBounceRotation(float partialTicks) {
+        public float getBounceRotation() {
             return MathHelper.lerp(partialTicks, this.preBounceRotation, this.bounceRotation);
         }
 
-        public float getBreastSize(float partialTicks) {
+        public float getBreastSize() {
             return MathHelper.lerp(partialTicks, this.preBreastSize, this.breastSize);
         }
     }

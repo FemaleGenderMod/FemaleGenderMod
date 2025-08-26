@@ -34,9 +34,4 @@ import java.util.function.Function;
 public interface EquipmentRendererAccessor {
     @Accessor
     Function<EquipmentRenderer.TrimSpriteKey, Sprite> getTrimSprites();
-
-    @Invoker
-    static int invokeGetDyeColor(EquipmentModel.Layer layer, int dyeColor) {
-        throw new UnsupportedOperationException("Something's gone very seriously wrong if we've gotten here!");
-    }
 }

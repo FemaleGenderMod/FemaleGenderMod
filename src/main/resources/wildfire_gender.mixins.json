@@ -7,18 +7,21 @@
     "ArmorStandEntityMixin"
   ],
   "client": [
+    "CustomCommandRendererMixin",
     "ItemStackMixin",
     "LivingEntityMixin",
     "PlayerEntityRendererMixin",
     "TextureManagerMixin",
     "accessors.EquipmentRendererAccessor",
+    "accessors.GameRendererAccessor",
     "accessors.LivingEntityRendererAccessor",
-    "accessors.TrimSpriteKeyConstructorAccessor",
-    "renderstate.LivingEntityRendererMixin",
-    "renderstate.LivingEntityRenderStateMixin",
+    "accessors.RenderDispatcherAccessor",
+    "accessors.YggdrasilMinecraftSessionServiceAccessor",
     "cape.PlayerListEntryMixin",
+    "cape.SkinTexturesMixin",
     "cape.SkinTexturesWildfireImplMixin",
-    "cape.SkinTexturesMixin"
+    "renderstate.LivingEntityRendererMixin",
+    "renderstate.LivingEntityRenderStateMixin"
   ],
   "injectors": {
     "defaultRequire": 1

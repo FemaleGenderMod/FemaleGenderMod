@@ -41,7 +41,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
-import java.text.Format;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -67,7 +66,6 @@ public class WildfireCommand {
 					send(ctx, "invalidatecache", "Invalidates the player/entity cache.");
 					send(ctx, "target", "Show debug info for entity you are looking at.");
 					send(ctx, "cache [allPlayers] [showEntities]", "Display cached entities/players");
-					send(ctx, "hud", "Show/Hide debug HUD (deprecated)");
 					send(ctx, "syncverbosity [level]", "Change Sync Server Logging Verbosity.");
 					return 1;
 				})
@@ -81,8 +79,6 @@ public class WildfireCommand {
 								.then(argument("showEntities", BoolArgumentType.bool())
 										.executes(WildfireCommand::getUsers)))
 						.executes(WildfireCommand::getUsers))
-				.then(ClientCommandManager.literal("hud")
-						.executes(WildfireCommand::debugCommand))
 				.then(ClientCommandManager.literal("syncverbosity")
 						.then(argument("level", new SyncVerbosity.SyncVerbosityArgumentType())
 								.executes(WildfireCommand::setLogLevel)));
@@ -214,13 +210,6 @@ public class WildfireCommand {
 		EntityConfig.CACHE.invalidateAll();
 
 		send(ctx, "Cache has been invalidated!");
-		return 1;
-	}
-
-	private static int debugCommand(CommandContext<FabricClientCommandSource> ctx) {
-		ClientConfig.INSTANCE.set(ClientConfig.DEBUG_MODE, !ClientConfig.INSTANCE.get(ClientConfig.DEBUG_MODE));
-		send(ctx, "Debug mode: " + (ClientConfig.INSTANCE.get(ClientConfig.DEBUG_MODE) ? "Enabled" : "Disabled"));
-		ClientConfig.INSTANCE.save();
 		return 1;
 	}
 }

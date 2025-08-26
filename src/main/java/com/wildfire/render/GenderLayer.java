@@ -34,6 +34,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.*;
+import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
@@ -83,14 +84,14 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 	private @Nullable RenderLayer getRenderLayer(S state) {
 		boolean bodyVisible = !state.invisible;
 		boolean translucent = state.invisible && !state.invisibleToPlayer;
-		boolean glowing = state.hasOutline;
+		boolean glowing = state.hasOutline();
 
 		var renderer = (LivingEntityRenderer<?, ?, ?>) context;
 		return ((LivingEntityRendererAccessor) renderer).invokeGetRenderLayer(state, bodyVisible, translucent, glowing);
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, S state, float limbAngle, float limbDistance) {
+	public void render(MatrixStack matrixStack, OrderedRenderCommandQueue queue, int light, S state, float limbAngle, float limbDistance) {
 		MinecraftClient client = MinecraftClient.getInstance();
 		if(client.player == null) {
 			// TODO is it possible to remove this check? does anything this invoke still check
@@ -108,7 +109,7 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 
 			//noinspection CodeBlock2Expr
 			renderSides(state, getContextModel(), matrixStack, side -> {
-				renderBreast(state, matrixStack, vertexConsumerProvider, light, overlay, side);
+				renderBreast(state, matrixStack, queue, overlay, side);
 			});
 		} catch(Exception e) {
 			WildfireGender.LOGGER.error("Failed to render breast layer", e);
@@ -123,8 +124,6 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 	protected boolean setupRender(S state, GenderRenderState genderRenderState) {
 		if(!ClientConfig.RENDER_BREASTS) return false;
-
-		float partialTicks = MinecraftClient.getInstance().getRenderTickCounter().getTickProgress(true);
 
 		armorStack = state.equippedChestStack;
 		//Note: When the stack is empty the helper will fall back to an implementation that returns the proper data
@@ -148,24 +147,24 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		isUniboob = breasts.uniboob;
 
 		GenderRenderState.BreastPhysicsState leftPhysicsState = genderRenderState.leftBreastPhysics;
-		final float bSize = leftPhysicsState.getBreastSize(partialTicks);
+		final float bSize = leftPhysicsState.getBreastSize();
 		outwardAngle = Math.round(breasts.cleavage * 100f);
 		outwardAngle = Math.min(outwardAngle, 10);
 
 		resizeBox(bSize);
 
-		lPhysPositionY = leftPhysicsState.getPositionY(partialTicks);
-		lPhysPositionX = leftPhysicsState.getPositionX(partialTicks);
-		lPhysBounceRotation = leftPhysicsState.getBounceRotation(partialTicks);
+		lPhysPositionY = leftPhysicsState.getPositionY();
+		lPhysPositionX = leftPhysicsState.getPositionX();
+		lPhysBounceRotation = leftPhysicsState.getBounceRotation();
 		if(isUniboob) {
 			rPhysPositionY = lPhysPositionY;
 			rPhysPositionX = lPhysPositionX;
 			rPhysBounceRotation = lPhysBounceRotation;
 		} else {
 			GenderRenderState.BreastPhysicsState rightPhysicsState = genderRenderState.rightBreastPhysics;
-			rPhysPositionY = rightPhysicsState.getPositionY(partialTicks);
-			rPhysPositionX = rightPhysicsState.getPositionX(partialTicks);
-			rPhysBounceRotation = rightPhysicsState.getBounceRotation(partialTicks);
+			rPhysPositionY = rightPhysicsState.getPositionY();
+			rPhysPositionX = rightPhysicsState.getPositionX();
+			rPhysBounceRotation = rightPhysicsState.getBounceRotation();
 		}
 
 		breastSize = Math.min(bSize * 1.5f, 0.7f); // Limit the max size to 0.7f
@@ -188,7 +187,7 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 	}
 
 	protected boolean isLayerVisible(S state) {
-		return !state.invisibleToPlayer || state.hasOutline;
+		return !state.invisibleToPlayer || state.hasOutline();
 	}
 
 	protected void resizeBox(float breastSize) {
@@ -259,18 +258,21 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		matrixStack.scale(0.9995f, 1f, 1f); //z-fighting FIXXX
 	}
 
-	private void renderBreast(S state, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light,
-							  int overlay, BreastSide side) {
-		RenderLayer breastRenderType = getRenderLayer(state);
-		if(breastRenderType == null) return; // only render if the player is visible in some capacity
+	private void renderBreast(S state, MatrixStack matrixStack, OrderedRenderCommandQueue queue, int overlay, BreastSide side) {
+		RenderLayer renderLayer = getRenderLayer(state);
+		if(renderLayer == null) return; // only render if the player is visible in some capacity
+
 		int alpha = state.invisible ? ColorHelper.channelFromFloat(0.15f) : 255;
 		int color = ColorHelper.getArgb(alpha, 255, 255, 255);
-		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(breastRenderType);
-		renderBox(side.isLeft ? lBreast : rBreast, matrixStack, vertexConsumer, light, overlay, color);
+
+		var model = side.isLeft ? lBreast : rBreast;
+		queue.submitCustom(matrixStack, renderLayer, new BreastRenderCommand(model, state, overlay, color));
+
 		if(state instanceof PlayerEntityRenderState playerState && playerState.jacketVisible) {
 			matrixStack.translate(0, 0, -0.015f);
 			matrixStack.scale(1.05f, 1.05f, 1.05f);
-			renderBox(side.isLeft ? lBreastWear : rBreastWear, matrixStack, vertexConsumer, light, overlay, color);
+			var jacketModel = side.isLeft ? lBreastWear : rBreastWear;
+			queue.submitCustom(matrixStack, renderLayer, new BreastRenderCommand(jacketModel, state, overlay, color));
 		}
 	}
 
@@ -292,10 +294,10 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		}
 	}
 
-	protected static void renderBox(WildfireModelRenderer.ModelBox model, MatrixStack matrixStack, VertexConsumer vertexConsumer,
+	public static void renderBox(WildfireModelRenderer.ModelBox model, MatrixStack.Entry entry, VertexConsumer vertexConsumer,
 									int light, int overlay, int color) {
-		Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
-		Matrix3f matrix3f = matrixStack.peek().getNormalMatrix();
+		Matrix4f matrix4f = entry.getPositionMatrix();
+		Matrix3f matrix3f = entry.getNormalMatrix();
 		for(var quad : model.quads) {
 			Vector3f vector3f = new Vector3f(quad.normal.x, quad.normal.y, quad.normal.z).mul(matrix3f);
 			float normalX = vector3f.x;
