@@ -47,6 +47,7 @@ import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public class WardrobeBrowserScreen extends BaseWildfireScreen {
@@ -65,12 +66,16 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 		super(Text.translatable("wildfire_gender.wardrobe.title"), parent, uuid);
 	}
 
-	public static void open(MinecraftClient client, ClientPlayerEntity player) {
+	public static BaseWildfireScreen create(ClientPlayerEntity player, @Nullable Screen parent) {
 		if(ClientConfig.INSTANCE.get(ClientConfig.FIRST_TIME_LOAD) && CloudSync.isAvailable()) {
-			client.setScreen(new WildfireFirstTimeSetupScreen(null, player.getUuid()));
+			return new WildfireFirstTimeSetupScreen(parent, player.getUuid());
 		} else {
-			client.setScreen(new WardrobeBrowserScreen(null, player.getUuid()));
+			return new WardrobeBrowserScreen(parent, player.getUuid());
 		}
+	}
+
+	public static void open(MinecraftClient client, ClientPlayerEntity player) {
+		client.setScreen(create(player, null));
 	}
 
 	@Override
