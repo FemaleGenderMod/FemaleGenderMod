@@ -126,17 +126,14 @@ public class WildfireCommand {
 		return value;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static void send(CommandContext<FabricClientCommandSource> ctx, String text) {
 		ctx.getSource().sendFeedback(Text.empty().append(COMMAND_PREFIX).append(text));
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static void send(CommandContext<FabricClientCommandSource> ctx, Text text) {
 		ctx.getSource().sendFeedback(Text.empty().append(COMMAND_PREFIX).append(text));
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static void sendHelp(CommandContext<FabricClientCommandSource> ctx, Text header, String... nameToDescription) {
 		assert nameToDescription.length % 2 == 0;
 		List<Text> lines = new ArrayList<>();

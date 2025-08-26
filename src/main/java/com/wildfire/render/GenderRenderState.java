@@ -24,6 +24,8 @@ import com.wildfire.main.entitydata.Breasts;
 import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.physics.BreastPhysics;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;
@@ -37,6 +39,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * A decoupled render state object that represents a snapshot of a {@link EntityConfig} during a certain frame.
  */
+@Environment(EnvType.CLIENT)
 public class GenderRenderState {
     public final BreastState breasts = new BreastState();
     public final BreastPhysicsState leftBreastPhysics = new BreastPhysicsState();

@@ -19,10 +19,13 @@
 package com.wildfire.render;
 
 import com.wildfire.main.entitydata.EntityConfig;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.LivingEntity;
 import org.jetbrains.annotations.Nullable;
 
 // See LivingEntityRenderStateMixin for the actual implementation
+@Environment(EnvType.CLIENT)
 public interface GenderEntityRenderStateAccessor {
 	/**
 	 * @return {@code null} if the entity does not support gender configs or if

@@ -20,6 +20,8 @@ package com.wildfire.render;
 
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.config.ClientConfig;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelTransform;
@@ -39,6 +41,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Calendar;
 
+@Environment(EnvType.CLIENT)
 public class HolidayFeaturesRenderer extends FeatureRenderer<PlayerEntityRenderState, PlayerEntityModel> {
 	private static final Identifier SANTA_HAT_TEXTURE = Identifier.of(WildfireGender.MODID, "textures/santa_hat.png");
 	private static final BipedEntityModel<PlayerEntityRenderState> SANTA_HAT_MODEL = new SantaHatModel();

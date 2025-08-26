@@ -64,7 +64,7 @@ public class BreastPhysics {
 		return (
 				// while you aren't able to normally ride chickens in vanilla, it is still possible through
 				// means like /ride, and as chickens attempt to force the rider's body yaw to the same yaw
-				// as the chicken (which is likely intended only for baby zombies), which results in unintended
+				// as the chicken (which is likely intended only for baby zombies), this results in unintended
 				// behavior with what we're doing
 				vehicle instanceof ChickenEntity
 				// unsaddled horses (and llamas, which also extend AbstractDonkeyEntity?) also break rotation
@@ -104,22 +104,11 @@ public class BreastPhysics {
 
 	// this class cannot be blanket marked as client-side only, as this is referenced in the constructor for EntityConfig;
 	// as such, the best we can get here is marking this method as such.
-	// TODO there's a lot of unused code here; this function should also ideally be broken up to make reading
-	// 		through it not as much of a chore (especially the vehicle physics)
 	@Environment(EnvType.CLIENT)
 	public void update(LivingEntity entity, IGenderArmor armor) {
 		// always suppress the full physics calculations on armor stands
 		if(entity instanceof ArmorStandEntity) {
-			if(entityConfig.getGender().canHaveBreasts()) {
-				this.breastSize = entityConfig.getBustSize();
-				if(!entityConfig.getArmorPhysicsOverride()) {
-					float tightness = MathHelper.clamp(armor.tightness(), 0, 1);
-					this.breastSize *= 1 - TIGHTNESS_REDUCTION_FACTOR * tightness;
-				}
-				this.preBreastSize = this.breastSize;
-			} else {
-				this.preBreastSize = this.breastSize = 0f;
-			}
+			simplifiedTick(armor);
 			return;
 		}
 
@@ -132,44 +121,6 @@ public class BreastPhysics {
 			this.prePos = entity.getPos();
 			return;
 		}
-
-		/*{
-			float h = 0; //tickDelta
-			float i = entity.getLeaningPitch(0);
-			float j;
-			float k;
-
-			float bodyXRotation = 0;
-			float bodyYRotation = 0;
-
-			if (entity.isFallFlying()) {
-				j = (float) entity.getRoll() + h;
-				k = MathHelper.clamp(j * j / 100.0F, 0.0F, 1.0F);
-				if (!entity.isUsingRiptide()) {
-					bodyXRotation = k * (-90.0F - entity.getPitch());
-				}
-
-				if (entity instanceof AbstractClientPlayerEntity player) {
-					Vec3d vec3d = entity.getRotationVec(h);
-					Vec3d vec3d2 = player.lerpVelocity(h);
-					double d = vec3d2.horizontalLengthSquared();
-					double e = vec3d.horizontalLengthSquared();
-					if (d > 0.0 && e > 0.0) {
-						double l = (vec3d2.x * vec3d.x + vec3d2.z * vec3d.z) / Math.sqrt(d * e);
-						double m = vec3d2.x * vec3d.z - vec3d2.z * vec3d.x;
-						bodyYRotation = (float) (Math.signum(m) * Math.acos(l));
-					}
-				}
-			} else if (i > 0.0F) {
-				j = entity.isTouchingWater() ? -90.0F - entity.getPitch() : -90.0F;
-				k = MathHelper.lerp(i, 0.0F, j);
-				bodyXRotation = k;
-			} else if (entity.isSleeping()) {
-				bodyXRotation = 90f;
-			} else if (entity.getPose() == EntityPose.CROUCHING) {
-				bodyXRotation = -15f;
-			}
-		}*/ //unused currently, might be later
 
 		float breastWeight = entityConfig.getBustSize() * 1.25f;
 		float targetBreastSize = entityConfig.getBustSize();
@@ -199,6 +150,27 @@ public class BreastPhysics {
 			bounceIntensity = bounceIntensity * WildfireHelper.randFloat(0.5f, 1.5f);
 		}
 
+		tickMovement(entity, motion, bounceIntensity, breastWeight);
+		tickPose(entity, bounceIntensity);
+		tickVehicle(entity, bounceIntensity, breastWeight);
+		tickArmSwing(entity, bounceIntensity);
+		finishTick();
+	}
+
+	private void simplifiedTick(IGenderArmor armor) {
+		if(entityConfig.getGender().canHaveBreasts()) {
+			this.breastSize = entityConfig.getBustSize();
+			if(!entityConfig.getArmorPhysicsOverride()) {
+				float tightness = MathHelper.clamp(armor.tightness(), 0, 1);
+				this.breastSize *= 1 - TIGHTNESS_REDUCTION_FACTOR * tightness;
+			}
+			this.preBreastSize = this.breastSize;
+		} else {
+			this.preBreastSize = this.breastSize = 0f;
+		}
+	}
+
+	private void tickMovement(final LivingEntity entity, final Vec3d motion, final float bounceIntensity, final float breastWeight) {
 		double vertVelocity = entity.getVelocity().y;
 		// Randomize which side the breast will angle toward when the player jumps/has upward velocity applied to them,
 		// or stops falling
@@ -209,7 +181,6 @@ public class BreastPhysics {
 
 		this.targetBounceY = (float) motion.y * bounceIntensity;
 		this.targetBounceY += breastWeight;
-//		float horizVel = (float) Math.sqrt(Math.pow(motion.x, 2) + Math.pow(motion.z, 2)) * (bounceIntensity);
 
 		this.targetRotVel = calcRotation(entity, bounceIntensity);
 		this.targetRotVel += (float) motion.y * bounceIntensity * randomB;
@@ -220,7 +191,9 @@ public class BreastPhysics {
 		f2 = f2 * f2 * f2;
 		if(f2 < 1.0F) f2 = 1.0F;
 		this.targetBounceY += MathHelper.cos(entity.limbAnimator.getAnimationProgress() * 0.6662F + (float)Math.PI) * 0.5F * entity.limbAnimator.getSpeed() * 0.5F / f2;
+	}
 
+	private void tickPose(final LivingEntity entity, final float bounceIntensity) {
 		EntityPose pose = entity.getPose();
 		if(pose != lastPose) {
 			if(pose == EntityPose.CROUCHING || lastPose == EntityPose.CROUCHING) {
@@ -230,8 +203,9 @@ public class BreastPhysics {
 			}
 			lastPose = pose;
 		}
+	}
 
-		//button option for extra entities
+	private void tickVehicle(LivingEntity entity, final float bounceIntensity, final float breastWeight) {
 		switch(entity.getVehicle()) {
 			case BoatEntity boat -> {
 				int rowTime = (int) boat.lerpPaddlePhase(0, entity.limbAnimator.getAnimationProgress());
@@ -272,12 +246,14 @@ public class BreastPhysics {
 			}
 			case null, default -> {}
 		}
+	}
 
+	private void tickArmSwing(LivingEntity entity, final float bounceIntensity) {
 		int swingDuration = entity.getHandSwingDuration();
 		// Require that either the current swing duration is 2 ticks, or the swing duration from the previous tick is,
 		// as any faster and the arm effectively doesn't swing at all; we check the previous tick's swing duration for
 		// reasons explained later on in this block
-		if((swingDuration > 1 || lastSwingDuration > 1) && pose != EntityPose.SLEEPING) {
+		if((swingDuration > 1 || lastSwingDuration > 1) && entity.getPose() != EntityPose.SLEEPING) {
 			float rawAmplifier = 0f;
 			if(swingDuration < 6) {
 				rawAmplifier = 0.15f * (6 - swingDuration);
@@ -322,18 +298,13 @@ public class BreastPhysics {
 			lastSwingTick = 0;
 		}
 		lastSwingDuration = Math.max(swingDuration, 1);
+	}
 
-		/*if(plr.getPose() == EntityPose.SWIMMING) {
-			//System.out.println(1 - plr.getRotationVec(tickDelta).getY());
-			rotationMultiplier = 1 - (float) plr.getRotationVec(tickDelta).getY();
-		}*/
-
-
-		float percent =  entityConfig.getFloppiness();
-		float bounceAmount = 0.45f * (1f - percent) + 0.15f; //0.6f * percent - 0.15f;
+	private void finishTick() {
+		float percent = entityConfig.getFloppiness();
+		float bounceAmount = 0.45f * (1f - percent) + 0.15f;
 		bounceAmount = MathHelper.clamp(bounceAmount, 0.15f, 0.6f);
 		float delta = 2.25f - bounceAmount;
-		//if(plr.isInWater()) delta = 0.75f - (1f * bounceAmount); //water resistance
 
 		float distanceFromMin = Math.abs(bounceVel + 1.5f) * 0.5f;
 		float distanceFromMax = Math.abs(bounceVel - 2.65f) * 0.5f;
@@ -367,7 +338,6 @@ public class BreastPhysics {
 			this.positionY = 1.5f;
 			this.velocity = 0;
 		}
-
 	}
 
 	public float getPrePositionY() {

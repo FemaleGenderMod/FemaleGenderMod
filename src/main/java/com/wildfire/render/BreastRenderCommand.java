@@ -18,6 +18,8 @@
 
 package com.wildfire.render;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.command.OrderedRenderCommandQueue;
@@ -28,6 +30,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.UnaryOperator;
 
+@Environment(EnvType.CLIENT)
 public record BreastRenderCommand(
 		WildfireModelRenderer.ModelBox model,
 		int light,
