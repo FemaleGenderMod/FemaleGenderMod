@@ -16,18 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.mixins.accessors;
+package com.wildfire.render.ducks;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.texture.TextureManager;
-import net.minecraft.resource.ResourceManager;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
+import net.minecraft.util.Identifier;
 
-@Mixin(TextureManager.class)
-@Environment(EnvType.CLIENT)
-public interface TextureManagerAccessor {
-    @Accessor
-    ResourceManager getResourceContainer();
+import java.util.Set;
+
+public interface TextureManagerDuck {
+	/**
+	 * Provides a {@link Set} containing texture {@link Identifier}s that have failed to load
+	 */
+	Set<Identifier> wildfire_gender$missingTextures();
 }
