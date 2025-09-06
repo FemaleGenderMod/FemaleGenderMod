@@ -18,6 +18,9 @@
 
 package com.wildfire.render;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.wildfire.api.IBreastArmorTexture;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.entitydata.EntityConfig;
@@ -53,6 +56,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Duration;
 import java.util.Objects;
 
 @Environment(EnvType.CLIENT)
@@ -65,11 +69,19 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 	private EntityConfig entityConfig;
 	private @NotNull IBreastArmorTexture textureData = IBreastArmorTexture.DEFAULT;
 
-	private static boolean textureExists(Identifier id) {
-		var texManager = MinecraftClient.getInstance().getTextureManager();
-		var resourceManager = ((TextureManagerAccessor) texManager).getResourceContainer();
-		return resourceManager.getResource(id).isPresent();
-	}
+	// TODO it'd be nice to clear this between resource reloads, but making such a mechanism in a way
+	//	    that's properly synchronized between threads is probably not going to be very easy,
+	//	    whereas the quick and easy option is to just use a cache.
+	private static final LoadingCache<Identifier, Boolean> TEXTURE_EXISTS = CacheBuilder.newBuilder()
+			.expireAfterAccess(Duration.ofSeconds(30))
+			.build(new CacheLoader<>() {
+				@Override
+				public @NotNull Boolean load(@NotNull Identifier key) {
+					var texManager = MinecraftClient.getInstance().getTextureManager();
+					var resourceManager = ((TextureManagerAccessor) texManager).getResourceContainer();
+					return resourceManager.getResource(key).isPresent();
+				}
+			});
 
 	static {
 		// apply a very slight delta to fix z-fighting with the armor
@@ -168,7 +180,7 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 	// TODO eventually expose some way for mods to override this, maybe through a default impl in IGenderArmor or similar
 	protected void renderBreastArmor(Identifier texture, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider,
 	                                 int light, BreastSide side, int color, boolean glint) {
-		if(!textureExists(texture)) {
+		if(!TEXTURE_EXISTS.getUnchecked(texture)) {
 			return;
 		}
 
