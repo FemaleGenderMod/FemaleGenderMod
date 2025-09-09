@@ -19,6 +19,8 @@
 package com.wildfire.mixins;
 
 import com.wildfire.render.ducks.TextureManagerDuck;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectSets;
 import net.minecraft.client.texture.ReloadableTexture;
 import net.minecraft.client.texture.TextureContents;
 import net.minecraft.client.texture.TextureManager;
@@ -31,14 +33,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Executor;
 
 @Mixin(TextureManager.class)
 abstract class TextureManagerMixin implements TextureManagerDuck {
-	private static final @Unique Set<Identifier> wildfire_gender$missingTextures = Collections.synchronizedSet(new HashSet<>());
+	private static final @Unique Set<Identifier> wildfire_gender$missingTextures = ObjectSets.synchronize(new ObjectOpenHashSet<>());
 
 	@Inject(
 			method = "loadTexture(Lnet/minecraft/util/Identifier;Lnet/minecraft/client/texture/ReloadableTexture;)Lnet/minecraft/client/texture/TextureContents;",
