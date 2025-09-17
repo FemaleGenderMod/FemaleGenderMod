@@ -54,7 +54,6 @@ import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.decoration.ArmorStandEntity;
@@ -92,6 +91,7 @@ public final class WildfireEventHandler {
 		// note that all the Util.make()s are required, as otherwise a dedicated server will crash during
 		// static class initialization due to references to classes that don't exist
 		if(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+			// TODO KeyMapping.Category.register(ResourceLocation) in mojmap
 			var category = Util.make(() -> KeyBinding.Category.method_74698(WildfireGender.id("generic")));
 			CONFIG_KEYBIND = Util.make(() -> {
 				KeyBinding keybind = new KeyBinding("key.wildfire_gender.gender_menu", GLFW.GLFW_KEY_H, category);
@@ -169,17 +169,20 @@ public final class WildfireEventHandler {
 	@Environment(EnvType.CLIENT)
 	private static void renderTooltip(ItemStack item, Consumer<Text> tooltipAppender, @Nullable PlayerEntity player) {
 		if(player == null || !ClientConfig.INSTANCE.get(ClientConfig.ARMOR_STAT)) return;
+		if(ClientConfig.INSTANCE.get(ClientConfig.ARMOR_PHYSICS_OVERRIDE)) return;
+
 		var playerConfig = WildfireGender.getPlayerById(player.getUuid());
 		if(playerConfig == null || !playerConfig.getGender().canHaveBreasts()) return;
 
 		var equippableComponent = item.get(DataComponentTypes.EQUIPPABLE);
-		if(equippableComponent != null && equippableComponent.slot() == EquipmentSlot.CHEST) {
-			var config = WildfireHelper.getArmorConfig(item);
-			// don't show a +0 tooltip on items that don't interact with physics (e.g. Elytra)
-			if(!config.coversBreasts() || config.physicsResistance() == 0f) return;
-			var formatted = AttributeModifiersComponent.DECIMAL_FORMAT.format(config.physicsResistance());
-			tooltipAppender.accept(Text.translatable("wildfire_gender.armor.tooltip", formatted).formatted(Formatting.LIGHT_PURPLE));
-		}
+		if(equippableComponent == null || equippableComponent.slot() != EquipmentSlot.CHEST) return;
+
+		var config = WildfireHelper.getArmorConfig(item);
+		// don't show a +0 tooltip on items that don't interact with physics (e.g. Elytra)
+		if(!config.coversBreasts() || config.physicsResistance() == 0f) return;
+
+		var formatted = WildfireHelper.toFormattedPercent(config.physicsResistance()) + "%";
+		tooltipAppender.accept(Text.translatable("wildfire_gender.armor.tooltip", formatted).formatted(Formatting.LIGHT_PURPLE));
 	}
 
 	@Environment(EnvType.CLIENT)
