@@ -29,10 +29,7 @@ import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.networking.ServerboundSyncPacket;
 import com.wildfire.main.networking.WildfireSync;
-import com.wildfire.render.GenderArmorLayer;
-import com.wildfire.render.GenderLayer;
-import com.wildfire.render.HolidayFeaturesRenderer;
-import com.wildfire.render.RenderStateEntityCapture;
+import com.wildfire.render.*;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
@@ -149,13 +146,16 @@ public final class WildfireEventHandler {
 
 	@Environment(EnvType.CLIENT)
 	private static void onPlayerNametag(PlayerEntityRenderState state, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, Consumer<Text> renderHelper) {
-		var player = ((RenderStateEntityCapture) state).getEntity() instanceof PlayerEntity p ? p : null;
-		if(player == null) return;
-		var nametag = WildfireGenderClient.getNametag(player.getUuid());
-		if(nametag == null) return;
+		GenderEntityRenderStateAccessor genderRenderStateAccessor = (GenderEntityRenderStateAccessor) state;
+
+		@Nullable GenderRenderState genderRenderState = genderRenderStateAccessor.wildfire_gender$getRenderState();
+		if (genderRenderState == null) return;
+
+		@Nullable Text nametag = genderRenderState.nametag;
+		if (nametag == null) return;
 
 		matrixStack.push();
-		float translationAmt = switch(player.getPose()) {
+		float translationAmt = switch(state.pose) {
 			case EntityPose.CROUCHING -> 0.8f;
 			case EntityPose.SLEEPING -> 0.125f;
 			case EntityPose.SWIMMING, EntityPose.GLIDING -> 0.3f;

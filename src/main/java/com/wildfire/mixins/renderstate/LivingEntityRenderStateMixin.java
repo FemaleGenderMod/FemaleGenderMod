@@ -18,29 +18,31 @@
 
 package com.wildfire.mixins.renderstate;
 
-import com.wildfire.render.RenderStateEntityCapture;
+import com.wildfire.main.entitydata.EntityConfig;
+import com.wildfire.render.GenderRenderState;
+import com.wildfire.render.GenderEntityRenderStateAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.state.LivingEntityRenderState;
 import net.minecraft.entity.LivingEntity;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Implements;
-import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
 @SuppressWarnings("unused")
 @Mixin(LivingEntityRenderState.class)
-@Implements(@Interface(iface = RenderStateEntityCapture.class, prefix = "wildfire_gender$"))
 @Environment(EnvType.CLIENT)
-abstract class LivingEntityRenderStateMixin {
-	private @Unique @Nullable LivingEntity wildfire_gender$entity = null;
+abstract class LivingEntityRenderStateMixin implements GenderEntityRenderStateAccessor {
+	private @Unique GenderRenderState genderRenderState = null;
 
-	public @Nullable LivingEntity wildfire_gender$getEntity() {
-		return wildfire_gender$entity;
+	@Override
+	public @Nullable GenderRenderState wildfire_gender$getRenderState() {
+		return this.genderRenderState;
 	}
 
-	public void wildfire_gender$setEntity(LivingEntity entity) {
-		this.wildfire_gender$entity = entity;
+	@Override
+	public void wildfire_gender$updateRenderState(EntityConfig entityConfig, LivingEntity entity) {
+		if (this.genderRenderState == null) this.genderRenderState = new GenderRenderState();
+		this.genderRenderState.update(entityConfig, entity);
 	}
 }

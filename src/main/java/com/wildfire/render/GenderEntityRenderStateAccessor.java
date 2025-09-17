@@ -18,11 +18,18 @@
 
 package com.wildfire.render;
 
+import com.wildfire.main.entitydata.EntityConfig;
 import net.minecraft.entity.LivingEntity;
 import org.jetbrains.annotations.Nullable;
 
 // See LivingEntityRenderStateMixin for the actual implementation
-public interface RenderStateEntityCapture {
-	@Nullable LivingEntity getEntity();
-	void setEntity(LivingEntity entity);
+public interface GenderEntityRenderStateAccessor {
+	/**
+	 * @return {@code null} if the entity does not support gender configs or if
+	 * {@link GenderEntityRenderStateAccessor#wildfire_gender$updateRenderState(EntityConfig, LivingEntity)} has never
+	 * been called on this entity.
+	 * @see EntityConfig#isSupportedEntity(LivingEntity)
+	 */
+	@Nullable GenderRenderState wildfire_gender$getRenderState();
+	void wildfire_gender$updateRenderState(EntityConfig entityConfig, LivingEntity entity);
 }

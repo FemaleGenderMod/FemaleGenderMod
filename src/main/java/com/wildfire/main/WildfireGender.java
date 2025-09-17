@@ -73,7 +73,8 @@ public class WildfireGender implements ModInitializer {
 			UUID.fromString("ad8ee68c-0aa1-47f9-b29f-f92fa1ef66dc"), //Diademiemi
 			UUID.fromString("8fb5e95d-7f41-4b4c-b8c5-4f15ea3fa2c1"), //Arcti.cc
 			UUID.fromString("3f36f7e9-7459-43fe-87ce-4e8a5d47da80"), //IzzyBizzy45
-			UUID.fromString("525b0455-15e9-49b7-b61d-f291e8ee6c5b") //Powerless001
+			UUID.fromString("525b0455-15e9-49b7-b61d-f291e8ee6c5b"), //Powerless001
+			UUID.fromString("ad3cb52d-524b-41b4-b9d6-b91ec440811d") //RacoonDog
 			//UUID.fromString("23b6feed-2dfe-4f2e-9429-863fd4adb946") //WildfireFGM (I'm not a contributor, silly!)
 	);
 

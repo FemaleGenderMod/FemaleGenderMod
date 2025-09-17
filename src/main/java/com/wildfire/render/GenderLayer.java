@@ -20,22 +20,17 @@ package com.wildfire.render;
 
 import com.wildfire.api.IGenderArmor;
 import com.wildfire.main.config.ClientConfig;
-import com.wildfire.main.entitydata.Breasts;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireHelper;
-import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.mixins.accessors.LivingEntityRendererAccessor;
-import com.wildfire.physics.BreastPhysics;
 import com.wildfire.render.WildfireModelRenderer.BreastModelBox;
 import com.wildfire.render.WildfireModelRenderer.OverlayModelBox;
 
 import java.lang.Math;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.*;
@@ -46,8 +41,6 @@ import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.state.BipedEntityRenderState;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.*;
 import org.jetbrains.annotations.Nullable;
@@ -64,8 +57,8 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 	private final FeatureRendererContext<S, M> context;
 
 	private float preBreastSize, preBreastOffsetZ;
-	private Breasts breasts;
-	protected ItemStack armorStack;
+	private boolean isUniboob;
+	protected ItemStack armorStack; // although ItemStacks are mutable, this is safe as it is a copy of the real one
 	protected IGenderArmor genderArmor;
 	protected boolean isChestplateOccupied, bounceEnabled, breathingAnimation;
 	protected float breastOffsetX, breastOffsetY, breastOffsetZ, lPhysPositionY, lPhysPositionX, rPhysPositionY, rPhysPositionX,
@@ -82,13 +75,6 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		// this can't be static or final as we need the ability to resize this during render time
 		lBreast = new BreastModelBox(64, 64, 16, 17, -4F, 0.0F, 0F, 4, 5, 4, 0.0F, false);
 		rBreast = new BreastModelBox(64, 64, 20, 17, 0, 0.0F, 0F, 4, 5, 4, 0.0F, false);
-	}
-
-	/**
-	 * Convenience method for getting the captured entity object from a render state
-	 */
-	protected @Nullable LivingEntity getEntity(S state) {
-		return ((RenderStateEntityCapture)state).getEntity();
 	}
 
 	/**
@@ -112,13 +98,12 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 			return;
 		}
 
-		LivingEntity ent = getEntity(state);
-		if(ent == null) return;
-
-		EntityConfig entityConfig = EntityConfig.getEntity(ent);
+		GenderEntityRenderStateAccessor genderRenderState = (GenderEntityRenderStateAccessor) state;
+		@Nullable GenderRenderState entityConfigState = genderRenderState.wildfire_gender$getRenderState();
+		if (entityConfigState == null) return;
 
 		try {
-			if(!setupRender(state, entityConfig)) return;
+			if(!setupRender(state, entityConfigState)) return;
 			int overlay = LivingEntityRenderer.getOverlay(state, 0);
 
 			//noinspection CodeBlock2Expr
@@ -136,17 +121,16 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 	 * @return {@code true} if rendering should continue
 	 */
 	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
-	protected boolean setupRender(S state, EntityConfig entityConfig) {
+	protected boolean setupRender(S state, GenderRenderState genderRenderState) {
 		if(!ClientConfig.RENDER_BREASTS) return false;
 
 		float partialTicks = MinecraftClient.getInstance().getRenderTickCounter().getTickProgress(true);
-		LivingEntity entity = Objects.requireNonNull(getEntity(state), "getEntity()");
 
 		armorStack = state.equippedChestStack;
 		//Note: When the stack is empty the helper will fall back to an implementation that returns the proper data
 		genderArmor = WildfireHelper.getArmorConfig(armorStack);
-		isChestplateOccupied = genderArmor.coversBreasts() && !entityConfig.getArmorPhysicsOverride();
-		if(genderArmor.alwaysHidesBreasts() || !entityConfig.showBreastsInArmor() && isChestplateOccupied) {
+		isChestplateOccupied = genderArmor.coversBreasts() && !genderRenderState.armorPhysicsOverride;
+		if(genderArmor.alwaysHidesBreasts() || !genderRenderState.showBreastsInArmor && isChestplateOccupied) {
 			//If the armor always hides breasts or there is armor and the player configured breasts
 			// to be hidden when wearing armor, we can just exit early rather than doing any calculations
 			return false;
@@ -156,30 +140,32 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 			return false;
 		}
 
-		breasts = entityConfig.getBreasts();
-		breastOffsetX = Math.round((Math.round(breasts.getXOffset() * 100f) / 100f) * 10) / 10f;
-		breastOffsetY = -Math.round((Math.round(breasts.getYOffset() * 100f) / 100f) * 10) / 10f;
-		breastOffsetZ = -Math.round((Math.round(breasts.getZOffset() * 100f) / 100f) * 10) / 10f;
+		GenderRenderState.BreastState breasts = genderRenderState.breasts;
+		breastOffsetX = WildfireHelper.round(breasts.xOffset, 1);
+		breastOffsetY = -WildfireHelper.round(breasts.yOffset, 1);
+		breastOffsetZ = -WildfireHelper.round(breasts.zOffset, 1);
 
-		BreastPhysics leftBreastPhysics = entityConfig.getLeftBreastPhysics();
-		final float bSize = leftBreastPhysics.getBreastSize(partialTicks);
-		outwardAngle = (Math.round(breasts.getCleavage() * 100f) / 100f) * 100f;
+		isUniboob = breasts.uniboob;
+
+		GenderRenderState.BreastPhysicsState leftPhysicsState = genderRenderState.leftBreastPhysics;
+		final float bSize = leftPhysicsState.getBreastSize(partialTicks);
+		outwardAngle = Math.round(breasts.cleavage * 100f);
 		outwardAngle = Math.min(outwardAngle, 10);
 
 		resizeBox(bSize);
 
-		lPhysPositionY = MathHelper.lerp(partialTicks, leftBreastPhysics.getPrePositionY(), leftBreastPhysics.getPositionY());
-		lPhysPositionX = MathHelper.lerp(partialTicks, leftBreastPhysics.getPrePositionX(), leftBreastPhysics.getPositionX());
-		lPhysBounceRotation = MathHelper.lerp(partialTicks, leftBreastPhysics.getPreBounceRotation(), leftBreastPhysics.getBounceRotation());
-		if(breasts.isUniboob()) {
+		lPhysPositionY = leftPhysicsState.getPositionY(partialTicks);
+		lPhysPositionX = leftPhysicsState.getPositionX(partialTicks);
+		lPhysBounceRotation = leftPhysicsState.getBounceRotation(partialTicks);
+		if(isUniboob) {
 			rPhysPositionY = lPhysPositionY;
 			rPhysPositionX = lPhysPositionX;
 			rPhysBounceRotation = lPhysBounceRotation;
 		} else {
-			BreastPhysics rightBreastPhysics = entityConfig.getRightBreastPhysics();
-			rPhysPositionY = MathHelper.lerp(partialTicks, rightBreastPhysics.getPrePositionY(), rightBreastPhysics.getPositionY());
-			rPhysPositionX = MathHelper.lerp(partialTicks, rightBreastPhysics.getPrePositionX(), rightBreastPhysics.getPositionX());
-			rPhysBounceRotation = MathHelper.lerp(partialTicks, rightBreastPhysics.getPreBounceRotation(), rightBreastPhysics.getBounceRotation());
+			GenderRenderState.BreastPhysicsState rightPhysicsState = genderRenderState.rightBreastPhysics;
+			rPhysPositionY = rightPhysicsState.getPositionY(partialTicks);
+			rPhysPositionX = rightPhysicsState.getPositionX(partialTicks);
+			rPhysBounceRotation = rightPhysicsState.getBounceRotation(partialTicks);
 		}
 
 		breastSize = Math.min(bSize * 1.5f, 0.7f); // Limit the max size to 0.7f
@@ -196,12 +182,8 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		breastSize += 0.5f * Math.abs(bSize - 0.7f) * 2f; // Adjust breastSize based on bSize
 
 		float resistance = MathHelper.clamp(genderArmor.physicsResistance(), 0, 1);
-		//Note: We only check if the breathing animation should be enabled if the chestplate's physics resistance
-		// is less than or equal to 0.5 so that if we won't be rendering it we can avoid doing extra calculations
-		breathingAnimation = ((entityConfig.getArmorPhysicsOverride() || resistance <= 0.5F) &&
-				(!entity.isSubmergedInWater() || StatusEffectUtil.hasWaterBreathing(entity) ||
-						entity.getWorld().getBlockState(new BlockPos(entity.getBlockX(), entity.getBlockY(), entity.getBlockZ())).isOf(Blocks.BUBBLE_COLUMN)));
-		bounceEnabled = entityConfig.hasBreastPhysics() && (!isChestplateOccupied || resistance < 1); //oh, you found this?
+		breathingAnimation = ((genderRenderState.armorPhysicsOverride || resistance <= 0.5F) && genderRenderState.isBreathing);
+		bounceEnabled = genderRenderState.hasBreastPhysics && (!isChestplateOccupied || resistance < 1); //oh, you found this?
 		return true;
 	}
 
@@ -241,13 +223,13 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 
 		matrixStack.translate((side.isLeft ? breastOffsetX : -breastOffsetX) * 0.0625f, 0.05625f + (breastOffsetY * 0.0625f), zOffset - 0.0625f * 2f + (breastOffsetZ * 0.0625f)); //shift down to correct position
 
-		if(!breasts.isUniboob()) {
+		if(!isUniboob) {
 			matrixStack.translate(-0.0625f * 2 * (side.isLeft ? 1 : -1), 0, 0);
 		}
 		if(bounceEnabled) {
 			matrixStack.multiply(new Quaternionf().rotationXYZ(0, (float)((side.isLeft ? lPhysBounceRotation : rPhysBounceRotation) * (Math.PI / 180f)), 0));
 		}
-		if(!breasts.isUniboob()) {
+		if(!isUniboob) {
 			matrixStack.translate(0.0625f * 2 * (side.isLeft ? 1 : -1), 0, 0);
 		}
 
