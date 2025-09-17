@@ -21,9 +21,9 @@ package com.wildfire.render;
 import com.wildfire.api.IBreastArmorTexture;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.mixins.accessors.EquipmentRendererAccessor;
-import com.wildfire.mixins.accessors.TextureManagerAccessor;
 import com.wildfire.mixins.accessors.TrimSpriteKeyConstructorAccessor;
 import com.wildfire.render.WildfireModelRenderer.BreastModelBox;
+import com.wildfire.render.ducks.TextureManagerDuck;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -61,10 +61,9 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 	private GenderRenderState genderRenderState;
 	private @NotNull IBreastArmorTexture textureData = IBreastArmorTexture.DEFAULT;
 
-	private static boolean textureExists(Identifier id) {
+	private static boolean textureExists(Identifier texture) {
 		var texManager = MinecraftClient.getInstance().getTextureManager();
-		var resourceManager = ((TextureManagerAccessor) texManager).getResourceContainer();
-		return resourceManager.getResource(id).isPresent();
+		return !((TextureManagerDuck) texManager).wildfire_gender$missingTextures().contains(texture);
 	}
 
 	static {
