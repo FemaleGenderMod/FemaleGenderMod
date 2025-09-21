@@ -52,6 +52,7 @@ abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<PlayerEnti
 			queue.submitLabel(
 					matrixStack,
 					state.nameLabelPos,
+					state.extraEars ? -10 : 0,
 					text,
 					!state.sneaking,
 					state.light,
