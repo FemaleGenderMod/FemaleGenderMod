@@ -22,11 +22,13 @@ import com.wildfire.api.IBreastArmorTexture;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.mixins.accessors.EquipmentRendererAccessor;
 import com.wildfire.render.WildfireModelRenderer.BreastModelBox;
-import com.wildfire.render.ducks.TextureManagerDuck;
+import com.wildfire.render.ducks.MissingTextureLogger;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.render.entity.equipment.EquipmentModel;
 import net.minecraft.client.render.entity.equipment.EquipmentModelLoader;
@@ -62,7 +64,7 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 
 	private static boolean textureExists(Identifier texture) {
 		var texManager = MinecraftClient.getInstance().getTextureManager();
-		return !((TextureManagerDuck) texManager).wildfire_gender$missingTextures().contains(texture);
+		return !((MissingTextureLogger) texManager).wildfire_gender$missingTextures().contains(texture);
 	}
 
 	static {
@@ -82,8 +84,13 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 
 	@Override
 	public void render(MatrixStack matrixStack, OrderedRenderCommandQueue queue, int light, S state, float limbAngle, float limbDistance) {
-		GenderEntityRenderStateAccessor genderRenderStateAccessor = (GenderEntityRenderStateAccessor) state;
-		this.genderRenderState = genderRenderStateAccessor.wildfire_gender$getRenderState();
+		if(MinecraftClient.getInstance().world == null) {
+			// TODO rendering in a menu is harder to support as we only tick physics when in a world,
+			//		and entities rendered in the main menu are naturally not in a world
+			return;
+		}
+
+		this.genderRenderState = GenderRenderState.get(state);
 		if (this.genderRenderState == null) return;
 
 		final ItemStack chestplate = state.equippedChestStack;

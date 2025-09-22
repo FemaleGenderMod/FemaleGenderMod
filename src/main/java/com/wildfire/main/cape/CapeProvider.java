@@ -34,7 +34,6 @@ import org.jetbrains.annotations.Nullable;
 import java.io.FileNotFoundException;
 import java.net.URI;
 import java.time.Duration;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 
@@ -44,7 +43,7 @@ import java.util.regex.Pattern;
  */
 public class CapeProvider {
     private static final Duration CACHE_DURATION = Util.make(() -> {
-        if(Objects.equals(System.getProperty("wildfiregender.capes.cache.debug"), "true")) {
+        if(Boolean.getBoolean("wildfiregender.capes.cache.debug")) {
             return Duration.ofSeconds(5);
         }
         return Duration.ofMinutes(30);

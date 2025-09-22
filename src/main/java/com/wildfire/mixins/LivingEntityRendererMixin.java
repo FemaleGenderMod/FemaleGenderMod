@@ -16,33 +16,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.mixins.renderstate;
+package com.wildfire.mixins;
 
-import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.render.GenderRenderState;
-import com.wildfire.render.GenderEntityRenderStateAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.state.LivingEntityRenderState;
 import net.minecraft.entity.LivingEntity;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@SuppressWarnings("unused")
-@Mixin(LivingEntityRenderState.class)
+@Mixin(LivingEntityRenderer.class)
 @Environment(EnvType.CLIENT)
-abstract class LivingEntityRenderStateMixin implements GenderEntityRenderStateAccessor {
-	private @Unique GenderRenderState genderRenderState = null;
-
-	@Override
-	public @Nullable GenderRenderState wildfire_gender$getRenderState() {
-		return this.genderRenderState;
-	}
-
-	@Override
-	public void wildfire_gender$updateRenderState(EntityConfig entityConfig, LivingEntity entity) {
-		if (this.genderRenderState == null) this.genderRenderState = new GenderRenderState();
-		this.genderRenderState.update(entityConfig, entity);
+abstract class LivingEntityRendererMixin {
+	@Inject(method = "updateRenderState(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/client/render/entity/state/LivingEntityRenderState;F)V", at = @At("TAIL"))
+	public void wildfiregender$captureEntityRenderState(LivingEntity entity, LivingEntityRenderState state, float tickDelta, CallbackInfo ci) {
+		GenderRenderState.update(entity, state);
 	}
 }

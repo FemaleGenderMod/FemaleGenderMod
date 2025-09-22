@@ -26,8 +26,10 @@ import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.physics.BreastPhysics;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.rendering.v1.RenderStateDataKey;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.PlayerLikeEntity;
 import net.minecraft.entity.effect.StatusEffectUtil;
@@ -41,6 +43,20 @@ import org.jetbrains.annotations.Nullable;
  */
 @Environment(EnvType.CLIENT)
 public class GenderRenderState {
+    private static final RenderStateDataKey<@Nullable GenderRenderState> STATE = RenderStateDataKey.create(() -> "GenderRenderState");
+
+    public static void update(LivingEntity entity, EntityRenderState state) {
+        if(!EntityConfig.isSupportedEntity(entity)) return;
+        var config = EntityConfig.getEntity(entity);
+        var modState = new GenderRenderState();
+        modState.update(config, entity);
+        state.setData(STATE, modState);
+    }
+
+    public static @Nullable GenderRenderState get(EntityRenderState state) {
+        return state.getData(STATE);
+    }
+
     public final BreastState breasts = new BreastState();
     public final BreastPhysicsState leftBreastPhysics = new BreastPhysicsState();
     public final BreastPhysicsState rightBreastPhysics = new BreastPhysicsState();

@@ -10,6 +10,7 @@
     "CustomCommandRendererMixin",
     "ItemStackMixin",
     "LivingEntityMixin",
+    "LivingEntityRendererMixin",
     "PlayerEntityRendererMixin",
     "TextureManagerMixin",
     "accessors.EquipmentRendererAccessor",
@@ -19,9 +20,7 @@
     "accessors.YggdrasilMinecraftSessionServiceAccessor",
     "cape.PlayerListEntryMixin",
     "cape.SkinTexturesMixin",
-    "cape.SkinTexturesWildfireImplMixin",
-    "renderstate.LivingEntityRendererMixin",
-    "renderstate.LivingEntityRenderStateMixin"
+    "cape.SkinTexturesWildfireImplMixin"
   ],
   "injectors": {
     "defaultRequire": 1

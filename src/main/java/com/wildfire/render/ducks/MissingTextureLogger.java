@@ -22,7 +22,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.Set;
 
-public interface TextureManagerDuck {
+public interface MissingTextureLogger {
 	/**
 	 * Provides a {@link Set} containing texture {@link Identifier}s that have failed to load
 	 */

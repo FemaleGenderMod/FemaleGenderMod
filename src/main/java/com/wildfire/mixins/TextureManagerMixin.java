@@ -18,7 +18,7 @@
 
 package com.wildfire.mixins;
 
-import com.wildfire.render.ducks.TextureManagerDuck;
+import com.wildfire.render.ducks.MissingTextureLogger;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSets;
 import net.minecraft.client.texture.ReloadableTexture;
@@ -37,7 +37,7 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 
 @Mixin(TextureManager.class)
-abstract class TextureManagerMixin implements TextureManagerDuck {
+abstract class TextureManagerMixin implements MissingTextureLogger {
 	private static final @Unique Set<Identifier> wildfire_gender$missingTextures = ObjectSets.synchronize(new ObjectOpenHashSet<>());
 
 	@Inject(

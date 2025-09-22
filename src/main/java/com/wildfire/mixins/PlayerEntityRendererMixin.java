@@ -18,9 +18,14 @@
 
 package com.wildfire.mixins;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.wildfire.events.PlayerNametagRenderEvent;
+import com.wildfire.main.config.ClientConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
@@ -29,6 +34,7 @@ import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.render.state.CameraRenderState;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.PlayerLikeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -40,6 +46,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<PlayerEntity, PlayerEntityRenderState, BipedEntityModel<PlayerEntityRenderState>> {
 	private PlayerEntityRendererMixin(EntityRendererFactory.Context ctx, BipedEntityModel<PlayerEntityRenderState> model, float shadowRadius) {
 		super(ctx, model, shadowRadius);
+	}
+
+	@ModifyReturnValue(method = "hasLabel(Lnet/minecraft/entity/PlayerLikeEntity;D)Z", at = @At("RETURN"))
+	public boolean wildfiregender$forceLabel(boolean original, @Local(argsOnly = true) PlayerLikeEntity player) {
+		if(FabricLoader.getInstance().isDevelopmentEnvironment()) {
+			if(player instanceof ClientPlayerEntity && ClientConfig.INSTANCE.get(ClientConfig.DISPLAY_OWN_NAMETAG)) {
+				return true;
+			}
+		}
+		return original;
 	}
 
 	@SuppressWarnings("CodeBlock2Expr")

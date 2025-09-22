@@ -49,9 +49,11 @@ public class ClientConfig extends AbstractConfiguration {
     public static final BooleanConfigKey ARMOR_STAT = new BooleanConfigKey("armor_stat", true);
 
     public static final BooleanConfigKey HIDE_OWN_CONTRIBUTOR_TAG = new BooleanConfigKey("hide_own_contributor_nametag", false);
-    // TODO support forcing certain cosmetics to always/never render if/when more are added than just the santa hat
-    // this is intentionally omitted from defaults as this is primarily intended for use in debugging
+
+    // region Debug options
     public static final TriStateConfigKey HOLIDAY_COSMETICS = new TriStateConfigKey("holiday_cosmetics");
+    public static final BooleanConfigKey DISPLAY_OWN_NAMETAG = new BooleanConfigKey("display_own_nametag", false);
+    // endregion
 
     static {
         INSTANCE.setDefault(ARMOR_PHYSICS_OVERRIDE);
@@ -64,6 +66,7 @@ public class ClientConfig extends AbstractConfiguration {
         INSTANCE.setDefault(ARMOR_STAT);
         INSTANCE.setDefault(HIDE_OWN_CONTRIBUTOR_TAG);
         // HOLIDAY_COSMETICS is intentionally omitted
+        // DISPLAY_OWN_NAMETAG is intentionally omitted
         if(!INSTANCE.exists()) {
             INSTANCE.save();
         }

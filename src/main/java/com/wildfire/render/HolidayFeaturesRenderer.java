@@ -37,7 +37,6 @@ import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Calendar;
 
@@ -53,9 +52,7 @@ public class HolidayFeaturesRenderer extends FeatureRenderer<PlayerEntityRenderS
 
 	@Override
 	public void render(MatrixStack matrices, OrderedRenderCommandQueue renderQueue, int light, PlayerEntityRenderState state, float limbAngle, float limbDistance) {
-		GenderEntityRenderStateAccessor genderRenderStateAccessor = (GenderEntityRenderStateAccessor) state;
-
-		@Nullable GenderRenderState genderRenderState = genderRenderStateAccessor.wildfire_gender$getRenderState();
+		var genderRenderState = GenderRenderState.get(state);
 		if (genderRenderState == null || !genderRenderState.hasHolidayThemes) return;
 
 		renderSantaHat(state, matrices, renderQueue, light);

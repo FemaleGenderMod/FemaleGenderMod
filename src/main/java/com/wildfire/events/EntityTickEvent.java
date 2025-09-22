@@ -25,7 +25,10 @@ import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.entity.LivingEntity;
 
 /**
- * Event invoked when <b>any</b> {@link LivingEntity} ticks on the client.
+ * <p>Event invoked when <b>any</b> {@link LivingEntity} ticks on the client.</p>
+ *
+ * <p>Note that this event may not be consistently invoked for every entity, such as if other
+ * mods (e.g. EntityCulling) cancel the entity tick.</p>
  */
 @FunctionalInterface
 @Environment(EnvType.CLIENT)

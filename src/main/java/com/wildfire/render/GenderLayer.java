@@ -19,21 +19,18 @@
 package com.wildfire.render;
 
 import com.wildfire.api.IGenderArmor;
-import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireHelper;
+import com.wildfire.main.config.ClientConfig;
 import com.wildfire.mixins.accessors.LivingEntityRendererAccessor;
 import com.wildfire.render.WildfireModelRenderer.BreastModelBox;
 import com.wildfire.render.WildfireModelRenderer.OverlayModelBox;
-
-import java.lang.Math;
-import java.util.function.Consumer;
-
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.model.*;
-import net.minecraft.client.render.*;
+import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
@@ -43,9 +40,13 @@ import net.minecraft.client.render.entity.state.BipedEntityRenderState;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.ColorHelper;
+import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 import org.joml.*;
+
+import java.lang.Math;
+import java.util.function.Consumer;
 
 @Environment(EnvType.CLIENT)
 public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntityModel<S>> extends FeatureRenderer<S, M> {
@@ -92,16 +93,14 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 
 	@Override
 	public void render(MatrixStack matrixStack, OrderedRenderCommandQueue queue, int light, S state, float limbAngle, float limbDistance) {
-		MinecraftClient client = MinecraftClient.getInstance();
-		if(client.player == null) {
-			// TODO is it possible to remove this check? does anything this invoke still check
-			//		the client player or world?
+		if(MinecraftClient.getInstance().world == null) {
+			// TODO rendering in a menu is harder to support as we only tick physics when in a world,
+			//		and entities rendered in the main menu are naturally not in a world
 			return;
 		}
 
-		GenderEntityRenderStateAccessor genderRenderState = (GenderEntityRenderStateAccessor) state;
-		@Nullable GenderRenderState entityConfigState = genderRenderState.wildfire_gender$getRenderState();
-		if (entityConfigState == null) return;
+		var entityConfigState = GenderRenderState.get(state);
+		if(entityConfigState == null) return;
 
 		try {
 			if(!setupRender(state, entityConfigState)) return;
