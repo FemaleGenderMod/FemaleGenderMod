@@ -32,7 +32,8 @@ import java.util.function.Consumer;
 /**
  * Event invoked when an armor item is appending its stats to a tooltip.
  * <br>
- * This is invoked <i>after</i> all other stats have already been added, but before any other tooltip lines have been added.
+ * This is only invoked for the {@link net.minecraft.component.DataComponentTypes#EQUIPPABLE} data component,
+ * and only if stats have already been added for the component.
  */
 @FunctionalInterface
 @Environment(EnvType.CLIENT)

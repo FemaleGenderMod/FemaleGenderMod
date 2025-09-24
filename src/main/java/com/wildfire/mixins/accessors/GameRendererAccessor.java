@@ -16,13 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.render;
+package com.wildfire.mixins.accessors;
 
-import net.minecraft.entity.LivingEntity;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.command.RenderDispatcher;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-// See LivingEntityRenderStateMixin for the actual implementation
-public interface RenderStateEntityCapture {
-	@Nullable LivingEntity getEntity();
-	void setEntity(LivingEntity entity);
+@Mixin(GameRenderer.class)
+public interface GameRendererAccessor {
+	@Accessor("entityRenderDispatcher")
+	RenderDispatcher getRenderDispatcher();
 }

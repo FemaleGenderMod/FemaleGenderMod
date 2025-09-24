@@ -34,6 +34,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import java.util.Objects;
 import java.util.UUID;
@@ -58,7 +59,7 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
 
 		final var config = ClientConfig.INSTANCE;
 		final var ref = new Object() {
-			WildfireButton btnSyncNow, btnAutomaticSync;
+			WildfireButton btnSyncNow, btnDelete, btnAutomaticSync;
 		};
 
 		addButton(builder -> builder
@@ -66,10 +67,13 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
 				.position(xPos, yPos)
 				.size(157, 20)
 				.onPress(button -> {
-					config.set(ClientConfig.CLOUD_SYNC_ENABLED, !config.get(ClientConfig.CLOUD_SYNC_ENABLED));
+					boolean enabled = config.toggle(ClientConfig.CLOUD_SYNC_ENABLED);
+					boolean available = CloudSync.isAvailable();
+
 					button.updateMessage();
-					ref.btnAutomaticSync.setActive(CloudSync.isEnabled());
-					ref.btnSyncNow.visible = CloudSync.isEnabled();
+					ref.btnAutomaticSync.setActive(enabled);
+					ref.btnSyncNow.visible = enabled && available;
+					ref.btnDelete.visible = !enabled && available;
 					ref.btnAutomaticSync.updateMessage();
 				}));
 
@@ -94,6 +98,13 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
 				.size(60, 15)
 				.onPress(this::sync));
 		ref.btnSyncNow.visible = CloudSync.isEnabled();
+
+		ref.btnDelete = addButton(builder -> builder
+				.message(() -> Text.translatable("wildfire_gender.cloud.delete").formatted(Formatting.RED))
+				.position(xPos + 98, yPos + 42)
+				.size(60, 15)
+				.onPress(this::delete));
+		ref.btnDelete.visible = !CloudSync.isEnabled();
 
 		addButton(builder -> builder
 				.message(() -> Text.literal("X"))
@@ -127,6 +138,19 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
 					WildfireGender.LOGGER.error("Failed to sync settings", actualException);
 				}
 				button.setMessage(Text.translatable("wildfire_gender.cloud.syncing.fail"));
+			}
+		});
+	}
+
+	private void delete(ButtonWidget widget) {
+		widget.active = false;
+		CompletableFuture.runAsync(() -> {
+			try {
+				CloudSync.deleteProfile(Objects.requireNonNull(getPlayer())).join();
+				widget.setMessage(Text.translatable("wildfire_gender.cloud.deleted"));
+			} catch(Exception e) {
+				WildfireGender.LOGGER.error("Failed to delete cloud sync profile", e);
+				widget.setMessage(Text.translatable("wildfire_gender.cloud.delete_failed"));
 			}
 		});
 	}

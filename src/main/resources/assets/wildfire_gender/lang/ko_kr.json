@@ -1,5 +1,5 @@
 {
-  "category.wildfire_gender.generic": "Wildfire의 성별 모드",
+  "key.category.wildfire_gender.generic": "Wildfire의 성별 모드",
   "key.wildfire_gender.gender_menu": "성별 선택 메뉴",
   "key.wildfire_gender.toggle": "가슴 렌더링 토글",
   "toast.wildfire_gender.get_started": "'%s' 눌러 설정을 엽니다.",

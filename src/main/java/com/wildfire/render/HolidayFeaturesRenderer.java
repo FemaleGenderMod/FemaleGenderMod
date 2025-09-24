@@ -19,80 +19,79 @@
 package com.wildfire.render;
 
 import com.wildfire.main.WildfireGender;
-import net.minecraft.client.model.*;
+import com.wildfire.main.config.ClientConfig;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.model.Dilation;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
+import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
-import org.joml.Quaternionf;
 
 import java.util.Calendar;
 
+@Environment(EnvType.CLIENT)
 public class HolidayFeaturesRenderer extends FeatureRenderer<PlayerEntityRenderState, PlayerEntityModel> {
-	private final ModelPart santaHat;
-
-	private static final Identifier SANTA_HAT = Identifier.of(WildfireGender.MODID, "textures/santa_hat.png");
+	private static final Identifier SANTA_HAT_TEXTURE = Identifier.of(WildfireGender.MODID, "textures/santa_hat.png");
+	private static final BipedEntityModel<PlayerEntityRenderState> SANTA_HAT_MODEL = new SantaHatModel();
 	private static final boolean christmas = isAroundChristmas();
 
 	public HolidayFeaturesRenderer(FeatureRendererContext<PlayerEntityRenderState, PlayerEntityModel> context) {
 		super(context);
-		santaHat = createSantaHat().createModel();
 	}
 
 	@Override
-	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, PlayerEntityRenderState state, float limbAngle, float limbDistance) {
-		var entity = ((RenderStateEntityCapture)state).getEntity();
-		if(entity == null) return;
-		var config = WildfireGender.getPlayerById(entity.getUuid());
-		if(config == null || !config.hasHolidayThemes()) return;
+	public void render(MatrixStack matrices, OrderedRenderCommandQueue renderQueue, int light, PlayerEntityRenderState state, float limbAngle, float limbDistance) {
+		var genderRenderState = GenderRenderState.get(state);
+		if (genderRenderState == null || !genderRenderState.hasHolidayThemes) return;
 
-		renderSantaHat(state, matrices, vertexConsumers, light);
+		renderSantaHat(state, matrices, renderQueue, light);
 	}
 
-	private void renderSantaHat(PlayerEntityRenderState state, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light) {
-		if(!christmas) return;
+	private void renderSantaHat(PlayerEntityRenderState state, MatrixStack matrixStack, OrderedRenderCommandQueue renderQueue, int light) {
+		if(!state.hatVisible) return;
+		if(!ClientConfig.INSTANCE.get(ClientConfig.HOLIDAY_COSMETICS).asBoolean(christmas)) return;
 
 		matrixStack.push();
-		try {
-			int overlay = LivingEntityRenderer.getOverlay(state, 0);
-			RenderLayer hatRenderType = RenderLayer.getEntityTranslucent(SANTA_HAT);
-			if(hatRenderType == null) return;
-			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(hatRenderType);
+		int overlay = LivingEntityRenderer.getOverlay(state, 0);
+		RenderLayer renderLayer = RenderLayer.getEntityTranslucent(SANTA_HAT_TEXTURE);
 
-			if(state.baby) {
-				matrixStack.scale(state.ageScale, state.ageScale, state.ageScale);
-				matrixStack.translate(0f, 0.75f, 0f);
-			}
-
-			ModelPart mPart = getContextModel().head;
-			matrixStack.translate(mPart.originX * 0.0625f, mPart.originY * 0.0625f, mPart.originZ * 0.0625f);
-			if(mPart.roll != 0.0F || mPart.yaw != 0.0F || mPart.pitch != 0.0F) {
-				matrixStack.multiply(new Quaternionf().rotationZYX(mPart.roll, mPart.yaw, mPart.pitch));
-			}
-
-			santaHat.render(matrixStack, vertexConsumer, light, overlay);
-		} catch(Exception e) {
-			WildfireGender.LOGGER.error("Failed to render breast layer", e);
+		if(state.baby) {
+			matrixStack.scale(state.ageScale, state.ageScale, state.ageScale);
+			matrixStack.translate(0f, 0.75f, 0f);
 		}
-		matrixStack.pop();
-	}
 
-	private static TexturedModelData createSantaHat() {
-		Dilation dilation = new Dilation(0.75f);
-		ModelData modelData = new ModelData();
-		ModelPartData modelPartData = modelData.getRoot();
-		modelPartData.addChild("santa_hat", ModelPartBuilder.create().uv(0, 0).cuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, dilation), ModelTransform.NONE);
-		return TexturedModelData.of(modelData, 32, 32);
+		matrixStack.scale(1.145f, 1.145f, 1.145f);
+		renderQueue.submitModel(SANTA_HAT_MODEL, state, matrixStack, renderLayer, light, overlay, state.outlineColor, null);
+		matrixStack.pop();
 	}
 
 	public static boolean isAroundChristmas() {
 		Calendar calendar = Calendar.getInstance();
 		return calendar.get(Calendar.MONTH) == Calendar.DECEMBER && calendar.get(Calendar.DATE) >= 24 && calendar.get(Calendar.DATE) <= 26;
+	}
+
+	private static class SantaHatModel extends PlayerEntityModel {
+		public SantaHatModel() {
+			super(createSantaHat().createModel(), false);
+		}
+
+		private static TexturedModelData createSantaHat() {
+			var root = PlayerEntityModel.getTexturedModelData(Dilation.NONE, false);
+			var clearedRoot = root.getRoot().resetChildrenParts();
+			var headPart = clearedRoot.getChild(EntityModelPartNames.HEAD);
+			headPart.addChild("santa_hat", ModelPartBuilder.create().uv(0, 0).cuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, Dilation.NONE), ModelTransform.NONE);
+			return TexturedModelData.of(root, 32, 32);
+		}
 	}
 }

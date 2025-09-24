@@ -1,5 +1,5 @@
 {
-	"category.wildfire_gender.generic": "Vrouwelijke Geslachts Mod",
+	"key.category.wildfire_gender.generic": "Vrouwelijke Geslachts Mod",
 	"key.wildfire_gender.gender_menu": "Vrouwelijke Geslachts Menu",
 	"key.wildfire_gender.toggle": "Schakel Borsten Rendering",
 	"toast.wildfire_gender.get_started": "Druk op '%s' om te starten!",

@@ -1,5 +1,5 @@
 {
-	"category.wildfire_gender.generic": "Wildfire's Female Gender Mod",
+	"key.category.wildfire_gender.generic": "Wildfire's Female Gender Mod",
 	"key.wildfire_gender.gender_menu": "Female Gender Menu",
 	"key.wildfire_gender.toggle": "Rendu de la poitrine",
 	"toast.wildfire_gender.get_started": "Appuyer sur '%s' pour commencer!",

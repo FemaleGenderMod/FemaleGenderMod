@@ -1,7 +1,7 @@
 {
 	  "modmenu.descriptionTranslation.wildfire_gender": "Уенчыларга теләгән җенесне сайларга рөхсәт итә.",
 
-	  "category.wildfire_gender.generic": "Wildfire's Female Gender Mod",
+	  "key.category.wildfire_gender.generic": "Wildfire's Female Gender Mod",
   	"key.wildfire_gender.gender_menu": "Хатын җенесе менюсы",
    	"toast.wildfire_gender.get_started": "Башлау өчен «%s» төймәсенә басыгыз!",
 

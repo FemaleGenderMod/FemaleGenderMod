@@ -23,6 +23,7 @@ import com.wildfire.main.config.enums.SyncVerbosity;
 import com.wildfire.main.config.types.BooleanConfigKey;
 import com.wildfire.main.config.types.EnumConfigKey;
 import com.wildfire.main.config.types.StringConfigKey;
+import com.wildfire.main.config.types.TriStateConfigKey;
 
 public class ClientConfig extends AbstractConfiguration {
     public static final ClientConfig INSTANCE = new ClientConfig();
@@ -37,7 +38,6 @@ public class ClientConfig extends AbstractConfiguration {
     public static final BooleanConfigKey ARMOR_PHYSICS_OVERRIDE = new BooleanConfigKey("armor_physics_override", false);
 
     public static final BooleanConfigKey FIRST_TIME_LOAD = new BooleanConfigKey("firstTimeLoad", true);
-    public static final BooleanConfigKey DEBUG_MODE = new BooleanConfigKey("debugMode", false);
     public static final BooleanConfigKey CLOUD_SYNC_ENABLED = new BooleanConfigKey("cloud_sync", false);
     public static final BooleanConfigKey AUTOMATIC_CLOUD_SYNC = new BooleanConfigKey("sync_player_data", false);
     // see CloudSync#DEFAULT_CLOUD_URL for the actual default
@@ -50,10 +50,14 @@ public class ClientConfig extends AbstractConfiguration {
 
     public static final BooleanConfigKey HIDE_OWN_CONTRIBUTOR_TAG = new BooleanConfigKey("hide_own_contributor_nametag", false);
 
+    // region Debug options
+    public static final TriStateConfigKey HOLIDAY_COSMETICS = new TriStateConfigKey("holiday_cosmetics");
+    public static final BooleanConfigKey DISPLAY_OWN_NAMETAG = new BooleanConfigKey("display_own_nametag", false);
+    // endregion
+
     static {
         INSTANCE.setDefault(ARMOR_PHYSICS_OVERRIDE);
         INSTANCE.setDefault(FIRST_TIME_LOAD);
-        INSTANCE.setDefault(DEBUG_MODE);
         INSTANCE.setDefault(CLOUD_SYNC_ENABLED);
         INSTANCE.setDefault(AUTOMATIC_CLOUD_SYNC);
         INSTANCE.setDefault(CLOUD_SERVER);
@@ -61,6 +65,8 @@ public class ClientConfig extends AbstractConfiguration {
         INSTANCE.setDefault(ALWAYS_SHOW_LIST);
         INSTANCE.setDefault(ARMOR_STAT);
         INSTANCE.setDefault(HIDE_OWN_CONTRIBUTOR_TAG);
+        // HOLIDAY_COSMETICS is intentionally omitted
+        // DISPLAY_OWN_NAMETAG is intentionally omitted
         if(!INSTANCE.exists()) {
             INSTANCE.save();
         }

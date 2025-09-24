@@ -182,7 +182,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 		final var client = Objects.requireNonNull(this.client);
 		if(client.player == null || client.world == null) return;
 		Map<UUID, PlayerListEntry> entries = client.player.networkHandler.getPlayerList()
-				.stream().collect(Collectors.toMap(entry -> entry.getProfile().getId(), Function.identity()));
+				.stream().collect(Collectors.toMap(entry -> entry.getProfile().id(), Function.identity()));
 
 		final boolean withCreator = entries.containsKey(WildfireGender.CREATOR_UUID);
 		final var foundContributors = WildfireGender.CONTRIBUTOR_UUIDS.stream().map(entries::get).filter(Objects::nonNull).toList();
@@ -211,7 +211,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 				&& mouseX > this.width / 2 - textWidth / 2 && mouseX < this.width / 2 + textWidth / 2
 				&& mouseY > creatorY - 2 && mouseY < creatorY + (9 * lines)) {
 			var contributorNames = toList.stream().filter(Objects::nonNull)
-					.map(entry -> Team.decorateName(entry.getScoreboardTeam(), Text.of(entry.getProfile().getName())))
+					.map(entry -> Team.decorateName(entry.getScoreboardTeam(), Text.of(entry.getProfile().name())))
 					.toList();
 
 			contribTooltip.setTooltip(Tooltip.of(Texts.join(contributorNames, Text.literal("\n"))));

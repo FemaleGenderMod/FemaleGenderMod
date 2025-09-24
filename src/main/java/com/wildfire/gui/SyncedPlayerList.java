@@ -79,17 +79,17 @@ public final class SyncedPlayerList {
 		var list = new ArrayList<SyncedPlayer>();
 
 		for(var entry : clientPlayer.networkHandler.getListedPlayerListEntries()) {
-			if(Objects.equals(entry.getProfile().getId(), clientPlayer.getUuid())) {
+			if(Objects.equals(entry.getProfile().id(), clientPlayer.getUuid())) {
 				continue;
 			}
 
-			var config = WildfireGender.getPlayerById(entry.getProfile().getId());
+			var config = WildfireGender.getPlayerById(entry.getProfile().id());
 			if(config == null || config.syncStatus == PlayerConfig.SyncStatus.UNKNOWN) {
 				continue;
 			}
 
-			var color = ContributorNametag.getContributorColor(entry.getProfile().getId());
-			list.add(new SyncedPlayer(entry.getProfile().getName(), color == null ? 0xFFFFFF : color, config.getGender()));
+			var color = ContributorNametag.getContributorColor(entry.getProfile().id());
+			list.add(new SyncedPlayer(entry.getProfile().name(), color == null ? 0xFFFFFF : color, config.getGender()));
 
 			if(list.size() >= 40) {
 				break;

@@ -19,8 +19,8 @@
 package com.wildfire.mixins.cape;
 
 import com.wildfire.main.cape.SkinTexturesWildfire;
-import net.minecraft.client.util.SkinTextures;
-import net.minecraft.util.Identifier;
+import net.minecraft.entity.player.SkinTextures;
+import net.minecraft.util.AssetInfo;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -28,13 +28,13 @@ import org.spongepowered.asm.mixin.Unique;
 @SuppressWarnings("unused")
 @Mixin(SkinTextures.class)
 abstract class SkinTexturesWildfireImplMixin implements SkinTexturesWildfire {
-    private @Unique @Nullable Identifier wildfiregender$overriddenCapeTexture = null;
+    private @Unique @Nullable AssetInfo.TextureAsset wildfiregender$overriddenCapeTexture = null;
 
-    public void wildfiregender$overrideCapeTexture(@Nullable Identifier texture) {
+    public void wildfiregender$overrideCapeTexture(@Nullable AssetInfo.TextureAsset texture) {
         this.wildfiregender$overriddenCapeTexture = texture;
     }
 
-    public @Nullable Identifier wildfiregender$getOverriddenCapeTexture() {
+    public @Nullable AssetInfo.TextureAsset wildfiregender$getOverriddenCapeTexture() {
         return wildfiregender$overriddenCapeTexture;
     }
 }

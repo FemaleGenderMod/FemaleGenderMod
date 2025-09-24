@@ -16,28 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.events;
+package com.wildfire.mixins.accessors;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.event.Event;
-import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.client.render.OutlineVertexConsumerProvider;
+import net.minecraft.client.render.command.RenderDispatcher;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-/**
- * <p>Event invoked when <b>any</b> {@link LivingEntity} ticks on the client.</p>
- *
- * <p>Note that this event may not be consistently invoked for every entity, such as if other
- * mods (e.g. EntityCulling) cancel the entity tick.</p>
- */
-@FunctionalInterface
-@Environment(EnvType.CLIENT)
-public interface EntityTickEvent {
-	Event<EntityTickEvent> EVENT = EventFactory.createArrayBacked(EntityTickEvent.class, listeners -> entity -> {
-		for(var listener : listeners) {
-			listener.onTick(entity);
-		}
-	});
-
-	void onTick(LivingEntity entity);
+@Mixin(RenderDispatcher.class)
+public interface RenderDispatcherAccessor {
+	@Accessor("outlineVertexConsumers")
+	OutlineVertexConsumerProvider getOutlineVertexConsumerProvider();
 }

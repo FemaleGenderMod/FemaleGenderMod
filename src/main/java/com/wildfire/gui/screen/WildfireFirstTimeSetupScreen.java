@@ -29,6 +29,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -81,8 +82,11 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 
 					final var nextScreen = new WardrobeBrowserScreen(null, client.player.getUuid());
 					doInitialSync().thenRun(() -> client.execute(() -> client.setScreen(nextScreen)));
-				}));
-
+				})
+				.tooltip(Tooltip.of(Text.empty()
+						.append(Text.translatable("wildfire_gender.first_time_setup.enable.tooltip.line1"))
+						.append("\n\n")
+						.append(Text.translatable("wildfire_gender.first_time_setup.enable.tooltip.line2")))));
 
 		ref.no = addButton(builder -> builder
 				.message(() -> DISABLE_CLOUD_SYNCING)
@@ -124,6 +128,7 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 				// don't immediately re-sync the data we just got back to the cloud
 				clientConfig.needsCloudSync = false;
 			} else {
+				// simply assume that the config is already loaded, so no need to wait.
 				clientConfig.needsCloudSync = true;
 			}
 		});

@@ -27,9 +27,9 @@ import com.google.gson.JsonObject;
 import com.mojang.authlib.HttpAuthenticationService;
 import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.util.InstantTypeAdapter;
-import com.wildfire.main.WildfireLocalization;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireHelper;
+import com.wildfire.main.WildfireLocalization;
 import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.config.enums.SyncVerbosity;
 import com.wildfire.main.entitydata.PlayerConfig;
@@ -39,7 +39,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.session.Session;
 import net.minecraft.util.Util;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.ApiStatus;
@@ -56,7 +55,10 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 /**
@@ -79,11 +81,17 @@ public final class CloudSync {
 	private static final Executor EXECUTOR = Util.getIoWorkerExecutor().named("wildfire_gender$cloudSync");
 	private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantTypeAdapter()).create();
 
-	private static final HttpClient CLIENT = HttpClient.newBuilder()
-			.version(useHttp1_1() ? HttpClient.Version.HTTP_1_1 : HttpClient.Version.HTTP_2)
-			.connectTimeout(Duration.ofSeconds(5))
-			.followRedirects(HttpClient.Redirect.NORMAL)
-			.build();
+	private static final HttpClient CLIENT = Util.make(() -> {
+		var builder = HttpClient.newBuilder();
+		// Use HTTP/1.1 in a development environment if the sync server is not running over https; this is because
+		// HttpClient's default of HTTP/2.0 causes issues when making a PUT request to a FastAPI server running
+		// over an unencrypted HTTP connection.
+		if(FabricLoader.getInstance().isDevelopmentEnvironment() && getCloudServer().startsWith("http://")) {
+			builder.version(HttpClient.Version.HTTP_1_1);
+		}
+		builder.connectTimeout(Duration.ofSeconds(5)).followRedirects(HttpClient.Redirect.NORMAL);
+		return builder.build();
+	});
 
 	private static final String USER_AGENT =
 			"WildfireGender/" + StringUtils.split(WildfireHelper.getModVersion(WildfireGender.MODID), '+')[0]
@@ -96,15 +104,6 @@ public final class CloudSync {
 	private static final String DEFAULT_CLOUD_URL = "https://wfgm.celestialfault.dev";
 	private static final Duration SYNC_COOLDOWN = Duration.ofSeconds(10);
 
-	private static boolean useHttp1_1() {
-		// FIXME this is a terrible workaround to a really dumb issue.
-		//       HttpClient will seemingly _completely_ break PUT requests if allowed to use its default of HTTP/2 with
-		//       a sync server not running over https; this should realistically only ever be an issue you'd encounter
-		//       when running the sync server locally to develop on it, which is why this enforces that you're in a
-		//       dev env to allow using HTTP/1.1.
-		return FabricLoader.getInstance().isDevelopmentEnvironment() && getCloudServer().startsWith("http://");
-	}
-
 	/**
 	 * @return {@code true} if the last {@link #sync(PlayerConfig) sync} was within the last 10 seconds
 	 */
@@ -116,9 +115,16 @@ public final class CloudSync {
 	 * @return A {@link SyncUnavailable} enum indicating the reason for syncing being unavailable, or {@code null} if available
 	 */
 	public static @Nullable SyncUnavailable unavailableReason() {
-		if(MinecraftClient.getInstance().getSession().getAccountType() != Session.AccountType.MSA) {
+		var sessionUuid = MinecraftClient.getInstance().getSession().getUuidOrNull();
+		// offline mode sessions use a version 3 UUID
+		if(sessionUuid == null || sessionUuid.version() != 4) {
 			return SyncUnavailable.INVALID_ACCOUNT;
 		}
+
+		if(CloudUtils.hasTheSessionServiceBeenTamperedWith()) {
+			return SyncUnavailable.INVALID_ACCOUNT;
+		}
+
 		var client = MinecraftClient.getInstance();
 		var netHandler = client.getNetworkHandler();
 		if(!client.isInSingleplayer() && netHandler != null && !netHandler.getConnection().isEncrypted()) {
@@ -226,7 +232,7 @@ public final class CloudSync {
 				var session = client.getSession();
 
 				try {
-					client.getSessionService().joinServer(Objects.requireNonNull(session.getUuidOrNull()), session.getAccessToken(), serverId);
+					CloudUtils.getSessionService().joinServer(Objects.requireNonNull(session.getUuidOrNull()), session.getAccessToken(), serverId);
 				} catch(AuthenticationException e) {
 					SyncLog.add(WildfireLocalization.SYNC_LOG_AUTHENTICATION_FAILED);
 					throw new RuntimeException(e);
@@ -304,6 +310,32 @@ public final class CloudSync {
 			}
 			WildfireGender.LOGGER.debug("Server responded to update: {}", response.body());
 			SyncLog.add(WildfireLocalization.SYNC_LOG_SYNC_SUCCESS);
+		}, EXECUTOR);
+	}
+
+	/**
+	 * Request that the cloud sync server delete the data stored for the provided client player.
+	 *
+	 * @param config The config of the client player
+	 *
+	 * @return A {@link CompletableFuture} indicating when the process has finished, or with an exception if
+	 *         the request failed.
+	 */
+	public static CompletableFuture<Void> deleteProfile(PlayerConfig config) {
+		return CompletableFuture.runAsync(() -> {
+			var token = getAuthToken();
+			var url = URI.create(getCloudServer() + "/" + config.uuid);
+			var request = createRequest(url).DELETE().header("Auth-Token", token).build();
+			var response = CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString()).join();
+			if(response.statusCode() == 404) {
+				SyncLog.add(WildfireLocalization.SYNC_LOG_NO_PROFILE_TO_DELETE);
+				return;
+			} else if(response.statusCode() >= 400) {
+				SyncLog.add(WildfireLocalization.SYNC_LOG_DELETION_FAILED);
+				throw new RuntimeException("Server responded " + response.statusCode() + ": " + response.body());
+			}
+			WildfireGender.LOGGER.debug("Deleted cloud sync profile");
+			SyncLog.add(WildfireLocalization.SYNC_LOG_DELETED);
 		}, EXECUTOR);
 	}
 
