@@ -37,7 +37,7 @@ public class FakeGUIPlayer {
 
 	private final String name;
 	private final UUID uuid;
-	private final Supplier<ClientMannequinEntity> entity;
+	private final Supplier<GUIMannequin> entity;
 
 	public FakeGUIPlayer(final String name, final UUID uuid) {
 		this.name = name;
@@ -58,10 +58,11 @@ public class FakeGUIPlayer {
 	}
 
 	public void tick() {
-		getEntity().tick();
+		entity.get().applyLoadedSkin();
+		EntityConfig.getEntity(getEntity()).tickBreastPhysics(getEntity());
 	}
 
-	private static Supplier<ClientMannequinEntity> createPlayerSupplier(final UUID uuid) {
+	private static Supplier<GUIMannequin> createPlayerSupplier(final UUID uuid) {
 		return Suppliers.memoize(() -> {
 			var client = MinecraftClient.getInstance();
 			assert client.world != null;
@@ -92,6 +93,18 @@ public class FakeGUIPlayer {
 			// with other mods that might be injecting into the data tracker update methods to know
 			// when real entities in the world are updated
 			((ClientMannequinEntityAccessor) this).invokeRefreshSkin();
+		}
+
+		public void applyLoadedSkin() {
+			var accessor = (ClientMannequinEntityAccessor) this;
+			var skinLookup = accessor.getSkinLookup();
+			if(skinLookup != null && skinLookup.isDone()) {
+				try {
+					skinLookup.get().ifPresent(accessor::invokeSetSkin);
+					accessor.setSkinLookup(null);
+				} catch(Exception ignored) {
+				}
+			}
 		}
 
 		@Override
