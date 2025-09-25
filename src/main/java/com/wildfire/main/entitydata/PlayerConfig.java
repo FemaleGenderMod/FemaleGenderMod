@@ -34,6 +34,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.UUID;
@@ -73,9 +74,10 @@ public class PlayerConfig extends EntityConfig {
 		if(uuid.version() != 4) holidayThemes = false;
 	}
 
-	// this shouldn't ever be called on players, but just to be safe, override with a noop.
+	// these shouldn't ever be called on players, but just to be safe, override with a noop.
 	@Override
-	public void readFromStack(@NotNull ItemStack chestplate) {}
+	public void readFromStack(@NotNull ItemStack chestplate) {
+	}
 
 	public Configuration getConfig() {
 		return cfg;

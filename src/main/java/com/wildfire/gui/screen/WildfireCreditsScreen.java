@@ -18,31 +18,20 @@
 
 package com.wildfire.gui.screen;
 
-import com.wildfire.events.EntityHurtSoundEvent;
+import com.wildfire.gui.FakeGUIPlayer;
 import com.wildfire.gui.GuiUtils;
-import com.wildfire.gui.WildfireSlider;
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.config.ClientConfig;
-import com.wildfire.main.config.Configuration;
-import com.wildfire.main.config.enums.Gender;
-import com.wildfire.main.entitydata.PlayerConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.joml.Matrix3x2fStack;
 import org.joml.Vector2f;
 
-import java.util.Objects;
 import java.util.UUID;
 
 @Environment(EnvType.CLIENT)
@@ -50,16 +39,17 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
 
     private static final Identifier CREDIT_CONTAINER = Identifier.of(WildfireGender.MODID, "textures/gui/credit_container.png");
 
-    private CreditBox[] CREDIT_BOXES = new CreditBox[] {
-            new CreditBox("WildfireMC", UUID.fromString("23b6feed-2dfe-4f2e-9429-863fd4adb946")),
-            new CreditBox("celeste", UUID.fromString("70336328-0de7-430e-8cba-2779e2a05ab5")),
-            new CreditBox("pupnewfster", UUID.fromString("64e57307-72e5-4f43-be9c-181e8e35cc9b")),
-            new CreditBox("Kichura", UUID.fromString("618a8390-51b1-43b2-a53a-ab72c1bbd8bd")),
-            new CreditBox("DiaDemiEmi", UUID.fromString("ad8ee68c-0aa1-47f9-b29f-f92fa1ef66dc")),
-            new CreditBox("ArcticWah", UUID.fromString("8fb5e95d-7f41-4b4c-b8c5-4f15ea3fa2c1")),
-            new CreditBox("IzzyBizzy45", UUID.fromString("3f36f7e9-7459-43fe-87ce-4e8a5d47da80")),
-            new CreditBox("Powerless001", UUID.fromString("525b0455-15e9-49b7-b61d-f291e8ee6c5b"))
+    private final FakeGUIPlayer[] CREDIT_BOXES = new FakeGUIPlayer[] {
+            new FakeGUIPlayer("WildfireMC", UUID.fromString("23b6feed-2dfe-4f2e-9429-863fd4adb946")),
+            new FakeGUIPlayer("celeste", UUID.fromString("70336328-0de7-430e-8cba-2779e2a05ab5")),
+            new FakeGUIPlayer("pupnewfster", UUID.fromString("64e57307-72e5-4f43-be9c-181e8e35cc9b")),
+            new FakeGUIPlayer("Kichura", UUID.fromString("618a8390-51b1-43b2-a53a-ab72c1bbd8bd")),
+            new FakeGUIPlayer("DiaDemiEmi", UUID.fromString("ad8ee68c-0aa1-47f9-b29f-f92fa1ef66dc")),
+            new FakeGUIPlayer("ArcticWah", UUID.fromString("8fb5e95d-7f41-4b4c-b8c5-4f15ea3fa2c1")),
+            new FakeGUIPlayer("IzzyBizzy45", UUID.fromString("3f36f7e9-7459-43fe-87ce-4e8a5d47da80")),
+            new FakeGUIPlayer("Powerless001", UUID.fromString("525b0455-15e9-49b7-b61d-f291e8ee6c5b"))
     };
+
     public WildfireCreditsScreen(Screen parent, UUID uuid) {
         super(Text.translatable("wildfire_gender.credits.title"), parent, uuid);
     }
@@ -80,17 +70,8 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
 
     @Override
     public void tick() {
-        for(CreditBox creditBox : CREDIT_BOXES) {
-            if(creditBox.getEntity() != null) {
-                if(!creditBox.getEntity().getUuidAsString().equalsIgnoreCase(client.player.getUuidAsString())) {
-                    PlayerConfig aPlr = WildfireGender.getOrAddPlayerById(creditBox.getUUID());
-                    aPlr.updateGender(Gender.FEMALE);
-                    aPlr.updateBustSize(0.8f);
-                    aPlr.getBreasts().updateCleavage(0.05f);
-                    aPlr.getBreasts().updateUniboob(false);
-                    aPlr.tickBreastPhysics(creditBox.getEntity());
-                }
-            }
+        for(FakeGUIPlayer player : CREDIT_BOXES) {
+            player.tick();
         }
     }
 
@@ -112,12 +93,11 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
         int startY = height / 2 - (2 * 74) / 2 + 4;
         int index = 0;
         int y = 0;
-        for(CreditBox creditBox : CREDIT_BOXES) {
+        for(FakeGUIPlayer creditBox : CREDIT_BOXES) {
             if(creditBox.getEntity() != null) {
                 int creditBoxX = startX + (index * 60);
                 int creditBoxY = startY + (y * 74);
                 ctx.drawTexture(RenderPipelines.GUI_TEXTURED, CREDIT_CONTAINER, creditBoxX, creditBoxY, 0, 0, 52, 68, 52, 68);
-
 
                 int xP = creditBoxX + (52 / 2);
                 int yP = creditBoxY + (68 / 2);

@@ -13,6 +13,7 @@
     "LivingEntityRendererMixin",
     "PlayerEntityRendererMixin",
     "TextureManagerMixin",
+    "accessors.ClientMannequinEntityAccessor",
     "accessors.EquipmentRendererAccessor",
     "accessors.GameRendererAccessor",
     "accessors.LivingEntityRendererAccessor",

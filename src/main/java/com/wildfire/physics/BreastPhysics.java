@@ -107,7 +107,7 @@ public class BreastPhysics {
 	@Environment(EnvType.CLIENT)
 	public void update(LivingEntity entity, IGenderArmor armor) {
 		// always suppress the full physics calculations on armor stands
-		if(entity instanceof ArmorStandEntity) {
+		if(entity instanceof ArmorStandEntity || entityConfig.forceSimplifiedPhysics) {
 			simplifiedTick(armor);
 			return;
 		}

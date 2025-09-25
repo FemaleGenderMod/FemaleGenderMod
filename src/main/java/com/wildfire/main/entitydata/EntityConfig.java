@@ -33,6 +33,7 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.PlayerLikeEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -86,6 +87,9 @@ public class EntityConfig {
 	protected boolean jacketLayer = true;
 	protected @Nullable BreastDataComponent fromComponent;
 
+	@ApiStatus.Internal
+	public boolean forceSimplifiedPhysics = false;
+
 	protected EntityConfig(UUID uuid) {
 		this.uuid = uuid;
 		this.breasts = new Breasts();
@@ -128,8 +132,10 @@ public class EntityConfig {
 	 * @return {@code true} if the mod has support for the provided entity
 	 */
 	public static boolean isSupportedEntity(LivingEntity entity) {
-		// TODO add support for mannequins? this will probably require a lot more work on entity config caches & sync :(
-		return entity instanceof PlayerEntity || entity instanceof ArmorStandEntity;
+		// TODO mannequins are not properly supported right now; this method only returns true to indicate that
+		//		our rendering does technically support it, despite the fact that there is no way to properly utilize
+		//		them without using janky workarounds.
+		return entity instanceof PlayerLikeEntity || entity instanceof ArmorStandEntity;
 	}
 
 	/**

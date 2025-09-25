@@ -164,8 +164,10 @@ public final class CloudSync {
 		}
 	}
 
-	private static boolean isFetchingDisabled() {
-		return !isEnabled() || disableFetchingUntil != null && disableFetchingUntil.isAfter(Instant.now());
+	private static boolean isFetchingDisabled(boolean ignoreConfig) {
+		if(!isAvailable()) return true;
+		if(!ignoreConfig && !isEnabled()) return true;
+		return disableFetchingUntil != null && disableFetchingUntil.isAfter(Instant.now());
 	}
 
 	private static HttpRequest.Builder createRequest(URI uri) {
@@ -339,6 +341,10 @@ public final class CloudSync {
 		}, EXECUTOR);
 	}
 
+	public static CompletableFuture<@Nullable JsonObject> getProfile(UUID uuid) {
+		return getProfile(uuid, false);
+	}
+
 	/**
 	 * Fetch player data from the sync server
 	 *
@@ -351,8 +357,8 @@ public final class CloudSync {
 	 *
 	 * @see #queueFetch(UUID)
 	 */
-	public static CompletableFuture<@Nullable JsonObject> getProfile(UUID uuid) {
-		if(isFetchingDisabled()) {
+	public static CompletableFuture<@Nullable JsonObject> getProfile(UUID uuid, boolean ignoreConfig) {
+		if(isFetchingDisabled(ignoreConfig)) {
 			return CompletableFuture.completedFuture(null);
 		}
 		if(uuid.version() != 4) {
@@ -401,7 +407,7 @@ public final class CloudSync {
 	 */
 	public static CompletableFuture<Map<UUID, JsonObject>> getMultiple(Collection<UUID> uuids) {
 		return CompletableFuture.supplyAsync(() -> {
-			if(isFetchingDisabled()) {
+			if(isFetchingDisabled(false)) {
 				return Collections.emptyMap();
 			}
 
