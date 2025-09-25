@@ -1,5 +1,7 @@
 UNRELEASED (tentatively 4.3.5)
 - Port to 1.21.9
+- Added credits screen.
+- Changed Keira image on first time setup to be a real-time rendered entity.
 - Added support for deleting your Cloud Sync profile when it's turned off
 - The Armor Physics setting now applies to all players
   - Note that this setting is still not synced to other players, and only has an effect on your client

@@ -115,14 +115,13 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
 
     @Override
     public void init() {
-        int yPos = this.height / 2 - 11;
 
-        /*addButton(builder -> builder
-                .message(() -> Text.literal("X"))
-                .position(this.width / 2 + 73, yPos - 121)
-                .size(9, 9)
+        addButton(builder -> builder
+                .message(() -> Text.translatable("wildfire_gender.details.go_back"))
+                .position(this.width / 2 - 25, this.height / 2 + 80)
+                .size(50, 13)
                 .onPress(button -> close())
-                .narration(text -> GuiUtils.doneNarrationText()));*/
+                .narration(text -> GuiUtils.doneNarrationText()));
 
         super.init();
     }
@@ -132,6 +131,8 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
         for(FakeGUIPlayer player : CREDIT_BOXES) {
             player.tick();
         }
+
+        super.tick();
     }
 
     @Override
@@ -145,7 +146,8 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
         Matrix3x2fStack mStack = ctx.getMatrices();
 
         mStack.pushMatrix();
-            GuiUtils.drawCenteredText(ctx, textRenderer, Text.translatable("wildfire_gender.credits.title"), width / 2, height / 2 - 85, ColorHelper.fullAlpha(0xFFFFFF));
+        GuiUtils.drawCenteredText(ctx, textRenderer, Text.translatable("wildfire_gender.credits.title"), width / 2, height / 2 - 100, ColorHelper.fullAlpha(0xFFFFFF));
+        GuiUtils.drawCenteredText(ctx, textRenderer, Text.translatable("wildfire_gender.credits.description"), width / 2, height / 2 - 85, ColorHelper.fullAlpha(0x888888));
         mStack.popMatrix();
 
         int columns = 5;
@@ -207,6 +209,8 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
                     row++;
                 }
             }
+
+            super.render(ctx, mouseX, mouseY, delta);
         }
     }
 }

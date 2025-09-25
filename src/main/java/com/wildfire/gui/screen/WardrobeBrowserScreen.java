@@ -136,6 +136,14 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 			}
 		});
 
+		addButton(builder -> builder
+				.message(() -> Text.translatable("wildfire_gender.credits.title").append("..."))
+				.position(this.width / 2 + 2, this.height / 2 + 33)
+				.size(78, 15)
+				.onPress(button -> {
+					client.setScreen(new WildfireCreditsScreen(WardrobeBrowserScreen.this, this.playerUUID));
+				}));
+
 		/*this.addDrawableChild(new WildfireButton(this.width / 2 + 111, y - 63, 9, 9, Text.literal("X"),
 			button -> close(), text -> GuiUtils.doneNarrationText()));*/
 

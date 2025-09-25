@@ -7,6 +7,7 @@
 	"wildfire_gender.armor.tooltip": "+%s Breast Support",
 
 	"wildfire_gender.credits.title": "Mod Credits",
+	"wildfire_gender.credits.description": "This is a list of the awesome people who have made this mod possible!",
 
 	"wildfire_gender.player_list.title": "Female Gender Mod",
 	"wildfire_gender.player_list.settings_button": "Settings",
@@ -123,6 +124,7 @@
 
 	"wildfire_gender.details.next_page": "Next Page",
 	"wildfire_gender.details.prev_page": "Prev Page",
+	"wildfire_gender.details.go_back": "Go Back",
 
 	"wildfire_gender.cloud_details.title": "Cloud Sync Server Information",
 
