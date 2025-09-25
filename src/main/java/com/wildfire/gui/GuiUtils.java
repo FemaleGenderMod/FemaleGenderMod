@@ -20,8 +20,11 @@ package com.wildfire.gui;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.text.MutableText;
@@ -119,6 +122,38 @@ public final class GuiUtils {
 		entity.lastHeadYaw = entity.getYaw();
 		float p = entity.getScale();
 		Vector3f vector3f = new Vector3f(0.0F, entity.getHeight() / 2.0F + f * p, 0.0F);
+		float q = size / p;
+		InventoryScreen.drawEntity(context, x1, y1, x2, y2, q, vector3f, quaternionf, quaternionf2, entity);
+		entity.bodyYaw = k;
+		entity.setYaw(l);
+		entity.setPitch(m);
+		entity.lastHeadYaw = n;
+		entity.headYaw = o;
+	}
+
+	// Copy of InventoryScreen#drawEntity that doesn't call DrawContext#enableScissor or DrawContext#disableScissor
+	// Allows adjusting entity x and y offsets.
+	public static void drawEntityOnScreenNoScissor(DrawContext context, float entXOff, float entYOff, int x1, int y1, int x2, int y2, int size, float mouseX, float mouseY, LivingEntity entity) {
+		float f = 0.0625F;
+		float g = (x1 + x2) / 2.0F;
+		float h = (y1 + y2) / 2.0F;
+		float i = (float)Math.atan((g - mouseX) / 40.0F);
+		float j = (float)Math.atan((h - mouseY) / 40.0F);
+		Quaternionf quaternionf = new Quaternionf().rotateZ((float) Math.PI);
+		Quaternionf quaternionf2 = new Quaternionf().rotateX(j * 20.0F * (float) (Math.PI / 180.0));
+		quaternionf.mul(quaternionf2);
+		float k = entity.bodyYaw;
+		float l = entity.getYaw();
+		float m = entity.getPitch();
+		float n = entity.lastHeadYaw;
+		float o = entity.headYaw;
+		entity.bodyYaw = 180.0F + i * 20.0F;
+		entity.setYaw(180.0F + i * 40.0F);
+		entity.setPitch(-j * 20.0F);
+		entity.headYaw = entity.getYaw();
+		entity.lastHeadYaw = entity.getYaw();
+		float p = entity.getScale();
+		Vector3f vector3f = new Vector3f(entXOff, entity.getHeight() / 2.0F + f * p + entYOff, 0.0F);
 		float q = size / p;
 		InventoryScreen.drawEntity(context, x1, y1, x2, y2, q, vector3f, quaternionf, quaternionf2, entity);
 		entity.bodyYaw = k;

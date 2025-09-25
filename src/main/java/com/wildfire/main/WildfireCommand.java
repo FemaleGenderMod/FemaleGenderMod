@@ -19,10 +19,12 @@
 package com.wildfire.main;
 
 import com.google.common.cache.Cache;
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.wildfire.gui.screen.WardrobeBrowserScreen;
+import com.wildfire.gui.screen.WildfireFirstTimeSetupScreen;
 import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.config.enums.SyncVerbosity;
 import com.wildfire.main.entitydata.BreastDataComponent;
@@ -72,6 +74,8 @@ public class WildfireCommand {
 	}
 
 	private static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess registry) {
+		MinecraftClient client = MinecraftClient.getInstance();
+
 		var debug = ClientCommandManager.literal("debug")
 				.executes((ctx) -> {
 					sendHelp(ctx, Text.literal("Debug Commands:"),
@@ -89,6 +93,13 @@ public class WildfireCommand {
 						.executes(WildfireCommand::invalidateCache))
 				.then(ClientCommandManager.literal("target")
 						.executes(WildfireCommand::getEntityLookingAt))
+				.then(ClientCommandManager.literal("firsttime")
+						.executes(ctx -> {
+							client.execute(() -> {
+								client.send(() -> client.setScreen(new WildfireFirstTimeSetupScreen(null, client.player.getUuid())));
+							});
+							return Command.SINGLE_SUCCESS;
+						}))
 				.then(ClientCommandManager.literal("cache")
 						.then(argument("allPlayers", BoolArgumentType.bool())
 								.executes(WildfireCommand::getUsers)

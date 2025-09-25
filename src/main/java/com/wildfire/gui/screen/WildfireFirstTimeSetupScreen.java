@@ -18,22 +18,38 @@
 
 package com.wildfire.gui.screen;
 
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.minecraft.MinecraftProfileTexture;
+import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.wildfire.gui.GuiUtils;
 import com.wildfire.gui.WildfireButton;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireGenderClient;
+import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.config.ClientConfig;
+import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.entitydata.PlayerConfig;
+import com.wildfire.render.GenderLayer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.tooltip.Tooltip;
+import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.render.entity.EntityRenderManager;
+import net.minecraft.client.render.entity.PlayerEntityRenderer;
+import net.minecraft.client.texture.PlayerSkinProvider;
+import net.minecraft.entity.player.PlayerModelPart;
+import net.minecraft.entity.player.PlayerSkinType;
+import net.minecraft.entity.player.SkinTextures;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 
 import java.util.Objects;
@@ -55,12 +71,41 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 
 	public WildfireFirstTimeSetupScreen(Screen parent, UUID uuid) {
 		super(Text.translatable("wildfire_gender.cloud_settings"), parent, uuid);
+
 	}
+
+	private @NotNull PlayerConfig keiraCfg;
+	private AbstractClientPlayerEntity fakeKeira;
+	UUID keiraUUID = UUID.fromString("372271ab-28f2-44bd-b585-95f43e010c22");
 
 	@Override
 	public void init() {
 		int x = this.width / 2;
 		int y = this.height / 2;
+
+		// Create a fake profile (so you can give it any skin)
+		MinecraftSessionService sessionService = MinecraftClient.getInstance().getApiServices().sessionService();
+
+		GameProfile filledProfile = sessionService.fetchProfile(keiraUUID, true).profile();
+		PlayerSkinProvider skinProvider = MinecraftClient.getInstance().getSkinProvider();
+
+		skinProvider.fetchSkinTextures(filledProfile).thenAccept(skin -> {
+			skin.ifPresent(skinTex -> {
+				boolean slim = skinTex.model() == PlayerSkinType.SLIM;
+
+				fakeKeira = new AbstractClientPlayerEntity(client.world, filledProfile) {
+					@Override
+					public SkinTextures getSkin() {
+						return skinTex;
+					}
+					@Override
+					public boolean isModelPartVisible(PlayerModelPart part) {
+						return true;
+					}
+				};
+			});
+		});
+
 
 		final var config = ClientConfig.INSTANCE;
 		final var ref = new Object() {
@@ -140,6 +185,20 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 		ctx.drawTexture(RenderPipelines.GUI_TEXTURED, BACKGROUND, (this.width - 274) / 2, (this.height - 200) / 2, 0, 0, 274, 200, 512, 512);
 	}
 
+	// Java thinks "isSupportedEntity()" is an instance of WildfireFirstTimeSetupScreen for the LivingEntity passed into it.
+	// Not sure why, so this is a loophole for now.
+	@Override
+	public void tick() {
+		if(fakeKeira != null) {
+			keiraCfg = WildfireGender.getOrAddPlayerById(fakeKeira.getUuid());
+			keiraCfg.updateGender(Gender.FEMALE);
+			keiraCfg.updateBustSize(0.8f);
+			keiraCfg.getBreasts().updateCleavage(0.05f);
+			keiraCfg.getBreasts().updateUniboob(false);
+			keiraCfg.tickBreastPhysics(fakeKeira);
+		}
+	}
+
 	@Override
 	public void render(DrawContext ctx, int mouseX, int mouseY, float delta) {
 		if(client == null || client.world == null) return;
@@ -169,7 +228,14 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 		int keiraW = 60;
 		int keiraH = (int) (keiraW * ((float)KEIRA_HEIGHT / KEIRA_WIDTH));
 
-		ctx.drawTexture(RenderPipelines.GUI_TEXTURED, KEIRA_WAVE, keiraX, keiraY, 0, 0, keiraW, keiraH, KEIRA_WIDTH, KEIRA_HEIGHT, KEIRA_WIDTH, KEIRA_HEIGHT);
+		//ctx.drawTexture(RenderPipelines.GUI_TEXTURED, KEIRA_WAVE, keiraX, keiraY, 0, 0, keiraW, keiraH, KEIRA_WIDTH, KEIRA_HEIGHT, KEIRA_WIDTH, KEIRA_HEIGHT);
+
+		if(fakeKeira != null) {
+			PlayerConfig cCfg = WildfireGender.getPlayerById(fakeKeira.getUuid());
+			if(cCfg != null) {
+				GuiUtils.drawEntityOnScreenNoScissor(ctx, 0, 0.4f, x - 132, y - 13, x - 75, y + 60, 50, mouseX, mouseY, fakeKeira);
+			}
+		}
 
 		/*mStack.push();
 			mStack.translate(keiraX + (keiraW / 2), keiraY + (keiraH / 2), 0);
