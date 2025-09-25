@@ -105,7 +105,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
         Matrix3x2fStack mStack = ctx.getMatrices();
 
         mStack.pushMatrix();
-            GuiUtils.drawCenteredText(ctx, textRenderer, Text.literal("Credits Screen (WIP)"), width / 2, height / 2 - 85, ColorHelper.fullAlpha(0xFFFFFF));
+            GuiUtils.drawCenteredText(ctx, textRenderer, Text.translatable("wildfire_gender.credits.title"), width / 2, height / 2 - 85, ColorHelper.fullAlpha(0xFFFFFF));
         mStack.popMatrix();
 
         int startX = width / 2 - (5 * 60) / 2 + 4;
