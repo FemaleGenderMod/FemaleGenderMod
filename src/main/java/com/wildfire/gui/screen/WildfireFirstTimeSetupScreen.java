@@ -83,16 +83,18 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 		int x = this.width / 2;
 		int y = this.height / 2;
 
-		// Create a fake profile (so you can give it any skin)
+		// Create a fake profile
 		MinecraftSessionService sessionService = MinecraftClient.getInstance().getApiServices().sessionService();
 
 		GameProfile filledProfile = sessionService.fetchProfile(keiraUUID, true).profile();
 		PlayerSkinProvider skinProvider = MinecraftClient.getInstance().getSkinProvider();
 
+		//Get the skin from Mojang
 		skinProvider.fetchSkinTextures(filledProfile).thenAccept(skin -> {
 			skin.ifPresent(skinTex -> {
 				boolean slim = skinTex.model() == PlayerSkinType.SLIM;
 
+				//Create the fake player entity
 				fakeKeira = new AbstractClientPlayerEntity(client.world, filledProfile) {
 					@Override
 					public SkinTextures getSkin() {

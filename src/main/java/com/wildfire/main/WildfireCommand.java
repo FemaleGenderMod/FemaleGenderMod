@@ -82,6 +82,7 @@ public class WildfireCommand {
 							"invalidatecache", "Clears the player & entity caches",
 							"target", "Show debug info for entity you are looking at",
 							"cache [allPlayers] [showEntities]", "Display cached entities/players",
+							"firsttime", "Display the first time setup screen",
 							"syncverbosity [level]", "Change how verbose the sync log is");
 					ctx.getSource().sendFeedback(Text.empty());
 					sendHelp(ctx, Text.literal("Singleplayer Commands:"),
