@@ -19,7 +19,10 @@
 package com.wildfire.gui;
 
 import com.google.common.base.Suppliers;
+import com.google.gson.JsonObject;
+import com.wildfire.main.GenderConfigs;
 import com.wildfire.main.cloud.CloudSync;
+import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.mixins.accessors.ClientMannequinEntityAccessor;
@@ -28,6 +31,8 @@ import net.minecraft.client.network.ClientMannequinEntity;
 import net.minecraft.client.texture.PlayerSkinCache;
 import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.world.World;
+import net.minidev.json.JSONObject;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -39,10 +44,15 @@ public class FakeGUIPlayer {
 	private final UUID uuid;
 	private final Supplier<GUIMannequin> entity;
 
-	public FakeGUIPlayer(final String name, final UUID uuid) {
+	private final String devTitle;
+	private final String description;
+
+	public FakeGUIPlayer(final String name, final UUID uuid, final String devTitle, final String description, @Nullable final JsonObject genderData) {
 		this.name = name;
 		this.uuid = uuid;
-		this.entity = createPlayerSupplier(uuid);
+		this.entity = createPlayerSupplier(uuid, genderData);
+		this.devTitle = devTitle;
+		this.description = description;
 	}
 
 	public ClientMannequinEntity getEntity() {
@@ -57,12 +67,21 @@ public class FakeGUIPlayer {
 		return name;
 	}
 
+	public String getDevTitle() {
+		return devTitle;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
 	public void tick() {
 		entity.get().applyLoadedSkin();
+		entity.get().age++; // This allows for playing the breathing animation
 		EntityConfig.getEntity(getEntity()).tickBreastPhysics(getEntity());
 	}
 
-	private static Supplier<GUIMannequin> createPlayerSupplier(final UUID uuid) {
+	private static Supplier<GUIMannequin> createPlayerSupplier(final UUID uuid, final JsonObject genderData) {
 		return Suppliers.memoize(() -> {
 			var client = MinecraftClient.getInstance();
 			assert client.world != null;
@@ -74,7 +93,12 @@ public class FakeGUIPlayer {
 				PlayerConfig config = (PlayerConfig) EntityConfig.CACHE.get(entity.getUuid(), () -> new PlayerConfig(entity.getUuid()));
 				config.forceSimplifiedPhysics = true;
 				CloudSync.getProfile(uuid, true).thenAccept(json -> {
-					if(json != null) config.updateFromJson(json);
+					if(json != null) {
+						config.updateFromJson(json);
+					} else {
+						//fallback,
+						config.updateFromJson(genderData);
+					}
 				});
 			} catch(ExecutionException | ClassCastException ignored) {
 			}

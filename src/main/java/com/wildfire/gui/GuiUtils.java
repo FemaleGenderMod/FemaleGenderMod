@@ -31,6 +31,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
@@ -162,4 +163,15 @@ public final class GuiUtils {
 		entity.lastHeadYaw = n;
 		entity.headYaw = o;
 	}
+
+	//Unknown if I want to use this yet, but it's here for now.
+	public static final Text FEMALE_GENDER_MOD_LOGO_TEXT = Text.empty()
+			.append(Text.literal("F").formatted(Formatting.LIGHT_PURPLE))
+			.append(Text.literal("emale").formatted(Formatting.WHITE))
+			.append(" ")
+			.append(Text.literal("G").formatted(Formatting.LIGHT_PURPLE))
+			.append(Text.literal("ender").formatted(Formatting.WHITE))
+			.append(" ")
+			.append(Text.literal("M").formatted(Formatting.LIGHT_PURPLE))
+			.append(Text.literal("od").formatted(Formatting.WHITE));
 }
