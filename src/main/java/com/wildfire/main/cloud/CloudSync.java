@@ -165,8 +165,8 @@ public final class CloudSync {
 	}
 
 	private static boolean isFetchingDisabled(boolean ignoreConfig) {
-		if(!isAvailable()) return false;
-		if(!ignoreConfig && !isEnabled()) return false;
+		if(!isAvailable()) return true;
+		if(!ignoreConfig && !isEnabled()) return true;
 		return disableFetchingUntil != null && disableFetchingUntil.isAfter(Instant.now());
 	}
 
