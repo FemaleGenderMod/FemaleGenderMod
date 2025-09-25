@@ -218,21 +218,6 @@ public class EntityConfig {
 		getRightBreastPhysics().update(entity, armor);
 	}
 
-	@ApiStatus.Internal
-	public void applySettingsFromComponent(@Nullable BreastDataComponent component) {
-		if(component == null) {
-			this.gender = Gender.MALE;
-			return;
-		}
-
-		breastPhysics = false;
-		pBustSize = component.breastSize();
-		gender = pBustSize >= 0.02f ? Gender.FEMALE : Gender.MALE;
-		breasts.updateCleavage(component.cleavage());
-		breasts.updateOffsets(component.offsets());
-		this.jacketLayer = component.jacket();
-	}
-
 	@Override
 	public String toString() {
 		return "%s(uuid=%s, gender=%s)".formatted(getClass().getCanonicalName(), uuid, gender);

@@ -79,10 +79,6 @@ public class PlayerConfig extends EntityConfig {
 	public void readFromStack(@NotNull ItemStack chestplate) {
 	}
 
-	@Override
-	public void applySettingsFromComponent(@Nullable BreastDataComponent component) {
-	}
-
 	public Configuration getConfig() {
 		return cfg;
 	}

@@ -25,7 +25,6 @@ import com.wildfire.gui.WildfireButton;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireGenderClient;
 import com.wildfire.main.config.ClientConfig;
-import com.wildfire.main.entitydata.BreastDataComponent;
 import com.wildfire.main.entitydata.PlayerConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -38,7 +37,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.joml.Vector2f;
-import org.joml.Vector3f;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -59,7 +57,6 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 	private static final Identifier BACKGROUND = Identifier.of(WildfireGender.MODID, "textures/gui/first_time_bg.png");
 
 	private static final UUID keiraUUID = UUID.fromString("372271ab-28f2-44bd-b585-95f43e010c22");
-	private static final BreastDataComponent KEIARA_BREAST_DATA = new BreastDataComponent(0.8f, 0.05f, new Vector3f(), true, null);
 
 	private final Supplier<FakeGUIPlayer> fakeKeira = Suppliers.memoize(() -> new FakeGUIPlayer("KeiaraFGM", keiraUUID));
 
