@@ -20,9 +20,7 @@ package com.wildfire.gui;
 
 import com.google.common.base.Suppliers;
 import com.google.gson.JsonObject;
-import com.wildfire.main.GenderConfigs;
 import com.wildfire.main.cloud.CloudSync;
-import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.mixins.accessors.ClientMannequinEntityAccessor;
@@ -31,7 +29,6 @@ import net.minecraft.client.network.ClientMannequinEntity;
 import net.minecraft.client.texture.PlayerSkinCache;
 import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.world.World;
-import net.minidev.json.JSONObject;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
