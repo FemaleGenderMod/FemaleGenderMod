@@ -24,6 +24,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.wildfire.gui.screen.WardrobeBrowserScreen;
+import com.wildfire.gui.screen.WildfireCreditsScreen;
 import com.wildfire.gui.screen.WildfireFirstTimeSetupScreen;
 import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.config.enums.SyncVerbosity;
@@ -83,6 +84,7 @@ public class WildfireCommand {
 							"target", "Show debug info for entity you are looking at",
 							"cache [allPlayers] [showEntities]", "Display cached entities/players",
 							"firsttime", "Display the first time setup screen",
+							"credits", "Display the WIP credits screen",
 							"syncverbosity [level]", "Change how verbose the sync log is");
 					ctx.getSource().sendFeedback(Text.empty());
 					sendHelp(ctx, Text.literal("Singleplayer Commands:"),
@@ -98,6 +100,13 @@ public class WildfireCommand {
 						.executes(ctx -> {
 							client.execute(() -> {
 								client.send(() -> client.setScreen(new WildfireFirstTimeSetupScreen(null, client.player.getUuid())));
+							});
+							return Command.SINGLE_SUCCESS;
+						}))
+				.then(ClientCommandManager.literal("credits")
+						.executes(ctx -> {
+							client.execute(() -> {
+								client.send(() -> client.setScreen(new WildfireCreditsScreen(null, client.player.getUuid())));
 							});
 							return Command.SINGLE_SUCCESS;
 						}))
