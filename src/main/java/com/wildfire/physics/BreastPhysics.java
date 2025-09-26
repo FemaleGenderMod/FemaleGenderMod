@@ -118,7 +118,7 @@ public class BreastPhysics {
 		this.preBreastSize = this.breastSize;
 
 		if(this.prePos == null) {
-			this.prePos = entity.getPos();
+			this.prePos = entity.getEntityPos();
 			return;
 		}
 
@@ -136,8 +136,8 @@ public class BreastPhysics {
 
 		breastSize += (breastSize < targetBreastSize) ? Math.abs(breastSize - targetBreastSize) / 2f : -Math.abs(breastSize - targetBreastSize) / 2f;
 
-		Vec3d motion = entity.getPos().subtract(this.prePos);
-		this.prePos = entity.getPos();
+		Vec3d motion = entity.getEntityPos().subtract(this.prePos);
+		this.prePos = entity.getEntityPos();
 
 		float bounceIntensity = (targetBreastSize * 3f) * Math.round((entityConfig.getBounceMultiplier() * 3) * 100) / 100f;
 		float resistance = MathHelper.clamp(armor.physicsResistance(), 0, 1);

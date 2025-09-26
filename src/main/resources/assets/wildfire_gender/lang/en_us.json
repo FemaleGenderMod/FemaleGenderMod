@@ -128,8 +128,20 @@
 
 	"wildfire_gender.cloud_details.title": "Cloud Sync Server Information",
 
-	"wildfire_gender.nametag.creator": "Female Gender Mod Creator",
-	"wildfire_gender.nametag.contributor": "Female Gender Mod Contributor",
+	"wildfire_gender.contributor.role.mod_creator": "Female Gender Mod Creator",
+	"wildfire_gender.contributor.role.mod_creator.short": "Mod Creator",
+	"wildfire_gender.contributor.role.fabric_maintainer": "Female Gender Mod Maintainer",
+	"wildfire_gender.contributor.role.fabric_maintainer.short": "Maintainer (Fabric)",
+	"wildfire_gender.contributor.role.neoforge_maintainer": "Female Gender Mod Maintainer",
+	"wildfire_gender.contributor.role.neoforge_maintainer.short": "Maintainer (NeoForge)",
+	"wildfire_gender.contributor.role.developer": "Female Gender Mod Contributor",
+	"wildfire_gender.contributor.role.developer.short": "Programmer",
+	"wildfire_gender.contributor.role.translator": "Female Gender Mod Translator",
+	"wildfire_gender.contributor.role.translator.short": "Mod Translator",
+	"wildfire_gender.contributor.role.mascot": "Female Gender Mod Mascot",
+	"wildfire_gender.contributor.role.mascot.short": "Mod Mascot",
+	"wildfire_gender.contributor.role.generic": "Female Gender Mod Contributor",
+	"wildfire_gender.contributor.role.generic.short": "Contributor",
 
 	"wildfire_gender.misc.holiday_themes": "Holiday Themes: %s",
 	"wildfire_gender.tooltip.holiday_themes.line1": "When enabled, this feature automatically showcases cosmetics like Santa hats and other holiday-themed items during their respective holidays.",

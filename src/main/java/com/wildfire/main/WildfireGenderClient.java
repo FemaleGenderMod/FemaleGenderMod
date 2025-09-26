@@ -20,8 +20,8 @@ package com.wildfire.main;
 
 import com.google.gson.JsonObject;
 import com.wildfire.main.cloud.CloudSync;
-import com.wildfire.main.cloud.ContributorNametag;
 import com.wildfire.main.config.ClientConfig;
+import com.wildfire.main.contributors.Contributors;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.networking.WildfireSync;
 import com.wildfire.render.debug.GenderDebugHudEntry;
@@ -36,12 +36,10 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.debug.DebugHudEntries;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -49,8 +47,6 @@ import java.util.concurrent.Executor;
 @Environment(EnvType.CLIENT)
 public class WildfireGenderClient implements ClientModInitializer {
 	private static final Executor LOAD_EXECUTOR = Util.getIoWorkerExecutor().named("wildfire_gender$loadPlayerData");
-	// TODO merge WildfireGender.CONTRIBUTOR_UUIDS into this?
-	public static final CompletableFuture<Map<UUID, ContributorNametag>> CONTRIBUTOR_NAMETAGS = CloudSync.getContributors();
 
 	@Override
 	public void onInitializeClient() {
@@ -108,21 +104,6 @@ public class WildfireGenderClient implements ClientModInitializer {
 			return null;
 		}
 
-		ContributorNametag custom;
-		try {
-			custom = WildfireGenderClient.CONTRIBUTOR_NAMETAGS.getNow(Map.of()).get(uuid);
-		} catch(Exception e) {
-			custom = null;
-		}
-
-		if(custom != null) {
-			return custom.asText();
-		} else if(WildfireGender.CREATOR_UUID.equals(uuid)) {
-			return Text.translatable("wildfire_gender.nametag.creator").formatted(Formatting.LIGHT_PURPLE);
-		} else if(WildfireGender.CONTRIBUTOR_UUIDS.contains(uuid)) {
-			return Text.translatable("wildfire_gender.nametag.contributor").formatted(Formatting.GOLD);
-		}
-
-		return null;
+		return Contributors.getNametag(uuid);
 	}
 }
