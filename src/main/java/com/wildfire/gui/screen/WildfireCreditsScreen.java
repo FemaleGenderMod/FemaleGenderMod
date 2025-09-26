@@ -185,8 +185,8 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
             }
         }
 
-        String pageInfo = (creditsPage) + " / " + (totalPages-1);
-        GuiUtils.drawCenteredText(ctx, textRenderer, Text.literal(pageInfo), width / 2, height / 2, ColorHelper.fullAlpha(0xFFFFFF));
+        //String pageInfo = (creditsPage) + " / " + (totalPages-1);
+        //GuiUtils.drawCenteredText(ctx, textRenderer, Text.literal(pageInfo), width / 2, height / 2, ColorHelper.fullAlpha(0xFFFFFF));
 
         super.render(ctx, mouseX, mouseY, delta);
     }
