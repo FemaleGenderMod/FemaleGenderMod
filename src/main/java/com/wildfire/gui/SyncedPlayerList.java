@@ -20,7 +20,8 @@ package com.wildfire.gui;
 
 import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.cloud.ContributorNametag;
+import com.wildfire.main.contributors.Contributor;
+import com.wildfire.main.contributors.Contributors;
 import com.wildfire.main.entitydata.PlayerConfig;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
@@ -88,7 +89,7 @@ public final class SyncedPlayerList {
 				continue;
 			}
 
-			var color = ContributorNametag.getContributorColor(entry.getProfile().id());
+			var color = Contributors.getColor(entry.getProfile().id());
 			list.add(new SyncedPlayer(entry.getProfile().name(), color == null ? 0xFFFFFF : color, config.getGender()));
 
 			if(list.size() >= 40) {

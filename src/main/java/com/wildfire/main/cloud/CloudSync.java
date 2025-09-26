@@ -32,6 +32,7 @@ import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.WildfireLocalization;
 import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.config.enums.SyncVerbosity;
+import com.wildfire.main.contributors.Contributor;
 import com.wildfire.main.entitydata.PlayerConfig;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -178,7 +179,8 @@ public final class CloudSync {
 				.timeout(Duration.ofSeconds(5));
 	}
 
-	public static CompletableFuture<Map<UUID, ContributorNametag>> getContributors() {
+	@ApiStatus.Internal
+	public static CompletableFuture<Map<UUID, Contributor>> getContributors() {
 		return CompletableFuture.supplyAsync(() -> {
 			var request = createRequest(URI.create(getCloudServer() + "/contributors")).GET().build();
 
@@ -201,7 +203,7 @@ public final class CloudSync {
 						.stream()
 						.collect(Collectors.toMap(
 								entry -> UUID.fromString(entry.getKey()),
-								entry -> GSON.fromJson(entry.getValue(), ContributorNametag.class)
+								entry -> GSON.fromJson(entry.getValue(), Contributor.class)
 						));
 				return Collections.unmodifiableMap(interim.size() <= 8 ? new Object2ObjectArrayMap<>(interim) : new Object2ObjectOpenHashMap<>(interim));
 			} catch(Exception e) {

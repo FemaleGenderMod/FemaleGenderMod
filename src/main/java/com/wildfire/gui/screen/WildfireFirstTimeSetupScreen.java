@@ -59,7 +59,7 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 
 	private static final UUID keiraUUID = UUID.fromString("372271ab-28f2-44bd-b585-95f43e010c22");
 
-	private final Supplier<FakeGUIPlayer> fakeKeira = Suppliers.memoize(() -> new FakeGUIPlayer("KeiaraFGM", keiraUUID, null, null, GenderConfigs.DEFAULT_FEMALE));
+	private final Supplier<FakeGUIPlayer> fakeKeira = Suppliers.memoize(() -> new FakeGUIPlayer("KeiaraFGM", keiraUUID, GenderConfigs.DEFAULT_FEMALE));
 
 	public WildfireFirstTimeSetupScreen(Screen parent, UUID uuid) {
 		super(Text.translatable("wildfire_gender.cloud_settings"), parent, uuid);
@@ -175,21 +175,8 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 		GuiUtils.drawCenteredTextWrapped(ctx, textRenderer, NOTICE, x, y + 68, (int) ((256-10) * 1.2f), ColorHelper.fullAlpha(4210752));
 		mStack.popMatrix();
 
-		int keiraX = x - 133;
-		int keiraY = y - 12;
-		int keiraW = 60;
-		int keiraH = (int) (keiraW * ((float)KEIRA_HEIGHT / KEIRA_WIDTH));
-
-		//ctx.drawTexture(RenderPipelines.GUI_TEXTURED, KEIRA_WAVE, keiraX, keiraY, 0, 0, keiraW, keiraH, KEIRA_WIDTH, KEIRA_HEIGHT, KEIRA_WIDTH, KEIRA_HEIGHT);
-
 		var fakeKeira = this.fakeKeira.get().getEntity();
 		GuiUtils.drawEntityOnScreenNoScissor(ctx, 0, 0.4f, x - 132, y - 13, x - 75, y + 60, 50, mouseX, mouseY, fakeKeira);
-
-		/*mStack.push();
-			mStack.translate(keiraX + (keiraW / 2), keiraY + (keiraH / 2), 0);
-			mStack.multiply(new Quaternionf().rotateZ(-25 * MathHelper.RADIANS_PER_DEGREE));
-			ctx.drawTexture(RenderPipelines.GUI_TEXTURED, KEIRA_LOOK, -keiraW / 2, -keiraH / 2, 0, 0, keiraW, keiraH, KEIRA_WIDTH, KEIRA_HEIGHT, KEIRA_WIDTH, KEIRA_HEIGHT);
-		mStack.pop();*/
 	}
 
 	@Override

@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.config.ClientConfig;
+import com.wildfire.main.contributors.Contributors;
 import com.wildfire.main.entitydata.PlayerConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -192,8 +193,12 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 		Map<UUID, PlayerListEntry> entries = client.player.networkHandler.getPlayerList()
 				.stream().collect(Collectors.toMap(entry -> entry.getProfile().id(), Function.identity()));
 
-		final boolean withCreator = entries.containsKey(WildfireGender.CREATOR_UUID);
-		final var foundContributors = WildfireGender.CONTRIBUTOR_UUIDS.stream().map(entries::get).filter(Objects::nonNull).toList();
+		final boolean withCreator = entries.containsKey(Contributors.CREATOR_UUID);
+		final var foundContributors = Contributors.getContributorUUIDs().stream()
+				.filter(it -> !it.equals(Contributors.CREATOR_UUID))
+				.map(entries::get)
+				.filter(Objects::nonNull)
+				.toList();
 
 		if(!withCreator && foundContributors.isEmpty()) {
 			return;
@@ -203,7 +208,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 		final var toList = new ArrayList<>(foundContributors);
 		if(withCreator && !foundContributors.isEmpty()) {
 			text = Text.translatable("wildfire_gender.label.with_both");
-			toList.addFirst(entries.get(WildfireGender.CREATOR_UUID));
+			toList.addFirst(entries.get(Contributors.CREATOR_UUID));
 		} else if(withCreator) {
 			text = Text.translatable("wildfire_gender.label.with_creator");
 		} else {
@@ -218,7 +223,8 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 		if(!toList.isEmpty()
 				&& mouseX > this.width / 2 - textWidth / 2 && mouseX < this.width / 2 + textWidth / 2
 				&& mouseY > creatorY - 2 && mouseY < creatorY + (9 * lines)) {
-			var contributorNames = toList.stream().filter(Objects::nonNull)
+			var contributorNames = toList.stream()
+					.filter(Objects::nonNull)
 					.map(entry -> Team.decorateName(entry.getScoreboardTeam(), Text.of(entry.getProfile().name())))
 					.toList();
 
