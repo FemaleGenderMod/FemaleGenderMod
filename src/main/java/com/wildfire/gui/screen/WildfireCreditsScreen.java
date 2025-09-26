@@ -75,8 +75,6 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
         for(FakeGUIPlayer player : CREDIT_BOXES) {
             player.tick();
         }
-
-        super.tick();
     }
 
     @Override
