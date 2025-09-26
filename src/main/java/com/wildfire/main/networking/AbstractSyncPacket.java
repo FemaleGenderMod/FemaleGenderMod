@@ -66,6 +66,7 @@ abstract class AbstractSyncPacket {
         this(plr.uuid, plr.getGender(), plr.getBustSize(), plr.hasHurtSounds(), plr.getVoicePitch(), new BreastPhysics(plr), plr.getBreasts());
     }
 
+    // TODO add support for mannequins?
     protected void updatePlayerFromPacket(PlayerConfig plr) {
         plr.updateGender(gender);
         plr.updateBustSize(bustSize);

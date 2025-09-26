@@ -27,14 +27,13 @@ import com.wildfire.main.WildfireGender;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.util.AssetInfo;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.io.FileNotFoundException;
 import java.net.URI;
 import java.time.Duration;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 
@@ -43,59 +42,47 @@ import java.util.regex.Pattern;
  * of the <a href="https://modrinth.com/mod/kappa">Kappa mod</a>
  */
 public class CapeProvider {
-    /**
-     * Sentinel {@link Identifier} returned if the player's cape was obtained successfully, but they have no cape to display
-     */
-    public static final Identifier NO_CAPE = Identifier.of(WildfireGender.MODID, "no_cape");
-
     private static final Duration CACHE_DURATION = Util.make(() -> {
-        if(Objects.equals(System.getProperty("wildfiregender.capes.cache.debug"), "true")) {
+        if(Boolean.getBoolean("wildfiregender.capes.cache.debug")) {
             return Duration.ofSeconds(5);
         }
         return Duration.ofMinutes(30);
     });
 
-    public static final LoadingCache<GameProfile, CompletableFuture<Identifier>> CACHE = CacheBuilder.newBuilder()
+    public static final LoadingCache<GameProfile, CompletableFuture<AssetInfo.TextureAsset>> CACHE = CacheBuilder.newBuilder()
             .expireAfterAccess(CACHE_DURATION)
             .removalListener(CapeProvider::remove)
-            .build(new CacheLoader<>() {
-                @NotNull
-                @Override
-                public CompletableFuture<@Nullable Identifier> load(@NotNull GameProfile key) {
-                    return loadCape(key);
-                }
-            });
+            .build(CacheLoader.from(CapeProvider::loadCape));
 
     private static final Pattern USERNAME = Pattern.compile("^[a-z0-9_]{1,16}$", Pattern.CASE_INSENSITIVE);
     private static final String CAPE_URL = "https://femalegendermod.net/capes/{uuid}.png";
 
-    private static void remove(RemovalNotification<GameProfile, CompletableFuture<@Nullable Identifier>> entry) {
+    private static void remove(RemovalNotification<GameProfile, CompletableFuture<AssetInfo.TextureAsset>> entry) {
         var future = entry.getValue();
         if(future == null) {
             WildfireGender.LOGGER.warn("Got a null value for removed cache entry with key {}; this shouldn't happen!", entry.getKey());
             return;
         }
 
-        var id = future.getNow(null);
-        if(id != null) {
-            MinecraftClient.getInstance().getTextureManager().destroyTexture(id); //destroy texture immediately
+        var tex = future.getNow(null);
+        if(tex != null) {
+            var id = tex.texturePath();
+            WildfireGender.LOGGER.debug("Destroying texture {}", id);
+            MinecraftClient.getInstance().getTextureManager().destroyTexture(id);
         }
     }
 
     // This loads the cape for one player, doesn't matter if it's the player or not.
-    private static CompletableFuture<@Nullable Identifier> loadCape(GameProfile player) {
+    private static CompletableFuture<AssetInfo.TextureAsset> loadCape(GameProfile player) {
         return CompletableFuture.supplyAsync(() -> {
             // immediately ignore any profiles that look obviously invalid; while it's possible that this
             // could ignore valid profiles (illegal characters in usernames have been known to exist),
             // odds are they're infinitely more likely to be NPCs than real players.
-            if(player.getId().version() != 4 || !USERNAME.matcher(player.getName()).matches()) {
+            if(player.id().version() != 4 || !USERNAME.matcher(player.name()).matches()) {
                 return null;
             }
 
-            /*if(texture == null) { //fallback url if existed, which it doesn't.
-                texture = tryUrl(player, FALLBACK_CAPE_URL.replace("{uuid}", player.getId().toString()));
-            }*/
-            return tryUrl(player, CAPE_URL.replace("{uuid}", player.getId().toString()));
+            return tryUrl(player, CAPE_URL.replace("{uuid}", player.id().toString()));
         }, Util.getIoWorkerExecutor());
     }
 
@@ -115,25 +102,23 @@ public class CapeProvider {
         return out;
     }
 
-    // Try to load a cape from an URL.
+    // Try to load a cape from a URL.
     // If this fails, it'll return null, and let us try another url.
-    private static @Nullable Identifier tryUrl(GameProfile player, String urlFrom) {
+    private static @Nullable AssetInfo.TextureAsset tryUrl(GameProfile player, String urlFrom) {
         try {
             WildfireGender.LOGGER.debug("Attempting to fetch cape from {}", urlFrom);
             var url = URI.create(urlFrom).toURL();
             var image = uncrop(NativeImage.read(url.openStream()));
             WildfireGender.LOGGER.debug("Got cape texture");
 
-            var id = Identifier.of(WildfireGender.MODID, "cape/" + player.getId().toString().replace("-", ""));
+            var id = Identifier.of(WildfireGender.MODID, "cape/" + player.id().toString().replace("-", ""));
             register(id, image).join();
 
-            return id;
+            return new AssetInfo.SkinAssetInfo(id, urlFrom);
         } catch(FileNotFoundException e) {
             // Getting the cape was successful! But there's no cape, so don't retry.
             WildfireGender.LOGGER.debug("No cape texture found");
-            // TODO this feels janky, but would probably require a special Optional-like class
-            //      with a dedicated missing state to properly work around this
-            return NO_CAPE;
+            return null;
         } catch(Exception e) {
             WildfireGender.LOGGER.error("Failed to fetch cape texture", e);
             return null;

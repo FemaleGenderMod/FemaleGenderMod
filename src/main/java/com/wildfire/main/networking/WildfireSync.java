@@ -66,8 +66,6 @@ public final class WildfireSync {
 	 * @param playerConfig The {@link PlayerConfig configuration} for the target player
 	 */
 	public static void sendToAllClients(@NotNull ServerPlayerEntity toSync, @NotNull PlayerConfig playerConfig) {
-		if(toSync.getServer() == null) return;
-
 		PlayerLookup.tracking(toSync).stream()
 				.filter(player -> !player.equals(toSync))
 				.filter(ClientboundSyncPacket::canSend)

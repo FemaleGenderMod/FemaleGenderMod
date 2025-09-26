@@ -27,11 +27,11 @@ import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.config.Configuration;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -329,14 +329,14 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int state) {
+    public boolean mouseReleased(Click arg) {
         //Ensure all sliders are saved
         children().forEach(child -> {
             if(child instanceof WildfireSlider slider) {
                 slider.save();
             }
         });
-        return super.mouseReleased(mouseX, mouseY, state);
+        return super.mouseReleased(arg);
     }
 
     private enum Tab {

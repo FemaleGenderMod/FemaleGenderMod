@@ -18,9 +18,8 @@
 
 package com.wildfire.main.entitydata;
 
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.config.Configuration;
@@ -29,10 +28,7 @@ import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerModelPart;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.registry.RegistryOps;
-import net.minecraft.registry.RegistryWrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
@@ -68,7 +64,6 @@ public record BreastDataComponent(float breastSize, float cleavage, Vector3f off
 					.forGetter(component -> component.offsets.y)
 		).apply(instance, (breastSize, cleavage, jacket, x, y, z) -> new BreastDataComponent(breastSize, cleavage, new Vector3f(x, y, z), jacket, null))
 	);
-	private static final MapCodec<BreastDataComponent> MAP_CODEC = CODEC.fieldOf(KEY);
 
 	public static @Nullable BreastDataComponent fromPlayer(@NotNull PlayerEntity player, @NotNull PlayerConfig config) {
 		if(!config.getGender().canHaveBreasts() || !config.showBreastsInArmor()) {
@@ -76,7 +71,7 @@ public record BreastDataComponent(float breastSize, float cleavage, Vector3f off
 		}
 
 		return new BreastDataComponent(config.getBustSize(), config.getBreasts().getCleavage(), config.getBreasts().getOffsets(),
-				player.isPartVisible(PlayerModelPart.JACKET), null);
+				player.isModelPartVisible(PlayerModelPart.JACKET), null);
 	}
 
 	public static @Nullable BreastDataComponent fromComponent(@Nullable NbtComponent component) {
@@ -84,30 +79,25 @@ public record BreastDataComponent(float breastSize, float cleavage, Vector3f off
 			return null;
 		}
 
-		DataResult<BreastDataComponent> result = component.get(MAP_CODEC);
-		if(result.isError()) {
-			return null;
-		}
-
-		return result.getOrThrow().withComponent(component);
+		return CODEC.decode(NbtOps.INSTANCE, component.copyNbt().getCompoundOrEmpty(KEY))
+				.result()
+				.map(Pair::getFirst)
+				.map(breastDataComponent -> breastDataComponent.withComponent(component))
+				.orElse(null);
 	}
 
-	public void write(RegistryWrapper.WrapperLookup lookup, ItemStack stack) {
+	public void write(ItemStack stack) {
 		if(stack.isEmpty()) {
 			throw new IllegalArgumentException("The provided ItemStack must not be empty");
 		}
 
-		RegistryOps<NbtElement> op = lookup.getOps(NbtOps.INSTANCE);
-		DataResult<NbtComponent> result = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT).with(op, MAP_CODEC, this);
-		if(result.isSuccess()) {
-			stack.set(DataComponentTypes.CUSTOM_DATA, result.getOrThrow());
-		}
+		NbtComponent.set(DataComponentTypes.CUSTOM_DATA, stack, nbt -> nbt.put(KEY, CODEC, this));
 	}
 
 	public static void removeFromStack(ItemStack stack) {
 		if(stack.isEmpty()) return;
 		NbtComponent component = stack.get(DataComponentTypes.CUSTOM_DATA);
-		if(component != null && component.contains(KEY)) {
+		if(component != null && component.copyNbt().contains(KEY)) {
 			NbtComponent.set(DataComponentTypes.CUSTOM_DATA, stack, nbt -> nbt.remove(KEY));
 		}
 	}

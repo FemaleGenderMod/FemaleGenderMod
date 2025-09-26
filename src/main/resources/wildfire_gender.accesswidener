@@ -2,3 +2,5 @@ accessWidener v2 named
 
 accessible method net/minecraft/entity/LivingEntity getHandSwingDuration ()I
 accessible class net/minecraft/client/render/entity/equipment/EquipmentRenderer$TrimSpriteKey
+accessible method net/minecraft/client/render/entity/equipment/EquipmentRenderer$TrimSpriteKey <init> (Lnet/minecraft/item/equipment/trim/ArmorTrim;Lnet/minecraft/client/render/entity/equipment/EquipmentModel$LayerType;Lnet/minecraft/registry/RegistryKey;)V
+accessible method net/minecraft/client/render/entity/equipment/EquipmentRenderer getDyeColor (Lnet/minecraft/client/render/entity/equipment/EquipmentModel$Layer;I)I

@@ -30,6 +30,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.TriState;
 import net.minecraft.util.math.MathHelper;
@@ -71,6 +72,11 @@ public final class WildfireHelper {
         return (float) ThreadLocalRandom.current().nextDouble(min, (double) max + 1);
     }
 
+    public static float round(float num, float decimalPlaces) {
+        float factor = (float) Math.pow(10, decimalPlaces);
+        return Math.round(num * factor) / factor;
+    }
+
     @SuppressWarnings("removal")
     @Environment(EnvType.CLIENT)
     public static IGenderArmor getArmorConfig(ItemStack stack) {
@@ -95,6 +101,10 @@ public final class WildfireHelper {
     public static String getModVersion(String modId) {
         var mod = FabricLoader.getInstance().getModContainer(modId).orElseThrow();
         return mod.getMetadata().getVersion().getFriendlyString();
+    }
+
+    public static String toFormattedPercent(double value) {
+        return AttributeModifiersComponent.DECIMAL_FORMAT.format(value * 100.0);
     }
 
     public static boolean onClient() {

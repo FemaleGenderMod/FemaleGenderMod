@@ -20,7 +20,8 @@ package com.wildfire.gui;
 
 import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.cloud.ContributorNametag;
+import com.wildfire.main.contributors.Contributor;
+import com.wildfire.main.contributors.Contributors;
 import com.wildfire.main.entitydata.PlayerConfig;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
@@ -79,17 +80,17 @@ public final class SyncedPlayerList {
 		var list = new ArrayList<SyncedPlayer>();
 
 		for(var entry : clientPlayer.networkHandler.getListedPlayerListEntries()) {
-			if(Objects.equals(entry.getProfile().getId(), clientPlayer.getUuid())) {
+			if(Objects.equals(entry.getProfile().id(), clientPlayer.getUuid())) {
 				continue;
 			}
 
-			var config = WildfireGender.getPlayerById(entry.getProfile().getId());
+			var config = WildfireGender.getPlayerById(entry.getProfile().id());
 			if(config == null || config.syncStatus == PlayerConfig.SyncStatus.UNKNOWN) {
 				continue;
 			}
 
-			var color = ContributorNametag.getContributorColor(entry.getProfile().getId());
-			list.add(new SyncedPlayer(entry.getProfile().getName(), color == null ? 0xFFFFFF : color, config.getGender()));
+			var color = Contributors.getColor(entry.getProfile().id());
+			list.add(new SyncedPlayer(entry.getProfile().name(), color == null ? 0xFFFFFF : color, config.getGender()));
 
 			if(list.size() >= 40) {
 				break;

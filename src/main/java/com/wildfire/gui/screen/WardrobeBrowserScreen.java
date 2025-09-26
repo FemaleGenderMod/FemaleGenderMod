@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.config.ClientConfig;
+import com.wildfire.main.contributors.Contributors;
 import com.wildfire.main.entitydata.PlayerConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -47,6 +48,7 @@ import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public class WardrobeBrowserScreen extends BaseWildfireScreen {
@@ -65,12 +67,16 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 		super(Text.translatable("wildfire_gender.wardrobe.title"), parent, uuid);
 	}
 
-	public static void open(MinecraftClient client, ClientPlayerEntity player) {
+	public static BaseWildfireScreen create(ClientPlayerEntity player, @Nullable Screen parent) {
 		if(ClientConfig.INSTANCE.get(ClientConfig.FIRST_TIME_LOAD) && CloudSync.isAvailable()) {
-			client.setScreen(new WildfireFirstTimeSetupScreen(null, player.getUuid()));
+			return new WildfireFirstTimeSetupScreen(parent, player.getUuid());
 		} else {
-			client.setScreen(new WardrobeBrowserScreen(null, player.getUuid()));
+			return new WardrobeBrowserScreen(parent, player.getUuid());
 		}
+	}
+
+	public static void open(MinecraftClient client, ClientPlayerEntity player) {
+		client.setScreen(create(player, null));
 	}
 
 	@Override
@@ -131,6 +137,14 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 			}
 		});
 
+		addButton(builder -> builder
+				.message(() -> Text.translatable("wildfire_gender.credits.title").append("..."))
+				.position(this.width / 2 + 2, this.height / 2 + 33)
+				.size(78, 15)
+				.onPress(button -> {
+					client.setScreen(new WildfireCreditsScreen(WardrobeBrowserScreen.this, this.playerUUID));
+				}));
+
 		/*this.addDrawableChild(new WildfireButton(this.width / 2 + 111, y - 63, 9, 9, Text.literal("X"),
 			button -> close(), text -> GuiUtils.doneNarrationText()));*/
 
@@ -177,10 +191,14 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 		final var client = Objects.requireNonNull(this.client);
 		if(client.player == null || client.world == null) return;
 		Map<UUID, PlayerListEntry> entries = client.player.networkHandler.getPlayerList()
-				.stream().collect(Collectors.toMap(entry -> entry.getProfile().getId(), Function.identity()));
+				.stream().collect(Collectors.toMap(entry -> entry.getProfile().id(), Function.identity()));
 
-		final boolean withCreator = entries.containsKey(WildfireGender.CREATOR_UUID);
-		final var foundContributors = WildfireGender.CONTRIBUTOR_UUIDS.stream().map(entries::get).filter(Objects::nonNull).toList();
+		final boolean withCreator = entries.containsKey(Contributors.CREATOR_UUID);
+		final var foundContributors = Contributors.getContributorUUIDs().stream()
+				.filter(it -> !it.equals(Contributors.CREATOR_UUID))
+				.map(entries::get)
+				.filter(Objects::nonNull)
+				.toList();
 
 		if(!withCreator && foundContributors.isEmpty()) {
 			return;
@@ -190,7 +208,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 		final var toList = new ArrayList<>(foundContributors);
 		if(withCreator && !foundContributors.isEmpty()) {
 			text = Text.translatable("wildfire_gender.label.with_both");
-			toList.addFirst(entries.get(WildfireGender.CREATOR_UUID));
+			toList.addFirst(entries.get(Contributors.CREATOR_UUID));
 		} else if(withCreator) {
 			text = Text.translatable("wildfire_gender.label.with_creator");
 		} else {
@@ -205,8 +223,9 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 		if(!toList.isEmpty()
 				&& mouseX > this.width / 2 - textWidth / 2 && mouseX < this.width / 2 + textWidth / 2
 				&& mouseY > creatorY - 2 && mouseY < creatorY + (9 * lines)) {
-			var contributorNames = toList.stream().filter(Objects::nonNull)
-					.map(entry -> Team.decorateName(entry.getScoreboardTeam(), Text.of(entry.getProfile().getName())))
+			var contributorNames = toList.stream()
+					.filter(Objects::nonNull)
+					.map(entry -> Team.decorateName(entry.getScoreboardTeam(), Text.of(entry.getProfile().name())))
 					.toList();
 
 			contribTooltip.setTooltip(Tooltip.of(Texts.join(contributorNames, Text.literal("\n"))));

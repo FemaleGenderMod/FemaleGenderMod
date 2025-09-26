@@ -35,11 +35,11 @@ import java.util.function.Consumer;
 @FunctionalInterface
 @Environment(EnvType.CLIENT)
 public interface PlayerNametagRenderEvent {
-	Event<PlayerNametagRenderEvent> EVENT = EventFactory.createArrayBacked(PlayerNametagRenderEvent.class, listeners -> (state, matrixStack, vertexConsumerProvider, renderHelper) -> {
+	Event<PlayerNametagRenderEvent> EVENT = EventFactory.createArrayBacked(PlayerNametagRenderEvent.class, listeners -> (state, matrixStack, renderHelper) -> {
 		for(var listener : listeners) {
-			listener.onRenderNameTag(state, matrixStack, vertexConsumerProvider, renderHelper);
+			listener.onRenderNameTag(state, matrixStack, renderHelper);
 		}
 	});
 
-	void onRenderNameTag(PlayerEntityRenderState state, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, Consumer<Text> renderHelper);
+	void onRenderNameTag(PlayerEntityRenderState state, MatrixStack matrixStack, Consumer<Text> renderHelper);
 }

@@ -1,0 +1,16 @@
+{
+	"gender": 1,
+	"bust_size": 0,
+	"hurt_sounds": false,
+	"voice_pitch": 1.0,
+	"breasts_xOffset": 0.0,
+	"breasts_yOffset": 0.0,
+	"breasts_zOffset": 0.0,
+	"breasts_uniboob": false,
+	"breasts_cleavage": 0.0,
+	"breast_physics": false,
+	"show_in_armor": false,
+	"bounce_multiplier": 0.3328767,
+	"floppy_multiplier": 0.75,
+	"holiday_themes": false
+}

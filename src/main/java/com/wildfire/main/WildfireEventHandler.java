@@ -21,7 +21,6 @@ package com.wildfire.main;
 import com.wildfire.events.*;
 import com.wildfire.gui.SyncedPlayerList;
 import com.wildfire.gui.screen.WardrobeBrowserScreen;
-import com.wildfire.gui.screen.WildfireFirstTimeSetupScreen;
 import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.entitydata.BreastDataComponent;
@@ -29,10 +28,7 @@ import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.networking.ServerboundSyncPacket;
 import com.wildfire.main.networking.WildfireSync;
-import com.wildfire.render.GenderArmorLayer;
-import com.wildfire.render.GenderLayer;
-import com.wildfire.render.HolidayFeaturesRenderer;
-import com.wildfire.render.RenderStateEntityCapture;
+import com.wildfire.render.*;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
@@ -51,7 +47,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.ArmorStandEntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
@@ -59,7 +54,6 @@ import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.decoration.ArmorStandEntity;
@@ -77,9 +71,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 public final class WildfireEventHandler {
@@ -96,17 +88,17 @@ public final class WildfireEventHandler {
 	}
 
 	static {
+		// note that all the Util.make()s are required, as otherwise a dedicated server will crash during
+		// static class initialization due to references to classes that don't exist
 		if(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
-			// this has to be wrapped in a lambda to ensure that a dedicated server won't crash during startup
-			// while executing this static block
+			var category = Util.make(() -> KeyBinding.Category.create(WildfireGender.id("generic")));
 			CONFIG_KEYBIND = Util.make(() -> {
-				// FIXME this now conflicts with the Quick Actions key from vanilla as of 1.21.6-pre1
-				KeyBinding keybind = new KeyBinding("key.wildfire_gender.gender_menu", GLFW.GLFW_KEY_H, "category.wildfire_gender.generic");
+				KeyBinding keybind = new KeyBinding("key.wildfire_gender.gender_menu", GLFW.GLFW_KEY_H, category);
 				KeyBindingHelper.registerKeyBinding(keybind);
 				return keybind;
 			});
 			TOGGLE_KEYBIND = Util.make(() -> {
-				KeyBinding keybind = new KeyBinding("key.wildfire_gender.toggle", GLFW.GLFW_KEY_UNKNOWN, "category.wildfire_gender.generic");
+				KeyBinding keybind = new KeyBinding("key.wildfire_gender.toggle", GLFW.GLFW_KEY_UNKNOWN, category);
 				KeyBindingHelper.registerKeyBinding(keybind);
 				return keybind;
 			});
@@ -148,14 +140,15 @@ public final class WildfireEventHandler {
 	}
 
 	@Environment(EnvType.CLIENT)
-	private static void onPlayerNametag(PlayerEntityRenderState state, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, Consumer<Text> renderHelper) {
-		var player = ((RenderStateEntityCapture) state).getEntity() instanceof PlayerEntity p ? p : null;
-		if(player == null) return;
-		var nametag = WildfireGenderClient.getNametag(player.getUuid());
-		if(nametag == null) return;
+	private static void onPlayerNametag(PlayerEntityRenderState state, MatrixStack matrixStack, Consumer<Text> renderHelper) {
+		var genderRenderState = GenderRenderState.get(state);
+		if(genderRenderState == null) return;
+
+		@Nullable Text nametag = genderRenderState.nametag;
+		if (nametag == null) return;
 
 		matrixStack.push();
-		float translationAmt = switch(player.getPose()) {
+		float translationAmt = switch(state.pose) {
 			case EntityPose.CROUCHING -> 0.8f;
 			case EntityPose.SLEEPING -> 0.125f;
 			case EntityPose.SWIMMING, EntityPose.GLIDING -> 0.3f;
@@ -173,17 +166,20 @@ public final class WildfireEventHandler {
 	@Environment(EnvType.CLIENT)
 	private static void renderTooltip(ItemStack item, Consumer<Text> tooltipAppender, @Nullable PlayerEntity player) {
 		if(player == null || !ClientConfig.INSTANCE.get(ClientConfig.ARMOR_STAT)) return;
+		if(ClientConfig.INSTANCE.get(ClientConfig.ARMOR_PHYSICS_OVERRIDE)) return;
+
 		var playerConfig = WildfireGender.getPlayerById(player.getUuid());
 		if(playerConfig == null || !playerConfig.getGender().canHaveBreasts()) return;
 
 		var equippableComponent = item.get(DataComponentTypes.EQUIPPABLE);
-		if(equippableComponent != null && equippableComponent.slot() == EquipmentSlot.CHEST) {
-			var config = WildfireHelper.getArmorConfig(item);
-			// don't show a +0 tooltip on items that don't interact with physics (e.g. Elytra)
-			if(!config.coversBreasts() || config.physicsResistance() == 0f) return;
-			var formatted = AttributeModifiersComponent.DECIMAL_FORMAT.format(config.physicsResistance());
-			tooltipAppender.accept(Text.translatable("wildfire_gender.armor.tooltip", formatted).formatted(Formatting.LIGHT_PURPLE));
-		}
+		if(equippableComponent == null || equippableComponent.slot() != EquipmentSlot.CHEST) return;
+
+		var config = WildfireHelper.getArmorConfig(item);
+		// don't show a +0 tooltip on items that don't interact with physics (e.g. Elytra)
+		if(!config.coversBreasts() || config.physicsResistance() == 0f) return;
+
+		var formatted = WildfireHelper.toFormattedPercent(config.physicsResistance()) + "%";
+		tooltipAppender.accept(Text.translatable("wildfire_gender.armor.tooltip", formatted).formatted(Formatting.LIGHT_PURPLE));
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -196,26 +192,6 @@ public final class WildfireEventHandler {
 		if(ClientConfig.INSTANCE.get(ClientConfig.ALWAYS_SHOW_LIST).isVisible()) {
 			SyncedPlayerList.drawSyncedPlayers(context, textRenderer);
 		}
-
-
-		//DEBUG
-		if(ClientConfig.INSTANCE.get(ClientConfig.DEBUG_MODE)) {
-
-			int i = 0;
-			for (Map.Entry<UUID, PlayerConfig> entry : WildfireGender.CACHE.asMap().entrySet()) {
-				PlayerConfig plrConfig = entry.getValue();
-
-				context.drawText(textRenderer, plrConfig.uuid.toString(), 5, 5 + (i*60), 0xFFFFFFFF, true);
-				context.drawText(textRenderer, Text.literal("Gender: ").append(plrConfig.getGender().getDisplayName()), 5, 5 + 12 + (i*60), 0xFFFFFFFF, true);
-				context.drawText(textRenderer, "Boob Size: " + plrConfig.getBustSize(), 5, 5 + 24 + (i*60), 0xFFFFFFFF, true);
-
-
-				/*WildfireGender.LOGGER.warn("UUID " + uuid);
-				WildfireGender.LOGGER.warn("Gender " + gender.getDisplayName().getString());
-				WildfireGender.LOGGER.warn("Bust Size " + bustSize);*/
-				i++;
-			}
-		}
 	}
 
 	/**
@@ -225,7 +201,7 @@ public final class WildfireEventHandler {
 	private static void registerRenderLayers(EntityType<? extends LivingEntity> entityType, LivingEntityRenderer<?, ?, ?> entityRenderer,
 	                                         LivingEntityFeatureRendererRegistrationCallback.RegistrationHelper registrationHelper,
 	                                         EntityRendererFactory.Context context) {
-		if(entityRenderer instanceof PlayerEntityRenderer playerRenderer) {
+		if(entityRenderer instanceof PlayerEntityRenderer<?> playerRenderer) {
 			registrationHelper.register(new GenderLayer<>(playerRenderer));
 			registrationHelper.register(new GenderArmorLayer<>(playerRenderer, context.getEquipmentModelLoader(), context.getEquipmentRenderer()));
 			registrationHelper.register(new HolidayFeaturesRenderer(playerRenderer));
@@ -324,7 +300,7 @@ public final class WildfireEventHandler {
 	private static void onEntityHurt(LivingEntity entity, DamageSource damageSource) {
 		MinecraftClient client = MinecraftClient.getInstance();
 		if(client.player == null || client.world == null) return;
-		if(!(entity instanceof PlayerEntity player) || !player.getWorld().isClient()) return;
+		if(!(entity instanceof PlayerEntity player) || !player.getEntityWorld().isClient()) return;
 
 		PlayerConfig genderPlayer = WildfireGender.getPlayerById(player.getUuid());
 		if(genderPlayer == null || !genderPlayer.hasHurtSounds()) return;
@@ -368,7 +344,7 @@ public final class WildfireEventHandler {
 		// making it impossible to compare against any armor data that isn't registered through the mod API.
 		BreastDataComponent component = BreastDataComponent.fromPlayer(player, playerConfig);
 		if(component != null) {
-			component.write(player.getWorld().getRegistryManager(), item);
+			component.write(item);
 		}
 	}
 }
