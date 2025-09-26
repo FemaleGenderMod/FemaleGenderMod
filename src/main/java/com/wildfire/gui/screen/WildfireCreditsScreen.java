@@ -28,6 +28,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -53,6 +54,11 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
             .map(it -> new FakeGUIPlayer(it.getValue().name(), it.getKey(), GenderConfigs.DEFAULT_FEMALE))
             .toArray(FakeGUIPlayer[]::new);
 
+    private final int boxesPerPage = 12;
+    private final int totalPages = (int) Math.ceil((double) CREDIT_BOXES.length / boxesPerPage);
+
+    private int creditsPage = 0;
+
     public WildfireCreditsScreen(Screen parent, UUID uuid) {
         super(Text.translatable("wildfire_gender.credits.title"), parent, uuid);
     }
@@ -60,6 +66,9 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
     @Override
     public void init() {
 
+        final var ref = new Object() {
+            ClickableWidget prevPage, nextPage;
+        };
         addButton(builder -> builder
                 .message(() -> Text.translatable("wildfire_gender.details.go_back"))
                 .position(this.width / 2 - 25, this.height / 2 + 80)
@@ -67,8 +76,37 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
                 .onPress(button -> close())
                 .narration(text -> GuiUtils.doneNarrationText()));
 
+        ref.nextPage = addButton(builder -> builder
+                .message(() -> Text.translatable("wildfire_gender.details.next_page"))
+                .position(this.width / 2 + 30, this.height / 2 + 80)
+                .size(60, 13)
+                .active(creditsPage < totalPages-1)
+                .onPress(button -> {
+                    if(creditsPage < totalPages-1) {
+                        creditsPage++;
+                    }
+                    ref.prevPage.active = creditsPage != 0;
+                    ref.nextPage.active = creditsPage < totalPages-1;
+                })
+                .narration(text -> GuiUtils.doneNarrationText()));
+
+        ref.prevPage = addButton(builder -> builder
+                .message(() -> Text.translatable("wildfire_gender.details.prev_page"))
+                .position(this.width / 2 - 90, this.height / 2 + 80)
+                .size(60, 13)
+                .active(creditsPage != 0)
+                .onPress(button -> {
+                    if(creditsPage > 0) {
+                        creditsPage--;
+                    }
+                    ref.prevPage.active = creditsPage != 0;
+                    ref.nextPage.active = creditsPage < totalPages;
+                })
+                .narration(text -> GuiUtils.doneNarrationText()));
+
         super.init();
     }
+
 
     @Override
     public void tick() {
@@ -93,27 +131,31 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
         GuiUtils.drawCenteredText(ctx, textRenderer, Text.translatable("wildfire_gender.credits.description"), width / 2, height / 2 - 85, ColorHelper.fullAlpha(0x888888));
         mStack.popMatrix();
 
-        int columns = 5;
+        int columns = 6;
         int boxW = 60;
         int boxH = 74;
 
+        // Calculate which range of contributors to render
+        int startIndex = creditsPage * boxesPerPage;
+        int endIndex = Math.min(startIndex + boxesPerPage, CREDIT_BOXES.length);
+
         int startY = height / 2 - (2 * boxH) / 2 + 4;
 
-        for(int i = 0; i < CREDIT_BOXES.length; i++) {
+        for (int i = startIndex; i < endIndex; i++) {
             var creditBox = CREDIT_BOXES[i];
 
-            int col = i % columns;
-            int row = i / columns;
+            int localIndex = i - startIndex;
+            int col = localIndex % columns;
+            int row = localIndex / columns;
 
-            int remaining = CREDIT_BOXES.length - (row * columns);
-            int boxesInRow = Math.min(columns, remaining);
-
-            int rowWidth = boxesInRow * boxW;
+            int remaining = Math.min(endIndex - startIndex - (row * columns), columns);
+            int rowWidth = remaining * boxW;
             int startX = (width / 2) - (rowWidth / 2) + 4;
 
             int creditBoxX = startX + (col * boxW);
             int creditBoxY = startY + (row * boxH);
 
+            // draw box
             ctx.drawTexture(RenderPipelines.GUI_TEXTURED, CREDIT_CONTAINER, creditBoxX, creditBoxY, 0, 0, 52, 68, 52, 68);
 
             int xP = creditBoxX + (52 / 2);
@@ -129,22 +171,22 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
             GuiUtils.drawCenteredTextWrapped(ctx, textRenderer, Text.literal(creditBox.getName()), xP, yP + 7, (int) (50 * 1.45f), ColorHelper.fullAlpha(0xFFFFFF));
             mStack.popMatrix();
 
-            if(mouseX > xP - 24 && mouseX < xP + 23 && mouseY > yP + 22 && mouseY < yP + 31) {
+            if (mouseX > xP - 24 && mouseX < xP + 23 && mouseY > yP + 22 && mouseY < yP + 31) {
                 List<Text> txtList = new ArrayList<>();
-
                 var role = creditBox.getRoleOrGeneric();
                 txtList.add(role.withColor(Text.empty()
                         .append(creditBox.getName())
                         .append(Text.literal(" - ").formatted(Formatting.DARK_GRAY))
                         .append(role.shortName())));
-
-                if(creditBox.getDescription() != null && !creditBox.getDescription().isEmpty()) {
+                if (creditBox.getDescription() != null && !creditBox.getDescription().isEmpty()) {
                     txtList.add(Text.literal(creditBox.getDescription()).formatted(Formatting.GRAY));
                 }
-
                 ctx.drawTooltip(textRenderer, txtList, mouseX, mouseY);
             }
         }
+
+        String pageInfo = (creditsPage) + " / " + (totalPages-1);
+        GuiUtils.drawCenteredText(ctx, textRenderer, Text.literal(pageInfo), width / 2, height / 2, ColorHelper.fullAlpha(0xFFFFFF));
 
         super.render(ctx, mouseX, mouseY, delta);
     }
