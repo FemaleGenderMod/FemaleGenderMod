@@ -44,7 +44,8 @@ import java.util.UUID;
 @Environment(EnvType.CLIENT)
 public class WildfireCreditsScreen extends BaseWildfireScreen {
 
-    private static final Identifier CREDIT_CONTAINER = Identifier.of(WildfireGender.MODID, "textures/gui/credit_container.png");
+    private static final Identifier CREDIT_CONTAINER = Identifier.of(WildfireGender.MODID, "textures/gui/credits/credit_container.png");
+    private static final Identifier BUTTON_CONTAINER = Identifier.of(WildfireGender.MODID, "textures/gui/credits/button_container.png");
 
     private final FakeGUIPlayer[] CREDIT_BOXES = Contributors.getContributors().entrySet().stream()
             .filter(it -> it.getValue().name() != null)
@@ -63,22 +64,25 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
         super(Text.translatable("wildfire_gender.credits.title"), parent, uuid);
     }
 
+    private int navigationY;
     @Override
     public void init() {
 
         final var ref = new Object() {
             ClickableWidget prevPage, nextPage;
         };
+
+        navigationY = this.height / 2 + 82;
         addButton(builder -> builder
                 .message(() -> Text.translatable("wildfire_gender.details.go_back"))
-                .position(this.width / 2 - 25, this.height / 2 + 80)
+                .position(this.width / 2 - 25, navigationY + 6)
                 .size(50, 13)
                 .onPress(button -> close())
                 .narration(text -> GuiUtils.doneNarrationText()));
 
         ref.nextPage = addButton(builder -> builder
                 .message(() -> Text.translatable("wildfire_gender.details.next_page"))
-                .position(this.width / 2 + 30, this.height / 2 + 80)
+                .position(this.width / 2 + 29, navigationY + 6)
                 .size(60, 13)
                 .active(creditsPage < totalPages-1)
                 .onPress(button -> {
@@ -92,7 +96,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
 
         ref.prevPage = addButton(builder -> builder
                 .message(() -> Text.translatable("wildfire_gender.details.prev_page"))
-                .position(this.width / 2 - 90, this.height / 2 + 80)
+                .position(this.width / 2 - 89, navigationY + 6)
                 .size(60, 13)
                 .active(creditsPage != 0)
                 .onPress(button -> {
@@ -130,6 +134,9 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
         GuiUtils.drawCenteredText(ctx, textRenderer, Text.translatable("wildfire_gender.credits.title"), width / 2, height / 2 - 100, ColorHelper.fullAlpha(0xFFFFFF));
         GuiUtils.drawCenteredText(ctx, textRenderer, Text.translatable("wildfire_gender.credits.description"), width / 2, height / 2 - 85, ColorHelper.fullAlpha(0x888888));
         mStack.popMatrix();
+
+        //draw button container
+        ctx.drawTexture(RenderPipelines.GUI_TEXTURED, BUTTON_CONTAINER, this.width / 2 - (190 / 2), navigationY, 0, 0, 190, 25, 190, 25);
 
         int columns = 6;
         int boxW = 60;
