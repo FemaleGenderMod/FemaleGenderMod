@@ -99,11 +99,11 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
 
         int startY = height / 2 - (2 * boxH) / 2 + 4;
 
-        int index = 0;
+        for(int i = 0; i < CREDIT_BOXES.length; i++) {
+            var creditBox = CREDIT_BOXES[i];
 
-        for(FakeGUIPlayer creditBox : CREDIT_BOXES) {
-            int col = index % columns;
-            int row = index++ / columns;
+            int col = i % columns;
+            int row = i / columns;
 
             int remaining = CREDIT_BOXES.length - (row * columns);
             int boxesInRow = Math.min(columns, remaining);
