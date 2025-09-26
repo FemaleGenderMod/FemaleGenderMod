@@ -36,6 +36,7 @@ import org.joml.Matrix3x2fStack;
 import org.joml.Vector2f;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -47,6 +48,8 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
     private final FakeGUIPlayer[] CREDIT_BOXES = Contributors.getContributors().entrySet().stream()
             .filter(it -> it.getValue().name() != null)
             .filter(it -> Boolean.TRUE.equals(it.getValue().showInCredits()))
+            .sorted(Comparator.comparing(it -> it.getValue().name()))
+            .sorted(Comparator.comparing(it -> it.getValue().getRole()))
             .map(it -> new FakeGUIPlayer(it.getValue().name(), it.getKey(), GenderConfigs.DEFAULT_FEMALE))
             .toArray(FakeGUIPlayer[]::new);
 
