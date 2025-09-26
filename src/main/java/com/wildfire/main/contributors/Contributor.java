@@ -79,6 +79,7 @@ public record Contributor(
 		DEVELOPER,
 		TRANSLATOR,
 		MASCOT,
+		VOICE_ACTOR_FEMALE,
 		GENERIC,
 		;
 
