@@ -27,16 +27,20 @@ import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.config.Configuration;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.option.KeybindsScreen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gl.RenderPipelines;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
+import java.awt.event.KeyEvent;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -103,9 +107,22 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
             case MISC -> initMiscTab(tabOffsetY);
         }
 
+        if(MinecraftClient.getInstance().options != null) {
+            if (MinecraftClient.getInstance().options.jumpKey.isPressed()) {
+                MinecraftClient.getInstance().options.jumpKey.setPressed(false);
+            }
+        }
+
         super.init();
     }
 
+    @Override
+    public void close() {
+        if(MinecraftClient.getInstance().options.jumpKey.isPressed()) {
+            MinecraftClient.getInstance().options.jumpKey.setPressed(false);
+        }
+        super.close();
+    }
     private void initCustomizationTab(final int tabOffsetY) {
         final var plr = Objects.requireNonNull(getPlayer(), "getPlayer()");
         final var breasts = plr.getBreasts();
@@ -159,6 +176,20 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
         final var ref = new Object() {
             ClickableWidget bounceSlider, floppySlider, overridePhysics, dualPhysics;
         };
+
+        addButton(builder -> builder
+                .message(() -> Text.translatable("wildfire_gender.char_settings.jump"))
+                .position(this.width / 2 - 130, this.height / 2 + 65)
+                .size(80, 15)
+                .onPress(button -> {
+                    if(MinecraftClient.getInstance().options.jumpKey.isPressed()) {
+                        MinecraftClient.getInstance().options.jumpKey.setPressed(false);
+                        button.setMessage(Text.translatable("wildfire_gender.char_settings.jump"));
+                    } else {
+                        MinecraftClient.getInstance().options.jumpKey.setPressed(true);
+                        button.setMessage(Text.translatable("wildfire_gender.char_settings.jumping"));
+                    }
+                }));
 
         addButton(builder -> builder
                 .message(() -> Text.translatable("wildfire_gender.char_settings.physics", plr.hasBreastPhysics() ? ENABLED : DISABLED))
@@ -291,21 +322,6 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .tooltip(Tooltip.of(Text.translatable("wildfire_gender.tooltip.holiday_themes.line1"))));
     }
 
-    /*private void createNewPreset(String presetName) {
-        BreastPresetConfiguration cfg = new BreastPresetConfiguration(presetName);
-        PlayerConfig plr = Objects.requireNonNull(getPlayer(), "getPlayer()");
-        cfg.set(BreastPresetConfiguration.PRESET_NAME, presetName);
-        cfg.set(BreastPresetConfiguration.BUST_SIZE, plr.getBustSize());
-        cfg.set(BreastPresetConfiguration.BREASTS_UNIBOOB, plr.getBreasts().isUniboob());
-        cfg.set(BreastPresetConfiguration.BREASTS_CLEAVAGE, plr.getBreasts().getCleavage());
-        cfg.set(BreastPresetConfiguration.BREASTS_OFFSET_X, plr.getBreasts().getXOffset());
-        cfg.set(BreastPresetConfiguration.BREASTS_OFFSET_Y, plr.getBreasts().getYOffset());
-        cfg.set(BreastPresetConfiguration.BREASTS_OFFSET_Z, plr.getBreasts().getZOffset());
-        cfg.save();
-
-        PRESET_LIST.refreshList();
-    }*/
-
     @Override
     public void renderBackground(DrawContext ctx, int mouseX, int mouseY, float delta) {
         this.renderInGameBackground(ctx);
@@ -338,6 +354,16 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
         });
         return super.mouseReleased(arg);
     }
+
+    /*@Override
+    public boolean keyPressed(KeyInput input) {
+        if(currentTab == Tab.PHYSICS) {
+            if (input.getKeycode() == MinecraftClient.getInstance().options.jumpKey.getDefaultKey().getCode()) {
+                MinecraftClient.getInstance().options.jumpKey.setPressed(true);
+            }
+        }
+        return super.keyPressed(input);
+    }*/
 
     private enum Tab {
         CUSTOMIZATION(BACKGROUND_CUSTOMIZATION, 80),
