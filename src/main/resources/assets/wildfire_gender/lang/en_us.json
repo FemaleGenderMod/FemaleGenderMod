@@ -8,6 +8,8 @@
 
 	"wildfire_gender.credits.title": "Mod Credits",
 	"wildfire_gender.credits.description": "This is a list of the awesome people who have made this mod possible!",
+	"wildfire_gender.credits.general": "General",
+	"wildfire_gender.credits.translators": "Translators",
 
 	"wildfire_gender.player_list.title": "Female Gender Mod",
 	"wildfire_gender.player_list.settings_button": "Settings",
@@ -45,6 +47,8 @@
 	"wildfire_gender.appearance_settings.title": "Character Personalization",
 	"wildfire_gender.char_settings.title": "Character Settings OLD",
 	"wildfire_gender.char_settings.physics": "Breast Physics: %s",
+	"wildfire_gender.char_settings.jump": "Jump",
+	"wildfire_gender.char_settings.jumping": "Stop Jumping",
 
 	"wildfire_gender.char_settings.override_armor_physics": "Armor Physics: %s",
 	"wildfire_gender.tooltip.override_armor_physics.line1": "Breast physics will no longer be reduced/suppressed by any worn armor while enabled; this is primarily intended for use with resource packs that hide armor.",
@@ -140,6 +144,8 @@
 	"wildfire_gender.contributor.role.translator.short": "Mod Translator",
 	"wildfire_gender.contributor.role.mascot": "Female Gender Mod Mascot",
 	"wildfire_gender.contributor.role.mascot.short": "Mod Mascot",
+	"wildfire_gender.contributor.role.voice_actor_female": "Keira Emberlyn Voice Actress",
+	"wildfire_gender.contributor.role.voice_actor_female.short": "Voice Actress",
 	"wildfire_gender.contributor.role.generic": "Female Gender Mod Contributor",
 	"wildfire_gender.contributor.role.generic.short": "Contributor",
 
