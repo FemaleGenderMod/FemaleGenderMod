@@ -35,3 +35,8 @@ bin/
 .DS_Store
 .AppleDouble
 .LSOverride
+
+# other
+
+.sdkmanrc
+.factorypath

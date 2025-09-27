@@ -64,6 +64,7 @@ public final class Contributors {
 		addContributor("8fb5e95d-7f41-4b4c-b8c5-4f15ea3fa2c1", "ArcticWah", Contributor.Role.TRANSLATOR);
 		addContributor("e31edb15-d8bd-44ac-8ec3-b54114e9d595", "PinguinLars", Contributor.Role.TRANSLATOR);
 		addContributor("242c1a3a-83ee-4aa6-a3de-568cdac082a4", "le0n_lol", Contributor.Role.TRANSLATOR);
+		addContributor("4c3e3225-aec0-499c-b563-2b17cdb017f8", "Betawolfy", Contributor.Role.TRANSLATOR);
 
 
 		// technically not an actual individual contributor, but still a notable enough account to add here
