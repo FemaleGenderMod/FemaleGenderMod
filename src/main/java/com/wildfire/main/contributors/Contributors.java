@@ -58,9 +58,13 @@ public final class Contributors {
 		addContributor("ad8ee68c-0aa1-47f9-b29f-f92fa1ef66dc", "DiaDemiEmi", Contributor.Role.DEVELOPER);
 		addContributor("3f36f7e9-7459-43fe-87ce-4e8a5d47da80", "IzzyBizzy45", Contributor.Role.DEVELOPER);
 		addContributor("ad3cb52d-524b-41b4-b9d6-b91ec440811d", "RacoonDog", Contributor.Role.DEVELOPER);
+		addContributor("525b0455-15e9-49b7-b61d-f291e8ee6c5b", "Powerless001", Contributor.Role.GENERIC);
+
 		addContributor("33feda66-c706-4725-8983-f62e5e6cbee7", "Bluelight", Contributor.Role.TRANSLATOR);
 		addContributor("8fb5e95d-7f41-4b4c-b8c5-4f15ea3fa2c1", "ArcticWah", Contributor.Role.TRANSLATOR);
-		addContributor("525b0455-15e9-49b7-b61d-f291e8ee6c5b", "Powerless001", Contributor.Role.GENERIC);
+		addContributor("e31edb15-d8bd-44ac-8ec3-b54114e9d595", "PinguinLars", Contributor.Role.TRANSLATOR);
+		addContributor("242c1a3a-83ee-4aa6-a3de-568cdac082a4", "le0n_lol", Contributor.Role.TRANSLATOR);
+
 
 		// technically not an actual individual contributor, but still a notable enough account to add here
 		addContributor("372271ab-28f2-44bd-b585-95f43e010c22", "KeiraFGM", Contributor.Role.MASCOT, false);

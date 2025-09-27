@@ -18,10 +18,12 @@
 
 package com.wildfire.gui.screen;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.wildfire.gui.FakeGUIPlayer;
 import com.wildfire.gui.GuiUtils;
 import com.wildfire.main.GenderConfigs;
 import com.wildfire.main.WildfireGender;
+import com.wildfire.main.contributors.Contributor;
 import com.wildfire.main.contributors.Contributors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -45,19 +47,36 @@ import java.util.UUID;
 public class WildfireCreditsScreen extends BaseWildfireScreen {
 
     private static final Identifier CREDIT_CONTAINER = Identifier.of(WildfireGender.MODID, "textures/gui/credits/credit_container.png");
+    private static final Identifier CREDIT_OUTLINE = Identifier.of(WildfireGender.MODID, "textures/gui/credits/credit_outline.png");
     private static final Identifier BUTTON_CONTAINER = Identifier.of(WildfireGender.MODID, "textures/gui/credits/button_container.png");
+    private static final Identifier TAB_CONTAINER = Identifier.of(WildfireGender.MODID, "textures/gui/credits/tab_container.png");
 
-    private final FakeGUIPlayer[] CREDIT_BOXES = Contributors.getContributors().entrySet().stream()
+    //General contributor list
+    private final FakeGUIPlayer[] C_GENERAL = Contributors.getContributors().entrySet().stream()
             .filter(it -> it.getValue().name() != null)
             .filter(it -> Boolean.TRUE.equals(it.getValue().showInCredits()))
+            .filter(it -> it.getValue().getRole() != Contributor.Role.TRANSLATOR) // exclude translators
+            .sorted(Comparator.comparing(it -> it.getValue().name()))
+            .sorted(Comparator.comparing(it -> it.getValue().getRole()))
+            .map(it -> new FakeGUIPlayer(it.getValue().name(), it.getKey(), GenderConfigs.DEFAULT_FEMALE))
+            .toArray(FakeGUIPlayer[]::new);
+
+    //Translator list
+    private final FakeGUIPlayer[] C_TRANSLATORS = Contributors.getContributors().entrySet().stream()
+            .filter(it -> it.getValue().name() != null)
+            .filter(it -> Boolean.TRUE.equals(it.getValue().showInCredits()))
+            .filter(it -> it.getValue().getRole() == Contributor.Role.TRANSLATOR) // only have translators
             .sorted(Comparator.comparing(it -> it.getValue().name()))
             .sorted(Comparator.comparing(it -> it.getValue().getRole()))
             .map(it -> new FakeGUIPlayer(it.getValue().name(), it.getKey(), GenderConfigs.DEFAULT_FEMALE))
             .toArray(FakeGUIPlayer[]::new);
 
     private final int boxesPerPage = 12;
-    private final int totalPages = (int) Math.ceil((double) CREDIT_BOXES.length / boxesPerPage);
 
+    private enum Category {
+        GENERAL, TRANSLATORS
+    }
+    private Category categoryTab = Category.GENERAL;
     private int creditsPage = 0;
 
     public WildfireCreditsScreen(Screen parent, UUID uuid) {
@@ -69,10 +88,46 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
     public void init() {
 
         final var ref = new Object() {
-            ClickableWidget prevPage, nextPage;
+            ClickableWidget prevPage, nextPage, generalTab, translatorTab;
         };
 
+        categoryTab = Category.GENERAL;
+
         navigationY = this.height / 2 + 82;
+
+        //category tab
+        ref.generalTab = addButton(builder -> builder
+                .message(() -> Text.translatable("wildfire_gender.credits.general"))
+                .position(this.width / 2 - 89, navigationY + 34)
+                .size(87, 13)
+                .active(categoryTab == Category.TRANSLATORS)
+                .onPress(button -> {
+                    categoryTab = Category.GENERAL;
+                    creditsPage = 0;
+                    ref.prevPage.active = false;
+                    ref.nextPage.active = creditsPage < getTotalPages()-1;
+                    ref.generalTab.active = false;
+                    ref.translatorTab.active = true;
+
+                })
+                .narration(text -> GuiUtils.doneNarrationText()));
+
+        ref.translatorTab = addButton(builder -> builder
+                .message(() -> Text.translatable("wildfire_gender.credits.translators"))
+                .position(this.width / 2 + 2, navigationY + 34)
+                .size(87, 13)
+                .active(categoryTab == Category.GENERAL)
+                .onPress(button -> {
+                    categoryTab = Category.TRANSLATORS;
+                    creditsPage = 0;
+                    ref.prevPage.active = false;
+                    ref.nextPage.active = creditsPage < getTotalPages()-1;
+                    ref.generalTab.active = true;
+                    ref.translatorTab.active = false;
+                })
+                .narration(text -> GuiUtils.doneNarrationText()));
+
+        //page tab
         addButton(builder -> builder
                 .message(() -> Text.translatable("wildfire_gender.details.go_back"))
                 .position(this.width / 2 - 25, navigationY + 6)
@@ -84,13 +139,13 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
                 .message(() -> Text.translatable("wildfire_gender.details.next_page"))
                 .position(this.width / 2 + 29, navigationY + 6)
                 .size(60, 13)
-                .active(creditsPage < totalPages-1)
+                .active(creditsPage < getTotalPages()-1)
                 .onPress(button -> {
-                    if(creditsPage < totalPages-1) {
+                    if(creditsPage < getTotalPages()-1) {
                         creditsPage++;
                     }
                     ref.prevPage.active = creditsPage != 0;
-                    ref.nextPage.active = creditsPage < totalPages-1;
+                    ref.nextPage.active = creditsPage < getTotalPages()-1;
                 })
                 .narration(text -> GuiUtils.doneNarrationText()));
 
@@ -104,7 +159,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
                         creditsPage--;
                     }
                     ref.prevPage.active = creditsPage != 0;
-                    ref.nextPage.active = creditsPage < totalPages;
+                    ref.nextPage.active = creditsPage < getTotalPages();
                 })
                 .narration(text -> GuiUtils.doneNarrationText()));
 
@@ -114,9 +169,17 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
 
     @Override
     public void tick() {
-        for(FakeGUIPlayer player : CREDIT_BOXES) {
+        for(FakeGUIPlayer player : getActiveBoxes()) {
             player.tick();
         }
+    }
+
+    private int getTotalPages() {
+        return (int) Math.ceil((double) getActiveBoxes().length / boxesPerPage);
+    }
+
+    private FakeGUIPlayer[] getActiveBoxes() {
+        return categoryTab == Category.TRANSLATORS ? C_TRANSLATORS : C_GENERAL;
     }
 
     @Override
@@ -129,27 +192,25 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
 
         Matrix3x2fStack mStack = ctx.getMatrices();
 
-        // FIXME any additional contributors will result in the rendered boxes overlapping with this text & the close button
         mStack.pushMatrix();
         GuiUtils.drawCenteredText(ctx, textRenderer, Text.translatable("wildfire_gender.credits.title"), width / 2, height / 2 - 100, ColorHelper.fullAlpha(0xFFFFFF));
         GuiUtils.drawCenteredText(ctx, textRenderer, Text.translatable("wildfire_gender.credits.description"), width / 2, height / 2 - 85, ColorHelper.fullAlpha(0x888888));
         mStack.popMatrix();
 
-        //draw button container
         ctx.drawTexture(RenderPipelines.GUI_TEXTURED, BUTTON_CONTAINER, this.width / 2 - (190 / 2), navigationY, 0, 0, 190, 25, 190, 25);
+        ctx.drawTexture(RenderPipelines.GUI_TEXTURED, TAB_CONTAINER, this.width / 2 - (190 / 2), navigationY + 28, 0, 0, 190, 25, 190, 25);
 
         int columns = 6;
         int boxW = 60;
         int boxH = 74;
 
-        // Calculate which range of contributors to render
         int startIndex = creditsPage * boxesPerPage;
-        int endIndex = Math.min(startIndex + boxesPerPage, CREDIT_BOXES.length);
+        int endIndex = Math.min(startIndex + boxesPerPage, getActiveBoxes().length);
 
         int startY = height / 2 - (2 * boxH) / 2 + 4;
 
         for (int i = startIndex; i < endIndex; i++) {
-            var creditBox = CREDIT_BOXES[i];
+            var creditBox = getActiveBoxes()[i];
 
             int localIndex = i - startIndex;
             int col = localIndex % columns;
@@ -162,8 +223,11 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
             int creditBoxX = startX + (col * boxW);
             int creditBoxY = startY + (row * boxH);
 
-            // draw box
             ctx.drawTexture(RenderPipelines.GUI_TEXTURED, CREDIT_CONTAINER, creditBoxX, creditBoxY, 0, 0, 52, 68, 52, 68);
+
+            ctx.getMatrices().pushMatrix();
+            ctx.drawTexture(RenderPipelines.GUI_TEXTURED, CREDIT_OUTLINE, creditBoxX+3, creditBoxY+3, 0, 0, 46, 53, 46, 53, ColorHelper.fullAlpha(creditBox.getRole().getColor()));
+            ctx.getMatrices().popMatrix();
 
             int xP = creditBoxX + (52 / 2);
             int yP = creditBoxY + (68 / 2);
