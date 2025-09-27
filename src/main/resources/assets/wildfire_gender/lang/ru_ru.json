@@ -45,6 +45,8 @@
 	"wildfire_gender.appearance_settings.title": "Персонализация персонажа",
 	"wildfire_gender.char_settings.title": "Старые настройки персонажа",
 	"wildfire_gender.char_settings.physics": "Физика груди: %s",
+	"wildfire_gender.char_settings.jump": "Прыгать",
+	"wildfire_gender.char_settings.jumping": "Перестать прыгать",
 
 	"wildfire_gender.char_settings.override_armor_physics": "Физика брони: %s",
 	"wildfire_gender.tooltip.override_armor_physics.line1": "При включении этой функции физика груди больше не будет снижаться/подавляться экипированной броней.",
