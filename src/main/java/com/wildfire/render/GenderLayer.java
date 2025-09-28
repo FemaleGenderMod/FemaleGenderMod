@@ -19,6 +19,7 @@
 package com.wildfire.render;
 
 import com.wildfire.api.IGenderArmor;
+import com.wildfire.gui.screen.WildfireBreastUVEditorScreen;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.config.ClientConfig;
@@ -48,13 +49,18 @@ import org.joml.*;
 import java.lang.Math;
 import java.util.function.Consumer;
 
+import static com.wildfire.gui.screen.WildfireBreastUVEditorScreen.leftBreastOverlayUV;
+import static com.wildfire.gui.screen.WildfireBreastUVEditorScreen.rightBreastOverlayUV;
+
 @Environment(EnvType.CLIENT)
 public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntityModel<S>> extends FeatureRenderer<S, M> {
 
 	private static final float DEG_TO_RAD = (float) (Math.PI / 180);
 
 	private BreastModelBox lBreast, rBreast;
-	private static final OverlayModelBox lBreastWear, rBreastWear;
+
+	//TODO: Un-final for debugging on PR. Revert to final in prod.
+	private static OverlayModelBox lBreastWear, rBreastWear;
 
 	private final FeatureRendererContext<S, M> context;
 
@@ -67,16 +73,16 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 			lPhysBounceRotation, rPhysBounceRotation, breastSize, zOffset, outwardAngle;
 
 	static {
-		lBreastWear = new OverlayModelBox(true, 64, 64, 17, 34, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, false);
-		rBreastWear = new OverlayModelBox(false, 64, 64, 21, 34, 0, 0.0F, 0F, 4, 5, 3, 0.0F, false);
+		lBreastWear = new OverlayModelBox(64, 64, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, leftBreastOverlayUV);
+		rBreastWear = new OverlayModelBox(64, 64,  0, 0.0F, 0F, 4, 5, 3, 0.0F, rightBreastOverlayUV);
 	}
 
 	public GenderLayer(FeatureRendererContext<S, M> render) {
 		super(render);
 		this.context = render;
 		// this can't be static or final as we need the ability to resize this during render time
-		lBreast = new BreastModelBox(64, 64, 16, 17, -4F, 0.0F, 0F, 4, 5, 4, 0.0F, false);
-		rBreast = new BreastModelBox(64, 64, 20, 17, 0, 0.0F, 0F, 4, 5, 4, 0.0F, false);
+		this.lBreast = new BreastModelBox(64, 64, -4F, 0.0F, 0F, 4, 5, 4, 0.0F, WildfireBreastUVEditorScreen.leftBreastUV);
+		this.rBreast = new BreastModelBox(64, 64, 0.0F, 0.0F, 0F, 4, 5, 4, 0.0F, WildfireBreastUVEditorScreen.rightBreastUV);
 	}
 
 	/**
@@ -105,6 +111,13 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		try {
 			if(!setupRender(state, entityConfigState)) return;
 			int overlay = LivingEntityRenderer.getOverlay(state, 0);
+
+			//TODO: REMOVE THIS FOR PRODUCTION -- THIS IS FOR DEBUGGING UV MAPPING. !! IT WILL CAUSE FRAME DROPS !!
+			boolean inEditorScreen = (MinecraftClient.getInstance().currentScreen instanceof WildfireBreastUVEditorScreen);
+			this.lBreast = new BreastModelBox(64, 64, inEditorScreen?-6F:-4F, 0.0F, inEditorScreen?-5F:0F, 4, 5, 4, 0.0F, WildfireBreastUVEditorScreen.leftBreastUV);
+			this.rBreast = new BreastModelBox(64, 64, inEditorScreen?2F:0F, 0.0F, inEditorScreen?-5F:0F, 4, 5, 4, 0.0F, WildfireBreastUVEditorScreen.rightBreastUV);
+			lBreastWear = new OverlayModelBox(64, 64, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, leftBreastOverlayUV);
+			rBreastWear = new OverlayModelBox(64, 64,  0, 0.0F, 0F, 4, 5, 3, 0.0F, rightBreastOverlayUV);
 
 			//noinspection CodeBlock2Expr
 			renderSides(state, getContextModel(), matrixStack, side -> {
@@ -195,8 +208,10 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		if(breastSize < 0.72f) reducer++;
 
 		if(preBreastSize != breastSize || preBreastOffsetZ != breastOffsetZ) {
-			lBreast = new BreastModelBox(64, 64, 16, 17, -4F, 0.0F, 0F, 4, 5, (int) (4 - breastOffsetZ - reducer), 0.0F, false);
-			rBreast = new BreastModelBox(64, 64, 20, 17, 0, 0.0F, 0F, 4, 5, (int) (4 - breastOffsetZ - reducer), 0.0F, false);
+			this.lBreast = new BreastModelBox(64, 64, -4F, 0.0F, 0F, 4, 5, 4, 0.0F, WildfireBreastUVEditorScreen.leftBreastUV);
+			this.rBreast = new BreastModelBox(64, 64, -4F, 0.0F, 0F, 4, 5, 4, 0.0F, WildfireBreastUVEditorScreen.rightBreastUV);
+			/*lBreast = new BreastModelBox(64, 64, 16, 17, -4F, 0.0F, 0F, 4, 5, (int) (4 - breastOffsetZ - reducer), 0.0F, false);
+			rBreast = new BreastModelBox(64, 64, 20, 17, 0, 0.0F, 0F, 4, 5, (int) (4 - breastOffsetZ - reducer), 0.0F, false);*/
 			preBreastSize = breastSize;
 			preBreastOffsetZ = breastOffsetZ;
 		}
@@ -298,17 +313,19 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		Matrix4f matrix4f = entry.getPositionMatrix();
 		Matrix3f matrix3f = entry.getNormalMatrix();
 		for(var quad : model.quads) {
-			Vector3f vector3f = new Vector3f(quad.normal.x, quad.normal.y, quad.normal.z).mul(matrix3f);
-			float normalX = vector3f.x;
-			float normalY = vector3f.y;
-			float normalZ = vector3f.z;
-			for(var vertex : quad.vertexPositions) {
-				float j = vertex.x() / 16.0F;
-				float k = vertex.y() / 16.0F;
-				float l = vertex.z() / 16.0F;
-				Vector4f vector4f = new Vector4f(j, k, l, 1.0F).mul(matrix4f);
-				vertexConsumer.vertex(vector4f.x(), vector4f.y(), vector4f.z(), color, vertex.u(), vertex.v(),
-						overlay, light, normalX, normalY, normalZ);
+			if(quad != null) {
+				Vector3f vector3f = new Vector3f(quad.normal.x, quad.normal.y, quad.normal.z).mul(matrix3f);
+				float normalX = vector3f.x;
+				float normalY = vector3f.y;
+				float normalZ = vector3f.z;
+				for (var vertex : quad.vertexPositions) {
+					float j = vertex.x() / 16.0F;
+					float k = vertex.y() / 16.0F;
+					float l = vertex.z() / 16.0F;
+					Vector4f vector4f = new Vector4f(j, k, l, 1.0F).mul(matrix4f);
+					vertexConsumer.vertex(vector4f.x(), vector4f.y(), vector4f.z(), color, vertex.u(), vertex.v(),
+							overlay, light, normalX, normalY, normalZ);
+				}
 			}
 		}
 	}

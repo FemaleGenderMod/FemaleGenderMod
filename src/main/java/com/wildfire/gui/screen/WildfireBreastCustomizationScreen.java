@@ -168,6 +168,15 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .current(breasts.getCleavage())
                 .update(breasts::updateCleavage)
                 .step(0.1));
+
+
+        addButton(builder -> builder
+                .message(() -> Text.translatable("wildfire_gender.char_settings.uv_editor"))
+                .position(this.width / 2 - 30, this.height / 2 + 65)
+                .size(80, 15)
+                .onPress(button -> {
+                    client.setScreen(new WildfireBreastUVEditorScreen(WildfireBreastCustomizationScreen.this, playerUUID));
+                }));
     }
 
     private void initPhysicsTab(final int tabOffsetY) {

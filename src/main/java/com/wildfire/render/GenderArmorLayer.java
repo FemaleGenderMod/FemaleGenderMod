@@ -52,6 +52,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
+import static com.wildfire.gui.screen.WildfireBreastUVEditorScreen.*;
+
 @Environment(EnvType.CLIENT)
 public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedEntityModel<S>> extends GenderLayer<S, M> {
 
@@ -70,16 +72,16 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 	static {
 		// apply a very slight delta to fix rare layering issues with the normal armor layer
 		// TODO look into how difficult it'd be to replicate Model render priority here
-		lTrim = new BreastModelBox(64, 32, 16, 17, -4F, 0.0F, 0F, 4, 5, 4, 0.001F, false);
-		rTrim = new BreastModelBox(64, 32, 20, 17, 0, 0.0F, 0F, 4, 5, 4, 0.001F, false);
+		lTrim = new BreastModelBox(64, 32, -4F, 0.0F, 0F, 4, 5, 4, 0.001F, leftBreastUV);
+		rTrim = new BreastModelBox(64, 32, 0, 0.0F, 0F, 4, 5, 4, 0.001F, rightBreastUV);
 	}
 
 	public GenderArmorLayer(FeatureRendererContext<S, M> render, EquipmentModelLoader equipmentModelLoader, EquipmentRenderer equipmentRenderer) {
 		super(render);
 		this.equipmentRenderer = equipmentRenderer;
 		this.equipmentModelLoader = equipmentModelLoader;
-		lBoobArmor = new BreastModelBox(64, 32, 16, 17, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, false);
-		rBoobArmor = new BreastModelBox(64, 32, 20, 17, 0, 0.0F, 0F, 4, 5, 3, 0.0F, false);
+		lBoobArmor = new BreastModelBox(64, 32,  -4F, 0.0F, 0F, 4, 5, 3, 0.0F, leftBreastArmorUV);
+		rBoobArmor = new BreastModelBox(64, 32,  0, 0.0F, 0F, 4, 5, 3, 0.0F, rightBreastArmorUV);
 	}
 
 	@Override
@@ -142,9 +144,12 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 		var texSize = textureData.textureSize();
 		var lUV = textureData.leftUv();
 		var dim = textureData.dimensions();
-		lBoobArmor = new BreastModelBox(texSize.x(), texSize.y(), lUV.x(), lUV.y(), -4F, 0.0F, 0F, dim.x(), dim.y(), 4, 0.0F, false);
+
+		//TODO: FIX THIS ARMOR RENDERING WITH JSON FILES?
+
+		//lBoobArmor = new BreastModelBox(texSize.x(), texSize.y(), lUV.x(), lUV.y(), -4F, 0.0F, 0F, dim.x(), dim.y(), 4, 0.0F, false);
 		var rUV = textureData.rightUv();
-		rBoobArmor = new BreastModelBox(texSize.x(), texSize.y(), rUV.x(), rUV.y(), 0, 0.0F, 0F, dim.x(), dim.y(), 4, 0.0F, false);
+		//rBoobArmor = new BreastModelBox(texSize.x(), texSize.y(), rUV.x(), rUV.y(), 0, 0.0F, 0F, dim.x(), dim.y(), 4, 0.0F, false);
 	}
 
 	@Override
