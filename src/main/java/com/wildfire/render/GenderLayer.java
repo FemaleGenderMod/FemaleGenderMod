@@ -112,7 +112,7 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 			if(FabricLoader.getInstance().isDevelopmentEnvironment()) {
 				//TODO: REMOVE THIS FOR PRODUCTION -- THIS IS FOR DEBUGGING UV MAPPING. !! IT WILL CAUSE FRAME DROPS !!
 				boolean isBreastsDebugMode = ClientConfig.BREASTS_DEBUG || (MinecraftClient.getInstance().currentScreen instanceof WildfireBreastUVEditorScreen);
-				entityConfigState.leftBreastUVLayout = new int[][] {
+				/*entityConfigState.leftBreastUVLayout = new int[][] {
 						{24, 21, 27, 26},  // EAST
 						{16, 21, 20, 26},   // WEST
 						{20, 17, 24, 21},    // DOWN
@@ -125,7 +125,7 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 						{24, 17, 28, 21},    // DOWN
 						{24,25, 28, 27},   // UP
 						{24, 21, 28, 26}    // NORTH
-				};
+				};*/
 				this.lBreast = new BreastModelBox(64, 64, isBreastsDebugMode ? -6F : -4F, 0.0F, isBreastsDebugMode ? -5F : 0F, 4, 5, 3, 0.0F, entityConfigState.leftBreastUVLayout);
 				this.rBreast = new BreastModelBox(64, 64, isBreastsDebugMode ? 2F : 0F, 0.0F, isBreastsDebugMode ? -5F : 0F, 4, 5, 3, 0.0F, entityConfigState.rightBreastUVLayout);
 				lBreastWear = new OverlayModelBox(64, 64, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, entityConfigState.leftBreastOverlayUVLayout);
