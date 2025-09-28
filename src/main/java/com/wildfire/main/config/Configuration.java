@@ -56,7 +56,7 @@ public class Configuration extends AbstractConfiguration {
 	//Breast UV Layouts (Default)
 	public static final Int2DArrayConfigKey LEFT_BREAST_UV_LAYOUT =
 			new Int2DArrayConfigKey("leftBreastUVLayout", new int[][] {
-					{24, 21, 28, 26},  // EAST
+					{24, 21, 27, 26},  // EAST
 					{16, 21, 20, 26},   // WEST
 					{20, 17, 24, 21},    // DOWN
 					{20, 25, 24, 27},   // UP

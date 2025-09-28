@@ -111,9 +111,23 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 
 			if(FabricLoader.getInstance().isDevelopmentEnvironment()) {
 				//TODO: REMOVE THIS FOR PRODUCTION -- THIS IS FOR DEBUGGING UV MAPPING. !! IT WILL CAUSE FRAME DROPS !!
-				boolean inEditorScreen = (MinecraftClient.getInstance().currentScreen instanceof WildfireBreastUVEditorScreen);
-				this.lBreast = new BreastModelBox(64, 64, inEditorScreen ? -6F : -4F, 0.0F, inEditorScreen ? -5F : 0F, 4, 5, 4, 0.0F, entityConfigState.leftBreastUVLayout);
-				this.rBreast = new BreastModelBox(64, 64, inEditorScreen ? 2F : 0F, 0.0F, inEditorScreen ? -5F : 0F, 4, 5, 4, 0.0F, entityConfigState.rightBreastUVLayout);
+				boolean isBreastsDebugMode = ClientConfig.BREASTS_DEBUG || (MinecraftClient.getInstance().currentScreen instanceof WildfireBreastUVEditorScreen);
+				entityConfigState.leftBreastUVLayout = new int[][] {
+						{24, 21, 27, 26},  // EAST
+						{16, 21, 20, 26},   // WEST
+						{20, 17, 24, 21},    // DOWN
+						{20, 25, 24, 27},   // UP
+						{20, 21, 24, 26}    // NORTH
+				};
+				entityConfigState.rightBreastUVLayout = new int[][] {
+						{28, 21, 32, 26},  // EAST
+						{21, 21, 24, 26},    // WEST
+						{24, 17, 28, 21},    // DOWN
+						{24,25, 28, 27},   // UP
+						{24, 21, 28, 26}    // NORTH
+				};
+				this.lBreast = new BreastModelBox(64, 64, isBreastsDebugMode ? -6F : -4F, 0.0F, isBreastsDebugMode ? -5F : 0F, 4, 5, 3, 0.0F, entityConfigState.leftBreastUVLayout);
+				this.rBreast = new BreastModelBox(64, 64, isBreastsDebugMode ? 2F : 0F, 0.0F, isBreastsDebugMode ? -5F : 0F, 4, 5, 3, 0.0F, entityConfigState.rightBreastUVLayout);
 				lBreastWear = new OverlayModelBox(64, 64, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, entityConfigState.leftBreastOverlayUVLayout);
 				rBreastWear = new OverlayModelBox(64, 64, 0, 0.0F, 0F, 4, 5, 3, 0.0F, entityConfigState.rightBreastOverlayUVLayout);
 			}
@@ -206,13 +220,12 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		if(breastSize < 0.84f) reducer++;
 		if(breastSize < 0.72f) reducer++;
 
-		if(preBreastSize != breastSize || preBreastOffsetZ != breastOffsetZ) {
+		if(preBreastSize != breastSize) {
 			this.lBreast = new BreastModelBox(64, 64, -4F, 0.0F, 0F, 4, 5, 4, 0.0F, genderRenderState.leftBreastUVLayout);
 			this.rBreast = new BreastModelBox(64, 64, -4F, 0.0F, 0F, 4, 5, 4, 0.0F, genderRenderState.rightBreastUVLayout);
 			/*lBreast = new BreastModelBox(64, 64, 16, 17, -4F, 0.0F, 0F, 4, 5, (int) (4 - breastOffsetZ - reducer), 0.0F, false);
 			rBreast = new BreastModelBox(64, 64, 20, 17, 0, 0.0F, 0F, 4, 5, (int) (4 - breastOffsetZ - reducer), 0.0F, false);*/
 			preBreastSize = breastSize;
-			preBreastOffsetZ = breastOffsetZ;
 		}
 	}
 
@@ -233,7 +246,7 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 			matrixStack.translate(0, (side.isLeft ? lPhysPositionY : rPhysPositionY) / 32f, 0);
 		}
 
-		matrixStack.translate((side.isLeft ? breastOffsetX : -breastOffsetX) * 0.0625f, 0.05625f + (breastOffsetY * 0.0625f), zOffset - 0.0625f * 2f + (breastOffsetZ * 0.0625f)); //shift down to correct position
+		matrixStack.translate((side.isLeft ? breastOffsetX : -breastOffsetX) * 0.0625f, 0.05625f + (breastOffsetY * 0.0625f), zOffset - 0.0625f * 2f + (breastOffsetZ * 0.0425f)); //shift down to correct position
 
 		if(!isUniboob) {
 			matrixStack.translate(-0.0625f * 2 * (side.isLeft ? 1 : -1), 0, 0);

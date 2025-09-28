@@ -32,8 +32,9 @@ public class ClientConfig extends AbstractConfiguration {
         super(".", "wildfire_gender");
     }
 
-    // note: this option is not intended to be saved in any persistent manner
+    // note: these options are not intended to be saved in any persistent manner
     public static boolean RENDER_BREASTS = true;
+    public static boolean BREASTS_DEBUG = false;
 
     public static final BooleanConfigKey ARMOR_PHYSICS_OVERRIDE = new BooleanConfigKey("armor_physics_override", false);
 

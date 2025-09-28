@@ -96,6 +96,11 @@ public class WildfireCommand {
 						.executes(WildfireCommand::invalidateCache))
 				.then(ClientCommandManager.literal("target")
 						.executes(WildfireCommand::getEntityLookingAt))
+				.then(ClientCommandManager.literal("boobs")
+						.executes((ctx) -> {
+							ClientConfig.BREASTS_DEBUG ^= true;
+							return Command.SINGLE_SUCCESS;
+						}))
 				.then(ClientCommandManager.literal("firsttime")
 						.executes(ctx -> {
 							client.execute(() -> {
