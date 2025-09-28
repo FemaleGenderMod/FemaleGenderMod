@@ -147,8 +147,6 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 
 		/*this.addDrawableChild(new WildfireButton(this.width / 2 + 111, y - 63, 9, 9, Text.literal("X"),
 			button -> close(), text -> GuiUtils.doneNarrationText()));*/
-
-		super.init();
 	}
 
 	@Override

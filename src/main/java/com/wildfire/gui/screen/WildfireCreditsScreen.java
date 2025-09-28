@@ -154,10 +154,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
                     ref.prevPage.active = creditsPage != 0;
                     ref.nextPage.active = creditsPage < getTotalPages();
                 }));
-
-        super.init();
     }
-
 
     @Override
     public void tick() {
