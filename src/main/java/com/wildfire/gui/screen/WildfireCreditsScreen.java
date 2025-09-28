@@ -90,8 +90,6 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
             ClickableWidget prevPage, nextPage, generalTab, translatorTab;
         };
 
-        categoryTab = Category.GENERAL;
-
         navigationY = this.height / 2 + 82;
 
         //category tab
