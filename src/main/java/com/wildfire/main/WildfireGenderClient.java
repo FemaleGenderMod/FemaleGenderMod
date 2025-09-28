@@ -30,7 +30,7 @@ import com.wildfire.resources.GenderArmorResourceManager;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.debug.DebugHudEntries;
@@ -53,7 +53,7 @@ public class WildfireGenderClient implements ClientModInitializer {
 		WildfireSounds.register();
 		WildfireSync.registerClient();
 		WildfireEventHandler.registerClientEvents();
-		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(GenderArmorResourceManager.INSTANCE);
+		ResourceLoader.get(ResourceType.CLIENT_RESOURCES).registerReloader(GenderArmorResourceManager.ID, GenderArmorResourceManager.INSTANCE);
 		DebugHudEntries.register(GenderDebugHudEntry.SELF, new GenderDebugHudEntry(true));
 		DebugHudEntries.register(GenderDebugHudEntry.OTHER, new GenderDebugHudEntry(false));
 		// only register this in dev env, as this likely isn't going to be very useful anywhere else.
