@@ -26,6 +26,7 @@ import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.config.Configuration;
 import com.wildfire.main.config.enums.Gender;
+import com.wildfire.main.config.types.ConfigKey;
 import com.wildfire.physics.BreastPhysics;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -47,6 +48,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 /**
  * <p>A stripped down version of a {@link PlayerConfig player's config}, intended for use with non-player entities.</p>
@@ -72,6 +74,15 @@ public class EntityConfig {
 	protected boolean breastPhysics = Configuration.BREAST_PHYSICS.getDefault();
 	protected float bounceMultiplier = Configuration.BOUNCE_MULTIPLIER.getDefault();
 	protected float floppyMultiplier = Configuration.FLOPPY_MULTIPLIER.getDefault();
+
+	protected int[][] leftBreastUVLayout = Configuration.LEFT_BREAST_UV_LAYOUT.getDefault();
+	protected int[][] rightBreastUVLayout = Configuration.RIGHT_BREAST_UV_LAYOUT.getDefault();
+
+	protected int[][] leftBreastOverlayUVLayout = Configuration.LEFT_BREAST_OVERLAY_UV_LAYOUT.getDefault();
+	protected int[][] rightBreastOverlayUVLayout = Configuration.RIGHT_BREAST_OVERLAY_UV_LAYOUT.getDefault();
+
+	protected int[][] leftBreastArmorUVLayout = Configuration.LEFT_BREAST_ARMOR_UV_LAYOUT.getDefault();
+	protected int[][] rightBreastArmorUVLayout = Configuration.RIGHT_BREAST_ARMOR_UV_LAYOUT.getDefault();
 
 	protected float voicePitch = Configuration.VOICE_PITCH.getDefault();
 
@@ -200,6 +211,29 @@ public class EntityConfig {
 	}
 	public @NotNull BreastPhysics getRightBreastPhysics() {
 		return rBreastPhysics;
+	}
+
+	public int[][] getLeftBreastUVLayout() { return this.leftBreastUVLayout; }
+	public boolean updateLeftBreastUVLayout(int[][] layout) { return updateValue(Configuration.LEFT_BREAST_UV_LAYOUT, layout, v -> this.leftBreastUVLayout = v); }
+	public int[][] getRightBreastUVLayout() { return this.rightBreastUVLayout; }
+	public boolean updateRightBreastUVLayout(int[][] layout) { return updateValue(Configuration.RIGHT_BREAST_UV_LAYOUT, layout, v -> this.rightBreastUVLayout = v); }
+
+	public int[][] getLeftBreastOverlayUVLayout() { return this.leftBreastOverlayUVLayout; }
+	public boolean updateLeftBreastOverlayUVLayout(int[][] layout) { return updateValue(Configuration.LEFT_BREAST_OVERLAY_UV_LAYOUT, layout, v -> this.leftBreastOverlayUVLayout = v); }
+	public int[][] getRightBreastOverlayUVLayout() { return this.rightBreastOverlayUVLayout; }
+	public boolean updateRightBreastOverlayUVLayout(int[][] layout) { return updateValue(Configuration.RIGHT_BREAST_OVERLAY_UV_LAYOUT, layout, v -> this.rightBreastOverlayUVLayout = v); }
+
+	public int[][] getLeftBreastArmorUVLayout() { return this.leftBreastArmorUVLayout; }
+	public boolean updateLeftBreastArmorUVLayout(int[][] layout) { return updateValue(Configuration.LEFT_BREAST_ARMOR_UV_LAYOUT, layout, v -> this.leftBreastArmorUVLayout = v); }
+	public int[][] getRightBreastArmorUVLayout() { return this.rightBreastArmorUVLayout; }
+	public boolean updateRightBreastArmorUVLayout(int[][] layout) { return updateValue(Configuration.RIGHT_BREAST_ARMOR_UV_LAYOUT, layout, v -> this.rightBreastArmorUVLayout = v); }
+
+	private <VALUE> boolean updateValue(ConfigKey<VALUE> key, VALUE value, Consumer<VALUE> setter) {
+		if (key.validate(value)) {
+			setter.accept(value);
+			return true;
+		}
+		return false;
 	}
 
 	/**

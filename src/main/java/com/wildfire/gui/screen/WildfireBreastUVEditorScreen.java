@@ -34,65 +34,6 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
     private static final Identifier BACKGROUND = Identifier.of(WildfireGender.MODID, "textures/gui/breast_uv_editor.png");
 
-    private static final int[][] LEFT_BREAST_UV_LAYOUT = new int[][] {
-            {24, 21, 28, 26},  // EAST
-            {16, 21, 20, 26},   // WEST
-            {20, 17, 24, 21},    // DOWN
-            {20, 25, 24, 27},   // UP
-            {20, 21, 24, 26}    // NORTH
-    };
-
-    private static final int[][] RIGHT_BREAST_UV_LAYOUT = new int[][] {
-            {28, 21, 32, 26},   // East
-            {20, 21, 24, 26},   // West
-            {24, 17, 28, 21},   // Down
-            {24,25, 28, 27},    // Up
-            {24, 21, 28, 26}    // North
-    };
-
-
-    private static final int[][] LEFT_BREAST_ARMOR_UV_LAYOUT = new int[][] {
-            {24, 21, 28, 26},  // EAST
-            {16, 21, 20, 26},   // WEST
-            {20, 17, 24, 21},    // DOWN
-            {20, 25, 24, 27},   // UP
-            {20, 21, 24, 26}    // NORTH
-    };
-
-    private static final int[][] RIGHT_BREAST_ARMOR_UV_LAYOUT = new int[][] {
-            {28, 21, 32, 26},  // EAST
-            {20, 21, 24, 26},    // WEST
-            {24, 17, 28, 21},    // DOWN
-            {24,25, 28, 27},   // UP
-            {24, 21, 28, 26}    // NORTH
-    };
-
-    public static final int[][] LEFT_OVERLAY_UV_LAYOUT = new int[][] {
-        {0, 0, 0, 0},  // EAST
-        {17, 37, 20, 42}, // WEST
-        {20, 34, 24, 37}, // DOWN
-        {20, 42, 24, 45}, // UP
-        {20, 37, 24, 42} // NORTH
-    };
-
-    public static final int[][] RIGHT_OVERLAY_UV_LAYOUT = new int[][] {
-            {28, 37, 31, 42}, // EAST
-            {0, 0, 0, 0},     // WEST
-            {24, 34, 28, 37}, // DOWN
-            {24, 42, 28, 45}, // UP
-            {24, 37, 28, 42}  // NORTH
-    };
-
-    //Actual Boob
-    public static int[][] leftBreastUV = LEFT_BREAST_UV_LAYOUT;
-    public static int[][] rightBreastUV = RIGHT_BREAST_UV_LAYOUT;
-    //Boob Armor
-    public static int[][] leftBreastArmorUV = LEFT_BREAST_ARMOR_UV_LAYOUT;
-    public static int[][] rightBreastArmorUV = RIGHT_BREAST_ARMOR_UV_LAYOUT;
-    //Boob Overlay (Jacket Layer)
-    public static int[][] leftBreastOverlayUV = LEFT_OVERLAY_UV_LAYOUT;
-    public static int[][] rightBreastOverlayUV = RIGHT_OVERLAY_UV_LAYOUT;
-
     public WildfireBreastUVEditorScreen(Screen parent, UUID uuid) {
         super(Text.translatable("wildfire_gender.uv_editor"), parent, uuid);
     }
@@ -129,53 +70,6 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
         if(client.player != null) {
 
-            //TODO: MAKE THESE STATIC, NOT UPDATING EVERY FRAME. THIS WILL CAUSE FRAME DROPS. REMOVE IN PROD.
-            leftBreastUV = new int[][]{
-                    {24, 21, 28, 26},  // EAST
-                    {16, 21, 20, 26},   // WEST
-                    {20, 17, 24, 21},    // DOWN
-                    {20, 25, 24, 27},   // UP
-                    {20, 21, 24, 26}    // NORTH
-            };
-
-            rightBreastUV = new int[][]{
-                    {28, 21, 32, 26},  // EAST
-                    {20, 21, 24, 26},    // WEST
-                    {24, 17, 28, 21},    // DOWN
-                    {24,25, 28, 27},   // UP
-                    {24, 21, 28, 26}    // NORTH
-            };
-
-            leftBreastOverlayUV = new int[][] {
-                    {0, 0, 0, 0},     // EAST
-                    {17, 37, 20, 42}, // WEST
-                    {20, 34, 24, 37}, // DOWN
-                    {20, 42, 24, 45}, // UP
-                    {20, 37, 24, 42}  // NORTH
-            };
-            rightBreastOverlayUV = new int[][] {
-                    {28, 37, 31, 42}, // EAST
-                    {0, 0, 0, 0},     // WEST
-                    {24, 34, 28, 37}, // DOWN
-                    {24, 42, 28, 45}, // UP
-                    {24, 37, 28, 42}  // NORTH
-            };
-
-            leftBreastArmorUV = new int[][]{
-                    {24, 21, 28, 26},  // EAST
-                    {16, 21, 20, 26},   // WEST
-                    {20, 17, 24, 21},    // DOWN
-                    {20, 25, 24, 27},   // UP
-                    {20, 21, 24, 26}    // NORTH
-            };
-            rightBreastArmorUV = new int[][]{
-                    {28, 21, 32, 26},  // EAST
-                    {20, 21, 24, 26},    // WEST
-                    {24, 17, 28, 21},    // DOWN
-                    {24,25, 28, 27},   // UP
-                    {24, 21, 28, 26}    // NORTH
-            };
-
             ctx.drawTexture(RenderPipelines.GUI_TEXTURED, client.player.getSkin().body().id(),
                     screenXBase, screenYBase,
                     0, 0, textureDrawWidth, textureDrawWidth, textureDrawWidth, textureDrawWidth);
@@ -201,7 +95,7 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
             int faceIndex = 0;
 
-            for (int[] faceUV : leftBreastUV) {
+            for (int[] faceUV : getPlayer().getLeftBreastUVLayout()) {
 
                 final int borderColor = FACE_COLORS[faceIndex];
                 final String faceName = FACE_NAMES[faceIndex];

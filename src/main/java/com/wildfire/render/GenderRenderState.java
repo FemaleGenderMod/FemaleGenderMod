@@ -73,6 +73,13 @@ public class GenderRenderState {
     public boolean hasJacketLayer;
     public boolean hasHolidayThemes;
 
+    public int[][] leftBreastUVLayout;
+    public int[][] rightBreastUVLayout;
+    public int[][] leftBreastOverlayUVLayout;
+    public int[][] rightBreastOverlayUVLayout;
+    public int[][] leftBreastArmorUVLayout;
+    public int[][] rightBreastArmorUVLayout;
+
     public boolean isBreathing;
     public @Nullable Text nametag;
 
@@ -104,10 +111,17 @@ public class GenderRenderState {
         }
 
         if(entityConfig instanceof PlayerConfig playerConfig) {
-            this.hasHolidayThemes = playerConfig.hasHolidayThemes();
+                    this.hasHolidayThemes = playerConfig.hasHolidayThemes();
         } else {
             this.hasHolidayThemes = false;
         }
+
+        this.leftBreastUVLayout = entityConfig.getLeftBreastUVLayout();
+        this.rightBreastUVLayout = entityConfig.getRightBreastUVLayout();
+        this.leftBreastOverlayUVLayout = entityConfig.getLeftBreastOverlayUVLayout();
+        this.rightBreastOverlayUVLayout = entityConfig.getRightBreastOverlayUVLayout();
+        this.leftBreastArmorUVLayout = entityConfig.getLeftBreastArmorUVLayout();
+        this.rightBreastArmorUVLayout = entityConfig.getRightBreastArmorUVLayout();
 
         this.isBreathing = !entity.isSubmergedInWater() || StatusEffectUtil.hasWaterBreathing(entity) ||
             entity.getEntityWorld().getBlockState(entity.getBlockPos()).isOf(Blocks.BUBBLE_COLUMN);

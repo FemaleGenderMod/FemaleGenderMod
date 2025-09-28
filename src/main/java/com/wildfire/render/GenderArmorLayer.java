@@ -25,6 +25,7 @@ import com.wildfire.render.WildfireModelRenderer.BreastModelBox;
 import com.wildfire.render.ducks.MissingTextureLogger;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
@@ -60,7 +61,7 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 	private final EquipmentRenderer equipmentRenderer;
 	private final EquipmentModelLoader equipmentModelLoader;
 	protected BreastModelBox lBoobArmor, rBoobArmor;
-	protected static final BreastModelBox lTrim, rTrim;
+	protected BreastModelBox lTrim, rTrim;
 	private GenderRenderState genderRenderState;
 	private @NotNull IBreastArmorTexture textureData = IBreastArmorTexture.DEFAULT;
 
@@ -69,19 +70,10 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 		return !((MissingTextureLogger) texManager).wildfire_gender$missingTextures().contains(texture);
 	}
 
-	static {
-		// apply a very slight delta to fix rare layering issues with the normal armor layer
-		// TODO look into how difficult it'd be to replicate Model render priority here
-		lTrim = new BreastModelBox(64, 32, -4F, 0.0F, 0F, 4, 5, 4, 0.001F, leftBreastUV);
-		rTrim = new BreastModelBox(64, 32, 0, 0.0F, 0F, 4, 5, 4, 0.001F, rightBreastUV);
-	}
-
 	public GenderArmorLayer(FeatureRendererContext<S, M> render, EquipmentModelLoader equipmentModelLoader, EquipmentRenderer equipmentRenderer) {
 		super(render);
 		this.equipmentRenderer = equipmentRenderer;
 		this.equipmentModelLoader = equipmentModelLoader;
-		lBoobArmor = new BreastModelBox(64, 32,  -4F, 0.0F, 0F, 4, 5, 3, 0.0F, leftBreastArmorUV);
-		rBoobArmor = new BreastModelBox(64, 32,  0, 0.0F, 0F, 4, 5, 3, 0.0F, rightBreastArmorUV);
 	}
 
 	@Override
@@ -94,6 +86,27 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 
 		this.genderRenderState = GenderRenderState.get(state);
 		if (this.genderRenderState == null) return;
+
+		//TODO: Better way to do this outside of render() method?
+		if(this.lBoobArmor == null || this.rBoobArmor == null) {
+			lBoobArmor = new BreastModelBox(64, 32,  -4F, 0.0F, 0F, 4, 5, 3, 0.0F, genderRenderState.leftBreastArmorUVLayout);
+			rBoobArmor = new BreastModelBox(64, 32,  0, 0.0F, 0F, 4, 5, 3, 0.0F, genderRenderState.rightBreastArmorUVLayout);
+		}
+
+		//TODO: REMOVE THIS AS IT WILL IMPACT FPS
+		if(FabricLoader.getInstance().isDevelopmentEnvironment()) {
+			lBoobArmor = new BreastModelBox(64, 32, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, genderRenderState.leftBreastArmorUVLayout);
+			rBoobArmor = new BreastModelBox(64, 32, 0, 0.0F, 0F, 4, 5, 3, 0.0F, genderRenderState.rightBreastArmorUVLayout);
+		}
+
+		//Armor trims suck
+		if(this.lTrim == null || this.rTrim == null) {
+
+			// apply a very slight delta to fix rare layering issues with the normal armor layer
+			// TODO look into how difficult it'd be to replicate Model render priority here
+			lTrim = new BreastModelBox(64, 32, -4F, 0.0F, 0F, 4, 5, 4, 0.001F, genderRenderState.leftBreastArmorUVLayout);
+			rTrim = new BreastModelBox(64, 32, 0, 0.0F, 0F, 4, 5, 4, 0.001F, genderRenderState.rightBreastArmorUVLayout);
+		}
 
 		final ItemStack chestplate = state.equippedChestStack;
 		// Check if the worn item in the chest slot is actually equippable in the chest slot, and has a model to render
@@ -135,7 +148,7 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 	}
 
 	@Override
-	protected void resizeBox(float breastSize) {
+	protected void resizeBox(GenderRenderState genderRenderState, float breastSize) {
 		if(genderArmor == null || Objects.equals(textureData, genderArmor.texture())) {
 			return;
 		}
@@ -145,7 +158,7 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 		var lUV = textureData.leftUv();
 		var dim = textureData.dimensions();
 
-		//TODO: FIX THIS ARMOR RENDERING WITH JSON FILES?
+		//TODO: FIX THIS ARMOR RENDERING WITH RESOURCE PACK'S CUSTOM JSON FILES?
 
 		//lBoobArmor = new BreastModelBox(texSize.x(), texSize.y(), lUV.x(), lUV.y(), -4F, 0.0F, 0F, dim.x(), dim.y(), 4, 0.0F, false);
 		var rUV = textureData.rightUv();
