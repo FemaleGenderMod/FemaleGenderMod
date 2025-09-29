@@ -171,9 +171,9 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
 
 
         addButton(builder -> builder
-                .message(() -> Text.translatable("wildfire_gender.char_settings.uv_editor"))
-                .position(this.width / 2 - 30, this.height / 2 + 65)
-                .size(80, 15)
+                .message(() -> Text.translatable("wildfire_gender.uv_editor"))
+                .position(this.width / 2 - 36, this.height / 2 + 43)
+                .size(120, 15)
                 .onPress(button -> {
                     client.setScreen(new WildfireBreastUVEditorScreen(WildfireBreastCustomizationScreen.this, playerUUID));
                 }));

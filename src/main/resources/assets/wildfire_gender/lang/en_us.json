@@ -6,6 +6,14 @@
 
 	"wildfire_gender.armor.tooltip": "+%s Breast Support",
 
+	"wildfire_gender.uv_editor": "Breast Texture Editor",
+	"wildfire_gender.uv_editor.reset_defaults": "Reset to Default UVs",
+	"wildfire_gender.uv_editor.no_face_selected": "Select a texture face below to edit it.",
+	"wildfire_gender.uv_editor.selection.left_breast": "Left Breast",
+	"wildfire_gender.uv_editor.selection.right_breast": "Right Breast",
+	"wildfire_gender.uv_editor.selection.left_breast_overlay": "Left Breast - Jacket",
+	"wildfire_gender.uv_editor.selection.right_breast_overlay": "Right Breast - Jacket",
+
 	"wildfire_gender.credits.title": "Mod Credits",
 	"wildfire_gender.credits.description": "This is a list of the awesome people who have made this mod possible!",
 	"wildfire_gender.credits.general": "General",
