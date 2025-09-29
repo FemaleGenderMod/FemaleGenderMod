@@ -93,9 +93,7 @@ public final class WildfireModelRenderer {
 			for (int i = 0; i < quads; i++) {
 				if (i < dynamicUvLayouts.length) {
 					int[] uv = dynamicUvLayouts[i];
-					if (!(uv[0] == 0 && uv[1] == 0 && uv[2] == 0 && uv[3] == 0)) {
-						this.quads[i] = new TexturedQuad(uv[0], uv[1], uv[2], uv[3], tW, tH, faceDirections[i], faceVertices[i][0], faceVertices[i][1], faceVertices[i][2], faceVertices[i][3]);
-					}
+					this.quads[i] = new TexturedQuad(uv[0], uv[1], uv[2], uv[3], tW, tH, faceDirections[i], faceVertices[i][0], faceVertices[i][1], faceVertices[i][2], faceVertices[i][3]);
 				} else {
 					System.err.println("Warning: Quad index " + i + " out of bounds for UV source length " + dynamicUvLayouts.length);
 				}
@@ -124,11 +122,16 @@ public final class WildfireModelRenderer {
 	public static class TexturedQuad {
 		public final WildfireModelRenderer.PositionTextureVertex[] vertexPositions;
 		public final Vector3f normal;
+		public final float[] uvs;
 
 		public TexturedQuad(float u1, float v1, float u2, float v2, float texWidth, float texHeight, Direction directionIn, PositionTextureVertex... positionsIn) {
 			if (positionsIn.length != 4) {
 				throw new IllegalArgumentException("Wrong number of vertex's. Expected: 4, Received: " + positionsIn.length);
 			}
+
+			//Set UVs in array to reference in render side.
+			this.uvs = new float[]{ u1, v1, u2, v2 };
+
 			this.vertexPositions = positionsIn;
 			float f = 0.0F / texWidth;
 			float f1 = 0.0F / texHeight;

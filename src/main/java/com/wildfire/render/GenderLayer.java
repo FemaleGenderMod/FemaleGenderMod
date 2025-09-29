@@ -111,7 +111,7 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 
 			if(FabricLoader.getInstance().isDevelopmentEnvironment()) {
 				//TODO: REMOVE THIS FOR PRODUCTION -- THIS IS FOR DEBUGGING UV MAPPING. !! IT WILL CAUSE FRAME DROPS !!
-				boolean isBreastsDebugMode = ClientConfig.BREASTS_DEBUG || (MinecraftClient.getInstance().currentScreen instanceof WildfireBreastUVEditorScreen);
+				boolean isBreastsDebugMode = ClientConfig.BREASTS_DEBUG;
 				/*entityConfigState.leftBreastUVLayout = new int[][] {
 						{24, 21, 27, 26},  // EAST
 						{16, 21, 20, 26},   // WEST
@@ -325,7 +325,9 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		Matrix4f matrix4f = entry.getPositionMatrix();
 		Matrix3f matrix3f = entry.getNormalMatrix();
 		for(var quad : model.quads) {
-			if(quad != null) {
+
+			//Make sure UVs aren't set to zero. If they are, the textures screw up. Don't render the quad at all.
+			if(quad.uvs[0] != 0.0F && quad.uvs[1] != 0.0F && quad.uvs[2] != 0.0F && quad.uvs[3] != 0.0F) {
 				Vector3f vector3f = new Vector3f(quad.normal.x, quad.normal.y, quad.normal.z).mul(matrix3f);
 				float normalX = vector3f.x;
 				float normalY = vector3f.y;
