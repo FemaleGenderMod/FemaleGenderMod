@@ -21,11 +21,14 @@ package com.wildfire.main.config.types;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.wildfire.main.WildfireGender;
+
+import java.util.Arrays;
 
 public class Int2DArrayConfigKey extends ConfigKey<int[][]> {
 
     public Int2DArrayConfigKey(String key, int[][] defaultValue) {
-        super(key, defaultValue.clone()); //Clone default value instead of referencing it.
+        super(key, WildfireGender.deepClone(defaultValue));
     }
 
     @Override
@@ -45,6 +48,7 @@ public class Int2DArrayConfigKey extends ConfigKey<int[][]> {
         return defaultValue;
     }
 
+
     @Override
     public void save(JsonObject object, int[][] value) {
         JsonArray outer = new JsonArray();
@@ -56,5 +60,10 @@ public class Int2DArrayConfigKey extends ConfigKey<int[][]> {
             outer.add(arr);
         }
         object.add(key, outer);
+    }
+
+    @Override
+    public int[][] getDefault() {
+        return WildfireGender.deepClone(super.getDefault());
     }
 }

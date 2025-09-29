@@ -32,6 +32,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.UUID;
 
 public class WildfireGender implements ModInitializer {
@@ -62,6 +63,15 @@ public class WildfireGender implements ModInitializer {
 				return config;
 			}
 		});
+	}
+
+	public static int[][] deepClone(int[][] src) {
+		if (src == null) return null;
+		int[][] copy = new int[src.length][];
+		for (int i = 0; i < src.length; i++) {
+			copy[i] = (src[i] != null) ? Arrays.copyOf(src[i], src[i].length) : null;
+		}
+		return copy;
 	}
 
 	@Override
