@@ -111,7 +111,7 @@ public class GenderRenderState {
         }
 
         if(entityConfig instanceof PlayerConfig playerConfig) {
-                    this.hasHolidayThemes = playerConfig.hasHolidayThemes();
+            this.hasHolidayThemes = playerConfig.hasHolidayThemes();
         } else {
             this.hasHolidayThemes = false;
         }
