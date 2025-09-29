@@ -9,7 +9,7 @@
 	"wildfire_gender.uv_editor": "Breast Texture Editor",
 	"wildfire_gender.uv_editor.reset_defaults_all": "Reset All to Default UVs",
 	"wildfire_gender.uv_editor.reset_defaults": "Reset to Default UVs",
-	"wildfire_gender.uv_editor.no_face_selected": "Select a texture face below to edit it.",
+	"wildfire_gender.uv_editor.no_face_selected": "Select a texture face on the left to edit it.",
 	"wildfire_gender.uv_editor.selection.left_breast": "Left",
 	"wildfire_gender.uv_editor.selection.right_breast": "Right",
 	"wildfire_gender.uv_editor.selection.left_breast_overlay": "Left",
@@ -29,7 +29,7 @@
 	"wildfire_gender.uv_editor.width": "Width",
 	"wildfire_gender.uv_editor.height": "Height",
 	"wildfire_gender.uv_editor.increment_tip.line1": "Hold SHIFT for +10",
-	"wildfire_gender.uv_editor.increment_tip.line2": "Hold SHIFT+CTRL for +20",
+	"wildfire_gender.uv_editor.increment_tip.line2": "SHIFT+CTRL for +20",
 
 	"wildfire_gender.credits.title": "Mod Credits",
 	"wildfire_gender.credits.description": "This is a list of the awesome people who have made this mod possible!",
