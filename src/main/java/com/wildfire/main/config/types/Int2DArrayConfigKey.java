@@ -25,7 +25,7 @@ import com.google.gson.JsonObject;
 public class Int2DArrayConfigKey extends ConfigKey<int[][]> {
 
     public Int2DArrayConfigKey(String key, int[][] defaultValue) {
-        super(key, defaultValue);
+        super(key, defaultValue.clone()); //Clone default value instead of referencing it.
     }
 
     @Override
