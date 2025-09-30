@@ -211,6 +211,8 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
                             selectedUVs[selectedFaceIndex][uvIndex] += delta * positionIncrementValue;
                             if (uvIndex == 0) selectedUVs[selectedFaceIndex][2] += delta * positionIncrementValue;
                             if (uvIndex == 1) selectedUVs[selectedFaceIndex][3] += delta * positionIncrementValue;
+
+                            getPlayer().save();
                         })
                 );
             }
