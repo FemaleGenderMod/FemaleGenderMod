@@ -89,19 +89,12 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 
 		//TODO: Better way to do this outside of render() method?
 		if(this.lBoobArmor == null || this.rBoobArmor == null) {
-			lBoobArmor = new BreastModelBox(64, 32,  -4F, 0.0F, 0F, 4, 5, 3, 0.0F, genderRenderState.leftBreastArmorUVLayout);
-			rBoobArmor = new BreastModelBox(64, 32,  0, 0.0F, 0F, 4, 5, 3, 0.0F, genderRenderState.rightBreastArmorUVLayout);
-		}
-
-		//TODO: REMOVE THIS AS IT WILL IMPACT FPS
-		if(FabricLoader.getInstance().isDevelopmentEnvironment()) {
 			lBoobArmor = new BreastModelBox(64, 32, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, genderRenderState.leftBreastArmorUVLayout);
 			rBoobArmor = new BreastModelBox(64, 32, 0, 0.0F, 0F, 4, 5, 3, 0.0F, genderRenderState.rightBreastArmorUVLayout);
 		}
 
 		//Armor trims suck
 		if(this.lTrim == null || this.rTrim == null) {
-
 			// apply a very slight delta to fix rare layering issues with the normal armor layer
 			// TODO look into how difficult it'd be to replicate Model render priority here
 			lTrim = new BreastModelBox(64, 32, -4F, 0.0F, 0F, 4, 5, 4, 0.001F, genderRenderState.leftBreastArmorUVLayout);

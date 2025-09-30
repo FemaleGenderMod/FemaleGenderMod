@@ -60,7 +60,6 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 
 	private final FeatureRendererContext<S, M> context;
 
-	private float preBreastSize, preBreastOffsetZ;
 	private boolean isUniboob;
 	protected ItemStack armorStack; // although ItemStacks are mutable, this is safe as it is a copy of the real one
 	protected IGenderArmor genderArmor;
@@ -98,39 +97,17 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		if(entityConfigState == null) return;
 
 		//TODO: Better way for this?
-		if(this.lBreast == null || this.rBreast == null || this.lBreastWear == null || this.rBreastWear == null) {
-			this.lBreast = new BreastModelBox(64, 64, -4F, 0.0F, 0F, 4, 5, 4, 0.0F, entityConfigState.leftBreastUVLayout);
-			this.rBreast = new BreastModelBox(64, 64, 0.0F, 0.0F, 0F, 4, 5, 4, 0.0F, entityConfigState.rightBreastUVLayout);
+		if((this.lBreast == null || this.rBreast == null || this.lBreastWear == null || this.rBreastWear == null) ||
+				MinecraftClient.getInstance().currentScreen instanceof WildfireBreastUVEditorScreen) {
+			this.lBreast = new BreastModelBox(64, 64, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, entityConfigState.leftBreastUVLayout);
+			this.rBreast = new BreastModelBox(64, 64, 0F, 0.0F, 0F, 4, 5, 3, 0.0F, entityConfigState.rightBreastUVLayout);
 			this.lBreastWear = new OverlayModelBox(64, 64, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, entityConfigState.leftBreastOverlayUVLayout);
-			this.rBreastWear = new OverlayModelBox(64, 64,  0, 0.0F, 0F, 4, 5, 3, 0.0F, entityConfigState.rightBreastOverlayUVLayout);
+			this.rBreastWear = new OverlayModelBox(64, 64, 0, 0.0F, 0F, 4, 5, 3, 0.0F, entityConfigState.rightBreastOverlayUVLayout);
 		}
 
 		try {
 			if(!setupRender(state, entityConfigState)) return;
 			int overlay = LivingEntityRenderer.getOverlay(state, 0);
-
-			if(FabricLoader.getInstance().isDevelopmentEnvironment()) {
-				//TODO: REMOVE THIS FOR PRODUCTION -- THIS IS FOR DEBUGGING UV MAPPING. !! IT WILL CAUSE FRAME DROPS !!
-				boolean isBreastsDebugMode = ClientConfig.BREASTS_DEBUG;
-				/*entityConfigState.leftBreastUVLayout = new int[][] {
-						{24, 21, 27, 26},  // EAST
-						{16, 21, 20, 26},   // WEST
-						{20, 17, 24, 21},    // DOWN
-						{20, 25, 24, 27},   // UP
-						{20, 21, 24, 26}    // NORTH
-				};
-				entityConfigState.rightBreastUVLayout = new int[][] {
-						{28, 21, 32, 26},  // EAST
-						{21, 21, 24, 26},    // WEST
-						{24, 17, 28, 21},    // DOWN
-						{24,25, 28, 27},   // UP
-						{24, 21, 28, 26}    // NORTH
-				};*/
-				this.lBreast = new BreastModelBox(64, 64, isBreastsDebugMode ? -6F : -4F, 0.0F, isBreastsDebugMode ? -5F : 0F, 4, 5, 3, 0.0F, entityConfigState.leftBreastUVLayout);
-				this.rBreast = new BreastModelBox(64, 64, isBreastsDebugMode ? 2F : 0F, 0.0F, isBreastsDebugMode ? -5F : 0F, 4, 5, 3, 0.0F, entityConfigState.rightBreastUVLayout);
-				lBreastWear = new OverlayModelBox(64, 64, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, entityConfigState.leftBreastOverlayUVLayout);
-				rBreastWear = new OverlayModelBox(64, 64, 0, 0.0F, 0F, 4, 5, 3, 0.0F, entityConfigState.rightBreastOverlayUVLayout);
-			}
 
 			//noinspection CodeBlock2Expr
 			renderSides(state, getContextModel(), matrixStack, side -> {
@@ -215,19 +192,7 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		return !state.invisibleToPlayer || state.hasOutline();
 	}
 
-	protected void resizeBox(GenderRenderState genderRenderState, float breastSize) {
-		float reducer = -1;
-		if(breastSize < 0.84f) reducer++;
-		if(breastSize < 0.72f) reducer++;
-
-		if(preBreastSize != breastSize) {
-			this.lBreast = new BreastModelBox(64, 64, -4F, 0.0F, 0F, 4, 5, 4, 0.0F, genderRenderState.leftBreastUVLayout);
-			this.rBreast = new BreastModelBox(64, 64, -4F, 0.0F, 0F, 4, 5, 4, 0.0F, genderRenderState.rightBreastUVLayout);
-			/*lBreast = new BreastModelBox(64, 64, 16, 17, -4F, 0.0F, 0F, 4, 5, (int) (4 - breastOffsetZ - reducer), 0.0F, false);
-			rBreast = new BreastModelBox(64, 64, 20, 17, 0, 0.0F, 0F, 4, 5, (int) (4 - breastOffsetZ - reducer), 0.0F, false);*/
-			preBreastSize = breastSize;
-		}
-	}
+	protected void resizeBox(GenderRenderState genderRenderState, float breastSize) { }
 
 	protected void setupTransformations(S state, M model, MatrixStack matrixStack, BreastSide side) {
 		if(state.baby) {
