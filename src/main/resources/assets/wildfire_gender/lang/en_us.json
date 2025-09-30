@@ -31,6 +31,12 @@
 	"wildfire_gender.uv_editor.increment_tip.line1": "Hold SHIFT for +10",
 	"wildfire_gender.uv_editor.increment_tip.line2": "SHIFT+CTRL for +20",
 
+	"wildfire_gender.uv_editor.faces.inner": "Inner Face",
+	"wildfire_gender.uv_editor.faces.outer": "Outer Face",
+	"wildfire_gender.uv_editor.faces.top": "Top Face",
+	"wildfire_gender.uv_editor.faces.bottom": "Bottom Face",
+	"wildfire_gender.uv_editor.faces.front": "Front Face",
+
 	"wildfire_gender.credits.title": "Mod Credits",
 	"wildfire_gender.credits.description": "This is a list of the awesome people who have made this mod possible!",
 	"wildfire_gender.credits.general": "General",

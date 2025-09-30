@@ -38,6 +38,9 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
+import org.joml.Vector2i;
+import org.joml.Vector4i;
+import org.w3c.dom.css.Rect;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -52,31 +55,69 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
     private static final Identifier TEXTURE_ADD = Identifier.of(WildfireGender.MODID, "textures/gui/widgets/add.png");
     private static final Identifier TEXTURE_SUBTRACT = Identifier.of(WildfireGender.MODID, "textures/gui/widgets/subtract.png");
-    private static final Identifier TEXTURE_UNUSED_PARTS = Identifier.of(WildfireGender.MODID, "textures/gui/uv_editor/unused_skin_parts.png");
 
-    public WildfireBreastUVEditorScreen(Screen parent, UUID uuid) {
-        super(Text.translatable("wildfire_gender.uv_editor"), parent, uuid);
-    }
+    private final int[] FACE_COLORS = new int[] { 0xFFFF0000, 0xFF00FF00, 0xFF0000FF, 0xFF00FFFF, 0xFFFF00FF };
+    private final int[] FADED_FACE_COLORS = new int[] { 0x33FF0000, 0x3300FF00, 0x330000FF, 0x3300FFFF, 0x33FF00FF };
+    private final String[] SHORT_FACE_NAMES = new String[] { "E", "W", "D", "U", "N" };
+    private final String[] FACE_NAMES_LEFT = new String[] {
+            "wildfire_gender.uv_editor.faces.inner",
+            "wildfire_gender.uv_editor.faces.outer",
+            "wildfire_gender.uv_editor.faces.top",
+            "wildfire_gender.uv_editor.faces.bottom",
+            "wildfire_gender.uv_editor.faces.front",
+    };
+    private final String[] FACE_NAMES_RIGHT = new String[] {
+            "wildfire_gender.uv_editor.faces.outer",
+            "wildfire_gender.uv_editor.faces.inner",
+            "wildfire_gender.uv_editor.faces.top",
+            "wildfire_gender.uv_editor.faces.bottom",
+            "wildfire_gender.uv_editor.faces.front",
+    };
+
+
+    private int[][] selectedUVs;
+
 
     private ClickableWidget[] positionWidgets = new ClickableWidget[0];
 
     private int selectedBreastIndex = 0;
     private int selectedFaceIndex = -1; // -1 means none selected
 
+    //Positions & Widths
     private int sidebarWidth = 260;
+    private Vector2i winElementPos;
+    private Vector2i uvWindowPos;
+    private int textureDrawWidth;
+    private float uvWindowScaleFactor;
+
+    //Save states of player here
     private Perspective prevPerspective;
+
+    private ClickableWidget btnLeftBreast, btnRightBreast, btnLeftBreastOverlay, btnRightBreastOverlay;
+
+    public WildfireBreastUVEditorScreen(Screen parent, UUID uuid) {
+        super(Text.translatable("wildfire_gender.uv_editor"), parent, uuid);
+    }
+
     @Override
     public void init() {
+        if(client == null) return;
+        
+        textureDrawWidth = 196;
+        int textureSourceWidth = 64;
+        uvWindowScaleFactor = (float) textureDrawWidth / (float) textureSourceWidth;
+
+        uvWindowPos = new Vector2i(5, this.height / 2 - textureDrawWidth / 2);
+
         if(prevPerspective == null) {
             prevPerspective = client.options.getPerspective();
         }
         client.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
 
-        final var ref = new Object() {
-            ClickableWidget leftBreast, rightBreast, leftBreastOverlay, rightBreastOverlay;
-        };
 
         sidebarWidth = 180;
+        winElementPos = new Vector2i(this.width - sidebarWidth + 7, 32);
+
         int x = this.width - sidebarWidth;
         int w = this.width - (this.width - sidebarWidth);
         int y = 0;
@@ -100,181 +141,94 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
                     getPlayer().save();
                 }));
 
-        //Breast Buttons
-        int elementXPos = this.width - sidebarWidth + 7;
-        int elementYPos = 32;
-
-
-        ref.leftBreast = addButton(builder -> builder
+        btnLeftBreast = addButton(builder -> builder
                 .message(() -> Text.translatable("wildfire_gender.uv_editor.selection.left_breast"))
-                .position(elementXPos, elementYPos + 13)
+                .position(winElementPos.x(), winElementPos.y() + 13)
                 .size((w / 2) / 2 - 5, 15)
                 .active(selectedBreastIndex != 1)
                 .onPress(button -> {
-                    selectedBreastIndex = 1;
-                    selectedFaceIndex = -1;
-                    ref.leftBreast.active = selectedBreastIndex != 1;
-                    ref.rightBreast.active = selectedBreastIndex != 0;
-                    ref.leftBreastOverlay.active = selectedBreastIndex != 3;
-                    ref.rightBreastOverlay.active = selectedBreastIndex != 2;
-                    clearAndInit();
+                    selectBreastIndex(1);
                 }));
 
-        ref.rightBreast = addButton(builder -> builder
+        btnRightBreast = addButton(builder -> builder
                 .message(() -> Text.translatable("wildfire_gender.uv_editor.selection.right_breast"))
-                .position(elementXPos + (w / 2) / 2 - 3, elementYPos + 13)
+                .position(winElementPos.x() + (w / 2) / 2 - 3, winElementPos.y() + 13)
                 .size((w / 2) / 2 - 6, 15)
                 .active(selectedBreastIndex != 0)
                 .onPress(button -> {
-                    selectedBreastIndex = 0;
-                    selectedFaceIndex = -1;
-                    ref.leftBreast.active = selectedBreastIndex != 1;
-                    ref.rightBreast.active = selectedBreastIndex != 0;
-                    ref.leftBreastOverlay.active = selectedBreastIndex != 3;
-                    ref.rightBreastOverlay.active = selectedBreastIndex != 2;
-                    clearAndInit();
+                    selectBreastIndex(0);
                 }));
 
-        ref.leftBreastOverlay = addButton(builder -> builder
+        btnLeftBreastOverlay = addButton(builder -> builder
                 .message(() -> Text.translatable("wildfire_gender.uv_editor.selection.left_breast_overlay"))
-                .position(elementXPos, elementYPos + 44)
+                .position(winElementPos.x(), winElementPos.y() + 44)
                 .size((w / 2) / 2 - 5, 15)
                 .active(selectedBreastIndex != 3)
                 .onPress(button -> {
-                    selectedBreastIndex = 3;
-                    selectedFaceIndex = -1;
-                    ref.leftBreast.active = selectedBreastIndex != 1;
-                    ref.rightBreast.active = selectedBreastIndex != 0;
-                    ref.leftBreastOverlay.active = selectedBreastIndex != 3;
-                    ref.rightBreastOverlay.active = selectedBreastIndex != 2;
-                    clearAndInit();
+                    selectBreastIndex(3);
                 }));
 
-        ref.rightBreastOverlay = addButton(builder -> builder
+        btnRightBreastOverlay = addButton(builder -> builder
                 .message(() -> Text.translatable("wildfire_gender.uv_editor.selection.right_breast_overlay"))
-                .position(elementXPos + (w / 2) / 2 - 3, elementYPos + 44)
+                .position(winElementPos.x() + (w / 2) / 2 - 3, winElementPos.y() + 44)
                 .size((w / 2) / 2 - 6, 15)
                 .active(selectedBreastIndex != 2)
                 .onPress(button -> {
-                    selectedBreastIndex = 2;
-                    selectedFaceIndex = -1;
-                    ref.leftBreast.active = selectedBreastIndex != 1;
-                    ref.rightBreast.active = selectedBreastIndex != 0;
-                    ref.leftBreastOverlay.active = selectedBreastIndex != 3;
-                    ref.rightBreastOverlay.active = selectedBreastIndex != 2;
-                    clearAndInit();
+                    selectBreastIndex(2);
                 }));
 
         //Position stuff
         if(selectedFaceIndex != -1) {
-            int positionBoxX = this.width - 130 + 5;
-            int positionBoxW = this.width - (this.width - 260);
+            int uvPositionWindowX = this.width - 130 + 5;
 
             positionWidgets = new ClickableWidget[8];
 
             int buttonArrayY = 52;
-            positionWidgets[0] = addButton(builder -> builder
-                    .renderer((button, ctx, mouseX, mouseY, partialTicks) -> {
-                        Formatting colorVal = positionIncrementValue == 10 ? Formatting.AQUA:(positionIncrementValue==20 ? Formatting.BLUE : Formatting.WHITE);
-                        ctx.drawTexture(RenderPipelines.GUI_TEXTURED, TEXTURE_SUBTRACT, button.getX() + button.getWidth() / 2 - 3, button.getY() + button.getHeight() / 2 - 3, 0, 0, 6, 6, 6, 6, 6, 6, ColorHelper.fullAlpha(colorVal.getColorValue()));
-                    })
-                    .message(() -> Text.translatable("wildfire_gender.uv_editor.remove_1"))
-                    .position(positionBoxX + 92, y + buttonArrayY)
-                    .size(12, 12)
-                    .onPress(button -> {
-                        selectedUVs[selectedFaceIndex][0]-=positionIncrementValue;
-                        selectedUVs[selectedFaceIndex][2]-=positionIncrementValue;
-                    }));
-            positionWidgets[1] = addButton(builder -> builder
-                    .renderer((button, ctx, mouseX, mouseY, partialTicks) -> {
-                        Formatting colorVal = positionIncrementValue == 10 ? Formatting.AQUA:(positionIncrementValue==20 ? Formatting.BLUE : Formatting.WHITE);
-                        ctx.drawTexture(RenderPipelines.GUI_TEXTURED, TEXTURE_ADD, button.getX() + button.getWidth() / 2 - 3, button.getY() + button.getHeight() / 2 - 3, 0, 0, 6, 6, 6, 6, 6, 6, ColorHelper.fullAlpha(colorVal.getColorValue()));
-                    })
-                    .message(() -> Text.translatable("wildfire_gender.uv_editor.add_1"))
-                    .position(positionBoxX + 106, y + buttonArrayY)
-                    .size(12, 12)
-                    .onPress(button -> {
-                        selectedUVs[selectedFaceIndex][0]+=positionIncrementValue;
-                        selectedUVs[selectedFaceIndex][2]+=positionIncrementValue;
-                    }));
 
-            positionWidgets[2] = addButton(builder -> builder
-                    .renderer((button, ctx, mouseX, mouseY, partialTicks) -> {
-                        Formatting colorVal = positionIncrementValue == 10 ? Formatting.AQUA:(positionIncrementValue==20 ? Formatting.BLUE : Formatting.WHITE);
-                        ctx.drawTexture(RenderPipelines.GUI_TEXTURED, TEXTURE_SUBTRACT, button.getX() + button.getWidth() / 2 - 3, button.getY() + button.getHeight() / 2 - 3, 0, 0, 6, 6, 6, 6, 6, 6, ColorHelper.fullAlpha(colorVal.getColorValue()));
-                    })
-                    .message(() -> Text.translatable("wildfire_gender.uv_editor.remove_1"))
-                    .position(positionBoxX + 92, y + buttonArrayY + 14)
-                    .size(12, 12)
-                    .onPress(button -> {
-                        selectedUVs[selectedFaceIndex][1]-=positionIncrementValue;
-                        selectedUVs[selectedFaceIndex][3]-=positionIncrementValue;
-                    }));
+            for (int i = 0; i < 8; i++) {
+                boolean isAdd = (i % 2 == 1);
+                int uvIndex = i / 2;
+                int delta = isAdd ? 1 : -1;
 
-            positionWidgets[3] = addButton(builder -> builder
-                    .renderer((button, ctx, mouseX, mouseY, partialTicks) -> {
-                        Formatting colorVal = positionIncrementValue == 10 ? Formatting.AQUA:(positionIncrementValue==20 ? Formatting.BLUE : Formatting.WHITE);
-                        ctx.drawTexture(RenderPipelines.GUI_TEXTURED, TEXTURE_ADD, button.getX() + button.getWidth() / 2 - 3, button.getY() + button.getHeight() / 2 - 3, 0, 0, 6, 6, 6, 6, 6, 6, ColorHelper.fullAlpha(colorVal.getColorValue()));
-                    })
-                    .message(() -> Text.translatable("wildfire_gender.uv_editor.add_1"))
-                    .position(positionBoxX + 106, y + buttonArrayY + 14)
-                    .size(12, 12)
-                    .onPress(button -> {
-                        selectedUVs[selectedFaceIndex][1]+=positionIncrementValue;
-                        selectedUVs[selectedFaceIndex][3]+=positionIncrementValue;
-                    }));
+                int xOffset = isAdd ? 106 : 92;
+                int yOffset = (i / 2) * 14;
 
-            positionWidgets[4] = addButton(builder -> builder
-                    .renderer((button, ctx, mouseX, mouseY, partialTicks) -> {
-                        Formatting colorVal = positionIncrementValue == 10 ? Formatting.AQUA:(positionIncrementValue==20 ? Formatting.BLUE : Formatting.WHITE);
-                        ctx.drawTexture(RenderPipelines.GUI_TEXTURED, TEXTURE_SUBTRACT, button.getX() + button.getWidth() / 2 - 3, button.getY() + button.getHeight() / 2 - 3, 0, 0, 6, 6, 6, 6, 6, 6, ColorHelper.fullAlpha(colorVal.getColorValue()));
-                    })
-                    .message(() -> Text.translatable("wildfire_gender.uv_editor.remove_1"))
-                    .position(positionBoxX + 92, y + buttonArrayY + 28)
-                    .size(12, 12)
-                    .onPress(button -> {
-                        selectedUVs[selectedFaceIndex][2]-=positionIncrementValue;
-                    }));
-            positionWidgets[5] = addButton(builder -> builder
-                    .renderer((button, ctx, mouseX, mouseY, partialTicks) -> {
-                        Formatting colorVal = positionIncrementValue == 10 ? Formatting.AQUA:(positionIncrementValue==20 ? Formatting.BLUE : Formatting.WHITE);
-                        ctx.drawTexture(RenderPipelines.GUI_TEXTURED, TEXTURE_ADD, button.getX() + button.getWidth() / 2 - 3, button.getY() + button.getHeight() / 2 - 3, 0, 0, 6, 6, 6, 6, 6, 6, ColorHelper.fullAlpha(colorVal.getColorValue()));
-                    })
-                    .message(() -> Text.translatable("wildfire_gender.uv_editor.add_1"))
-                    .position(positionBoxX + 106, y + buttonArrayY + 28)
-                    .size(12, 12)
-                    .onPress(button -> {
-                        selectedUVs[selectedFaceIndex][2]+=positionIncrementValue;
-                    }));
-
-            positionWidgets[6] = addButton(builder -> builder
-                    .renderer((button, ctx, mouseX, mouseY, partialTicks) -> {
-                        Formatting colorVal = positionIncrementValue == 10 ? Formatting.AQUA:(positionIncrementValue==20 ? Formatting.BLUE : Formatting.WHITE);
-                        ctx.drawTexture(RenderPipelines.GUI_TEXTURED, TEXTURE_SUBTRACT, button.getX() + button.getWidth() / 2 - 3, button.getY() + button.getHeight() / 2 - 3, 0, 0, 6, 6, 6, 6, 6, 6, ColorHelper.fullAlpha(colorVal.getColorValue()));
-                    })
-                    .message(() -> Text.translatable("wildfire_gender.uv_editor.remove_1"))
-                    .position(positionBoxX + 92, y + buttonArrayY + 42)
-                    .size(12, 12)
-                    .onPress(button -> {
-                        selectedUVs[selectedFaceIndex][3]-=positionIncrementValue;
-                    }));
-
-            positionWidgets[7] = addButton(builder -> builder
-                    .renderer((button, ctx, mouseX, mouseY, partialTicks) -> {
-                        Formatting colorVal = positionIncrementValue == 10 ? Formatting.AQUA:(positionIncrementValue==20 ? Formatting.BLUE : Formatting.WHITE);
-                        ctx.drawTexture(RenderPipelines.GUI_TEXTURED, TEXTURE_ADD, button.getX() + button.getWidth() / 2 - 3, button.getY() + button.getHeight() / 2 - 3, 0, 0, 6, 6, 6, 6, 6, 6, ColorHelper.fullAlpha(colorVal.getColorValue()));
-                    })
-                    .message(() -> Text.translatable("wildfire_gender.uv_editor.add_1"))
-                    .position(positionBoxX + 106, y + buttonArrayY + 42)
-                    .size(12, 12)
-                    .onPress(button -> {
-                        selectedUVs[selectedFaceIndex][3]+=positionIncrementValue;
-                    }));
-
-
-
+                positionWidgets[i] = addButton(builder -> builder
+                        .renderer((button, ctx, mouseX, mouseY, partialTicks) -> {
+                            Formatting colorVal = positionIncrementValue == 10 ? Formatting.AQUA :
+                                    (positionIncrementValue == 20 ? Formatting.BLUE : Formatting.WHITE);
+                            ctx.drawTexture(RenderPipelines.GUI_TEXTURED,
+                                    isAdd ? TEXTURE_ADD : TEXTURE_SUBTRACT,
+                                    button.getX() + button.getWidth() / 2 - 3,
+                                    button.getY() + button.getHeight() / 2 - 3,
+                                    0,0,6,6,6,6,6,6,
+                                    ColorHelper.fullAlpha(colorVal.getColorValue()));
+                        })
+                        .message(() -> Text.translatable(isAdd ? "wildfire_gender.uv_editor.add_1" : "wildfire_gender.uv_editor.remove_1"))
+                        .position(uvPositionWindowX + xOffset, y + buttonArrayY + yOffset)
+                        .size(12, 12)
+                        .onPress(button -> {
+                            selectedUVs[selectedFaceIndex][uvIndex] += delta * positionIncrementValue;
+                            if (uvIndex == 0) selectedUVs[selectedFaceIndex][2] += delta * positionIncrementValue;
+                            if (uvIndex == 1) selectedUVs[selectedFaceIndex][3] += delta * positionIncrementValue;
+                        })
+                );
+            }
         }
         super.init();
+    }
+
+    private void selectBreastIndex(int index) {
+        selectedBreastIndex = index;
+        selectedFaceIndex = -1;
+        updateBreastButtonStates();
+        clearAndInit();
+    }
+    private void updateBreastButtonStates() {
+        btnLeftBreast.active = selectedBreastIndex != 1;
+        btnRightBreast.active = selectedBreastIndex != 0;
+        btnLeftBreastOverlay.active = selectedBreastIndex != 3;
+        btnRightBreastOverlay.active = selectedBreastIndex != 2;
     }
 
     private void updatePositionWidgets() {
@@ -311,19 +265,16 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
         ctx.fill(this.width - sidebarWidth + 5, 30, this.width - w / 2 - 5, 93, 0x66000000);
         ctx.fill(this.width - w / 2, 30, this.width - 5, 128, 0x66000000);
 
-        final int textureDrawWidth = 196;
-        int screenXBase = 5;
-        int screenYBase = this.height / 2 - textureDrawWidth / 2;
-        ctx.fill(screenXBase - 2, screenYBase - 2, screenXBase + textureDrawWidth + 2, screenYBase + textureDrawWidth + 2, 0xCC000000);
-        ctx.fill(screenXBase, screenYBase, screenXBase + textureDrawWidth, screenYBase + textureDrawWidth, 0xFFFFFFFF);
+        ctx.fill(uvWindowPos.x() - 2, uvWindowPos.y() - 2, uvWindowPos.x() + textureDrawWidth + 2, uvWindowPos.y() + textureDrawWidth + 2, 0xCC000000);
+        ctx.fill(uvWindowPos.x(), uvWindowPos.y(), uvWindowPos.x() + textureDrawWidth, uvWindowPos.y() + textureDrawWidth, 0xFFFFFFFF);
     }
 
-    private int[][] selectedUVs;
 
     @Override
     public void tick() {
+        if(getPlayer() == null) return;
+
         selectedUVs = switch (selectedBreastIndex) {
-            case 0 -> getPlayer().getLeftBreastUVLayout();
             case 1 -> getPlayer().getRightBreastUVLayout();
             case 2 -> getPlayer().getLeftBreastOverlayUVLayout();
             case 3 -> getPlayer().getRightBreastOverlayUVLayout();
@@ -335,69 +286,15 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
     public void render(DrawContext ctx, int mouseX, int mouseY, float delta) {
         if (client == null || client.world == null) return;
 
-        //TODO: Localize this
-        final String[] FACE_NAMES_LEFT = new String[] {
-                "Inner Face",
-                "Outer Face",
-                "Top Face",
-                "Bottom Face",
-                "Front Face"
-        };
-        final String[] FACE_NAMES_RIGHT = new String[] {
-                "Outer Face",
-                "Inner Face",
-                "Top Face",
-                "Bottom Face",
-                "Front Face"
-        };
-
         int x = this.width / 2;
         int y = this.height / 2;
 
-        final int textureDrawWidth = 196;
-        final int textureSourceWidth = 64;
-        final float scaleFactor = (float) textureDrawWidth / (float) textureSourceWidth;
 
-        int screenXBase = 5;
-        int screenYBase = this.height / 2 - textureDrawWidth / 2;
-
-        if(client.player != null && selectedUVs != null) {
-
-            /*ctx.drawTexture(RenderPipelines.GUI_TEXTURED, TEXTURE_UNUSED_PARTS,
-                    screenXBase, screenYBase,
-                    0, 0, textureDrawWidth, textureDrawWidth, textureDrawWidth, textureDrawWidth);*/
+        if(client.player != null && getPlayer() != null && selectedUVs != null) {
 
             ctx.drawTexture(RenderPipelines.GUI_TEXTURED, client.player.getSkin().body().id(),
-                    screenXBase, screenYBase,
+                    uvWindowPos.x(), uvWindowPos.y(),
                     0, 0, textureDrawWidth, textureDrawWidth, textureDrawWidth, textureDrawWidth);
-
-
-            final int borderThickness = 1;
-
-            final int[] FACE_COLORS = new int[]{
-                    0xFFFF0000,
-                    0xFF00FF00,
-                    0xFF0000FF,
-                    0xFF00FFFF,
-                    0xFFFF00FF
-            };
-            final int[] FADED_FACE_COLORS = new int[]{
-                    0x33FF0000,
-                    0x3300FF00,
-                    0x330000FF,
-                    0x3300FFFF,
-                    0x33FF00FF
-            };
-
-            final String[] SHORT_FACE_NAMES = new String[]{
-                    "E",
-                    "W",
-                    "D",
-                    "U",
-                    "N"
-            };
-
-            int faceIndex = 0;
 
             //Other faces
             int[][][] ALL_UVS = new int[][][] {
@@ -407,114 +304,15 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
                     getPlayer().getRightBreastOverlayUVLayout()
             };
 
-            int allFaceIndex = 0;
             for(int[][] eachBreast : ALL_UVS) {
-                allFaceIndex = 0;
-                for (int[] faceUV : eachBreast) {
-
-                    int borderColor = FADED_FACE_COLORS[allFaceIndex];
-
-                    final String faceName = SHORT_FACE_NAMES[allFaceIndex];
-                    String fullFaceName = "N/A";
-                    if (selectedBreastIndex % 2 == 0) {
-                        fullFaceName = FACE_NAMES_LEFT[allFaceIndex];
-                    } else {
-                        fullFaceName = FACE_NAMES_RIGHT[allFaceIndex];
-                    }
-                    int u1 = faceUV[0];
-                    int v1 = faceUV[1];
-                    int u2 = faceUV[2];
-                    int v2 = faceUV[3];
-
-                    if (!(u1 == 0 && v1 == 0 && u2 == 0 && v2 == 0)) {
-                        int rectX1 = (int) (screenXBase + (float) (u1) * scaleFactor);
-                        int rectY1 = (int) (screenYBase + (float) (v1 - 1) * scaleFactor);
-                        int rectX2 = (int) (screenXBase + (float) (u2) * scaleFactor);
-                        int rectY2 = (int) (screenYBase + (float) (v2 - 1) * scaleFactor);
-
-                        ctx.fill(rectX1, rectY1, rectX2, rectY1 + borderThickness, borderColor);
-                        ctx.fill(rectX1, rectY2 - borderThickness, rectX2, rectY2, borderColor);
-                        ctx.fill(rectX1, rectY1, rectX1 + borderThickness, rectY2, borderColor);
-                        ctx.fill(rectX2 - borderThickness, rectY1, rectX2, rectY2, borderColor);
-
-                        int centerX = (rectX1 + rectX2) / 2;
-                        int centerY = (rectY1 + rectY2) / 2;
-                        int textWidth = textRenderer.getWidth(faceName);
-                        int textHeight = textRenderer.fontHeight;
-
-                        ctx.getMatrices().pushMatrix();
-                        ctx.getMatrices().translate(centerX, centerY);
-                        ctx.getMatrices().scale(0.6f);
-
-                        ctx.drawText(textRenderer, faceName, -textWidth / 2, -textHeight / 2, 0x33FFFFFF, true);
-
-                        ctx.getMatrices().popMatrix();
-
-                    }
-                    allFaceIndex++;
-                }
+                drawFaceBorders(ctx, eachBreast, mouseX, mouseY, true);
             }
 
-            //selected faces
-            for (int[] faceUV : selectedUVs) {
-
-                int borderColor = (faceIndex == selectedFaceIndex) ? 0xFFFFFFFF : FACE_COLORS[faceIndex];
-
-                final String faceName = SHORT_FACE_NAMES[faceIndex];
-                String fullFaceName = "N/A";
-                if(selectedBreastIndex % 2 == 0) {
-                    fullFaceName = FACE_NAMES_LEFT[faceIndex];
-                } else {
-                    fullFaceName = FACE_NAMES_RIGHT[faceIndex];
-                }
-                int u1 = faceUV[0];
-                int v1 = faceUV[1];
-                int u2 = faceUV[2];
-                int v2 = faceUV[3];
-
-                if(!(u1 == 0 && v1 == 0 && u2 == 0 && v2 == 0)) {
-                    int rectX1 = (int) (screenXBase + (float) (u1) * scaleFactor);
-                    int rectY1 = (int) (screenYBase + (float) (v1 - 1) * scaleFactor);
-                    int rectX2 = (int) (screenXBase + (float) (u2) * scaleFactor);
-                    int rectY2 = (int) (screenYBase + (float) (v2 - 1) * scaleFactor);
-
-                    if(mouseX >= rectX1 && mouseX <= rectX2 && mouseY >= rectY1 && mouseY <= rectY2) {
-                        List<OrderedText> array = new ArrayList<>();
-                        array.add(Text.literal(fullFaceName).append(" (").append(faceName).append(")").formatted(Formatting.GOLD).asOrderedText());
-                        array.add(Text.empty().append("[" + u1 + ", " + v1 + ", " + u2 + ", " + v2 + "]").formatted(Formatting.AQUA).asOrderedText());
-                        ctx.drawTooltip(array, mouseX, mouseY);
-                    }
-
-                    ctx.fill(rectX1, rectY1, rectX2, rectY1 + borderThickness, borderColor);
-                    ctx.fill(rectX1, rectY2 - borderThickness, rectX2, rectY2, borderColor);
-                    ctx.fill(rectX1, rectY1, rectX1 + borderThickness, rectY2, borderColor);
-                    ctx.fill(rectX2 - borderThickness, rectY1, rectX2, rectY2, borderColor);
-
-                    int centerX = (rectX1 + rectX2) / 2;
-                    int centerY = (rectY1 + rectY2) / 2;
-                    int textWidth = textRenderer.getWidth(faceName);
-                    int textHeight = textRenderer.fontHeight;
-
-                    ctx.getMatrices().pushMatrix();
-                    ctx.getMatrices().translate(centerX, centerY);
-                    ctx.getMatrices().scale(0.6f);
-
-                    ctx.drawText(textRenderer, faceName, -textWidth / 2, -textHeight / 2, 0xFFFFFFFF, true);
-
-                    ctx.getMatrices().popMatrix();
-
-                }
-                faceIndex++;
-            }
-
+            drawFaceBorders(ctx, selectedUVs, mouseX, mouseY, false);
         }
 
-        int elementXPos = this.width - sidebarWidth - 14;
-        int elementYPos = 32;
-
-        GuiUtils.drawCenteredText(ctx, textRenderer, Text.translatable("wildfire_gender.uv_editor.selection.layer_body"),  elementXPos + 62, elementYPos + 2, 0xFFFFFFFF);
-        GuiUtils.drawCenteredText(ctx, textRenderer, Text.translatable("wildfire_gender.uv_editor.selection.layer_jacket"),  elementXPos + 62, elementYPos + 32, 0xFFFFFFFF);
-
+        GuiUtils.drawCenteredText(ctx, textRenderer, Text.translatable("wildfire_gender.uv_editor.selection.layer_body"),  winElementPos.x() + 42, winElementPos.y() + 2, 0xFFFFFFFF);
+        GuiUtils.drawCenteredText(ctx, textRenderer, Text.translatable("wildfire_gender.uv_editor.selection.layer_jacket"),  winElementPos.x() + 42, winElementPos.y() + 32, 0xFFFFFFFF);
 
         int positionBoxX = this.width - sidebarWidth / 4;
         int positionBoxW = this.width - (this.width - sidebarWidth);
@@ -532,10 +330,6 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
             GuiUtils.drawCenteredText(ctx, textRenderer, Text.translatable(fullFaceName).formatted(Formatting.GOLD), positionBoxX, 37, 0xFFFFFFFF);
 
-            /*int mouseA = (int) ((mouseX-screenXBase) / scaleFactor);
-            int mouseB = (int) ((mouseY-screenYBase) / scaleFactor);
-
-            ctx.drawTooltip(Text.literal("A: " + mouseA + ", B: " + mouseB + " X: " + mouseX + " Y: " + mouseY), mouseX, mouseY);*/
             ctx.drawText(textRenderer, Text.translatable("wildfire_gender.uv_editor.xpos"), positionBoxX - 35, 55, 0xFFFFFFFF, false);
             ctx.drawText(textRenderer, Text.translatable("wildfire_gender.uv_editor.ypos"), positionBoxX - 35, 55 + 14, 0xFFFFFFFF, false);
             ctx.drawText(textRenderer, Text.translatable("wildfire_gender.uv_editor.width"), positionBoxX - 35, 55 + (14*2), 0xFFFFFFFF, false);
@@ -562,17 +356,70 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
         super.render(ctx, mouseX, mouseY, delta);
     }
 
+
+    private void drawFaceBorders(DrawContext ctx, int[][] uvList, int mouseX, int mouseY, boolean faded) {
+
+        int faceIndex = 0;
+        //selected faces
+        for (int[] faceUV : uvList) {
+
+            int borderColor = (faceIndex == selectedFaceIndex) ? 0xFFFFFFFF : FACE_COLORS[faceIndex];
+
+            if(faded) {
+                borderColor = FADED_FACE_COLORS[faceIndex];
+            }
+
+            final String faceName = SHORT_FACE_NAMES[faceIndex];
+            String fullFaceName = "N/A";
+            if(selectedBreastIndex % 2 == 0) {
+                fullFaceName = FACE_NAMES_LEFT[faceIndex];
+            } else {
+                fullFaceName = FACE_NAMES_RIGHT[faceIndex];
+            }
+            int u1 = faceUV[0];
+            int v1 = faceUV[1];
+            int u2 = faceUV[2];
+            int v2 = faceUV[3];
+
+            if(!(u1 == 0 && v1 == 0 && u2 == 0 && v2 == 0)) {
+                int rectX1 = (int) (uvWindowPos.x() + (float) (u1) * uvWindowScaleFactor);
+                int rectY1 = (int) (uvWindowPos.y() + (float) (v1 - 1) * uvWindowScaleFactor);
+                int rectX2 = (int) (uvWindowPos.x() + (float) (u2) * uvWindowScaleFactor);
+                int rectY2 = (int) (uvWindowPos.y() + (float) (v2 - 1) * uvWindowScaleFactor);
+
+                if(mouseX >= rectX1 && mouseX <= rectX2 && mouseY >= rectY1 && mouseY <= rectY2) {
+                    List<OrderedText> array = new ArrayList<>();
+                    array.add(Text.literal(fullFaceName).append(" (").append(faceName).append(")").formatted(Formatting.GOLD).asOrderedText());
+                    array.add(Text.empty().append("[" + u1 + ", " + v1 + ", " + u2 + ", " + v2 + "]").formatted(Formatting.AQUA).asOrderedText());
+                    ctx.drawTooltip(array, mouseX, mouseY);
+                }
+
+                int borderThickness = 1;
+                ctx.fill(rectX1, rectY1, rectX2, rectY1 + borderThickness, borderColor);
+                ctx.fill(rectX1, rectY2 - borderThickness, rectX2, rectY2, borderColor);
+                ctx.fill(rectX1, rectY1, rectX1 + borderThickness, rectY2, borderColor);
+                ctx.fill(rectX2 - borderThickness, rectY1, rectX2, rectY2, borderColor);
+
+                int centerX = (rectX1 + rectX2) / 2;
+                int centerY = (rectY1 + rectY2) / 2;
+                int textWidth = textRenderer.getWidth(faceName);
+                int textHeight = textRenderer.fontHeight;
+
+                ctx.getMatrices().pushMatrix();
+                ctx.getMatrices().translate(centerX, centerY);
+                ctx.getMatrices().scale(0.6f);
+
+                ctx.drawText(textRenderer, faceName, -textWidth / 2, -textHeight / 2, 0xFFFFFFFF, true);
+
+                ctx.getMatrices().popMatrix();
+
+            }
+            faceIndex++;
+        }
+    }
+
     @Override
     public boolean mouseClicked(Click click, boolean doubled) {
-
-        //TODO: Make these common to the class instead of duplicating?
-
-        final int textureDrawWidth = 196;
-        final int textureSourceWidth = 64;
-        final float scaleFactor = (float) textureDrawWidth / (float) textureSourceWidth;
-
-        int screenXBase = 5;
-        int screenYBase = this.height / 2 - textureDrawWidth / 2;
 
         int faceIndex = 0;
 
@@ -583,10 +430,10 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
             int v2 = faceUV[3];
 
             if(!(u1 == 0 && v1 == 0 && u2 == 0 && v2 == 0)) {
-                int rectX1 = (int) (screenXBase + (float) (u1) * scaleFactor);
-                int rectY1 = (int) (screenYBase + (float) (v1 - 1) * scaleFactor);
-                int rectX2 = (int) (screenXBase + (float) (u2) * scaleFactor);
-                int rectY2 = (int) (screenYBase + (float) (v2 - 1) * scaleFactor);
+                int rectX1 = (int) (uvWindowPos.x() + (float) (u1) * uvWindowScaleFactor);
+                int rectY1 = (int) (uvWindowPos.y() + (float) (v1 - 1) * uvWindowScaleFactor);
+                int rectX2 = (int) (uvWindowPos.x() + (float) (u2) * uvWindowScaleFactor);
+                int rectY2 = (int) (uvWindowPos.y() + (float) (v2 - 1) * uvWindowScaleFactor);
 
                 if(click.x() >= rectX1 && click.x() <= rectX2 && click.y() >= rectY1 && click.y() <= rectY2) {
                     if(click.button() == 0) {
@@ -609,7 +456,6 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
         return super.mouseClicked(click, doubled);
     }
-
 
     @Override
     public boolean keyPressed(KeyInput input) {
@@ -636,6 +482,8 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
     @Override
     public void close() {
+        if(client == null) return;
+
         client.options.setPerspective(prevPerspective);
         prevPerspective = null;
         super.close();
