@@ -18,6 +18,7 @@
 
 package com.wildfire.gui;
 
+import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.config.types.FloatConfigKey;
 import it.unimi.dsi.fastutil.floats.Float2ObjectFunction;
 import it.unimi.dsi.fastutil.floats.FloatConsumer;
@@ -109,7 +110,7 @@ public class WildfireSlider extends ClickableWidget {
 		int keyCode = event.key();
 		if(keyCode == GLFW.GLFW_KEY_LEFT || keyCode == GLFW.GLFW_KEY_RIGHT) {
 			value += (keyCode == GLFW.GLFW_KEY_LEFT ? -arrowKeyStep : arrowKeyStep);
-			value = MathHelper.clamp(value, 0, 1);
+			value = WildfireHelper.snapToStep(MathHelper.clamp(value, 0, 1), arrowKeyStep);
 			applyValue();
 			updateMessage();
 			return true;

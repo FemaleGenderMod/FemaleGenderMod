@@ -120,4 +120,8 @@ public final class WildfireHelper {
     public static boolean onClient() {
         return FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
     }
+
+    public static double snapToStep(double value, double stepSize) {
+        return Math.round(value / stepSize) * stepSize;
+    }
 }
