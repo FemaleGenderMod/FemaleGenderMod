@@ -35,13 +35,13 @@ public class Int2DArrayConfigKey extends ConfigKey<int[][]> {
     protected int[][] read(JsonElement element) {
         if (element != null && element.isJsonArray()) {
             JsonArray outer = element.getAsJsonArray();
-            int[][] result = new int[outer.size()][];
+            int[][] result = new int[outer.size()][4]; // always 4 elements per object
             for (int i = 0; i < outer.size(); i++) {
-                JsonArray inner = outer.get(i).getAsJsonArray();
-                result[i] = new int[inner.size()];
-                for (int j = 0; j < inner.size(); j++) {
-                    result[i][j] = inner.get(j).getAsInt();
-                }
+                JsonObject obj = outer.get(i).getAsJsonObject();
+                result[i][0] = obj.get("x1").getAsInt();
+                result[i][1] = obj.get("y1").getAsInt();
+                result[i][2] = obj.get("x2").getAsInt();
+                result[i][3] = obj.get("y2").getAsInt();
             }
             return result;
         }
@@ -53,11 +53,12 @@ public class Int2DArrayConfigKey extends ConfigKey<int[][]> {
     public void save(JsonObject object, int[][] value) {
         JsonArray outer = new JsonArray();
         for (int[] inner : value) {
-            JsonArray arr = new JsonArray();
-            for (int num : inner) {
-                arr.add(num);
-            }
-            outer.add(arr);
+            JsonObject obj = new JsonObject();
+            obj.addProperty("x1", inner[0]);
+            obj.addProperty("y1", inner[1]);
+            obj.addProperty("x2", inner[2]);
+            obj.addProperty("y2", inner[3]);
+            outer.add(obj);
         }
         object.add(key, outer);
     }

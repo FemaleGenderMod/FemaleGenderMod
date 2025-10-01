@@ -67,14 +67,14 @@ public class Configuration extends AbstractConfiguration {
 					{28, 21, 32, 26},  // EAST
 					{21, 21, 24, 26},    // WEST
 					{24, 17, 28, 21},    // DOWN
-					{24,25, 28, 27},   // UP
+					{24, 25, 28, 27},   // UP
 					{24, 21, 28, 26}    // NORTH
 			});
 
 	public static final Int2DArrayConfigKey LEFT_BREAST_OVERLAY_UV_LAYOUT =
 			new Int2DArrayConfigKey("leftBreastOverlayUVLayout", new int[][] {
-					{0, 0, 0, 0},     // EAST
-					{17, 37, 20, 42}, // WEST (not used)
+					{ 0,  0,  0,  0},     // EAST (not used)
+					{17, 37, 20, 42}, // WEST
 					{20, 34, 24, 37}, // DOWN
 					{20, 42, 24, 45}, // UP
 					{20, 37, 24, 42}  // NORTH
@@ -82,7 +82,7 @@ public class Configuration extends AbstractConfiguration {
 	public static final Int2DArrayConfigKey RIGHT_BREAST_OVERLAY_UV_LAYOUT =
 			new Int2DArrayConfigKey("rightBreastOverlayUVLayout", new int[][] {
 					{28, 37, 31, 42}, // EAST
-					{0, 0, 0, 0},     // WEST (not used)
+					{ 0,  0,  0,  0},     // WEST (not used)
 					{24, 34, 28, 37}, // DOWN
 					{24, 42, 28, 45}, // UP
 					{24, 37, 28, 42}  // NORTH
