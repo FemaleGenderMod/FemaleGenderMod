@@ -65,14 +65,6 @@ public class WildfireGender implements ModInitializer {
 		});
 	}
 
-	public static int[][] deepClone(int[][] src) {
-		if (src == null) return null;
-		int[][] copy = new int[src.length][];
-		for (int i = 0; i < src.length; i++) {
-			copy[i] = (src[i] != null) ? Arrays.copyOf(src[i], src[i].length) : null;
-		}
-		return copy;
-	}
 
 	@Override
 	public void onInitialize() {
@@ -92,4 +84,5 @@ public class WildfireGender implements ModInitializer {
 	public static Identifier id(String path) {
 		return Identifier.of(MODID, path);
 	}
+
 }

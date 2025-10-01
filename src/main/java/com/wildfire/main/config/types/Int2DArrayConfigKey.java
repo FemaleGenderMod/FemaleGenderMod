@@ -22,13 +22,14 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.wildfire.main.WildfireGender;
+import com.wildfire.main.WildfireHelper;
 
 import java.util.Arrays;
 
 public class Int2DArrayConfigKey extends ConfigKey<int[][]> {
 
     public Int2DArrayConfigKey(String key, int[][] defaultValue) {
-        super(key, WildfireGender.deepClone(defaultValue));
+        super(key, WildfireHelper.deepClone(defaultValue));
     }
 
     @Override
@@ -65,6 +66,6 @@ public class Int2DArrayConfigKey extends ConfigKey<int[][]> {
 
     @Override
     public int[][] getDefault() {
-        return WildfireGender.deepClone(super.getDefault());
+        return WildfireHelper.deepClone(super.getDefault());
     }
 }
