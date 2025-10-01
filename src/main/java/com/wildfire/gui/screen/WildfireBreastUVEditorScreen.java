@@ -391,7 +391,7 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
                 if(mouseX >= rectX1 && mouseX <= rectX2 && mouseY >= rectY1 && mouseY <= rectY2) {
                     List<OrderedText> array = new ArrayList<>();
-                    array.add(Text.literal(fullFaceName).append(" (").append(faceName).append(")").formatted(Formatting.GOLD).asOrderedText());
+                    array.add(Text.translatable(fullFaceName).append(" (").append(faceName).append(")").formatted(Formatting.GOLD).asOrderedText());
                     array.add(Text.empty().append("[" + u1 + ", " + v1 + ", " + u2 + ", " + v2 + "]").formatted(Formatting.AQUA).asOrderedText());
                     ctx.drawTooltip(array, mouseX, mouseY);
                 }
