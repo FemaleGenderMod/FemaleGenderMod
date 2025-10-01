@@ -134,7 +134,8 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .range(Configuration.BUST_SIZE)
                 .current(plr.getBustSize())
                 .update(plr::updateBustSize)
-                .step(0.01));
+                .step(0.01)
+                .mouseStep(1.0 / 100.0));
 
         addSlider(builder -> builder
                 .message(value -> Text.translatable("wildfire_gender.wardrobe.slider.separation", Math.round((Math.round(value * 100f) / 100f) * 10)))
@@ -142,15 +143,17 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .size(HALF_WIDTH, 20)
                 .range(Configuration.BREASTS_OFFSET_X)
                 .current(breasts.getXOffset())
-                .update(breasts::updateXOffset));
+                .update(breasts::updateXOffset)
+                .mouseStep(1.0 / 20.0));
 
         addSlider(builder -> builder
                 .message(value -> Text.translatable("wildfire_gender.wardrobe.slider.height", Math.round((Math.round(value * 100f) / 100f) * 10)))
-                .position(this.width / 2 - 36 + HALF_WIDTH + 2, tabOffsetY + 22)
+                .position(this.width / 2 - 36 + HALF_WIDTH + 4, tabOffsetY + 22)
                 .size(HALF_WIDTH, 20)
                 .range(Configuration.BREASTS_OFFSET_Y)
                 .current(breasts.getYOffset())
-                .update(breasts::updateYOffset));
+                .update(breasts::updateYOffset)
+                .mouseStep(1.0 / 20.0));
 
         addSlider(builder -> builder
                 .message(value -> Text.translatable("wildfire_gender.wardrobe.slider.depth", Math.round((Math.round(value * 100f) / 100f) * 10)))
@@ -159,15 +162,17 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .range(Configuration.BREASTS_OFFSET_Z)
                 .current(breasts.getZOffset())
                 .update(breasts::updateZOffset)
-                .step(0.1));
+                .step(0.1)
+                .mouseStep(1.0 / 10.0));
         addSlider(builder -> builder
                 .message(value -> Text.translatable("wildfire_gender.wardrobe.slider.rotation", Math.round((Math.round(value * 100f) / 100f) * 100)))
-                .position(this.width / 2 - 36 + HALF_WIDTH + 2, tabOffsetY + 46)
+                .position(this.width / 2 - 36 + HALF_WIDTH + 4, tabOffsetY + 46)
                 .size(HALF_WIDTH, 20)
                 .range(Configuration.BREASTS_CLEAVAGE)
                 .current(breasts.getCleavage())
                 .update(breasts::updateCleavage)
-                .step(0.1));
+                .step(0.1)
+                .mouseStep(1.0 / 10.0));
 
 
         addButton(builder -> builder
@@ -250,6 +255,7 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .current(plr.getBounceMultiplier())
                 .update(plr::updateBounceMultiplier)
                 .step(0.005)
+                //.mouseStep(1.0 / 100.0)
                 .active(plr.hasBreastPhysics()));
 
         ref.floppySlider = addSlider(builder -> builder
@@ -260,6 +266,7 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .current(plr.getFloppiness())
                 .update(plr::updateFloppiness)
                 .step(0.01)
+                //.mouseStep(1.0 / 100.0)
                 .active(plr.hasBreastPhysics()));
     }
 
@@ -297,6 +304,7 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                     }
                 })
                 .step(0.01)
+                //.mouseStep(1.0 / 100.0)
                 .active(plr.hasHurtSounds()));
 
         addButton(builder -> builder

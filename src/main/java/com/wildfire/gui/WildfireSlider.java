@@ -51,6 +51,7 @@ public class WildfireSlider extends ClickableWidget {
 	private boolean changed;
 	private boolean dragging;
 
+	private double mouseStep = 0;
 	private double arrowKeyStep = 0.05;
 
 	private WildfireSlider(int xPos, int yPos, int width, int height, double minVal, double maxVal, double currentVal, FloatConsumer valueUpdate,
@@ -66,6 +67,9 @@ public class WildfireSlider extends ClickableWidget {
 
 	public void setArrowKeyStep(double arrowKeyStep) {
 		this.arrowKeyStep = arrowKeyStep;
+	}
+	private void setMouseStep(double mouseStep) {
+		this.mouseStep = mouseStep;
 	}
 
 	protected void updateMessage() {
@@ -205,15 +209,23 @@ public class WildfireSlider extends ClickableWidget {
 	private void setValueFromMouse(double mouseX) {
 		this.value = ((mouseX - (double)(this.getX() + 4)) / (double)(this.getWidth() - 8));
 		this.value = MathHelper.clamp(this.value, 0, 1);
+
+		if (mouseStep > 0) {
+			double snapped = Math.round(this.value / mouseStep) * mouseStep;
+			this.value = MathHelper.clamp(snapped, 0, 1);
+		}
+
 		applyValue();
 		updateMessage();
 	}
+
 
 	public static final class Builder {
 		private int x, y, width, height;
 		private float min, max;
 		private double value;
 		private Double step = null;
+		private Double mouseStep = null;
 		private boolean active = true;
 		private Float2ObjectFunction<Text> messageSupplier;
 		private FloatConsumer onUpdate, onSave;
@@ -269,6 +281,10 @@ public class WildfireSlider extends ClickableWidget {
 			this.step = step;
 			return this;
 		}
+		public Builder mouseStep(double step) {
+			this.mouseStep = step;
+			return this;
+		}
 
 		public WildfireSlider build() {
 			var built = new WildfireSlider(x, y, width, height, min, max, value, onUpdate, messageSupplier, onSave);
@@ -276,7 +292,11 @@ public class WildfireSlider extends ClickableWidget {
 			if(step != null) {
 				built.setArrowKeyStep(step);
 			}
+			if(mouseStep != null) {
+				built.setMouseStep(mouseStep);
+			}
 			return built;
 		}
 	}
+
 }
