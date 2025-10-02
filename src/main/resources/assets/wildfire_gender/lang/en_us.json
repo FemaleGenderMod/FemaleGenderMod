@@ -18,12 +18,6 @@
 	"wildfire_gender.uv_editor.selection.layer_body": "Body Layer",
 	"wildfire_gender.uv_editor.selection.layer_jacket": "Jacket Layer",
 
-	"wildfire_gender.uv_editor.add_1": "+1",
-	"wildfire_gender.uv_editor.remove_1": "-1",
-	"wildfire_gender.uv_editor.add_10": "+10",
-	"wildfire_gender.uv_editor.remove_10": "-10",
-	"wildfire_gender.uv_editor.add_20": "+20",
-	"wildfire_gender.uv_editor.remove_20": "-20",
 	"wildfire_gender.uv_editor.xpos": "X-Pos",
 	"wildfire_gender.uv_editor.ypos": "Y-Pos",
 	"wildfire_gender.uv_editor.width": "Width",
