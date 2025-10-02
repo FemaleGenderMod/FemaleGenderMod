@@ -18,7 +18,7 @@
 
 package com.wildfire.main.networking;
 
-import com.mojang.datafixers.util.Function7;
+import com.mojang.datafixers.util.Function11;
 import com.wildfire.main.entitydata.Breasts;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.config.enums.Gender;
@@ -40,6 +40,10 @@ abstract class AbstractSyncPacket {
                 PacketCodecs.FLOAT, p -> p.voicePitch,
                 BreastPhysics.CODEC, p -> p.physics,
                 Breasts.CODEC, p -> p.breasts,
+                UV_CODEC, p -> p.leftBreastUVLayout,
+                UV_CODEC, p -> p.rightBreastUVLayout,
+                UV_CODEC, p -> p.leftBreastOverlayUVLayout,
+                UV_CODEC, p -> p.rightBreastOverlayUVLayout,
                 constructor
         );
     }
@@ -51,8 +55,12 @@ abstract class AbstractSyncPacket {
     protected final float voicePitch;
     protected final BreastPhysics physics;
     protected final Breasts breasts;
+    protected final int[][] leftBreastUVLayout;
+    protected final int[][] rightBreastUVLayout;
+    protected final int[][] leftBreastOverlayUVLayout;
+    protected final int[][] rightBreastOverlayUVLayout;
 
-    protected AbstractSyncPacket(UUID uuid, Gender gender, float bustSize, boolean hurtSounds, float voicePitch, BreastPhysics physics, Breasts breasts) {
+    protected AbstractSyncPacket(UUID uuid, Gender gender, float bustSize, boolean hurtSounds, float voicePitch, BreastPhysics physics, Breasts breasts, int[][] leftBreastUVLayout, int[][] rightBreastUVLayout, int[][] leftBreastOverlayUVLayout, int[][] rightBreastOverlayUVLayout) {
         this.uuid = uuid;
         this.gender = gender;
         this.bustSize = bustSize;
@@ -60,10 +68,14 @@ abstract class AbstractSyncPacket {
         this.voicePitch = voicePitch;
         this.physics = physics;
         this.breasts = breasts;
+        this.leftBreastUVLayout = leftBreastUVLayout;
+        this.rightBreastUVLayout = rightBreastUVLayout;
+        this.leftBreastOverlayUVLayout = leftBreastOverlayUVLayout;
+        this.rightBreastOverlayUVLayout = rightBreastOverlayUVLayout;
     }
 
     protected AbstractSyncPacket(PlayerConfig plr) {
-        this(plr.uuid, plr.getGender(), plr.getBustSize(), plr.hasHurtSounds(), plr.getVoicePitch(), new BreastPhysics(plr), plr.getBreasts());
+        this(plr.uuid, plr.getGender(), plr.getBustSize(), plr.hasHurtSounds(), plr.getVoicePitch(), new BreastPhysics(plr), plr.getBreasts(), plr.getLeftBreastUVLayout(), plr.getRightBreastUVLayout(), plr.getLeftBreastOverlayUVLayout(), plr.getRightBreastOverlayUVLayout());
     }
 
     // TODO add support for mannequins?
@@ -74,6 +86,10 @@ abstract class AbstractSyncPacket {
         plr.updateVoicePitch(voicePitch);
         physics.applyTo(plr);
         plr.getBreasts().copyFrom(breasts);
+        plr.updateLeftBreastUVLayout(leftBreastUVLayout);
+        plr.updateRightBreastUVLayout(rightBreastUVLayout);
+        plr.updateLeftBreastOverlayUVLayout(leftBreastOverlayUVLayout);
+        plr.updateRightBreastOverlayUVLayout(rightBreastOverlayUVLayout);
     }
 
     protected record BreastPhysics(boolean physics, boolean showInArmor, float bounceMultiplier, float floppyMultiplier) {
@@ -99,6 +115,29 @@ abstract class AbstractSyncPacket {
     }
 
     @FunctionalInterface
-    protected interface SyncPacketConstructor<T extends AbstractSyncPacket> extends Function7<UUID, Gender, Float, Boolean, Float, BreastPhysics, Breasts, T> {
+    protected interface SyncPacketConstructor<T extends AbstractSyncPacket> extends Function11<UUID, Gender, Float, Boolean, Float, BreastPhysics, Breasts, int[][], int[][], int[][], int[][], T> {
     }
+
+
+    public static final PacketCodec<ByteBuf, int[][]> UV_CODEC = new PacketCodec<>() {
+        @Override
+        public void encode(ByteBuf buf, int[][] value) {
+            for (int i = 0; i < 5; i++) {
+                for (int j = 0; j < 4; j++) {
+                    PacketCodecs.VAR_INT.encode(buf, value[i][j]);
+                }
+            }
+        }
+
+        @Override
+        public int[][] decode(ByteBuf buf) {
+            int[][] result = new int[5][4];
+            for (int i = 0; i < 5; i++) {
+                for (int j = 0; j < 4; j++) {
+                    result[i][j] = PacketCodecs.VAR_INT.decode(buf);
+                }
+            }
+            return result;
+        }
+    };
 }

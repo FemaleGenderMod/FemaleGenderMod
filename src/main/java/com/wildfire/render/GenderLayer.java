@@ -48,6 +48,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.*;
 
 import java.lang.Math;
+import java.util.Arrays;
 import java.util.function.Consumer;
 
 @Environment(EnvType.CLIENT)
@@ -57,6 +58,11 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 
 	private BreastModelBox lBreast, rBreast;
 	private OverlayModelBox lBreastWear, rBreastWear;
+
+	private int[][] prevLeftBreastUVLayout;
+	private int[][] prevRightBreastUVLayout;
+	private int[][] prevLeftBreastOverlayUVLayout;
+	private int[][] prevRightBreastOverlayUVLayout;
 
 	private final FeatureRendererContext<S, M> context;
 
@@ -97,8 +103,16 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		if(entityConfigState == null) return;
 
 		//TODO: Better way for this?
-		if((this.lBreast == null || this.rBreast == null || this.lBreastWear == null || this.rBreastWear == null) ||
-				MinecraftClient.getInstance().currentScreen instanceof WildfireBreastUVEditorScreen) {
+		if(!Arrays.deepEquals(this.prevLeftBreastUVLayout, entityConfigState.leftBreastUVLayout)
+			|| !Arrays.deepEquals(this.prevRightBreastUVLayout, entityConfigState.rightBreastUVLayout)
+			|| !Arrays.deepEquals(this.prevLeftBreastOverlayUVLayout, entityConfigState.leftBreastOverlayUVLayout)
+			|| !Arrays.deepEquals(this.prevRightBreastOverlayUVLayout, entityConfigState.rightBreastOverlayUVLayout)) {
+
+			this.prevLeftBreastUVLayout = entityConfigState.leftBreastUVLayout;
+			this.prevRightBreastUVLayout = entityConfigState.rightBreastUVLayout;
+			this.prevLeftBreastOverlayUVLayout = entityConfigState.leftBreastOverlayUVLayout;
+			this.prevRightBreastOverlayUVLayout = entityConfigState.rightBreastOverlayUVLayout;
+
 			this.lBreast = new BreastModelBox(64, 64, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, entityConfigState.leftBreastUVLayout);
 			this.rBreast = new BreastModelBox(64, 64, 0F, 0.0F, 0F, 4, 5, 3, 0.0F, entityConfigState.rightBreastUVLayout);
 			this.lBreastWear = new OverlayModelBox(64, 64, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, entityConfigState.leftBreastOverlayUVLayout);
