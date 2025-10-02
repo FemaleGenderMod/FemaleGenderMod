@@ -201,7 +201,6 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
                 );
             }
         }
-        super.init();
     }
 
     private void selectBreastIndex(int index) {
