@@ -29,9 +29,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.input.KeyInput;
-import net.minecraft.client.option.Perspective;
 import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.entity.player.SkinTextures;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
@@ -39,10 +37,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.joml.Vector2i;
-import org.joml.Vector4i;
-import org.w3c.dom.css.Rect;
-
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -90,9 +84,6 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
     private int textureDrawWidth;
     private float uvWindowScaleFactor;
 
-    //Save states of player here
-    private Perspective prevPerspective;
-
     private ClickableWidget btnLeftBreast, btnRightBreast, btnLeftBreastOverlay, btnRightBreastOverlay;
 
     public WildfireBreastUVEditorScreen(Screen parent, UUID uuid) {
@@ -106,14 +97,7 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
         textureDrawWidth = 196;
         int textureSourceWidth = 64;
         uvWindowScaleFactor = (float) textureDrawWidth / (float) textureSourceWidth;
-
         uvWindowPos = new Vector2i(5, this.height / 2 - textureDrawWidth / 2);
-
-        if(prevPerspective == null) {
-            prevPerspective = client.options.getPerspective();
-        }
-        client.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
-
 
         sidebarWidth = 180;
         winElementPos = new Vector2i(this.width - sidebarWidth + 7, 32);
@@ -457,12 +441,4 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
         return super.keyPressed(input);
     }
 
-    @Override
-    public void close() {
-        if(client == null) return;
-
-        client.options.setPerspective(prevPerspective);
-        prevPerspective = null;
-        super.close();
-    }
 }
