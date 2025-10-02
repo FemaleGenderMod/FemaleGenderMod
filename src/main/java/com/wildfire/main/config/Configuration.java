@@ -53,7 +53,6 @@ public class Configuration extends AbstractConfiguration {
 
 	public static final BooleanConfigKey HOLIDAY_THEMES = new BooleanConfigKey("holiday_themes", true);
 
-	//Breast UV Layouts (Default)
 	public static final Int2DArrayConfigKey LEFT_BREAST_UV_LAYOUT =
 			new Int2DArrayConfigKey("leftBreastUVLayout", new int[][] {
 					{24, 21, 27, 26},  // EAST
@@ -128,10 +127,7 @@ public class Configuration extends AbstractConfiguration {
 			new RegisteredKey<>(RIGHT_BREAST_UV_LAYOUT, PlayerConfig::getRightBreastUVLayout, PlayerConfig::updateRightBreastUVLayout),
 
 			new RegisteredKey<>(LEFT_BREAST_OVERLAY_UV_LAYOUT, PlayerConfig::getLeftBreastOverlayUVLayout, PlayerConfig::updateLeftBreastOverlayUVLayout),
-			new RegisteredKey<>(RIGHT_BREAST_OVERLAY_UV_LAYOUT, PlayerConfig::getRightBreastOverlayUVLayout, PlayerConfig::updateRightBreastOverlayUVLayout),
-
-			new RegisteredKey<>(LEFT_BREAST_ARMOR_UV_LAYOUT, PlayerConfig::getLeftBreastArmorUVLayout, PlayerConfig::updateLeftBreastArmorUVLayout),
-			new RegisteredKey<>(RIGHT_BREAST_ARMOR_UV_LAYOUT, PlayerConfig::getRightBreastArmorUVLayout, PlayerConfig::updateRightBreastArmorUVLayout)
+			new RegisteredKey<>(RIGHT_BREAST_OVERLAY_UV_LAYOUT, PlayerConfig::getRightBreastOverlayUVLayout, PlayerConfig::updateRightBreastOverlayUVLayout)
 	);
 
 	public Configuration(String cfgName) {
