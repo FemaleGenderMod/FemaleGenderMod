@@ -306,7 +306,7 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		for(var quad : model.quads) {
 
 			//Make sure UVs aren't set to zero. If they are, the textures screw up. Don't render the quad at all.
-			if(quad.uvs[0] != 0.0F && quad.uvs[1] != 0.0F && quad.uvs[2] != 0.0F && quad.uvs[3] != 0.0F) continue;
+			if(quad.uvs[0] == 0.0F && quad.uvs[1] == 0.0F && quad.uvs[2] == 0.0F && quad.uvs[3] == 0.0F) continue;
 
 			Vector3f vector3f = new Vector3f(quad.normal.x, quad.normal.y, quad.normal.z).mul(matrix3f);
 			float normalX = vector3f.x;
