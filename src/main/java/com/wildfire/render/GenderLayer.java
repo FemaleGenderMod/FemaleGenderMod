@@ -102,23 +102,6 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		var entityConfigState = GenderRenderState.get(state);
 		if(entityConfigState == null) return;
 
-		//TODO: Better way for this?
-		if(!Arrays.deepEquals(this.prevLeftBreastUVLayout, entityConfigState.leftBreastUVLayout)
-			|| !Arrays.deepEquals(this.prevRightBreastUVLayout, entityConfigState.rightBreastUVLayout)
-			|| !Arrays.deepEquals(this.prevLeftBreastOverlayUVLayout, entityConfigState.leftBreastOverlayUVLayout)
-			|| !Arrays.deepEquals(this.prevRightBreastOverlayUVLayout, entityConfigState.rightBreastOverlayUVLayout)) {
-
-			this.prevLeftBreastUVLayout = entityConfigState.leftBreastUVLayout;
-			this.prevRightBreastUVLayout = entityConfigState.rightBreastUVLayout;
-			this.prevLeftBreastOverlayUVLayout = entityConfigState.leftBreastOverlayUVLayout;
-			this.prevRightBreastOverlayUVLayout = entityConfigState.rightBreastOverlayUVLayout;
-
-			this.lBreast = new BreastModelBox(64, 64, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, entityConfigState.leftBreastUVLayout);
-			this.rBreast = new BreastModelBox(64, 64, 0F, 0.0F, 0F, 4, 5, 3, 0.0F, entityConfigState.rightBreastUVLayout);
-			this.lBreastWear = new OverlayModelBox(64, 64, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, entityConfigState.leftBreastOverlayUVLayout);
-			this.rBreastWear = new OverlayModelBox(64, 64, 0, 0.0F, 0F, 4, 5, 3, 0.0F, entityConfigState.rightBreastOverlayUVLayout);
-		}
-
 		try {
 			if(!setupRender(state, entityConfigState)) return;
 			int overlay = LivingEntityRenderer.getOverlay(state, 0);
@@ -206,7 +189,24 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		return !state.invisibleToPlayer || state.hasOutline();
 	}
 
-	protected void resizeBox(GenderRenderState genderRenderState, float breastSize) { }
+	protected void resizeBox(GenderRenderState genderRenderState, float breastSize) {
+		//TODO: Better way for this?
+		if(!Arrays.deepEquals(this.prevLeftBreastUVLayout, genderRenderState.leftBreastUVLayout)
+				|| !Arrays.deepEquals(this.prevRightBreastUVLayout, genderRenderState.rightBreastUVLayout)
+				|| !Arrays.deepEquals(this.prevLeftBreastOverlayUVLayout, genderRenderState.leftBreastOverlayUVLayout)
+				|| !Arrays.deepEquals(this.prevRightBreastOverlayUVLayout, genderRenderState.rightBreastOverlayUVLayout)) {
+
+			this.prevLeftBreastUVLayout = genderRenderState.leftBreastUVLayout;
+			this.prevRightBreastUVLayout = genderRenderState.rightBreastUVLayout;
+			this.prevLeftBreastOverlayUVLayout = genderRenderState.leftBreastOverlayUVLayout;
+			this.prevRightBreastOverlayUVLayout = genderRenderState.rightBreastOverlayUVLayout;
+
+			this.lBreast = new BreastModelBox(64, 64, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, genderRenderState.leftBreastUVLayout);
+			this.rBreast = new BreastModelBox(64, 64, 0F, 0.0F, 0F, 4, 5, 3, 0.0F, genderRenderState.rightBreastUVLayout);
+			this.lBreastWear = new OverlayModelBox(64, 64, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, genderRenderState.leftBreastOverlayUVLayout);
+			this.rBreastWear = new OverlayModelBox(64, 64, 0, 0.0F, 0F, 4, 5, 3, 0.0F, genderRenderState.rightBreastOverlayUVLayout);
+		}
+	}
 
 	protected void setupTransformations(S state, M model, MatrixStack matrixStack, BreastSide side) {
 		if(state.baby) {
