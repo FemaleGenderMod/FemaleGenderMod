@@ -30,9 +30,7 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
-
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.UUID;
 
 public class WildfireGender implements ModInitializer {
