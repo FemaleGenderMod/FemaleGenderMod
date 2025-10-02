@@ -233,28 +233,6 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
         btnRightBreastOverlay.active = selectedBreastIndex != 2;
     }
 
-    private void updatePositionWidgets() {
-        String addKey = "wildfire_gender.uv_editor.add_1";
-        String removeKey = "wildfire_gender.uv_editor.remove_1";
-
-        if (positionIncrementValue == 10) {
-            addKey = "wildfire_gender.uv_editor.add_10";
-            removeKey = "wildfire_gender.uv_editor.remove_10";
-        } else if (positionIncrementValue == 20) {
-            addKey = "wildfire_gender.uv_editor.add_20";
-            removeKey = "wildfire_gender.uv_editor.remove_20";
-        }
-
-        Text addText = Text.translatable(addKey);
-        Text removeText = Text.translatable(removeKey);
-
-        for (int i = 0; i < positionWidgets.length; i++) {
-            ClickableWidget widget = positionWidgets[i];
-            widget.setMessage(i % 2 == 0 ? removeText : addText);
-        }
-
-    }
-
 
     @Override
     public void renderBackground(DrawContext ctx, int mouseX, int mouseY, float delta) {
@@ -463,10 +441,8 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
     public boolean keyPressed(KeyInput input) {
         if(input.hasShift() && input.hasCtrl()) {
             positionIncrementValue = 20;
-            updatePositionWidgets();
         } else if(input.hasShift()) {
             positionIncrementValue = 10;
-            updatePositionWidgets();
         }
 
         return super.keyPressed(input);
@@ -478,7 +454,6 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
         } else {
             positionIncrementValue = 10;
         }
-        updatePositionWidgets();
         return super.keyPressed(input);
     }
 
