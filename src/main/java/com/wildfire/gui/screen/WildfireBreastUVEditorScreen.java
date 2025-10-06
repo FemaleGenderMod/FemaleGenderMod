@@ -50,8 +50,6 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
     private static final Text TITLE = Text.translatable("wildfire_gender.uv_editor");
 
-    private int positionIncrementValue = 1;
-
     private static final Identifier TEXTURE_ADD = Identifier.of(WildfireGender.MODID, "textures/gui/widgets/add.png");
     private static final Identifier TEXTURE_SUBTRACT = Identifier.of(WildfireGender.MODID, "textures/gui/widgets/subtract.png");
 
@@ -177,8 +175,8 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
                 positionWidgets[i] = addButton(builder -> builder
                         .renderer((button, ctx, mouseX, mouseY, partialTicks) -> {
-                            Formatting colorVal = positionIncrementValue == 10 ? Formatting.AQUA :
-                                    (positionIncrementValue == 20 ? Formatting.BLUE : Formatting.WHITE);
+                            Formatting colorVal = getPositionIncrement() == 10 ? Formatting.AQUA :
+                                    (getPositionIncrement() == 20 ? Formatting.BLUE : Formatting.WHITE);
                             ctx.drawTexture(RenderPipelines.GUI_TEXTURED,
                                     isAdd ? TEXTURE_ADD : TEXTURE_SUBTRACT,
                                     button.getX() + button.getWidth() / 2 - 3,
@@ -199,15 +197,15 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
                                 int newY2 = oldQuad.y2();
 
                                 if(uvIndex == 0) { // adjust X
-                                    newX1 += delta * positionIncrementValue;
-                                    newX2 += delta * positionIncrementValue;
+                                    newX1 += delta * getPositionIncrement();
+                                    newX2 += delta * getPositionIncrement();
                                 } else if(uvIndex == 1) { // adjust Y
-                                    newY1 += delta * positionIncrementValue;
-                                    newY2 += delta * positionIncrementValue;
+                                    newY1 += delta * getPositionIncrement();
+                                    newY2 += delta * getPositionIncrement();
                                 } else if(uvIndex == 2) { // adjust width
-                                    newX2 += delta * positionIncrementValue;
+                                    newX2 += delta * getPositionIncrement();
                                 } else { // adjust height
-                                    newY2 += delta * positionIncrementValue;
+                                    newY2 += delta * getPositionIncrement();
                                 }
 
                                 UVQuad newQuad = new UVQuad(newX1, newY1, newX2, newY2);
@@ -435,32 +433,12 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
         return super.mouseClicked(click, doubled);
     }
 
-    @Override
-    public boolean keyPressed(KeyInput input) {
-        if(client == null) return super.keyPressed(input);
+    private int getPositionIncrement() {
+        if(client == null) return 1;
 
-        boolean isShift = client.isShiftPressed();
-        boolean isCtrl = client.isCtrlPressed();
-
-        if(isShift && isCtrl) {
-            positionIncrementValue = 20;
-        } else if(isShift) {
-            positionIncrementValue = 10;
-        }
-
-        return super.keyPressed(input);
+        if (client.isShiftPressed() && client.isCtrlPressed()) return 20;
+        if (client.isShiftPressed()) return 10;
+        return 1;
     }
 
-    @Override
-    public boolean keyReleased(KeyInput input) {
-        if(client == null) return super.keyReleased(input);
-
-        boolean isShift = client.isShiftPressed();
-        if(!isShift) {
-            positionIncrementValue = 1;
-        } else {
-            positionIncrementValue = 10;
-        }
-        return super.keyPressed(input);
-    }
 }
