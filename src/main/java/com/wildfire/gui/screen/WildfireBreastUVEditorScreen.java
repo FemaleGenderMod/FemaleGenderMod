@@ -31,6 +31,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.input.AbstractInput;
 import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.sound.SoundEvents;
@@ -438,9 +439,14 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
     @Override
     public boolean keyPressed(KeyInput input) {
-        if(input.hasShift() && input.hasCtrl()) {
+        if(client == null) return super.keyPressed(input);
+
+        boolean isShift = client.isShiftPressed();
+        boolean isCtrl = client.isCtrlPressed();
+
+        if(isShift && isCtrl) {
             positionIncrementValue = 20;
-        } else if(input.hasShift()) {
+        } else if(isShift) {
             positionIncrementValue = 10;
         }
 
@@ -448,7 +454,10 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
     }
     @Override
     public boolean keyReleased(KeyInput input) {
-        if(!input.hasShift()) {
+        if(client == null) return super.keyReleased(input);
+
+        boolean isShift = client.isShiftPressed();
+        if(!isShift) {
             positionIncrementValue = 1;
         } else {
             positionIncrementValue = 10;
