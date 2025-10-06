@@ -101,7 +101,7 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
         if(client == null) return;
         
         textureDrawWidth = 196;
-        int textureSourceWidth = 64;
+        final int textureSourceWidth = 64;
         uvWindowScaleFactor = (float) textureDrawWidth / (float) textureSourceWidth;
         uvWindowPos = new Vector2i(5, this.height / 2 - textureDrawWidth / 2);
 
