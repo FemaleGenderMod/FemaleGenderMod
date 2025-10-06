@@ -73,7 +73,6 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
             "wildfire_gender.uv_editor.faces.front",
     };
 
-
     private ClickableWidget[] positionWidgets = new ClickableWidget[0];
 
     private enum BreastTypes {
@@ -231,13 +230,13 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
         updateBreastButtonStates();
         clearAndInit();
     }
+
     private void updateBreastButtonStates() {
         btnLeftBreast.active = selectedBreastIndex != BreastTypes.LEFT;
         btnRightBreast.active = selectedBreastIndex != BreastTypes.RIGHT;
         btnLeftBreastOverlay.active = selectedBreastIndex != BreastTypes.LEFT_OVERLAY;
         btnRightBreastOverlay.active = selectedBreastIndex != BreastTypes.RIGHT_OVERLAY;
     }
-
 
     @Override
     public void renderBackground(DrawContext ctx, int mouseX, int mouseY, float delta) {
@@ -336,7 +335,6 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
         super.render(ctx, mouseX, mouseY, delta);
     }
-
 
     private void drawFaceBorders(DrawContext ctx, UVLayout uvList, int mouseX, int mouseY, boolean faded) {
 
@@ -452,6 +450,7 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
         return super.keyPressed(input);
     }
+
     @Override
     public boolean keyReleased(KeyInput input) {
         if(client == null) return super.keyReleased(input);
@@ -464,5 +463,4 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
         }
         return super.keyPressed(input);
     }
-
 }
