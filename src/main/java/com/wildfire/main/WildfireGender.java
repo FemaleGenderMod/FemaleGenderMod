@@ -39,14 +39,6 @@ public class WildfireGender implements ModInitializer {
 	public static final Logger LOGGER = LogUtils.getLogger();
 	public static final LoadingCache<UUID, PlayerConfig> CACHE;
 
-    public static final Direction[] SERIALIZED_DIRECTIONS = {
-            Direction.EAST,
-            Direction.WEST,
-            Direction.DOWN,
-            Direction.UP,
-            Direction.NORTH
-    };
-
 	static {
 		var builder = CacheBuilder.newBuilder();
 		// Only automatically expire cache entries on the client; a server may go a decent while without accessing

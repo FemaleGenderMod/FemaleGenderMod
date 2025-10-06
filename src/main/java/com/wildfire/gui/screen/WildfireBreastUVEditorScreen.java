@@ -20,6 +20,7 @@ package com.wildfire.gui.screen;
 
 import com.wildfire.gui.GuiUtils;
 import com.wildfire.main.WildfireGender;
+import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.config.Configuration;
 import com.wildfire.main.uvs.UVLayout;
 import com.wildfire.main.uvs.UVQuad;
@@ -42,7 +43,6 @@ import net.minecraft.util.math.Direction;
 import org.joml.Vector2i;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
@@ -73,20 +73,15 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
     };
 
 
-    private int[][] selectedUVs;
-
-
     private ClickableWidget[] positionWidgets = new ClickableWidget[0];
 
     private enum BreastTypes {
         LEFT, RIGHT, LEFT_OVERLAY, RIGHT_OVERLAY
     }
 
-    private enum UVFaces {
-        NONE, EAST, WEST, DOWN, UP, NORTH
-    }
+    private UVLayout selectedUVs = null;
     private BreastTypes selectedBreastIndex = BreastTypes.LEFT;
-    private UVFaces selectedFace = UVFaces.NONE; // -1 means none selected
+    private Direction selectedDirection = null; // -1 means none selected
 
     //Positions & Widths
     private int sidebarWidth = 260;
@@ -165,7 +160,7 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
                 .onPress(button -> selectBreastUVMap(BreastTypes.RIGHT_OVERLAY)));
 
         //Position stuff
-        if(selectedFace != UVFaces.NONE) {
+        if(selectedDirection != null) {
             int uvPositionWindowX = this.width - 130 + 5;
 
             positionWidgets = new ClickableWidget[8];
@@ -195,9 +190,28 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
                         .position(uvPositionWindowX + xOffset, y + buttonArrayY + yOffset)
                         .size(12, 12)
                         .onPress(button -> {
-                            selectedUVs[selectedFace.ordinal()][uvIndex] += delta * positionIncrementValue;
-                            if (uvIndex == 0) selectedUVs[selectedFace.ordinal()][2] += delta * positionIncrementValue;
-                            if (uvIndex == 1) selectedUVs[selectedFace.ordinal()][3] += delta * positionIncrementValue;
+                            if(selectedDirection != null) {
+                                UVQuad oldQuad = selectedUVs.getAllSides().get(selectedDirection);
+
+                                int newX1 = oldQuad.x1();
+                                int newY1 = oldQuad.y1();
+                                int newX2 = oldQuad.x2();
+                                int newY2 = oldQuad.y2();
+
+                                if(uvIndex == 0) { // adjust X
+                                    newX1 += delta * positionIncrementValue;
+                                    newX2 += delta * positionIncrementValue;
+                                } else if(uvIndex == 1) { // adjust Y
+                                    newY1 += delta * positionIncrementValue;
+                                    newY2 += delta * positionIncrementValue;
+                                }
+
+                                UVQuad newQuad = new UVQuad(newX1, newY1, newX2, newY2);
+
+                                selectedUVs.put(selectedDirection, newQuad);
+
+                                getPlayer().save();
+                            }
 
                             getPlayer().save();
                         })
@@ -208,7 +222,7 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
     private void selectBreastUVMap(BreastTypes breast) {
         selectedBreastIndex = breast;
-        selectedFace = UVFaces.NONE;
+        selectedDirection = null;
         updateBreastButtonStates();
         clearAndInit();
     }
@@ -240,12 +254,12 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
     public void tick() {
         if(getPlayer() == null) return;
 
-        /*selectedUVs = switch (selectedBreastIndex) {
+        selectedUVs = switch (selectedBreastIndex) {
             case BreastTypes.RIGHT -> getPlayer().getRightBreastUVLayout();
             case BreastTypes.LEFT_OVERLAY -> getPlayer().getLeftBreastOverlayUVLayout();
             case BreastTypes.RIGHT_OVERLAY -> getPlayer().getRightBreastOverlayUVLayout();
             default -> getPlayer().getLeftBreastUVLayout();
-        };*/
+        };
     }
 
     @Override
@@ -270,7 +284,7 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
                 drawFaceBorders(ctx, eachBreast, mouseX, mouseY, true);
             }
 
-            //drawFaceBorders(ctx, selectedUVs, mouseX, mouseY, false);
+            drawFaceBorders(ctx, selectedUVs, mouseX, mouseY, false);
         }
 
         GuiUtils.drawCenteredText(ctx, textRenderer, Text.translatable("wildfire_gender.uv_editor.selection.layer_body"),  winElementPos.x() + 42, winElementPos.y() + 2, 0xFFFFFFFF);
@@ -280,14 +294,14 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
         int positionBoxW = this.width - (this.width - sidebarWidth);
 
         //Coordinate selector
-        if(selectedFace == UVFaces.NONE) {
+        if(selectedDirection == null) {
             GuiUtils.drawCenteredTextWrapped(ctx, textRenderer, Text.translatable("wildfire_gender.uv_editor.no_face_selected"), positionBoxX, 60, 70, 0xFF888888);
         } else {
             String fullFaceName = "N/A";
             if(selectedBreastIndex.ordinal() % 2 == 0) {
-                fullFaceName = FACE_NAMES_LEFT[selectedFace.ordinal()];
+                fullFaceName = FACE_NAMES_LEFT[WildfireHelper.getDirectionIndex(selectedDirection)];
             } else {
-                fullFaceName = FACE_NAMES_RIGHT[selectedFace.ordinal()];
+                fullFaceName = FACE_NAMES_RIGHT[WildfireHelper.getDirectionIndex(selectedDirection)];
             }
 
             GuiUtils.drawCenteredText(ctx, textRenderer, Text.translatable(fullFaceName).formatted(Formatting.GOLD), positionBoxX, 37, 0xFFFFFFFF);
@@ -323,10 +337,12 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
         int faceIndex = 0;
         //selected faces
-        for (int i = 0; i < uvList.getAllSides().size(); i++) {
-            UVQuad quad = uvList.getAllSides().get(i);
 
-            int borderColor = (faceIndex == selectedFace.ordinal()) ? 0xFFFFFFFF : FACE_COLORS[faceIndex];
+        for (int i = 0; i < uvList.getAllSides().size(); i++) {
+            UVQuad quad = uvList.getAllSides().get(WildfireHelper.getDirectionByIndex(i));
+
+
+            int borderColor = (faceIndex == WildfireHelper.getDirectionIndex(selectedDirection)) ? 0xFFFFFFFF : FACE_COLORS[faceIndex];
 
             if(faded) {
                 borderColor = FADED_FACE_COLORS[faceIndex];
@@ -373,6 +389,7 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
                 ctx.getMatrices().popMatrix();
 
             }
+
             faceIndex++;
         }
     }
@@ -382,28 +399,27 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
         int faceIndex = 0;
 
-        for (int[] faceUV : selectedUVs) {
-            int u1 = faceUV[0];
-            int v1 = faceUV[1];
-            int u2 = faceUV[2];
-            int v2 = faceUV[3];
+        if(selectedUVs == null) return super.mouseClicked(click, doubled);
 
-            if(!(u1 == 0 && v1 == 0 && u2 == 0 && v2 == 0)) {
-                int rectX1 = (int) (uvWindowPos.x() + (float) (u1) * uvWindowScaleFactor);
-                int rectY1 = (int) (uvWindowPos.y() + (float) (v1 - 1) * uvWindowScaleFactor);
-                int rectX2 = (int) (uvWindowPos.x() + (float) (u2) * uvWindowScaleFactor);
-                int rectY2 = (int) (uvWindowPos.y() + (float) (v2 - 1) * uvWindowScaleFactor);
+        for (int i = 0; i < selectedUVs.getAllSides().size(); i++) {
+            UVQuad quad = selectedUVs.getAllSides().get(WildfireHelper.getDirectionByIndex(i));
+
+            if(!(quad.x1() == 0 && quad.y1() == 0 && quad.x2() == 0 && quad.y2() == 0)) {
+                int rectX1 = (int) (uvWindowPos.x() + (float) (quad.x1()) * uvWindowScaleFactor);
+                int rectY1 = (int) (uvWindowPos.y() + (float) (quad.y1() - 1) * uvWindowScaleFactor);
+                int rectX2 = (int) (uvWindowPos.x() + (float) (quad.x2()) * uvWindowScaleFactor);
+                int rectY2 = (int) (uvWindowPos.y() + (float) (quad.y2() - 1) * uvWindowScaleFactor);
 
                 if(click.x() >= rectX1 && click.x() <= rectX2 && click.y() >= rectY1 && click.y() <= rectY2) {
                     if(click.button() == 0) {
 
-                        if(selectedFace.ordinal() != faceIndex) {
+                        if(WildfireHelper.getDirectionIndex(selectedDirection) != faceIndex) {
                             MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-                            selectedFace = UVFaces.values()[faceIndex]; // store which rect was clicked
+                            selectedDirection = WildfireHelper.SERIALIZED_DIRECTIONS[faceIndex]; // store which rect was clicked
                             clearAndInit();
                         }
-                    } else if(click.button() == 1 && selectedFace != UVFaces.NONE) {
-                        selectedFace = UVFaces.NONE;
+                    } else if(click.button() == 1 && selectedDirection != null) {
+                        selectedDirection = null;
                         MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                         clearAndInit();
                     }

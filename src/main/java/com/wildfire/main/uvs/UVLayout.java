@@ -18,7 +18,7 @@
 
 package com.wildfire.main.uvs;
 
-import com.wildfire.main.WildfireGender;
+import com.wildfire.main.WildfireHelper;
 import net.minecraft.util.math.Direction;
 
 import java.util.Collections;
@@ -60,7 +60,7 @@ public class UVLayout {
         if (this == o) return true;
         if (!(o instanceof UVLayout other)) return false;
 
-        for (Direction dir : WildfireGender.SERIALIZED_DIRECTIONS) {
+        for (Direction dir : WildfireHelper.SERIALIZED_DIRECTIONS) {
             UVQuad q1 = this.get(dir);
             UVQuad q2 = other.get(dir);
 

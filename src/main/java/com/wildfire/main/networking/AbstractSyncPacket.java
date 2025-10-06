@@ -19,7 +19,7 @@
 package com.wildfire.main.networking;
 
 import com.mojang.datafixers.util.Function11;
-import com.wildfire.main.WildfireGender;
+import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.entitydata.Breasts;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.config.enums.Gender;
@@ -29,7 +29,6 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.Uuids;
-import net.minecraft.util.math.Direction;
 
 import java.util.UUID;
 
@@ -127,8 +126,8 @@ abstract class AbstractSyncPacket {
 
         @Override
         public void encode(ByteBuf buf, UVLayout value) {
-            for (int i = 0; i < WildfireGender.SERIALIZED_DIRECTIONS.length; i++) {
-                UVQuad quad = value.get(WildfireGender.SERIALIZED_DIRECTIONS[i]);
+            for (int i = 0; i < WildfireHelper.SERIALIZED_DIRECTIONS.length; i++) {
+                UVQuad quad = value.get(WildfireHelper.SERIALIZED_DIRECTIONS[i]);
                 PacketCodecs.VAR_INT.encode(buf, quad.x1());
                 PacketCodecs.VAR_INT.encode(buf, quad.y1());
                 PacketCodecs.VAR_INT.encode(buf, quad.x2());
@@ -140,8 +139,8 @@ abstract class AbstractSyncPacket {
         public UVLayout decode(ByteBuf buf) {
             UVLayout layout = new UVLayout();
 
-            for (int i = 0; i < WildfireGender.SERIALIZED_DIRECTIONS.length; i++) {
-                layout.put(WildfireGender.SERIALIZED_DIRECTIONS[i], new UVQuad(
+            for (int i = 0; i < WildfireHelper.SERIALIZED_DIRECTIONS.length; i++) {
+                layout.put(WildfireHelper.SERIALIZED_DIRECTIONS[i], new UVQuad(
                         PacketCodecs.VAR_INT.decode(buf),
                         PacketCodecs.VAR_INT.decode(buf),
                         PacketCodecs.VAR_INT.decode(buf),

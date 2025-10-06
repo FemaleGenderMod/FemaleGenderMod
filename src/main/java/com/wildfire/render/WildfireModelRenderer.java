@@ -18,7 +18,7 @@
 
 package com.wildfire.render;
 
-import com.wildfire.main.WildfireGender;
+import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.uvs.UVLayout;
 import com.wildfire.main.uvs.UVQuad;
 import net.fabricmc.api.EnvType;
@@ -95,7 +95,7 @@ public final class WildfireModelRenderer {
 
 			for (int i = 0; i < quads; i++) {
 				if (i < dynamicUvLayouts.getAllSides().size()) {
-					UVQuad quad = dynamicUvLayouts.get(WildfireGender.SERIALIZED_DIRECTIONS[i]);
+					UVQuad quad = dynamicUvLayouts.get(WildfireHelper.SERIALIZED_DIRECTIONS[i]);
 					this.quads[i] = new TexturedQuad(quad.x1(), quad.y1(), quad.x2(), quad.y2(), tW, tH, faceDirections[i], faceVertices[i][0], faceVertices[i][1], faceVertices[i][2], faceVertices[i][3]);
 				} else {
 					System.err.println("Warning: Quad error");
