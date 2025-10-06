@@ -23,6 +23,7 @@ import com.wildfire.gui.screen.WildfireBreastUVEditorScreen;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.config.ClientConfig;
+import com.wildfire.main.uvs.UVLayout;
 import com.wildfire.mixins.accessors.LivingEntityRendererAccessor;
 import com.wildfire.render.WildfireModelRenderer.BreastModelBox;
 import com.wildfire.render.WildfireModelRenderer.OverlayModelBox;
@@ -59,10 +60,10 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 	private BreastModelBox lBreast, rBreast;
 	private OverlayModelBox lBreastWear, rBreastWear;
 
-	private int[][] prevLeftBreastUVLayout;
-	private int[][] prevRightBreastUVLayout;
-	private int[][] prevLeftBreastOverlayUVLayout;
-	private int[][] prevRightBreastOverlayUVLayout;
+	private UVLayout prevLeftBreastUVLayout;
+	private UVLayout prevRightBreastUVLayout;
+	private UVLayout prevLeftBreastOverlayUVLayout;
+	private UVLayout prevRightBreastOverlayUVLayout;
 
 	private final FeatureRendererContext<S, M> context;
 
@@ -191,10 +192,10 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 
 	protected void resizeBox(GenderRenderState genderRenderState, float breastSize) {
 		//TODO: Better way for this?
-		if(!Arrays.deepEquals(this.prevLeftBreastUVLayout, genderRenderState.leftBreastUVLayout)
-				|| !Arrays.deepEquals(this.prevRightBreastUVLayout, genderRenderState.rightBreastUVLayout)
-				|| !Arrays.deepEquals(this.prevLeftBreastOverlayUVLayout, genderRenderState.leftBreastOverlayUVLayout)
-				|| !Arrays.deepEquals(this.prevRightBreastOverlayUVLayout, genderRenderState.rightBreastOverlayUVLayout)) {
+		if((this.prevLeftBreastUVLayout == null || !this.prevLeftBreastUVLayout.equals(genderRenderState.leftBreastUVLayout))
+				|| (this.prevRightBreastUVLayout == null || !this.prevRightBreastUVLayout.equals(genderRenderState.rightBreastUVLayout))
+				|| (this.prevLeftBreastOverlayUVLayout == null || !this.prevLeftBreastOverlayUVLayout.equals(genderRenderState.leftBreastOverlayUVLayout))
+				|| (this.prevRightBreastOverlayUVLayout == null || !this.prevRightBreastOverlayUVLayout.equals(genderRenderState.rightBreastOverlayUVLayout))) {
 
 			this.prevLeftBreastUVLayout = genderRenderState.leftBreastUVLayout;
 			this.prevRightBreastUVLayout = genderRenderState.rightBreastUVLayout;

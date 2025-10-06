@@ -19,13 +19,17 @@
 package com.wildfire.main.networking;
 
 import com.mojang.datafixers.util.Function11;
+import com.wildfire.main.WildfireGender;
 import com.wildfire.main.entitydata.Breasts;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.config.enums.Gender;
+import com.wildfire.main.uvs.UVLayout;
+import com.wildfire.main.uvs.UVQuad;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.Uuids;
+import net.minecraft.util.math.Direction;
 
 import java.util.UUID;
 
@@ -55,12 +59,12 @@ abstract class AbstractSyncPacket {
     protected final float voicePitch;
     protected final BreastPhysics physics;
     protected final Breasts breasts;
-    protected final int[][] leftBreastUVLayout;
-    protected final int[][] rightBreastUVLayout;
-    protected final int[][] leftBreastOverlayUVLayout;
-    protected final int[][] rightBreastOverlayUVLayout;
+    protected final UVLayout leftBreastUVLayout;
+    protected final UVLayout rightBreastUVLayout;
+    protected final UVLayout leftBreastOverlayUVLayout;
+    protected final UVLayout rightBreastOverlayUVLayout;
 
-    protected AbstractSyncPacket(UUID uuid, Gender gender, float bustSize, boolean hurtSounds, float voicePitch, BreastPhysics physics, Breasts breasts, int[][] leftBreastUVLayout, int[][] rightBreastUVLayout, int[][] leftBreastOverlayUVLayout, int[][] rightBreastOverlayUVLayout) {
+    protected AbstractSyncPacket(UUID uuid, Gender gender, float bustSize, boolean hurtSounds, float voicePitch, BreastPhysics physics, Breasts breasts, UVLayout leftBreastUVLayout, UVLayout rightBreastUVLayout, UVLayout leftBreastOverlayUVLayout, UVLayout rightBreastOverlayUVLayout) {
         this.uuid = uuid;
         this.gender = gender;
         this.bustSize = bustSize;
@@ -115,29 +119,37 @@ abstract class AbstractSyncPacket {
     }
 
     @FunctionalInterface
-    protected interface SyncPacketConstructor<T extends AbstractSyncPacket> extends Function11<UUID, Gender, Float, Boolean, Float, BreastPhysics, Breasts, int[][], int[][], int[][], int[][], T> {
+    protected interface SyncPacketConstructor<T extends AbstractSyncPacket> extends Function11<UUID, Gender, Float, Boolean, Float, BreastPhysics, Breasts, UVLayout, UVLayout, UVLayout, UVLayout, T> {
     }
 
 
-    public static final PacketCodec<ByteBuf, int[][]> UV_CODEC = new PacketCodec<>() {
+    public static final PacketCodec<ByteBuf, UVLayout> UV_CODEC = new PacketCodec<>() {
+
         @Override
-        public void encode(ByteBuf buf, int[][] value) {
-            for (int i = 0; i < 5; i++) {
-                for (int j = 0; j < 4; j++) {
-                    PacketCodecs.VAR_INT.encode(buf, value[i][j]);
-                }
+        public void encode(ByteBuf buf, UVLayout value) {
+            for (int i = 0; i < WildfireGender.SERIALIZED_DIRECTIONS.length; i++) {
+                UVQuad quad = value.get(WildfireGender.SERIALIZED_DIRECTIONS[i]);
+                PacketCodecs.VAR_INT.encode(buf, quad.x1());
+                PacketCodecs.VAR_INT.encode(buf, quad.y1());
+                PacketCodecs.VAR_INT.encode(buf, quad.x2());
+                PacketCodecs.VAR_INT.encode(buf, quad.y2());
             }
         }
 
         @Override
-        public int[][] decode(ByteBuf buf) {
-            int[][] result = new int[5][4];
-            for (int i = 0; i < 5; i++) {
-                for (int j = 0; j < 4; j++) {
-                    result[i][j] = PacketCodecs.VAR_INT.decode(buf);
-                }
+        public UVLayout decode(ByteBuf buf) {
+            UVLayout layout = new UVLayout();
+
+            for (int i = 0; i < WildfireGender.SERIALIZED_DIRECTIONS.length; i++) {
+                layout.put(WildfireGender.SERIALIZED_DIRECTIONS[i], new UVQuad(
+                        PacketCodecs.VAR_INT.decode(buf),
+                        PacketCodecs.VAR_INT.decode(buf),
+                        PacketCodecs.VAR_INT.decode(buf),
+                        PacketCodecs.VAR_INT.decode(buf))
+                );
             }
-            return result;
+
+            return layout;
         }
     };
 }

@@ -21,6 +21,8 @@ package com.wildfire.gui.screen;
 import com.wildfire.gui.GuiUtils;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.config.Configuration;
+import com.wildfire.main.uvs.UVLayout;
+import com.wildfire.main.uvs.UVQuad;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.Click;
@@ -36,9 +38,11 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
+import net.minecraft.util.math.Direction;
 import org.joml.Vector2i;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
@@ -236,12 +240,12 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
     public void tick() {
         if(getPlayer() == null) return;
 
-        selectedUVs = switch (selectedBreastIndex) {
+        /*selectedUVs = switch (selectedBreastIndex) {
             case BreastTypes.RIGHT -> getPlayer().getRightBreastUVLayout();
             case BreastTypes.LEFT_OVERLAY -> getPlayer().getLeftBreastOverlayUVLayout();
             case BreastTypes.RIGHT_OVERLAY -> getPlayer().getRightBreastOverlayUVLayout();
             default -> getPlayer().getLeftBreastUVLayout();
-        };
+        };*/
     }
 
     @Override
@@ -255,18 +259,18 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
                     0, 0, textureDrawWidth, textureDrawWidth, textureDrawWidth, textureDrawWidth);
 
             //Other faces
-            int[][][] ALL_UVS = new int[][][] {
+            UVLayout[] ALL_UVS = new UVLayout[] {
                     getPlayer().getLeftBreastUVLayout(),
                     getPlayer().getRightBreastUVLayout(),
                     getPlayer().getLeftBreastOverlayUVLayout(),
                     getPlayer().getRightBreastOverlayUVLayout()
             };
 
-            for(int[][] eachBreast : ALL_UVS) {
+            for(UVLayout eachBreast : ALL_UVS) {
                 drawFaceBorders(ctx, eachBreast, mouseX, mouseY, true);
             }
 
-            drawFaceBorders(ctx, selectedUVs, mouseX, mouseY, false);
+            //drawFaceBorders(ctx, selectedUVs, mouseX, mouseY, false);
         }
 
         GuiUtils.drawCenteredText(ctx, textRenderer, Text.translatable("wildfire_gender.uv_editor.selection.layer_body"),  winElementPos.x() + 42, winElementPos.y() + 2, 0xFFFFFFFF);
@@ -315,11 +319,12 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
     }
 
 
-    private void drawFaceBorders(DrawContext ctx, int[][] uvList, int mouseX, int mouseY, boolean faded) {
+    private void drawFaceBorders(DrawContext ctx, UVLayout uvList, int mouseX, int mouseY, boolean faded) {
 
         int faceIndex = 0;
         //selected faces
-        for (int[] faceUV : uvList) {
+        for (int i = 0; i < uvList.getAllSides().size(); i++) {
+            UVQuad quad = uvList.getAllSides().get(i);
 
             int borderColor = (faceIndex == selectedFace.ordinal()) ? 0xFFFFFFFF : FACE_COLORS[faceIndex];
 
@@ -334,21 +339,17 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
             } else {
                 fullFaceName = FACE_NAMES_RIGHT[faceIndex];
             }
-            int u1 = faceUV[0];
-            int v1 = faceUV[1];
-            int u2 = faceUV[2];
-            int v2 = faceUV[3];
 
-            if(!(u1 == 0 && v1 == 0 && u2 == 0 && v2 == 0)) {
-                int rectX1 = (int) (uvWindowPos.x() + (float) (u1) * uvWindowScaleFactor);
-                int rectY1 = (int) (uvWindowPos.y() + (float) (v1 - 1) * uvWindowScaleFactor);
-                int rectX2 = (int) (uvWindowPos.x() + (float) (u2) * uvWindowScaleFactor);
-                int rectY2 = (int) (uvWindowPos.y() + (float) (v2 - 1) * uvWindowScaleFactor);
+            if(!(quad.x1() == 0 && quad.y1() == 0 && quad.x2() == 0 && quad.y2() == 0)) {
+                int rectX1 = (int) (uvWindowPos.x() + (float) (quad.x1()) * uvWindowScaleFactor);
+                int rectY1 = (int) (uvWindowPos.y() + (float) (quad.y1() - 1) * uvWindowScaleFactor);
+                int rectX2 = (int) (uvWindowPos.x() + (float) (quad.x2()) * uvWindowScaleFactor);
+                int rectY2 = (int) (uvWindowPos.y() + (float) (quad.y2() - 1) * uvWindowScaleFactor);
 
                 if(mouseX >= rectX1 && mouseX <= rectX2 && mouseY >= rectY1 && mouseY <= rectY2) {
                     List<OrderedText> array = new ArrayList<>();
                     array.add(Text.translatable(fullFaceName).append(" (").append(faceName).append(")").formatted(Formatting.GOLD).asOrderedText());
-                    array.add(Text.empty().append("[" + u1 + ", " + v1 + ", " + u2 + ", " + v2 + "]").formatted(Formatting.AQUA).asOrderedText());
+                    array.add(Text.empty().append("[" + quad.x1() + ", " + quad.y1() + ", " + quad.x2() + ", " + quad.y2() + "]").formatted(Formatting.AQUA).asOrderedText());
                     ctx.drawTooltip(array, mouseX, mouseY);
                 }
 

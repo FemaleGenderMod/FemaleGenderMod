@@ -18,6 +18,9 @@
 
 package com.wildfire.render;
 
+import com.wildfire.main.WildfireGender;
+import com.wildfire.main.uvs.UVLayout;
+import com.wildfire.main.uvs.UVQuad;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.math.Direction;
@@ -38,9 +41,9 @@ public final class WildfireModelRenderer {
 		public final float posY2;
 		public final float posZ2;
 
-		protected final int[][] dynamicUvLayouts;
+		protected final UVLayout dynamicUvLayouts;
 
-		protected ModelBox(int tW, int tH, float x, float y, float z, int dx, int dy, int dz, float delta, int quads, int[][] dynamicUvLayouts) {
+		protected ModelBox(int tW, int tH, float x, float y, float z, int dx, int dy, int dz, float delta, int quads, UVLayout dynamicUvLayouts) {
 			this.posX1 = x;
 			this.posY1 = y;
 			this.posZ1 = z;
@@ -91,24 +94,24 @@ public final class WildfireModelRenderer {
 			};
 
 			for (int i = 0; i < quads; i++) {
-				if (i < dynamicUvLayouts.length) {
-					int[] uv = dynamicUvLayouts[i];
-					this.quads[i] = new TexturedQuad(uv[0], uv[1], uv[2], uv[3], tW, tH, faceDirections[i], faceVertices[i][0], faceVertices[i][1], faceVertices[i][2], faceVertices[i][3]);
+				if (i < dynamicUvLayouts.getAllSides().size()) {
+					UVQuad quad = dynamicUvLayouts.get(WildfireGender.SERIALIZED_DIRECTIONS[i]);
+					this.quads[i] = new TexturedQuad(quad.x1(), quad.y1(), quad.x2(), quad.y2(), tW, tH, faceDirections[i], faceVertices[i][0], faceVertices[i][1], faceVertices[i][2], faceVertices[i][3]);
 				} else {
-					System.err.println("Warning: Quad index " + i + " out of bounds for UV source length " + dynamicUvLayouts.length);
+					System.err.println("Warning: Quad error");
 				}
 			}
 		}
 	}
 
 	public static class OverlayModelBox extends ModelBox {
-		public OverlayModelBox(int tW, int tH, float x, float y, float z, int dx, int dy, int dz, float delta, int[][] dynamicUvLayouts) {
+		public OverlayModelBox(int tW, int tH, float x, float y, float z, int dx, int dy, int dz, float delta, UVLayout dynamicUvLayouts) {
 			super(tW, tH, x, y, z, dx, dy, dz, delta, 5, dynamicUvLayouts);
 		}
 	}
 
 	public static class BreastModelBox extends ModelBox {
-		public BreastModelBox(int tW, int tH, float x, float y, float z, int dx, int dy, int dz, float delta, int[][] dynamicUvLayouts) {
+		public BreastModelBox(int tW, int tH, float x, float y, float z, int dx, int dy, int dz, float delta, UVLayout dynamicUvLayouts) {
 			super(tW, tH, x, y, z, dx, dy, dz, delta, 5, dynamicUvLayouts);
 		}
 	}

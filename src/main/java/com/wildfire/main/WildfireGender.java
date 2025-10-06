@@ -27,6 +27,7 @@ import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.networking.WildfireSync;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Direction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -37,6 +38,14 @@ public class WildfireGender implements ModInitializer {
 	public static final String MODID = "wildfire_gender";
 	public static final Logger LOGGER = LogUtils.getLogger();
 	public static final LoadingCache<UUID, PlayerConfig> CACHE;
+
+    public static final Direction[] SERIALIZED_DIRECTIONS = {
+            Direction.EAST,
+            Direction.WEST,
+            Direction.DOWN,
+            Direction.UP,
+            Direction.NORTH
+    };
 
 	static {
 		var builder = CacheBuilder.newBuilder();
