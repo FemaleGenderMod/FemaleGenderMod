@@ -204,6 +204,10 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
                                 } else if(uvIndex == 1) { // adjust Y
                                     newY1 += delta * positionIncrementValue;
                                     newY2 += delta * positionIncrementValue;
+                                } else if(uvIndex == 2) { // adjust width
+                                    newX2 += delta * positionIncrementValue;
+                                } else { // adjust height
+                                    newY2 += delta * positionIncrementValue;
                                 }
 
                                 UVQuad newQuad = new UVQuad(newX1, newY1, newX2, newY2);
