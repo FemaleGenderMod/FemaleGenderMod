@@ -129,7 +129,6 @@ abstract class AbstractSyncPacket {
         @Override
         public void encode(ByteBuf buf, UVLayout value) {
             for (Map.Entry<UVDirection, UVQuad> entry : value.getAllSides().entrySet()) {
-                UVDirection direction = entry.getKey();
                 UVQuad quad = entry.getValue();
 
                 PacketCodecs.VAR_INT.encode(buf, quad.x1());
@@ -145,7 +144,6 @@ abstract class AbstractSyncPacket {
 
             for (Map.Entry<UVDirection, UVQuad> entry : layout.getAllSides().entrySet()) {
                 UVDirection direction = entry.getKey();
-                UVQuad quad = entry.getValue();
 
                 layout.put(direction, new UVQuad(
                         PacketCodecs.VAR_INT.decode(buf),
