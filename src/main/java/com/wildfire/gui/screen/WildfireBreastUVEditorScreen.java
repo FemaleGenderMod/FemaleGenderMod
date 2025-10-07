@@ -60,7 +60,7 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
     private UVLayout selectedUVs = null;
     private BreastTypes selectedBreastIndex = BreastTypes.LEFT;
-    private UVDirection selectedDirection = null; // -1 means none selected
+    private UVDirection selectedDirection = null;
 
     //Positions & Widths
     private int sidebarWidth = 260;
