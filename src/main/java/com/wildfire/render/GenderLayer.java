@@ -50,6 +50,7 @@ import org.joml.*;
 
 import java.lang.Math;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 @Environment(EnvType.CLIENT)
@@ -192,10 +193,10 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 
 	protected void resizeBox(GenderRenderState genderRenderState, float breastSize) {
 		//TODO: Better way for this?
-		if((this.prevLeftBreastUVLayout == null || !this.prevLeftBreastUVLayout.equals(genderRenderState.leftBreastUVLayout))
-				|| (this.prevRightBreastUVLayout == null || !this.prevRightBreastUVLayout.equals(genderRenderState.rightBreastUVLayout))
-				|| (this.prevLeftBreastOverlayUVLayout == null || !this.prevLeftBreastOverlayUVLayout.equals(genderRenderState.leftBreastOverlayUVLayout))
-				|| (this.prevRightBreastOverlayUVLayout == null || !this.prevRightBreastOverlayUVLayout.equals(genderRenderState.rightBreastOverlayUVLayout))) {
+		if(!Objects.equals(this.prevLeftBreastUVLayout, genderRenderState.leftBreastUVLayout)
+				|| !Objects.equals(this.prevRightBreastUVLayout, genderRenderState.rightBreastUVLayout)
+				|| !Objects.equals(this.prevLeftBreastOverlayUVLayout, genderRenderState.leftBreastOverlayUVLayout)
+				|| !Objects.equals(this.prevRightBreastOverlayUVLayout, genderRenderState.rightBreastOverlayUVLayout)) {
 
 			this.prevLeftBreastUVLayout = genderRenderState.leftBreastUVLayout;
 			this.prevRightBreastUVLayout = genderRenderState.rightBreastUVLayout;
