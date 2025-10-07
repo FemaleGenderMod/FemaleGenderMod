@@ -23,11 +23,11 @@ import net.minecraft.util.math.Vec3i;
 import org.joml.Vector3f;
 
 public enum UVDirection {
-    EAST(0, "east", "", "E", 0xFFFF0000, new Vec3i(1, 0, 0)),   // Red
-    WEST(1, "west", "", "W", 0xFF00FF00, new Vec3i(-1, 0, 0)),   // Green
-    DOWN(2, "down", "wildfire_gender.uv_editor.faces.bottom", "D", 0xFF0000FF, new Vec3i(0, -1, 0)), // Blue
-    UP(3,  "up", "wildfire_gender.uv_editor.faces.top", "U", 0xFF00FFFF, new Vec3i(0, 1, 0)),      // Cyan
-    NORTH(4, "north", "wildfire_gender.uv_editor.faces.front", "N", 0xFFFF00FF, new Vec3i(0, 0, -1)); // Magenta
+    EAST(0, "east", "", "E", 0xFFFF0000, new Vec3i(1, 0, 0)),
+    WEST(1, "west", "", "W", 0xFF00FF00, new Vec3i(-1, 0, 0)),
+    DOWN(2, "down", "wildfire_gender.uv_editor.faces.bottom", "D", 0xFF0000FF, new Vec3i(0, -1, 0)),
+    UP(3,  "up", "wildfire_gender.uv_editor.faces.top", "U", 0xFF00FFFF, new Vec3i(0, 1, 0)),
+    NORTH(4, "north", "wildfire_gender.uv_editor.faces.front", "N", 0xFFFF00FF, new Vec3i(0, 0, -1));
 
     private final int index;
     private final String unlocalizedName;
