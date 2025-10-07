@@ -73,8 +73,6 @@ public enum UVDirection {
         return Text.literal(saveName);
     }
 
-
-
     public int getIndex() {
         return index;
     }
