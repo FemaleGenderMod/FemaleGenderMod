@@ -22,6 +22,8 @@ import com.wildfire.gui.GuiUtils;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.config.Configuration;
+import com.wildfire.main.uvs.BreastTypes;
+import com.wildfire.main.uvs.UVDirection;
 import com.wildfire.main.uvs.UVLayout;
 import com.wildfire.main.uvs.UVQuad;
 import net.minecraft.client.MinecraftClient;
@@ -44,6 +46,7 @@ import net.minecraft.util.math.Direction;
 import org.joml.Vector2i;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
@@ -53,33 +56,11 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
     private static final Identifier TEXTURE_ADD = Identifier.of(WildfireGender.MODID, "textures/gui/widgets/add.png");
     private static final Identifier TEXTURE_SUBTRACT = Identifier.of(WildfireGender.MODID, "textures/gui/widgets/subtract.png");
 
-    private final int[] FACE_COLORS = new int[] { 0xFFFF0000, 0xFF00FF00, 0xFF0000FF, 0xFF00FFFF, 0xFFFF00FF };
-    private final int[] FADED_FACE_COLORS = new int[] { 0x33FF0000, 0x3300FF00, 0x330000FF, 0x3300FFFF, 0x33FF00FF };
-    private final String[] SHORT_FACE_NAMES = new String[] { "E", "W", "D", "U", "N" };
-    private final String[] FACE_NAMES_LEFT = new String[] {
-            "wildfire_gender.uv_editor.faces.inner",
-            "wildfire_gender.uv_editor.faces.outer",
-            "wildfire_gender.uv_editor.faces.top",
-            "wildfire_gender.uv_editor.faces.bottom",
-            "wildfire_gender.uv_editor.faces.front",
-    };
-    private final String[] FACE_NAMES_RIGHT = new String[] {
-            "wildfire_gender.uv_editor.faces.outer",
-            "wildfire_gender.uv_editor.faces.inner",
-            "wildfire_gender.uv_editor.faces.top",
-            "wildfire_gender.uv_editor.faces.bottom",
-            "wildfire_gender.uv_editor.faces.front",
-    };
-
     private ClickableWidget[] positionWidgets = new ClickableWidget[0];
-
-    private enum BreastTypes {
-        LEFT, RIGHT, LEFT_OVERLAY, RIGHT_OVERLAY
-    }
 
     private UVLayout selectedUVs = null;
     private BreastTypes selectedBreastIndex = BreastTypes.LEFT;
-    private Direction selectedDirection = null; // -1 means none selected
+    private UVDirection selectedDirection = null; // -1 means none selected
 
     //Positions & Widths
     private int sidebarWidth = 260;
@@ -299,14 +280,8 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
         if(selectedDirection == null) {
             GuiUtils.drawCenteredTextWrapped(ctx, textRenderer, Text.translatable("wildfire_gender.uv_editor.no_face_selected"), positionBoxX, 60, 70, 0xFF888888);
         } else {
-            String fullFaceName = "N/A";
-            if(selectedBreastIndex.ordinal() % 2 == 0) {
-                fullFaceName = FACE_NAMES_LEFT[WildfireHelper.getDirectionIndex(selectedDirection)];
-            } else {
-                fullFaceName = FACE_NAMES_RIGHT[WildfireHelper.getDirectionIndex(selectedDirection)];
-            }
 
-            GuiUtils.drawCenteredText(ctx, textRenderer, Text.translatable(fullFaceName).formatted(Formatting.GOLD), positionBoxX, 37, 0xFFFFFFFF);
+            GuiUtils.drawCenteredText(ctx, textRenderer, Text.empty().append(selectedDirection.getDirectionText(selectedBreastIndex)).formatted(Formatting.GOLD), positionBoxX, 37, 0xFFFFFFFF);
 
             ctx.drawText(textRenderer, Text.translatable("wildfire_gender.uv_editor.xpos"), positionBoxX - 35, 55, 0xFFFFFFFF, false);
             ctx.drawText(textRenderer, Text.translatable("wildfire_gender.uv_editor.ypos"), positionBoxX - 35, 55 + 14, 0xFFFFFFFF, false);
@@ -336,26 +311,16 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
     private void drawFaceBorders(DrawContext ctx, UVLayout uvList, int mouseX, int mouseY, boolean faded) {
 
-        int faceIndex = 0;
         //selected faces
 
-        for (int i = 0; i < uvList.getAllSides().size(); i++) {
-            UVQuad quad = uvList.getAllSides().get(WildfireHelper.getDirectionByIndex(i));
+        for (Map.Entry<UVDirection, UVQuad> entry : uvList.getAllSides().entrySet()) {
+            UVDirection direction = entry.getKey();
+            UVQuad quad = entry.getValue();
 
 
-            int borderColor = (faceIndex == WildfireHelper.getDirectionIndex(selectedDirection)) ? 0xFFFFFFFF : FACE_COLORS[faceIndex];
+            int borderColor = (selectedDirection == direction && !faded) ? 0xFFFFFFFF : direction.getFaceColor(faded);
 
-            if(faded) {
-                borderColor = FADED_FACE_COLORS[faceIndex];
-            }
-
-            final String faceName = SHORT_FACE_NAMES[faceIndex];
-            String fullFaceName = "N/A";
-            if(selectedBreastIndex.ordinal() % 2 == 0) {
-                fullFaceName = FACE_NAMES_LEFT[faceIndex];
-            } else {
-                fullFaceName = FACE_NAMES_RIGHT[faceIndex];
-            }
+            final String faceName = direction.getShortName();
 
             if(!(quad.x1() == 0 && quad.y1() == 0 && quad.x2() == 0 && quad.y2() == 0)) {
                 int rectX1 = (int) (uvWindowPos.x() + (float) (quad.x1()) * uvWindowScaleFactor);
@@ -365,7 +330,7 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
                 if(mouseX >= rectX1 && mouseX <= rectX2 && mouseY >= rectY1 && mouseY <= rectY2) {
                     List<OrderedText> array = new ArrayList<>();
-                    array.add(Text.translatable(fullFaceName).append(" (").append(faceName).append(")").formatted(Formatting.GOLD).asOrderedText());
+                    array.add(Text.empty().append(direction.getDirectionText(selectedBreastIndex)).append(" (").append(faceName).append(")").formatted(Formatting.GOLD).asOrderedText());
                     array.add(Text.empty().append("[" + quad.x1() + ", " + quad.y1() + ", " + quad.x2() + ", " + quad.y2() + "]").formatted(Formatting.AQUA).asOrderedText());
                     ctx.drawTooltip(array, mouseX, mouseY);
                 }
@@ -390,20 +355,16 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
                 ctx.getMatrices().popMatrix();
 
             }
-
-            faceIndex++;
         }
     }
 
     @Override
     public boolean mouseClicked(Click click, boolean doubled) {
-
-        int faceIndex = 0;
-
         if(selectedUVs == null) return super.mouseClicked(click, doubled);
 
-        for (int i = 0; i < selectedUVs.getAllSides().size(); i++) {
-            UVQuad quad = selectedUVs.getAllSides().get(WildfireHelper.getDirectionByIndex(i));
+        for (Map.Entry<UVDirection, UVQuad> entry : selectedUVs.getAllSides().entrySet()) {
+            UVDirection direction = entry.getKey();
+            UVQuad quad = entry.getValue();
 
             if(!(quad.x1() == 0 && quad.y1() == 0 && quad.x2() == 0 && quad.y2() == 0)) {
                 int rectX1 = (int) (uvWindowPos.x() + (float) (quad.x1()) * uvWindowScaleFactor);
@@ -414,9 +375,9 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
                 if(click.x() >= rectX1 && click.x() <= rectX2 && click.y() >= rectY1 && click.y() <= rectY2) {
                     if(click.button() == 0) {
 
-                        if(WildfireHelper.getDirectionIndex(selectedDirection) != faceIndex) {
+                        if(selectedDirection != direction) {
                             MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-                            selectedDirection = WildfireHelper.SERIALIZED_DIRECTIONS[faceIndex]; // store which rect was clicked
+                            selectedDirection = direction; // store which rect was clicked
                             clearAndInit();
                         }
                     } else if(click.button() == 1 && selectedDirection != null) {
@@ -427,7 +388,6 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
                     return true;
                 }
             }
-            faceIndex++;
         }
 
         return super.mouseClicked(click, doubled);

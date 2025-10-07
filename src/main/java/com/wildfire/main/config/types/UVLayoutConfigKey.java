@@ -21,6 +21,7 @@ package com.wildfire.main.config.types;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
+import com.wildfire.main.uvs.UVDirection;
 import com.wildfire.main.uvs.UVLayout;
 import com.wildfire.main.uvs.UVQuad;
 import net.minecraft.util.math.Direction;
@@ -33,13 +34,13 @@ public class UVLayoutConfigKey extends ConfigKey<UVLayout> {
 
     @Override
     protected UVLayout read(JsonElement element) {
-        if (!element.isJsonObject()) return defaultValue;
+        if (!element.isJsonObject()) return defaultValue.deepCopy();
 
         JsonObject obj = element.getAsJsonObject();
         UVLayout layout = new UVLayout();
 
-        for (Direction dir : Direction.values()) {
-            JsonElement sideElem = obj.get(dir.getId());
+        for (UVDirection dir : UVDirection.values()) {
+            JsonElement sideElem = obj.get(dir.getSaveName());
             if (sideElem != null && sideElem.isJsonObject()) {
                 JsonObject quadObj = sideElem.getAsJsonObject();
                 int x1 = quadObj.get("x1").getAsInt();
@@ -56,7 +57,7 @@ public class UVLayoutConfigKey extends ConfigKey<UVLayout> {
     @Override
     public void save(JsonObject object, UVLayout value) {
         JsonObject layoutObj = new JsonObject();
-        for (Direction dir : Direction.values()) {
+        for (UVDirection dir : UVDirection.values()) {
             UVQuad quad = value.get(dir);
             if (quad != null) {
                 JsonObject quadObj = new JsonObject();
@@ -64,9 +65,14 @@ public class UVLayoutConfigKey extends ConfigKey<UVLayout> {
                 quadObj.addProperty("y1", quad.y1());
                 quadObj.addProperty("x2", quad.x2());
                 quadObj.addProperty("y2", quad.y2());
-                layoutObj.add(dir.getId(), quadObj);
+                layoutObj.add(dir.getSaveName(), quadObj);
             }
         }
         object.add(key, layoutObj);
+    }
+
+    @Override
+    public UVLayout getDefault() {
+        return defaultValue.deepCopy();
     }
 }

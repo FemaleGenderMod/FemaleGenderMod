@@ -18,6 +18,6 @@
 
 package com.wildfire.main.uvs;
 
-import net.minecraft.util.math.Direction;
-
-public record UVQuad(int x1, int y1, int x2, int y2) {}
+public enum BreastTypes {
+    LEFT, RIGHT, LEFT_OVERLAY, RIGHT_OVERLAY
+}
