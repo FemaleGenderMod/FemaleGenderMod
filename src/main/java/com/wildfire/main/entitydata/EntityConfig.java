@@ -214,6 +214,7 @@ public class EntityConfig {
 		return rBreastPhysics;
 	}
 
+	// FIXME these update methods should match the rest and be in PlayerConfig instead of here
 	public UVLayout getLeftBreastUVLayout() {
 		return this.leftBreastUVLayout;
 	}
@@ -256,7 +257,7 @@ public class EntityConfig {
 		return this.rightBreastArmorUVLayout;
 	}
 
-	private <VALUE> boolean updateValue(ConfigKey<VALUE> key, VALUE value, Consumer<VALUE> setter) {
+	protected <VALUE> boolean updateValue(ConfigKey<VALUE> key, VALUE value, Consumer<VALUE> setter) {
 		if (key.validate(value)) {
 			setter.accept(value);
 			return true;
