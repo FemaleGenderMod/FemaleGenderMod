@@ -165,7 +165,7 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
                                     0,0,6,6,6,6,6,6,
                                     ColorHelper.fullAlpha(colorVal.getColorValue()));
                         })
-                        .message(() -> Text.literal(isAdd ? "Add" : "Remove"))
+                        .message(() -> isAdd ? Text.translatable("wildfire_gender.uv_editor.add") : Text.translatable("wildfire_gender.uv_editor.add"))
                         .position(uvPositionWindowX + xOffset, y + buttonArrayY + yOffset)
                         .size(12, 12)
                         .onPress(button -> {
