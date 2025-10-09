@@ -20,7 +20,6 @@ package com.wildfire.gui.screen;
 
 import com.wildfire.gui.GuiUtils;
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.config.Configuration;
 import com.wildfire.main.uvs.BreastTypes;
 import com.wildfire.main.uvs.UVDirection;
@@ -33,8 +32,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.input.AbstractInput;
-import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.OrderedText;
@@ -42,12 +39,9 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
-import net.minecraft.util.math.Direction;
 import org.joml.Vector2i;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+
+import java.util.*;
 
 public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
@@ -56,18 +50,16 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
     private static final Identifier TEXTURE_ADD = Identifier.of(WildfireGender.MODID, "textures/gui/widgets/add.png");
     private static final Identifier TEXTURE_SUBTRACT = Identifier.of(WildfireGender.MODID, "textures/gui/widgets/subtract.png");
 
-    private ClickableWidget[] positionWidgets = new ClickableWidget[0];
-
     private UVLayout selectedUVs = null;
     private BreastTypes selectedBreastIndex = BreastTypes.LEFT;
     private UVDirection selectedDirection = null;
 
     //Positions & Widths
     private Vector2i winElementPos;
-	private Vector2i uvWindowPos;
+    private Vector2i uvWindowPos;
 
-	private static final int sidebarWidth = 180;
-	private static final int textureDrawWidth = 196;
+    private static final int sidebarWidth = 180;
+    private static final int textureDrawWidth = 196;
     private static final int textureSourceWidth = 64;
     private static final float uvWindowScaleFactor = (float) textureDrawWidth / (float) textureSourceWidth;
 
@@ -139,8 +131,6 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
         if(selectedDirection != null) {
             int uvPositionWindowX = this.width - 130 + 5;
 
-            positionWidgets = new ClickableWidget[8];
-
             int buttonArrayY = 52;
 
             for (int i = 0; i < 8; i++) {
@@ -151,7 +141,7 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
                 int xOffset = isAdd ? 106 : 92;
                 int yOffset = (i / 2) * 14;
 
-                positionWidgets[i] = addButton(builder -> builder
+                addButton(builder -> builder
                         .renderer((button, ctx, mouseX, mouseY, partialTicks) -> {
                             Formatting colorVal = getPositionIncrement() == 10 ? Formatting.AQUA :
                                     (getPositionIncrement() == 20 ? Formatting.BLUE : Formatting.WHITE);
@@ -160,12 +150,14 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
                                     button.getX() + button.getWidth() / 2 - 3,
                                     button.getY() + button.getHeight() / 2 - 3,
                                     0,0,6,6,6,6,6,6,
-                                    ColorHelper.fullAlpha(colorVal.getColorValue()));
+                                    ColorHelper.fullAlpha(Objects.requireNonNull(colorVal.getColorValue())));
                         })
-                        .message(() -> isAdd ? Text.translatable("wildfire_gender.uv_editor.add") : Text.translatable("wildfire_gender.uv_editor.add"))
+                        .message(() -> isAdd ? Text.translatable("wildfire_gender.uv_editor.add") : Text.translatable("wildfire_gender.uv_editor.remove"))
                         .position(uvPositionWindowX + xOffset, y + buttonArrayY + yOffset)
                         .size(12, 12)
                         .onPress(button -> {
+                            final var player = Objects.requireNonNull(getPlayer(), "getPlayer()");
+
                             if(selectedDirection != null) {
                                 UVQuad oldQuad = selectedUVs.getAllSides().get(selectedDirection);
 
@@ -190,10 +182,10 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
                                 selectedUVs.put(selectedDirection, newQuad);
 
-                                getPlayer().save();
+                                player.save();
                             }
 
-                            getPlayer().save();
+                            player.save();
                         })
                 );
             }
@@ -248,6 +240,7 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
         if(client.player != null && getPlayer() != null && selectedUVs != null) {
 
+            //noinspection SuspiciousNameCombination
             ctx.drawTexture(RenderPipelines.GUI_TEXTURED, client.player.getSkin().body().id(),
                     uvWindowPos.x(), uvWindowPos.y(),
                     0, 0, textureDrawWidth, textureDrawWidth, textureDrawWidth, textureDrawWidth);
