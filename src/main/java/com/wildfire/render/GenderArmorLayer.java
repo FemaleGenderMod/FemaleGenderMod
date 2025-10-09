@@ -25,7 +25,6 @@ import com.wildfire.render.WildfireModelRenderer.BreastModelBox;
 import com.wildfire.render.ducks.MissingTextureLogger;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
@@ -52,8 +51,6 @@ import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
-
-import static com.wildfire.gui.screen.WildfireBreastUVEditorScreen.*;
 
 @Environment(EnvType.CLIENT)
 public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedEntityModel<S>> extends GenderLayer<S, M> {
@@ -86,13 +83,6 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 
 		this.genderRenderState = GenderRenderState.get(state);
 		if (this.genderRenderState == null) return;
-
-		//TODO: Better way to do this outside of render() method?
-		if(this.lBoobArmor == null || this.rBoobArmor == null) {
-			lBoobArmor = new BreastModelBox(64, 32, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, genderRenderState.leftBreastArmorUVLayout);
-			rBoobArmor = new BreastModelBox(64, 32, 0, 0.0F, 0F, 4, 5, 3, 0.0F, genderRenderState.rightBreastArmorUVLayout);
-		}
-
 
 		final ItemStack chestplate = state.equippedChestStack;
 		// Check if the worn item in the chest slot is actually equippable in the chest slot, and has a model to render
@@ -149,6 +139,12 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 
 		//lBoobArmor = new BreastModelBox(texSize.x(), texSize.y(), lUV.x(), lUV.y(), -4F, 0.0F, 0F, dim.x(), dim.y(), 4, 0.0F, false);
 		//rBoobArmor = new BreastModelBox(texSize.x(), texSize.y(), rUV.x(), rUV.y(), 0, 0.0F, 0F, dim.x(), dim.y(), 4, 0.0F, false);
+
+		//TODO: Better way to do this outside of render() method?
+		if(this.lBoobArmor == null || this.rBoobArmor == null) {
+			lBoobArmor = new BreastModelBox(64, 32, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, genderRenderState.leftBreastArmorUVLayout);
+			rBoobArmor = new BreastModelBox(64, 32, 0, 0.0F, 0F, 4, 5, 3, 0.0F, genderRenderState.rightBreastArmorUVLayout);
+		}
 
 		//Armor trims still suck
 		if(this.lTrim == null || this.rTrim == null) {
