@@ -24,7 +24,7 @@ import com.wildfire.main.uvs.UVLayout;
 import com.wildfire.main.uvs.UVQuad;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 import java.util.Map;
 
@@ -129,7 +129,7 @@ public final class WildfireModelRenderer {
 
 	public static class TexturedQuad {
 		public final WildfireModelRenderer.PositionTextureVertex[] vertexPositions;
-		public final Vector3f normal;
+		public final Vector3fc normal;
 		public final float[] uvs;
 
 		public TexturedQuad(float u1, float v1, float u2, float v2, float texWidth, float texHeight, UVDirection directionIn, PositionTextureVertex... positionsIn) {

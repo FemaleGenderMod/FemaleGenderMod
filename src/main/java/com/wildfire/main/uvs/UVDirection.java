@@ -21,6 +21,7 @@ package com.wildfire.main.uvs;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3i;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 public enum UVDirection {
     EAST("east", "", "E", 0xFFFF0000, new Vec3i(1, 0, 0)),
@@ -33,7 +34,7 @@ public enum UVDirection {
     private final String shortName;
     private final String saveName;
     private final int baseColor;
-    private final Vector3f floatVector;
+    private final Vector3fc floatVector;
 
     UVDirection(String saveName, String unlocalizedName, String shortName, int baseColor, Vec3i vector) {
         this.unlocalizedName = unlocalizedName;
