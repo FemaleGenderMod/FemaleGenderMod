@@ -117,12 +117,12 @@ public class GenderRenderState {
             this.hasHolidayThemes = false;
         }
 
-        this.leftBreastUVLayout = entityConfig.getLeftBreastUVLayout();
-        this.rightBreastUVLayout = entityConfig.getRightBreastUVLayout();
-        this.leftBreastOverlayUVLayout = entityConfig.getLeftBreastOverlayUVLayout();
-        this.rightBreastOverlayUVLayout = entityConfig.getRightBreastOverlayUVLayout();
-        this.leftBreastArmorUVLayout = entityConfig.getLeftBreastArmorUVLayout();
-        this.rightBreastArmorUVLayout = entityConfig.getRightBreastArmorUVLayout();
+        this.leftBreastUVLayout = entityConfig.getLeftBreastUVLayout().copy();
+        this.rightBreastUVLayout = entityConfig.getRightBreastUVLayout().copy();
+        this.leftBreastOverlayUVLayout = entityConfig.getLeftBreastOverlayUVLayout().copy();
+        this.rightBreastOverlayUVLayout = entityConfig.getRightBreastOverlayUVLayout().copy();
+        this.leftBreastArmorUVLayout = entityConfig.getLeftBreastArmorUVLayout().copy();
+        this.rightBreastArmorUVLayout = entityConfig.getRightBreastArmorUVLayout().copy();
 
         this.isBreathing = !entity.isSubmergedInWater() || StatusEffectUtil.hasWaterBreathing(entity) ||
             entity.getEntityWorld().getBlockState(entity.getBlockPos()).isOf(Blocks.BUBBLE_COLUMN);
