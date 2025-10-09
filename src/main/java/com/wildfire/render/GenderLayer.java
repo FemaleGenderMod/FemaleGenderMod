@@ -19,14 +19,17 @@
 package com.wildfire.render;
 
 import com.wildfire.api.IGenderArmor;
+import com.wildfire.gui.screen.WildfireBreastUVEditorScreen;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.config.ClientConfig;
+import com.wildfire.main.uvs.UVLayout;
 import com.wildfire.mixins.accessors.LivingEntityRendererAccessor;
 import com.wildfire.render.WildfireModelRenderer.BreastModelBox;
 import com.wildfire.render.WildfireModelRenderer.OverlayModelBox;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
@@ -46,6 +49,8 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.*;
 
 import java.lang.Math;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 @Environment(EnvType.CLIENT)
@@ -54,11 +59,15 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 	private static final float DEG_TO_RAD = (float) (Math.PI / 180);
 
 	private BreastModelBox lBreast, rBreast;
-	private static final OverlayModelBox lBreastWear, rBreastWear;
+	private OverlayModelBox lBreastWear, rBreastWear;
+
+	private UVLayout prevLeftBreastUVLayout;
+	private UVLayout prevRightBreastUVLayout;
+	private UVLayout prevLeftBreastOverlayUVLayout;
+	private UVLayout prevRightBreastOverlayUVLayout;
 
 	private final FeatureRendererContext<S, M> context;
 
-	private float preBreastSize, preBreastOffsetZ;
 	private boolean isUniboob;
 	protected ItemStack armorStack; // although ItemStacks are mutable, this is safe as it is a copy of the real one
 	protected IGenderArmor genderArmor;
@@ -66,17 +75,10 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 	protected float breastOffsetX, breastOffsetY, breastOffsetZ, lPhysPositionY, lPhysPositionX, rPhysPositionY, rPhysPositionX,
 			lPhysBounceRotation, rPhysBounceRotation, breastSize, zOffset, outwardAngle;
 
-	static {
-		lBreastWear = new OverlayModelBox(true, 64, 64, 17, 34, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, false);
-		rBreastWear = new OverlayModelBox(false, 64, 64, 21, 34, 0, 0.0F, 0F, 4, 5, 3, 0.0F, false);
-	}
 
 	public GenderLayer(FeatureRendererContext<S, M> render) {
 		super(render);
 		this.context = render;
-		// this can't be static or final as we need the ability to resize this during render time
-		lBreast = new BreastModelBox(64, 64, 16, 17, -4F, 0.0F, 0F, 4, 5, 4, 0.0F, false);
-		rBreast = new BreastModelBox(64, 64, 20, 17, 0, 0.0F, 0F, 4, 5, 4, 0.0F, false);
 	}
 
 	/**
@@ -150,7 +152,7 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		outwardAngle = Math.round(breasts.cleavage * 100f);
 		outwardAngle = Math.min(outwardAngle, 10);
 
-		resizeBox(bSize);
+		resizeBox(genderRenderState, bSize);
 
 		lPhysPositionY = leftPhysicsState.getPositionY();
 		lPhysPositionX = leftPhysicsState.getPositionX();
@@ -189,16 +191,22 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		return !state.invisibleToPlayer || state.hasOutline();
 	}
 
-	protected void resizeBox(float breastSize) {
-		float reducer = -1;
-		if(breastSize < 0.84f) reducer++;
-		if(breastSize < 0.72f) reducer++;
+	protected void resizeBox(GenderRenderState genderRenderState, float breastSize) {
+		//TODO: Better way for this?
+		if(!Objects.equals(this.prevLeftBreastUVLayout, genderRenderState.leftBreastUVLayout)
+				|| !Objects.equals(this.prevRightBreastUVLayout, genderRenderState.rightBreastUVLayout)
+				|| !Objects.equals(this.prevLeftBreastOverlayUVLayout, genderRenderState.leftBreastOverlayUVLayout)
+				|| !Objects.equals(this.prevRightBreastOverlayUVLayout, genderRenderState.rightBreastOverlayUVLayout)) {
 
-		if(preBreastSize != breastSize || preBreastOffsetZ != breastOffsetZ) {
-			lBreast = new BreastModelBox(64, 64, 16, 17, -4F, 0.0F, 0F, 4, 5, (int) (4 - breastOffsetZ - reducer), 0.0F, false);
-			rBreast = new BreastModelBox(64, 64, 20, 17, 0, 0.0F, 0F, 4, 5, (int) (4 - breastOffsetZ - reducer), 0.0F, false);
-			preBreastSize = breastSize;
-			preBreastOffsetZ = breastOffsetZ;
+			this.prevLeftBreastUVLayout = genderRenderState.leftBreastUVLayout;
+			this.prevRightBreastUVLayout = genderRenderState.rightBreastUVLayout;
+			this.prevLeftBreastOverlayUVLayout = genderRenderState.leftBreastOverlayUVLayout;
+			this.prevRightBreastOverlayUVLayout = genderRenderState.rightBreastOverlayUVLayout;
+
+			this.lBreast = new BreastModelBox(64, 64, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, genderRenderState.leftBreastUVLayout);
+			this.rBreast = new BreastModelBox(64, 64, 0F, 0.0F, 0F, 4, 5, 3, 0.0F, genderRenderState.rightBreastUVLayout);
+			this.lBreastWear = new OverlayModelBox(64, 64, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, genderRenderState.leftBreastOverlayUVLayout);
+			this.rBreastWear = new OverlayModelBox(64, 64, 0, 0.0F, 0F, 4, 5, 3, 0.0F, genderRenderState.rightBreastOverlayUVLayout);
 		}
 	}
 
@@ -219,7 +227,7 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 			matrixStack.translate(0, (side.isLeft ? lPhysPositionY : rPhysPositionY) / 32f, 0);
 		}
 
-		matrixStack.translate((side.isLeft ? breastOffsetX : -breastOffsetX) * 0.0625f, 0.05625f + (breastOffsetY * 0.0625f), zOffset - 0.0625f * 2f + (breastOffsetZ * 0.0625f)); //shift down to correct position
+		matrixStack.translate((side.isLeft ? breastOffsetX : -breastOffsetX) * 0.0625f, 0.05625f + (breastOffsetY * 0.0625f), zOffset - 0.0625f * 2f + (breastOffsetZ * 0.0425f)); //shift down to correct position
 
 		if(!isUniboob) {
 			matrixStack.translate(-0.0625f * 2 * (side.isLeft ? 1 : -1), 0, 0);
@@ -298,11 +306,15 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		Matrix4f matrix4f = entry.getPositionMatrix();
 		Matrix3f matrix3f = entry.getNormalMatrix();
 		for(var quad : model.quads) {
+
+			//Make sure UVs aren't set to zero. If they are, the textures screw up. Don't render the quad at all.
+			if(quad.uvs[0] == 0.0F && quad.uvs[1] == 0.0F && quad.uvs[2] == 0.0F && quad.uvs[3] == 0.0F) continue;
+
 			Vector3f vector3f = new Vector3f(quad.normal.x, quad.normal.y, quad.normal.z).mul(matrix3f);
 			float normalX = vector3f.x;
 			float normalY = vector3f.y;
 			float normalZ = vector3f.z;
-			for(var vertex : quad.vertexPositions) {
+			for (var vertex : quad.vertexPositions) {
 				float j = vertex.x() / 16.0F;
 				float k = vertex.y() / 16.0F;
 				float l = vertex.z() / 16.0F;

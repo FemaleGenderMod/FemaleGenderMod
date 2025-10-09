@@ -23,6 +23,7 @@ import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.entitydata.Breasts;
 import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
+import com.wildfire.main.uvs.UVLayout;
 import com.wildfire.physics.BreastPhysics;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -73,6 +74,13 @@ public class GenderRenderState {
     public boolean hasJacketLayer;
     public boolean hasHolidayThemes;
 
+    public UVLayout leftBreastUVLayout;
+    public UVLayout rightBreastUVLayout;
+    public UVLayout leftBreastOverlayUVLayout;
+    public UVLayout rightBreastOverlayUVLayout;
+    public UVLayout leftBreastArmorUVLayout;
+    public UVLayout rightBreastArmorUVLayout;
+
     public boolean isBreathing;
     public @Nullable Text nametag;
 
@@ -108,6 +116,13 @@ public class GenderRenderState {
         } else {
             this.hasHolidayThemes = false;
         }
+
+        this.leftBreastUVLayout = entityConfig.getLeftBreastUVLayout();
+        this.rightBreastUVLayout = entityConfig.getRightBreastUVLayout();
+        this.leftBreastOverlayUVLayout = entityConfig.getLeftBreastOverlayUVLayout();
+        this.rightBreastOverlayUVLayout = entityConfig.getRightBreastOverlayUVLayout();
+        this.leftBreastArmorUVLayout = entityConfig.getLeftBreastArmorUVLayout();
+        this.rightBreastArmorUVLayout = entityConfig.getRightBreastArmorUVLayout();
 
         this.isBreathing = !entity.isSubmergedInWater() || StatusEffectUtil.hasWaterBreathing(entity) ||
             entity.getEntityWorld().getBlockState(entity.getBlockPos()).isOf(Blocks.BUBBLE_COLUMN);

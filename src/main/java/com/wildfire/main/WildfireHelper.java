@@ -33,12 +33,15 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.TriState;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 
+import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
 public final class WildfireHelper {
+
     private WildfireHelper() {
         throw new UnsupportedOperationException();
     }
@@ -77,6 +80,15 @@ public final class WildfireHelper {
         return Math.round(num * factor) / factor;
     }
 
+    public static int[][] deepClone(int[][] src) {
+        if (src == null) return null;
+        int[][] copy = new int[src.length][];
+        for (int i = 0; i < src.length; i++) {
+            copy[i] = (src[i] != null) ? Arrays.copyOf(src[i], src[i].length) : null;
+        }
+        return copy;
+    }
+
     @SuppressWarnings("removal")
     @Environment(EnvType.CLIENT)
     public static IGenderArmor getArmorConfig(ItemStack stack) {
@@ -109,5 +121,9 @@ public final class WildfireHelper {
 
     public static boolean onClient() {
         return FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
+    }
+
+    public static double snapToStep(double value, double stepSize) {
+        return Math.round(value / stepSize) * stepSize;
     }
 }
