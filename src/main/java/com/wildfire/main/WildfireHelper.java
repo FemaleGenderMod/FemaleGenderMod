@@ -46,32 +46,6 @@ public final class WildfireHelper {
         throw new UnsupportedOperationException();
     }
 
-    public static final Direction[] SERIALIZED_DIRECTIONS = {
-            Direction.EAST,
-            Direction.WEST,
-            Direction.DOWN,
-            Direction.UP,
-            Direction.NORTH
-    };
-
-    public static int getDirectionIndex(Direction dir) {
-        for (int i = 0; i < SERIALIZED_DIRECTIONS.length; i++) {
-            if (SERIALIZED_DIRECTIONS[i] == dir) {
-                return i;
-            }
-        }
-        return -1; // not found
-    }
-
-    public static Direction getDirectionByIndex(int dir) {
-        for (int i = 0; i < SERIALIZED_DIRECTIONS.length; i++) {
-            if (i == dir) {
-                return SERIALIZED_DIRECTIONS[i];
-            }
-        }
-        return null; // not found
-    }
-
     public static final PrimitiveCodec<TriState> TRISTATE = new PrimitiveCodec<>() {
         @Override
         public <T> DataResult<TriState> read(final DynamicOps<T> ops, final T input) {

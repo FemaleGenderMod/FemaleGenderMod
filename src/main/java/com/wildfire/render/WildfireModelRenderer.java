@@ -19,12 +19,15 @@
 package com.wildfire.render;
 
 import com.wildfire.main.WildfireHelper;
+import com.wildfire.main.uvs.UVDirection;
 import com.wildfire.main.uvs.UVLayout;
 import com.wildfire.main.uvs.UVQuad;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.math.Direction;
 import org.joml.Vector3f;
+
+import java.util.Map;
 
 @Environment(EnvType.CLIENT)
 public final class WildfireModelRenderer {
@@ -89,18 +92,22 @@ public final class WildfireModelRenderer {
 					{vertex3, vertex4, vertex5, vertex6}	 // SOUTH
 			};
 
-			Direction[] faceDirections = new Direction[] {
-					Direction.EAST, Direction.WEST, Direction.DOWN, Direction.UP, Direction.NORTH, Direction.SOUTH
-			};
+            int i = 0;
+            for (Map.Entry<UVDirection, UVQuad> entry : dynamicUvLayouts.getAllSides().entrySet()) {
+                UVDirection direction = entry.getKey();
+                UVQuad quad = entry.getValue();
 
-			for (int i = 0; i < quads; i++) {
-				if (i < dynamicUvLayouts.getAllSides().size()) {
-					UVQuad quad = dynamicUvLayouts.get(WildfireHelper.SERIALIZED_DIRECTIONS[i]);
-					this.quads[i] = new TexturedQuad(quad.x1(), quad.y1(), quad.x2(), quad.y2(), tW, tH, faceDirections[i], faceVertices[i][0], faceVertices[i][1], faceVertices[i][2], faceVertices[i][3]);
-				} else {
-					System.err.println("Warning: Quad error");
-				}
-			}
+                    this.quads[i] = new TexturedQuad(
+                            quad.x1(), quad.y1(), quad.x2(), quad.y2(),
+                            tW, tH,
+                            direction,
+                            faceVertices[i][0],
+                            faceVertices[i][1],
+                            faceVertices[i][2],
+                            faceVertices[i][3]
+                    );
+                    i++;
+            }
 		}
 	}
 
@@ -127,7 +134,7 @@ public final class WildfireModelRenderer {
 		public final Vector3f normal;
 		public final float[] uvs;
 
-		public TexturedQuad(float u1, float v1, float u2, float v2, float texWidth, float texHeight, Direction directionIn, PositionTextureVertex... positionsIn) {
+		public TexturedQuad(float u1, float v1, float u2, float v2, float texWidth, float texHeight, UVDirection directionIn, PositionTextureVertex... positionsIn) {
 			if (positionsIn.length != 4) {
 				throw new IllegalArgumentException("Wrong number of vertex's. Expected: 4, Received: " + positionsIn.length);
 			}

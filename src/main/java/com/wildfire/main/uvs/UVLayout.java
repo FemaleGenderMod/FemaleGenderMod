@@ -18,56 +18,49 @@
 
 package com.wildfire.main.uvs;
 
-import com.wildfire.main.WildfireHelper;
-import net.minecraft.util.math.Direction;
-
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 
 public class UVLayout {
-    private final EnumMap<Direction, UVQuad> quads = new EnumMap<>(Direction.class);
+    private final EnumMap<UVDirection, UVQuad> quads = new EnumMap<>(UVDirection.class);
 
     public UVLayout(UVQuad east, UVQuad west, UVQuad down, UVQuad up, UVQuad north) {
-        quads.put(Direction.EAST,  east);
-        quads.put(Direction.WEST,  west);
-        quads.put(Direction.DOWN,  down);
-        quads.put(Direction.UP,    up);
-        quads.put(Direction.NORTH, north);
+        quads.put(UVDirection.EAST,  east);
+        quads.put(UVDirection.WEST,  west);
+        quads.put(UVDirection.DOWN,  down);
+        quads.put(UVDirection.UP,    up);
+        quads.put(UVDirection.NORTH, north);
     }
 
+    //empty constructor for encode/decode
     public UVLayout() {
+        quads.put(UVDirection.EAST,  null);
+        quads.put(UVDirection.WEST,  null);
+        quads.put(UVDirection.DOWN,  null);
+        quads.put(UVDirection.UP,    null);
+        quads.put(UVDirection.NORTH, null);
     }
 
-    public void put(Direction dir, UVQuad quad) {
+    public void put(UVDirection dir, UVQuad quad) {
         quads.put(dir, quad);
     }
 
-    public UVQuad get(Direction dir) {
+    public UVQuad get(UVDirection dir) {
         return quads.get(dir);
     }
 
-    public boolean has(Direction dir) {
+    public boolean has(UVDirection dir) {
         return quads.containsKey(dir);
     }
 
-    public Map<Direction, UVQuad> getAllSides() {
+    public Map<UVDirection, UVQuad> getAllSides() {
         return Collections.unmodifiableMap(quads);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof UVLayout other)) return false;
-
-        for (Direction dir : WildfireHelper.SERIALIZED_DIRECTIONS) {
-            UVQuad q1 = this.get(dir);
-            UVQuad q2 = other.get(dir);
-
-            if (q1 == null && q2 == null) continue;
-            if (q1 == null || q2 == null) return false;
-            if (!q1.equals(q2)) return false;
-        }
-        return true;
+    public UVLayout copy() {
+        var copy = new UVLayout();
+        copy.quads.putAll(this.quads);
+        return copy;
     }
 }
