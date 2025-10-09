@@ -31,7 +31,6 @@ import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
-import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.OrderedText;
@@ -138,8 +137,9 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
                 addButton(builder -> builder
                         .renderer((button, ctx, mouseX, mouseY, partialTicks) -> {
-                            Formatting colorVal = getPositionIncrement() == 10 ? Formatting.AQUA :
-                                    (getPositionIncrement() == 20 ? Formatting.BLUE : Formatting.WHITE);
+                            int increment = getPositionIncrement();
+                            Formatting colorVal = increment == 10 ? Formatting.AQUA :
+                                    (increment == 20 ? Formatting.BLUE : Formatting.WHITE);
                             ctx.drawTexture(RenderPipelines.GUI_TEXTURED,
                                     isAdd ? TEXTURE_ADD : TEXTURE_SUBTRACT,
                                     button.getX() + button.getWidth() / 2 - 3,
@@ -151,35 +151,24 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
                         .position(uvPositionWindowX + xOffset, y + buttonArrayY + yOffset)
                         .size(12, 12)
                         .onPress(button -> {
+                            if(selectedDirection == null) return;
                             final var player = Objects.requireNonNull(getPlayer(), "getPlayer()");
 
-                            if(selectedDirection != null) {
-                                UVQuad oldQuad = selectedUVs.getAllSides().get(selectedDirection);
+                            UVQuad quad = selectedUVs.getAllSides().get(selectedDirection);
+                            int increment = getPositionIncrement();
+                            int toAdd = delta * increment;
 
-                                int newX1 = oldQuad.x1();
-                                int newY1 = oldQuad.y1();
-                                int newX2 = oldQuad.x2();
-                                int newY2 = oldQuad.y2();
-
-                                if(uvIndex == 0) { // adjust X
-                                    newX1 += delta * getPositionIncrement();
-                                    newX2 += delta * getPositionIncrement();
-                                } else if(uvIndex == 1) { // adjust Y
-                                    newY1 += delta * getPositionIncrement();
-                                    newY2 += delta * getPositionIncrement();
-                                } else if(uvIndex == 2) { // adjust width
-                                    newX2 += delta * getPositionIncrement();
-                                } else { // adjust height
-                                    newY2 += delta * getPositionIncrement();
-                                }
-
-                                UVQuad newQuad = new UVQuad(newX1, newY1, newX2, newY2);
-
-                                selectedUVs.put(selectedDirection, newQuad);
-
-                                player.save();
+                            if(uvIndex == 0) {
+                                quad = quad.addX1(toAdd).addX2(toAdd);
+                            } else if(uvIndex == 1) {
+                                quad = quad.addY1(toAdd).addY2(toAdd);
+                            } else if(uvIndex == 2) {
+                                quad = quad.addX2(toAdd);
+                            } else {
+                                quad = quad.addY2(toAdd);
                             }
 
+                            selectedUVs.put(selectedDirection, quad);
                             player.save();
                         })
                 );
