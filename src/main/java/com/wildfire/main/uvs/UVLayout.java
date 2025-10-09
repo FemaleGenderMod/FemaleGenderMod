@@ -63,4 +63,13 @@ public class UVLayout {
         copy.quads.putAll(this.quads);
         return copy;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof UVLayout)) return false;
+
+        UVLayout other = (UVLayout) obj;
+        return quads.equals(other.quads);
+    }
 }
