@@ -58,12 +58,9 @@ public class UVLayout {
         return Collections.unmodifiableMap(quads);
     }
 
-    public UVLayout deepCopy() {
-        UVLayout copy = new UVLayout();
-        for (Map.Entry<UVDirection, UVQuad> entry : quads.entrySet()) {
-            UVQuad quad = entry.getValue();
-            copy.put(entry.getKey(), new UVQuad(quad.x1(), quad.y1(), quad.x2(), quad.y2()));
-        }
+    public UVLayout copy() {
+        var copy = new UVLayout();
+        copy.quads.putAll(this.quads);
         return copy;
     }
 }

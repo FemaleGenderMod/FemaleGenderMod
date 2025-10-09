@@ -20,11 +20,9 @@ package com.wildfire.main.config.types;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonArray;
 import com.wildfire.main.uvs.UVDirection;
 import com.wildfire.main.uvs.UVLayout;
 import com.wildfire.main.uvs.UVQuad;
-import net.minecraft.util.math.Direction;
 
 public class UVLayoutConfigKey extends ConfigKey<UVLayout> {
 
@@ -34,7 +32,7 @@ public class UVLayoutConfigKey extends ConfigKey<UVLayout> {
 
     @Override
     protected UVLayout read(JsonElement element) {
-        if (!element.isJsonObject()) return defaultValue.deepCopy();
+        if (!element.isJsonObject()) return defaultValue.copy();
 
         JsonObject obj = element.getAsJsonObject();
         UVLayout layout = new UVLayout();
@@ -73,6 +71,6 @@ public class UVLayoutConfigKey extends ConfigKey<UVLayout> {
 
     @Override
     public UVLayout getDefault() {
-        return defaultValue.deepCopy();
+        return defaultValue.copy();
     }
 }
