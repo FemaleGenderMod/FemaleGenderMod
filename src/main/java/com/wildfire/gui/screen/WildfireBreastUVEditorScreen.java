@@ -211,12 +211,13 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
         };
     }
 
+    // TODO this should be broken up into smaller methods
     @Override
     public void render(DrawContext ctx, int mouseX, int mouseY, float delta) {
-        if(client == null || client.world == null) return;
+        if(client == null || client.world == null || client.player == null) return;
         var player = getPlayer();
 
-        if(client.player != null && player != null && selectedUVs != null) {
+        if(player != null && selectedUVs != null) {
 
             //noinspection SuspiciousNameCombination
             ctx.drawTexture(RenderPipelines.GUI_TEXTURED, client.player.getSkin().body().id(),
@@ -242,7 +243,6 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
         GuiUtils.drawCenteredText(ctx, textRenderer, Text.translatable("wildfire_gender.uv_editor.selection.layer_jacket"),  winElementPos.x() + 42, winElementPos.y() + 32, 0xFFFFFFFF);
 
         int positionBoxX = this.width - sidebarWidth / 4;
-        int positionBoxW = this.width - (this.width - sidebarWidth);
 
         //Coordinate selector
         if(selectedDirection == null) {
@@ -270,8 +270,8 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
         } else if(MinecraftClient.getInstance().getWindow().getWidth() >= 2560) {
             modelScale = 200;
         }
-        InventoryScreen.drawEntity(ctx, this.width / 2 - modelScale, this.height / 2 - modelScale, this.width / 2 + modelScale, this.height / 2 + modelScale, modelScale, 0.0625f, mouseX, mouseY, client.player);
 
+        InventoryScreen.drawEntity(ctx, this.width / 2 - modelScale, this.height / 2 - modelScale, this.width / 2 + modelScale, this.height / 2 + modelScale, modelScale, 0.0625f, mouseX, mouseY, client.player);
         GuiUtils.drawCenteredText(ctx, textRenderer, TITLE, this.width / 2, 20, 0xFFFFFFFF);
 
         super.render(ctx, mouseX, mouseY, delta);
@@ -362,8 +362,8 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
     }
 
     private int getPositionIncrement() {
-        if(client == null) return 1;
-
+        // this should only ever be null before #init() is called, and never afterward
+        Objects.requireNonNull(client);
         if (client.isShiftPressed() && client.isCtrlPressed()) return 20;
         if (client.isShiftPressed()) return 10;
         return 1;
