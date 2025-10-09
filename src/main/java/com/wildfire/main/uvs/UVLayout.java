@@ -33,7 +33,6 @@ public class UVLayout {
         quads.put(UVDirection.NORTH, north);
     }
 
-    //empty constructor for encode/decode
     public UVLayout() {
         quads.put(UVDirection.EAST,  null);
         quads.put(UVDirection.WEST,  null);
@@ -67,9 +66,7 @@ public class UVLayout {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof UVLayout)) return false;
-
-        UVLayout other = (UVLayout) obj;
+        if (!(obj instanceof UVLayout other)) return false;
         return quads.equals(other.quads);
     }
 }
