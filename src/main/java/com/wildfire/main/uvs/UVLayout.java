@@ -18,12 +18,19 @@
 
 package com.wildfire.main.uvs;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 
 public class UVLayout {
     private final EnumMap<UVDirection, UVQuad> quads = new EnumMap<>(UVDirection.class);
+
+    public UVLayout(Map<UVDirection, UVQuad> map) {
+        this.quads.putAll(map);
+        fillMissing();
+    }
 
     public UVLayout(UVQuad east, UVQuad west, UVQuad down, UVQuad up, UVQuad north) {
         quads.put(UVDirection.EAST,  east);
@@ -34,11 +41,15 @@ public class UVLayout {
     }
 
     public UVLayout() {
-        quads.put(UVDirection.EAST,  null);
-        quads.put(UVDirection.WEST,  null);
-        quads.put(UVDirection.DOWN,  null);
-        quads.put(UVDirection.UP,    null);
-        quads.put(UVDirection.NORTH, null);
+        this(Collections.emptyMap());
+    }
+
+    private void fillMissing() {
+        quads.putIfAbsent(UVDirection.EAST,  null);
+        quads.putIfAbsent(UVDirection.WEST,  null);
+        quads.putIfAbsent(UVDirection.DOWN,  null);
+        quads.putIfAbsent(UVDirection.UP,    null);
+        quads.putIfAbsent(UVDirection.NORTH, null);
     }
 
     public void put(UVDirection dir, UVQuad quad) {
@@ -51,6 +62,11 @@ public class UVLayout {
 
     public boolean has(UVDirection dir) {
         return quads.containsKey(dir) && quads.get(dir) != null;
+    }
+
+    @ApiStatus.Internal
+    public EnumMap<UVDirection, UVQuad> getQuads() {
+        return quads.clone();
     }
 
     public Map<UVDirection, UVQuad> getAllSides() {

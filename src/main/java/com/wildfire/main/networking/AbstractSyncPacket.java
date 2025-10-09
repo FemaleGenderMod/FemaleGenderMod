@@ -30,11 +30,8 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.Uuids;
 
-import java.util.Arrays;
-import java.util.Map;
+import java.util.EnumMap;
 import java.util.UUID;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 abstract class AbstractSyncPacket {
 
@@ -132,41 +129,12 @@ abstract class AbstractSyncPacket {
         }
     }
 
-    static final PacketCodec<ByteBuf, UVLayout> UV_CODEC = new PacketCodec<>() {
-        @Override
-        public void encode(ByteBuf buf, UVLayout value) {
-            Map<UVDirection, UVQuad> directions = Arrays.stream(UVDirection.values())
-                    .filter(value::has)
-                    .collect(Collectors.toMap(Function.identity(), value::get));
-
-            PacketCodecs.INTEGER.encode(buf, directions.size());
-            for(var entry : directions.entrySet()) {
-                var quad = entry.getValue();
-                PacketCodecs.INTEGER.encode(buf, entry.getKey().ordinal());
-                PacketCodecs.VAR_INT.encode(buf, quad.x1());
-                PacketCodecs.VAR_INT.encode(buf, quad.y1());
-                PacketCodecs.VAR_INT.encode(buf, quad.x2());
-                PacketCodecs.VAR_INT.encode(buf, quad.y2());
-            }
-        }
-
-        @Override
-        public UVLayout decode(ByteBuf buf) {
-            var layout = new UVLayout();
-
-            int directionCount = PacketCodecs.INTEGER.decode(buf);
-            for(int i = 0; i < directionCount; i++) {
-                var direction = UVDirection.values()[PacketCodecs.INTEGER.decode(buf)];
-                var quad = new UVQuad(PacketCodecs.INTEGER.decode(buf),
-                        PacketCodecs.INTEGER.decode(buf),
-                        PacketCodecs.INTEGER.decode(buf),
-                        PacketCodecs.INTEGER.decode(buf));
-                layout.put(direction, quad);
-            }
-
-            return layout;
-        }
-    };
+    static final PacketCodec<ByteBuf, UVLayout> UV_CODEC = PacketCodecs.map(
+            size -> new EnumMap<>(UVDirection.class),
+            UVDirection.PACKET_CODEC,
+            UVQuad.PACKET_CODEC,
+            UVDirection.values().length
+    ).xmap(UVLayout::new, UVLayout::getQuads);
 
     static final PacketCodec<ByteBuf, UVLayouts.Layer> UV_LAYER_CODEC = PacketCodec.tuple(
             UV_CODEC, UVLayouts.Layer::left,

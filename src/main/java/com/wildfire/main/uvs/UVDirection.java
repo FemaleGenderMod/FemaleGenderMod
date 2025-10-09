@@ -18,10 +18,16 @@
 
 package com.wildfire.main.uvs;
 
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.text.Text;
+import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.Vec3i;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
+
+import java.util.function.IntFunction;
 
 public enum UVDirection {
     EAST("east", "", "E", 0xFFFF0000, new Vec3i(1, 0, 0)),
@@ -35,6 +41,9 @@ public enum UVDirection {
     private final String saveName;
     private final int baseColor;
     private final Vector3fc floatVector;
+
+    public static final IntFunction<UVDirection> BY_ID = ValueLists.createIndexToValueFunction(UVDirection::ordinal, values(), ValueLists.OutOfBoundsHandling.WRAP);
+    public static final PacketCodec<ByteBuf, UVDirection> PACKET_CODEC = PacketCodecs.indexed(BY_ID, UVDirection::ordinal);
 
     UVDirection(String saveName, String unlocalizedName, String shortName, int baseColor, Vec3i vector) {
         this.unlocalizedName = unlocalizedName;
