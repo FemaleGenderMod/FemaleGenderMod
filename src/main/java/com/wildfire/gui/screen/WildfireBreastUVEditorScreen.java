@@ -63,11 +63,13 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
     private UVDirection selectedDirection = null;
 
     //Positions & Widths
-    private int sidebarWidth = 260;
     private Vector2i winElementPos;
-    private Vector2i uvWindowPos;
-    private int textureDrawWidth;
-    private float uvWindowScaleFactor;
+	private Vector2i uvWindowPos;
+
+	private static final int sidebarWidth = 180;
+	private static final int textureDrawWidth = 196;
+    private static final int textureSourceWidth = 64;
+    private static final float uvWindowScaleFactor = (float) textureDrawWidth / (float) textureSourceWidth;
 
     private ClickableWidget btnLeftBreast, btnRightBreast, btnLeftBreastOverlay, btnRightBreastOverlay;
 
@@ -78,13 +80,8 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
     @Override
     public void init() {
         if(client == null) return;
-        
-        textureDrawWidth = 196;
-        final int textureSourceWidth = 64;
-        uvWindowScaleFactor = (float) textureDrawWidth / (float) textureSourceWidth;
-        uvWindowPos = new Vector2i(5, this.height / 2 - textureDrawWidth / 2);
 
-        sidebarWidth = 180;
+        uvWindowPos = new Vector2i(5, this.height / 2 - textureDrawWidth / 2);
         winElementPos = new Vector2i(this.width - sidebarWidth + 7, 32);
 
         int x = this.width - sidebarWidth;
