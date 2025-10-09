@@ -158,11 +158,10 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 		var rUV = textureData.rightUv();
 		var dim = textureData.dimensions();*/
 
-		//TODO: FIX THIS ARMOR RENDERING WITH RESOURCE PACK'S CUSTOM JSON FILES?
-
 		//lBoobArmor = new BreastModelBox(texSize.x(), texSize.y(), lUV.x(), lUV.y(), -4F, 0.0F, 0F, dim.x(), dim.y(), 4, 0.0F, false);
 		//rBoobArmor = new BreastModelBox(texSize.x(), texSize.y(), rUV.x(), rUV.y(), 0, 0.0F, 0F, dim.x(), dim.y(), 4, 0.0F, false);
 
+		// FIXME make this work with armor configs
 		if(this.lBoobArmor == null || this.rBoobArmor == null) {
 			lBoobArmor = new BreastModelBox(64, 32, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, state.leftBreastArmorUVLayout);
 			rBoobArmor = new BreastModelBox(64, 32, 0, 0.0F, 0F, 4, 5, 3, 0.0F, state.rightBreastArmorUVLayout);

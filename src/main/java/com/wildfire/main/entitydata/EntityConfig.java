@@ -215,6 +215,8 @@ public class EntityConfig {
 	}
 
 	// FIXME these update methods should match the rest and be in PlayerConfig instead of here
+	// FIXME this should really be redesigned to not have multiple methods with very similar names;
+	//		ideally something like `getUVs().skin().left()` etc.
 	public UVLayout getLeftBreastUVLayout() {
 		return this.leftBreastUVLayout;
 	}
