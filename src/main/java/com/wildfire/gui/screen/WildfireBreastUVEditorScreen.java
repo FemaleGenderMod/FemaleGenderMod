@@ -63,8 +63,6 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
     private static final int textureSourceWidth = 64;
     private static final float uvWindowScaleFactor = (float) textureDrawWidth / (float) textureSourceWidth;
 
-    private ClickableWidget btnLeftBreast, btnRightBreast, btnLeftBreastOverlay, btnRightBreastOverlay;
-
     public WildfireBreastUVEditorScreen(Screen parent, UUID uuid) {
         super(Text.translatable("wildfire_gender.uv_editor"), parent, uuid);
     }
@@ -99,28 +97,28 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
                     getPlayer().save();
                 }));
 
-        btnLeftBreast = addButton(builder -> builder
+        addButton(builder -> builder
                 .message(() -> Text.translatable("wildfire_gender.uv_editor.selection.left_breast"))
                 .position(winElementPos.x(), winElementPos.y() + 13)
                 .size((w / 2) / 2 - 5, 15)
                 .active(selectedBreastIndex != BreastTypes.LEFT)
                 .onPress(button -> selectBreastUVMap(BreastTypes.LEFT)));
 
-        btnRightBreast = addButton(builder -> builder
+        addButton(builder -> builder
                 .message(() -> Text.translatable("wildfire_gender.uv_editor.selection.right_breast"))
                 .position(winElementPos.x() + (w / 2) / 2 - 3, winElementPos.y() + 13)
                 .size((w / 2) / 2 - 6, 15)
                 .active(selectedBreastIndex != BreastTypes.RIGHT)
                 .onPress(button -> selectBreastUVMap(BreastTypes.RIGHT)));
 
-        btnLeftBreastOverlay = addButton(builder -> builder
+        addButton(builder -> builder
                 .message(() -> Text.translatable("wildfire_gender.uv_editor.selection.left_breast_overlay"))
                 .position(winElementPos.x(), winElementPos.y() + 44)
                 .size((w / 2) / 2 - 5, 15)
                 .active(selectedBreastIndex != BreastTypes.LEFT_OVERLAY)
                 .onPress(button -> selectBreastUVMap(BreastTypes.LEFT_OVERLAY)));
 
-        btnRightBreastOverlay = addButton(builder -> builder
+        addButton(builder -> builder
                 .message(() -> Text.translatable("wildfire_gender.uv_editor.selection.right_breast_overlay"))
                 .position(winElementPos.x() + (w / 2) / 2 - 3, winElementPos.y() + 44)
                 .size((w / 2) / 2 - 6, 15)
@@ -195,15 +193,7 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
     private void selectBreastUVMap(BreastTypes breast) {
         selectedBreastIndex = breast;
         selectedDirection = null;
-        updateBreastButtonStates();
         clearAndInit();
-    }
-
-    private void updateBreastButtonStates() {
-        btnLeftBreast.active = selectedBreastIndex != BreastTypes.LEFT;
-        btnRightBreast.active = selectedBreastIndex != BreastTypes.RIGHT;
-        btnLeftBreastOverlay.active = selectedBreastIndex != BreastTypes.LEFT_OVERLAY;
-        btnRightBreastOverlay.active = selectedBreastIndex != BreastTypes.RIGHT_OVERLAY;
     }
 
     @Override
