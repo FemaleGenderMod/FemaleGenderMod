@@ -51,7 +51,7 @@ public class UVLayout {
     }
 
     public boolean has(UVDirection dir) {
-        return quads.containsKey(dir);
+        return quads.containsKey(dir) && quads.get(dir) != null;
     }
 
     public Map<UVDirection, UVQuad> getAllSides() {
