@@ -18,6 +18,7 @@
 
 package com.wildfire.main.networking;
 
+import com.mojang.logging.LogUtils;
 import com.wildfire.main.entitydata.PlayerConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -30,8 +31,11 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 
 public final class WildfireSync {
+	static final Logger LOGGER = LogUtils.getLogger();
+
 	private WildfireSync() {
 		throw new UnsupportedOperationException();
 	}
@@ -46,8 +50,14 @@ public final class WildfireSync {
 		PayloadTypeRegistry.playC2S().register(ServerboundSyncPacket.ID, ServerboundSyncPacket.CODEC);
 		PayloadTypeRegistry.playS2C().register(ServerboundSyncPacket.ID, ServerboundSyncPacket.CODEC);
 
+		PayloadTypeRegistry.playC2S().register(SyncHelloPacket.Clientbound.ID, SyncHelloPacket.Clientbound.CODEC);
+		PayloadTypeRegistry.playS2C().register(SyncHelloPacket.Clientbound.ID, SyncHelloPacket.Clientbound.CODEC);
+		PayloadTypeRegistry.playC2S().register(SyncHelloPacket.Serverbound.ID, SyncHelloPacket.Serverbound.CODEC);
+		PayloadTypeRegistry.playS2C().register(SyncHelloPacket.Serverbound.ID, SyncHelloPacket.Serverbound.CODEC);
+
 		ServerPlayConnectionEvents.INIT.register((handler, server) -> {
 			ServerPlayNetworking.registerReceiver(handler, ServerboundSyncPacket.ID, ServerboundSyncPacket::handle);
+			ServerPlayNetworking.registerReceiver(handler, SyncHelloPacket.Serverbound.ID, SyncHelloPacket.Serverbound::handle);
 		});
 	}
 
@@ -56,6 +66,14 @@ public final class WildfireSync {
 	public static void registerClient() {
 		ClientPlayConnectionEvents.INIT.register((handler, client) -> {
 			ClientPlayNetworking.registerReceiver(ClientboundSyncPacket.ID, ClientboundSyncPacket::handle);
+			ClientPlayNetworking.registerReceiver(SyncHelloPacket.Clientbound.ID, SyncHelloPacket.Clientbound::handle);
+		});
+
+		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+			if(ClientPlayNetworking.canSend(SyncHelloPacket.Serverbound.ID)) {
+				LOGGER.debug("Sending hello packet to server");
+				sender.sendPacket(new SyncHelloPacket.Serverbound());
+			}
 		});
 	}
 

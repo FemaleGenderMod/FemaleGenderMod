@@ -35,6 +35,8 @@ import java.util.UUID;
 
 abstract class AbstractSyncPacket {
 
+    // remember to update SyncHelloPacket.VERSION when modifying this codec if the changes result in a change
+    // to the underlying packet structure
     protected static <T extends AbstractSyncPacket> PacketCodec<ByteBuf, T> codec(SyncPacketConstructor<T> constructor) {
         return PacketCodec.tuple(
                 Uuids.PACKET_CODEC, p -> p.uuid,
