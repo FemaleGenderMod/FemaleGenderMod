@@ -79,3 +79,13 @@ body:
       label: "What other mods do you have?"
       description: |
         Please list any other mods involved if this issue relates to mod compatibility.
+
+  - type: checkboxes
+    id: checked-faq
+    attributes:
+      label: "This is not mentioned in the FAQ"
+      description: |
+        Please check if this is not mentioned in the FAQ before making this issue.
+      options:
+        - label: This issue is not mentioned in the FAQ
+          required: true
