@@ -30,6 +30,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceFinder;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import org.jetbrains.annotations.Nullable;
@@ -40,11 +41,12 @@ import java.util.Map;
 import java.util.Optional;
 
 @Environment(EnvType.CLIENT)
-public final class GenderArmorResourceManager extends JsonDataLoader<IGenderArmor> implements IdentifiableResourceReloadListener {
+public final class GenderArmorResourceManager extends JsonDataLoader<IGenderArmor> {
 	private GenderArmorResourceManager() {
 		super(IGenderArmor.CODEC, ResourceFinder.json("wildfire_gender_data"));
 	}
 
+	public static final Identifier ID = WildfireGender.id("armor_data");
 	public static final GenderArmorResourceManager INSTANCE = new GenderArmorResourceManager();
 	private @Unmodifiable Map<Identifier, IGenderArmor> configs = Map.of();
 
@@ -57,11 +59,6 @@ public final class GenderArmorResourceManager extends JsonDataLoader<IGenderArmo
 				.flatMap(EquippableComponent::assetId)
 				.map(RegistryKey::getValue)
 				.map(GenderArmorResourceManager::get);
-	}
-
-	@Override
-	public Identifier getFabricId() {
-		return Identifier.of(WildfireGender.MODID, "armor_data");
 	}
 
 	@Override

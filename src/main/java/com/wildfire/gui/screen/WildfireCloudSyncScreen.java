@@ -118,8 +118,6 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
 					//client.setScreen(new WildfireCloudDetailsScreen(this, client.player.getUuid())); // Disabled for now. Not complete
 					// BUTTON IS SUPPOSED TO DO NOTHING AT THE MOMENT
 				}));*/
-
-		super.init();
 	}
 
 	private void sync(ButtonWidget button) {

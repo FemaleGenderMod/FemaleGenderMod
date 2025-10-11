@@ -112,17 +112,15 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 MinecraftClient.getInstance().options.jumpKey.setPressed(false);
             }
         }
-
-        super.init();
     }
 
     @Override
-    public void close() {
+    public void removed() {
         if(MinecraftClient.getInstance().options.jumpKey.isPressed()) {
             MinecraftClient.getInstance().options.jumpKey.setPressed(false);
         }
-        super.close();
     }
+
     private void initCustomizationTab(final int tabOffsetY) {
         final var plr = Objects.requireNonNull(getPlayer(), "getPlayer()");
         final var breasts = plr.getBreasts();

@@ -18,7 +18,6 @@
 
 package com.wildfire.gui.screen;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.wildfire.gui.FakeGUIPlayer;
 import com.wildfire.gui.GuiUtils;
 import com.wildfire.main.GenderConfigs;
@@ -91,8 +90,6 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
             ClickableWidget prevPage, nextPage, generalTab, translatorTab;
         };
 
-        categoryTab = Category.GENERAL;
-
         navigationY = this.height / 2 + 82;
 
         //category tab
@@ -109,8 +106,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
                     ref.generalTab.active = false;
                     ref.translatorTab.active = true;
 
-                })
-                .narration(text -> GuiUtils.doneNarrationText()));
+                }));
 
         ref.translatorTab = addButton(builder -> builder
                 .message(() -> Text.translatable("wildfire_gender.credits.translators"))
@@ -124,16 +120,14 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
                     ref.nextPage.active = creditsPage < getTotalPages()-1;
                     ref.generalTab.active = true;
                     ref.translatorTab.active = false;
-                })
-                .narration(text -> GuiUtils.doneNarrationText()));
+                }));
 
         //page tab
         addButton(builder -> builder
                 .message(() -> Text.translatable("wildfire_gender.details.go_back"))
                 .position(this.width / 2 - 25, navigationY + 6)
                 .size(50, 13)
-                .onPress(button -> close())
-                .narration(text -> GuiUtils.doneNarrationText()));
+                .onPress(button -> close()));
 
         ref.nextPage = addButton(builder -> builder
                 .message(() -> Text.translatable("wildfire_gender.details.next_page"))
@@ -146,8 +140,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
                     }
                     ref.prevPage.active = creditsPage != 0;
                     ref.nextPage.active = creditsPage < getTotalPages()-1;
-                })
-                .narration(text -> GuiUtils.doneNarrationText()));
+                }));
 
         ref.prevPage = addButton(builder -> builder
                 .message(() -> Text.translatable("wildfire_gender.details.prev_page"))
@@ -160,12 +153,8 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
                     }
                     ref.prevPage.active = creditsPage != 0;
                     ref.nextPage.active = creditsPage < getTotalPages();
-                })
-                .narration(text -> GuiUtils.doneNarrationText()));
-
-        super.init();
+                }));
     }
-
 
     @Override
     public void tick() {

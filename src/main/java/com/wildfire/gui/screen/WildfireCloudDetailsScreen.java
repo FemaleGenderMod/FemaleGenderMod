@@ -73,8 +73,6 @@ public class WildfireCloudDetailsScreen extends BaseWildfireScreen {
 //						currentPage--;
 //					}
 //				}));
-
-		super.init();
 	}
 
 

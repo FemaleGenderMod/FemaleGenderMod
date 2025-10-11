@@ -180,11 +180,6 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 	}
 
 	@Override
-	public void close() {
-		super.close();
-	}
-
-	@Override
 	public void removed() {
 		ClientConfig.INSTANCE.save();
 	}
