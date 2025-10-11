@@ -214,22 +214,52 @@ public class EntityConfig {
 		return rBreastPhysics;
 	}
 
-	public UVLayout getLeftBreastUVLayout() { return this.leftBreastUVLayout; }
-	public boolean updateLeftBreastUVLayout(UVLayout layout) { return updateValue(Configuration.LEFT_BREAST_UV_LAYOUT, layout, v -> this.leftBreastUVLayout = v); }
-	public UVLayout getRightBreastUVLayout() { return this.rightBreastUVLayout; }
-	public boolean updateRightBreastUVLayout(UVLayout layout) { return updateValue(Configuration.RIGHT_BREAST_UV_LAYOUT, layout, v -> this.rightBreastUVLayout = v); }
+	// FIXME these update methods should match the rest and be in PlayerConfig instead of here
+	// FIXME this should really be redesigned to not have multiple methods with very similar names;
+	//		ideally something like `getUVs().skin().left()` etc.
+	public UVLayout getLeftBreastUVLayout() {
+		return this.leftBreastUVLayout;
+	}
 
-	public UVLayout getLeftBreastOverlayUVLayout() { return this.leftBreastOverlayUVLayout; }
-	public boolean updateLeftBreastOverlayUVLayout(UVLayout layout) { return updateValue(Configuration.LEFT_BREAST_OVERLAY_UV_LAYOUT, layout, v -> this.leftBreastOverlayUVLayout = v); }
-	public UVLayout getRightBreastOverlayUVLayout() { return this.rightBreastOverlayUVLayout; }
-	public boolean updateRightBreastOverlayUVLayout(UVLayout layout) { return updateValue(Configuration.RIGHT_BREAST_OVERLAY_UV_LAYOUT, layout, v -> this.rightBreastOverlayUVLayout = v); }
+	public boolean updateLeftBreastUVLayout(UVLayout layout) {
+		return updateValue(Configuration.LEFT_BREAST_UV_LAYOUT, layout, v -> this.leftBreastUVLayout = v);
+	}
 
-	public UVLayout getLeftBreastArmorUVLayout() { return this.leftBreastArmorUVLayout; }
-	public boolean updateLeftBreastArmorUVLayout(UVLayout layout) { return updateValue(Configuration.LEFT_BREAST_ARMOR_UV_LAYOUT, layout, v -> this.leftBreastArmorUVLayout = v); }
-	public UVLayout getRightBreastArmorUVLayout() { return this.rightBreastArmorUVLayout; }
-	public boolean updateRightBreastArmorUVLayout(UVLayout layout) { return updateValue(Configuration.RIGHT_BREAST_ARMOR_UV_LAYOUT, layout, v -> this.rightBreastArmorUVLayout = v); }
+	public UVLayout getRightBreastUVLayout() {
+		return this.rightBreastUVLayout;
+	}
 
-	private <VALUE> boolean updateValue(ConfigKey<VALUE> key, VALUE value, Consumer<VALUE> setter) {
+	public boolean updateRightBreastUVLayout(UVLayout layout) {
+		return updateValue(Configuration.RIGHT_BREAST_UV_LAYOUT, layout, v -> this.rightBreastUVLayout = v);
+	}
+
+	public UVLayout getLeftBreastOverlayUVLayout() {
+		return this.leftBreastOverlayUVLayout;
+	}
+
+	public boolean updateLeftBreastOverlayUVLayout(UVLayout layout) {
+		return updateValue(Configuration.LEFT_BREAST_OVERLAY_UV_LAYOUT, layout, v -> this.leftBreastOverlayUVLayout = v);
+	}
+
+	public UVLayout getRightBreastOverlayUVLayout() {
+		return this.rightBreastOverlayUVLayout;
+	}
+
+	public boolean updateRightBreastOverlayUVLayout(UVLayout layout) {
+		return updateValue(Configuration.RIGHT_BREAST_OVERLAY_UV_LAYOUT, layout, v -> this.rightBreastOverlayUVLayout = v);
+	}
+
+	@Deprecated(forRemoval = true)
+	public UVLayout getLeftBreastArmorUVLayout() {
+		return this.leftBreastArmorUVLayout;
+	}
+
+	@Deprecated(forRemoval = true)
+	public UVLayout getRightBreastArmorUVLayout() {
+		return this.rightBreastArmorUVLayout;
+	}
+
+	protected <VALUE> boolean updateValue(ConfigKey<VALUE> key, VALUE value, Consumer<VALUE> setter) {
 		if (key.validate(value)) {
 			setter.accept(value);
 			return true;

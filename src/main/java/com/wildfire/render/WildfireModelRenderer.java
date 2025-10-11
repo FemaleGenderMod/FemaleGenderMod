@@ -18,14 +18,13 @@
 
 package com.wildfire.render;
 
-import com.wildfire.main.WildfireHelper;
+import com.google.common.base.Preconditions;
 import com.wildfire.main.uvs.UVDirection;
 import com.wildfire.main.uvs.UVLayout;
 import com.wildfire.main.uvs.UVQuad;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.math.Direction;
-import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 import java.util.Map;
 
@@ -78,11 +77,10 @@ public final class WildfireModelRenderer {
 			);
 		}
 
-		public ModelBox(int tW, int tH, float x, float y, float z, int dx, int dy, int dz, float delta) {
-			this(tW, tH, x, y, z, dx, dy, dz, delta, 6, null);
-		}
-
-		protected void initQuads(int tW, int tH, int dx, int dy, int dz, int quads, PositionTextureVertex vertex, PositionTextureVertex vertex1, PositionTextureVertex vertex2, PositionTextureVertex vertex3, PositionTextureVertex vertex4, PositionTextureVertex vertex5, PositionTextureVertex vertex6, PositionTextureVertex vertex7) {
+		protected void initQuads(int tW, int tH, int dx, int dy, int dz, int quads,
+								 PositionTextureVertex vertex, PositionTextureVertex vertex1, PositionTextureVertex vertex2,
+								 PositionTextureVertex vertex3, PositionTextureVertex vertex4, PositionTextureVertex vertex5,
+								 PositionTextureVertex vertex6, PositionTextureVertex vertex7) {
 			PositionTextureVertex[][] faceVertices = {
 					{vertex4, vertex, vertex1, vertex5}, 	// EAST
 					{vertex7, vertex3, vertex6, vertex2},	// WEST
@@ -131,13 +129,11 @@ public final class WildfireModelRenderer {
 
 	public static class TexturedQuad {
 		public final WildfireModelRenderer.PositionTextureVertex[] vertexPositions;
-		public final Vector3f normal;
+		public final Vector3fc normal;
 		public final float[] uvs;
 
 		public TexturedQuad(float u1, float v1, float u2, float v2, float texWidth, float texHeight, UVDirection directionIn, PositionTextureVertex... positionsIn) {
-			if (positionsIn.length != 4) {
-				throw new IllegalArgumentException("Wrong number of vertex's. Expected: 4, Received: " + positionsIn.length);
-			}
+			Preconditions.checkArgument(positionsIn.length == 4, "Incorrect number of vertices; expected 4, got %s", positionsIn.length);
 
 			//Set UVs in array to reference in render side.
 			this.uvs = new float[]{ u1, v1, u2, v2 };

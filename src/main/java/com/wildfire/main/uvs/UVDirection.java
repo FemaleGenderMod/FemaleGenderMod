@@ -18,26 +18,34 @@
 
 package com.wildfire.main.uvs;
 
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.text.Text;
+import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.Vec3i;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
+
+import java.util.function.IntFunction;
 
 public enum UVDirection {
-    EAST(0, "east", "", "E", 0xFFFF0000, new Vec3i(1, 0, 0)),
-    WEST(1, "west", "", "W", 0xFF00FF00, new Vec3i(-1, 0, 0)),
-    DOWN(2, "down", "wildfire_gender.uv_editor.faces.bottom", "D", 0xFF0000FF, new Vec3i(0, -1, 0)),
-    UP(3,  "up", "wildfire_gender.uv_editor.faces.top", "U", 0xFF00FFFF, new Vec3i(0, 1, 0)),
-    NORTH(4, "north", "wildfire_gender.uv_editor.faces.front", "N", 0xFFFF00FF, new Vec3i(0, 0, -1));
+    EAST("east", "", "E", 0xFFFF0000, new Vec3i(1, 0, 0)),
+    WEST("west", "", "W", 0xFF00FF00, new Vec3i(-1, 0, 0)),
+    DOWN("down", "wildfire_gender.uv_editor.faces.bottom", "D", 0xFF0000FF, new Vec3i(0, -1, 0)),
+    UP("up", "wildfire_gender.uv_editor.faces.top", "U", 0xFF00FFFF, new Vec3i(0, 1, 0)),
+    NORTH("north", "wildfire_gender.uv_editor.faces.front", "N", 0xFFFF00FF, new Vec3i(0, 0, -1));
 
-    private final int index;
     private final String unlocalizedName;
     private final String shortName;
     private final String saveName;
     private final int baseColor;
-    private final Vector3f floatVector;
+    private final Vector3fc floatVector;
 
-    UVDirection(int index, String saveName, String unlocalizedName, String shortName, int baseColor, Vec3i vector) {
-        this.index = index;
+    public static final IntFunction<UVDirection> BY_ID = ValueLists.createIndexToValueFunction(UVDirection::ordinal, values(), ValueLists.OutOfBoundsHandling.WRAP);
+    public static final PacketCodec<ByteBuf, UVDirection> PACKET_CODEC = PacketCodecs.indexed(BY_ID, UVDirection::ordinal);
+
+    UVDirection(String saveName, String unlocalizedName, String shortName, int baseColor, Vec3i vector) {
         this.unlocalizedName = unlocalizedName;
         this.saveName = saveName;
         this.shortName = shortName;
@@ -71,10 +79,6 @@ public enum UVDirection {
         }
 
         return Text.literal(saveName);
-    }
-
-    public int getIndex() {
-        return index;
     }
 
     public String getSaveName() {

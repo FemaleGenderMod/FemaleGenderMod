@@ -69,6 +69,7 @@ public class WildfireSlider extends ClickableWidget {
 	public void setArrowKeyStep(double arrowKeyStep) {
 		this.arrowKeyStep = arrowKeyStep;
 	}
+
 	private void setMouseStep(double mouseStep) {
 		this.mouseStep = mouseStep;
 	}
@@ -220,7 +221,7 @@ public class WildfireSlider extends ClickableWidget {
 		updateMessage();
 	}
 
-
+	@SuppressWarnings("UnusedReturnValue")
 	public static final class Builder {
 		private int x, y, width, height;
 		private float min, max;
@@ -282,6 +283,7 @@ public class WildfireSlider extends ClickableWidget {
 			this.step = step;
 			return this;
 		}
+
 		public Builder mouseStep(double step) {
 			this.mouseStep = step;
 			return this;

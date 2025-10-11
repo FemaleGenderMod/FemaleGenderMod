@@ -19,7 +19,6 @@
 package com.wildfire.render;
 
 import com.wildfire.api.IGenderArmor;
-import com.wildfire.gui.screen.WildfireBreastUVEditorScreen;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.config.ClientConfig;
@@ -29,7 +28,6 @@ import com.wildfire.render.WildfireModelRenderer.BreastModelBox;
 import com.wildfire.render.WildfireModelRenderer.OverlayModelBox;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
@@ -49,7 +47,6 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.*;
 
 import java.lang.Math;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -74,7 +71,6 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 	protected boolean isChestplateOccupied, bounceEnabled, breathingAnimation;
 	protected float breastOffsetX, breastOffsetY, breastOffsetZ, lPhysPositionY, lPhysPositionX, rPhysPositionY, rPhysPositionX,
 			lPhysBounceRotation, rPhysBounceRotation, breastSize, zOffset, outwardAngle;
-
 
 	public GenderLayer(FeatureRendererContext<S, M> render) {
 		super(render);
@@ -123,36 +119,36 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 	 * @return {@code true} if rendering should continue
 	 */
 	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
-	protected boolean setupRender(S state, GenderRenderState genderRenderState) {
+	protected boolean setupRender(S entityState, GenderRenderState genderState) {
 		if(!ClientConfig.RENDER_BREASTS) return false;
 
-		armorStack = state.equippedChestStack;
+		armorStack = entityState.equippedChestStack;
 		//Note: When the stack is empty the helper will fall back to an implementation that returns the proper data
 		genderArmor = WildfireHelper.getArmorConfig(armorStack);
-		isChestplateOccupied = genderArmor.coversBreasts() && !genderRenderState.armorPhysicsOverride;
-		if(genderArmor.alwaysHidesBreasts() || !genderRenderState.showBreastsInArmor && isChestplateOccupied) {
+		isChestplateOccupied = genderArmor.coversBreasts() && !genderState.armorPhysicsOverride;
+		if(genderArmor.alwaysHidesBreasts() || !genderState.showBreastsInArmor && isChestplateOccupied) {
 			//If the armor always hides breasts or there is armor and the player configured breasts
 			// to be hidden when wearing armor, we can just exit early rather than doing any calculations
 			return false;
 		}
 
-		if(!isLayerVisible(state)) {
+		if(!isLayerVisible(entityState)) {
 			return false;
 		}
 
-		GenderRenderState.BreastState breasts = genderRenderState.breasts;
+		GenderRenderState.BreastState breasts = genderState.breasts;
 		breastOffsetX = WildfireHelper.round(breasts.xOffset, 1);
 		breastOffsetY = -WildfireHelper.round(breasts.yOffset, 1);
 		breastOffsetZ = -WildfireHelper.round(breasts.zOffset, 1);
 
 		isUniboob = breasts.uniboob;
 
-		GenderRenderState.BreastPhysicsState leftPhysicsState = genderRenderState.leftBreastPhysics;
+		GenderRenderState.BreastPhysicsState leftPhysicsState = genderState.leftBreastPhysics;
 		final float bSize = leftPhysicsState.getBreastSize();
 		outwardAngle = Math.round(breasts.cleavage * 100f);
 		outwardAngle = Math.min(outwardAngle, 10);
 
-		resizeBox(genderRenderState, bSize);
+		resizeBox(genderState, bSize);
 
 		lPhysPositionY = leftPhysicsState.getPositionY();
 		lPhysPositionX = leftPhysicsState.getPositionX();
@@ -162,7 +158,7 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 			rPhysPositionX = lPhysPositionX;
 			rPhysBounceRotation = lPhysBounceRotation;
 		} else {
-			GenderRenderState.BreastPhysicsState rightPhysicsState = genderRenderState.rightBreastPhysics;
+			GenderRenderState.BreastPhysicsState rightPhysicsState = genderState.rightBreastPhysics;
 			rPhysPositionY = rightPhysicsState.getPositionY();
 			rPhysPositionX = rightPhysicsState.getPositionX();
 			rPhysBounceRotation = rightPhysicsState.getBounceRotation();
@@ -182,8 +178,8 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		breastSize += 0.5f * Math.abs(bSize - 0.7f) * 2f; // Adjust breastSize based on bSize
 
 		float resistance = MathHelper.clamp(genderArmor.physicsResistance(), 0, 1);
-		breathingAnimation = ((genderRenderState.armorPhysicsOverride || resistance <= 0.5F) && genderRenderState.isBreathing);
-		bounceEnabled = genderRenderState.hasBreastPhysics && (!isChestplateOccupied || resistance < 1); //oh, you found this?
+		breathingAnimation = ((genderState.armorPhysicsOverride || resistance <= 0.5F) && genderState.isBreathing);
+		bounceEnabled = genderState.hasBreastPhysics && (!isChestplateOccupied || resistance < 1); //oh, you found this?
 		return true;
 	}
 
@@ -191,22 +187,22 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		return !state.invisibleToPlayer || state.hasOutline();
 	}
 
-	protected void resizeBox(GenderRenderState genderRenderState, float breastSize) {
+	protected void resizeBox(GenderRenderState state, float breastSize) {
 		//TODO: Better way for this?
-		if(!Objects.equals(this.prevLeftBreastUVLayout, genderRenderState.leftBreastUVLayout)
-				|| !Objects.equals(this.prevRightBreastUVLayout, genderRenderState.rightBreastUVLayout)
-				|| !Objects.equals(this.prevLeftBreastOverlayUVLayout, genderRenderState.leftBreastOverlayUVLayout)
-				|| !Objects.equals(this.prevRightBreastOverlayUVLayout, genderRenderState.rightBreastOverlayUVLayout)) {
+		if(!Objects.equals(this.prevLeftBreastUVLayout, state.leftBreastUVLayout)
+				|| !Objects.equals(this.prevRightBreastUVLayout, state.rightBreastUVLayout)
+				|| !Objects.equals(this.prevLeftBreastOverlayUVLayout, state.leftBreastOverlayUVLayout)
+				|| !Objects.equals(this.prevRightBreastOverlayUVLayout, state.rightBreastOverlayUVLayout)) {
 
-			this.prevLeftBreastUVLayout = genderRenderState.leftBreastUVLayout;
-			this.prevRightBreastUVLayout = genderRenderState.rightBreastUVLayout;
-			this.prevLeftBreastOverlayUVLayout = genderRenderState.leftBreastOverlayUVLayout;
-			this.prevRightBreastOverlayUVLayout = genderRenderState.rightBreastOverlayUVLayout;
+			this.prevLeftBreastUVLayout = state.leftBreastUVLayout;
+			this.prevRightBreastUVLayout = state.rightBreastUVLayout;
+			this.prevLeftBreastOverlayUVLayout = state.leftBreastOverlayUVLayout;
+			this.prevRightBreastOverlayUVLayout = state.rightBreastOverlayUVLayout;
 
-			this.lBreast = new BreastModelBox(64, 64, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, genderRenderState.leftBreastUVLayout);
-			this.rBreast = new BreastModelBox(64, 64, 0F, 0.0F, 0F, 4, 5, 3, 0.0F, genderRenderState.rightBreastUVLayout);
-			this.lBreastWear = new OverlayModelBox(64, 64, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, genderRenderState.leftBreastOverlayUVLayout);
-			this.rBreastWear = new OverlayModelBox(64, 64, 0, 0.0F, 0F, 4, 5, 3, 0.0F, genderRenderState.rightBreastOverlayUVLayout);
+			this.lBreast = new BreastModelBox(64, 64, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, state.leftBreastUVLayout);
+			this.rBreast = new BreastModelBox(64, 64, 0F, 0.0F, 0F, 4, 5, 3, 0.0F, state.rightBreastUVLayout);
+			this.lBreastWear = new OverlayModelBox(64, 64, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, state.leftBreastOverlayUVLayout);
+			this.rBreastWear = new OverlayModelBox(64, 64, 0, 0.0F, 0F, 4, 5, 3, 0.0F, state.rightBreastOverlayUVLayout);
 		}
 	}
 
@@ -310,7 +306,7 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 			//Make sure UVs aren't set to zero. If they are, the textures screw up. Don't render the quad at all.
 			if(quad.uvs[0] == 0.0F && quad.uvs[1] == 0.0F && quad.uvs[2] == 0.0F && quad.uvs[3] == 0.0F) continue;
 
-			Vector3f vector3f = new Vector3f(quad.normal.x, quad.normal.y, quad.normal.z).mul(matrix3f);
+			Vector3f vector3f = new Vector3f(quad.normal.x(), quad.normal.y(), quad.normal.z()).mul(matrix3f);
 			float normalX = vector3f.x;
 			float normalY = vector3f.y;
 			float normalZ = vector3f.z;

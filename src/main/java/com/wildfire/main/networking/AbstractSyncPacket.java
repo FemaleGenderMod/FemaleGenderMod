@@ -18,11 +18,10 @@
 
 package com.wildfire.main.networking;
 
-import com.mojang.datafixers.util.Function11;
-import com.wildfire.main.WildfireHelper;
+import com.mojang.datafixers.util.Function8;
+import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.entitydata.Breasts;
 import com.wildfire.main.entitydata.PlayerConfig;
-import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.uvs.UVDirection;
 import com.wildfire.main.uvs.UVLayout;
 import com.wildfire.main.uvs.UVQuad;
@@ -31,11 +30,13 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.Uuids;
 
-import java.util.Map;
+import java.util.EnumMap;
 import java.util.UUID;
 
 abstract class AbstractSyncPacket {
 
+    // remember to update SyncHelloPacket.VERSION when modifying this codec if the changes result in a change
+    // to the underlying packet structure
     protected static <T extends AbstractSyncPacket> PacketCodec<ByteBuf, T> codec(SyncPacketConstructor<T> constructor) {
         return PacketCodec.tuple(
                 Uuids.PACKET_CODEC, p -> p.uuid,
@@ -45,10 +46,7 @@ abstract class AbstractSyncPacket {
                 PacketCodecs.FLOAT, p -> p.voicePitch,
                 BreastPhysics.CODEC, p -> p.physics,
                 Breasts.CODEC, p -> p.breasts,
-                UV_CODEC, p -> p.leftBreastUVLayout,
-                UV_CODEC, p -> p.rightBreastUVLayout,
-                UV_CODEC, p -> p.leftBreastOverlayUVLayout,
-                UV_CODEC, p -> p.rightBreastOverlayUVLayout,
+                UV_LAYOUTS_CODEC, p -> p.uvLayouts,
                 constructor
         );
     }
@@ -60,12 +58,9 @@ abstract class AbstractSyncPacket {
     protected final float voicePitch;
     protected final BreastPhysics physics;
     protected final Breasts breasts;
-    protected final UVLayout leftBreastUVLayout;
-    protected final UVLayout rightBreastUVLayout;
-    protected final UVLayout leftBreastOverlayUVLayout;
-    protected final UVLayout rightBreastOverlayUVLayout;
+    protected final UVLayouts uvLayouts;
 
-    protected AbstractSyncPacket(UUID uuid, Gender gender, float bustSize, boolean hurtSounds, float voicePitch, BreastPhysics physics, Breasts breasts, UVLayout leftBreastUVLayout, UVLayout rightBreastUVLayout, UVLayout leftBreastOverlayUVLayout, UVLayout rightBreastOverlayUVLayout) {
+    protected AbstractSyncPacket(UUID uuid, Gender gender, float bustSize, boolean hurtSounds, float voicePitch, BreastPhysics physics, Breasts breasts, UVLayouts uvLayouts) {
         this.uuid = uuid;
         this.gender = gender;
         this.bustSize = bustSize;
@@ -73,14 +68,11 @@ abstract class AbstractSyncPacket {
         this.voicePitch = voicePitch;
         this.physics = physics;
         this.breasts = breasts;
-        this.leftBreastUVLayout = leftBreastUVLayout;
-        this.rightBreastUVLayout = rightBreastUVLayout;
-        this.leftBreastOverlayUVLayout = leftBreastOverlayUVLayout;
-        this.rightBreastOverlayUVLayout = rightBreastOverlayUVLayout;
+        this.uvLayouts = uvLayouts;
     }
 
     protected AbstractSyncPacket(PlayerConfig plr) {
-        this(plr.uuid, plr.getGender(), plr.getBustSize(), plr.hasHurtSounds(), plr.getVoicePitch(), new BreastPhysics(plr), plr.getBreasts(), plr.getLeftBreastUVLayout(), plr.getRightBreastUVLayout(), plr.getLeftBreastOverlayUVLayout(), plr.getRightBreastOverlayUVLayout());
+        this(plr.uuid, plr.getGender(), plr.getBustSize(), plr.hasHurtSounds(), plr.getVoicePitch(), new BreastPhysics(plr), plr.getBreasts(), UVLayouts.from(plr));
     }
 
     // TODO add support for mannequins?
@@ -91,10 +83,7 @@ abstract class AbstractSyncPacket {
         plr.updateVoicePitch(voicePitch);
         physics.applyTo(plr);
         plr.getBreasts().copyFrom(breasts);
-        plr.updateLeftBreastUVLayout(leftBreastUVLayout);
-        plr.updateRightBreastUVLayout(rightBreastUVLayout);
-        plr.updateLeftBreastOverlayUVLayout(leftBreastOverlayUVLayout);
-        plr.updateRightBreastOverlayUVLayout(rightBreastOverlayUVLayout);
+        uvLayouts.applyTo(plr);
     }
 
     protected record BreastPhysics(boolean physics, boolean showInArmor, float bounceMultiplier, float floppyMultiplier) {
@@ -120,40 +109,44 @@ abstract class AbstractSyncPacket {
     }
 
     @FunctionalInterface
-    protected interface SyncPacketConstructor<T extends AbstractSyncPacket> extends Function11<UUID, Gender, Float, Boolean, Float, BreastPhysics, Breasts, UVLayout, UVLayout, UVLayout, UVLayout, T> {
+    protected interface SyncPacketConstructor<T extends AbstractSyncPacket> extends Function8<UUID, Gender, Float, Boolean, Float, BreastPhysics, Breasts, UVLayouts, T> {
     }
 
-
-    public static final PacketCodec<ByteBuf, UVLayout> UV_CODEC = new PacketCodec<>() {
-
-        @Override
-        public void encode(ByteBuf buf, UVLayout value) {
-            for (Map.Entry<UVDirection, UVQuad> entry : value.getAllSides().entrySet()) {
-                UVQuad quad = entry.getValue();
-
-                PacketCodecs.VAR_INT.encode(buf, quad.x1());
-                PacketCodecs.VAR_INT.encode(buf, quad.y1());
-                PacketCodecs.VAR_INT.encode(buf, quad.x2());
-                PacketCodecs.VAR_INT.encode(buf, quad.y2());
-            }
+    public record UVLayouts(Layer skin, Layer overlay) {
+        public static UVLayouts from(PlayerConfig plr) {
+            return new UVLayouts(
+                    /*skin = */ new Layer(plr.getLeftBreastUVLayout().copy(), plr.getRightBreastUVLayout().copy()),
+                    /*overlay = */ new Layer(plr.getLeftBreastOverlayUVLayout().copy(), plr.getRightBreastOverlayUVLayout().copy())
+            );
         }
 
-        @Override
-        public UVLayout decode(ByteBuf buf) {
-            UVLayout layout = new UVLayout();
-
-            for (Map.Entry<UVDirection, UVQuad> entry : layout.getAllSides().entrySet()) {
-                UVDirection direction = entry.getKey();
-
-                layout.put(direction, new UVQuad(
-                        PacketCodecs.VAR_INT.decode(buf),
-                        PacketCodecs.VAR_INT.decode(buf),
-                        PacketCodecs.VAR_INT.decode(buf),
-                        PacketCodecs.VAR_INT.decode(buf))
-                );
-            }
-
-            return layout;
+        private void applyTo(PlayerConfig plr) {
+            plr.updateLeftBreastUVLayout(skin.left);
+            plr.updateRightBreastUVLayout(skin.right);
+            plr.updateLeftBreastOverlayUVLayout(overlay.left);
+            plr.updateRightBreastOverlayUVLayout(overlay.right);
         }
-    };
+
+        public record Layer(UVLayout left, UVLayout right) {
+        }
+    }
+
+    static final PacketCodec<ByteBuf, UVLayout> UV_CODEC = PacketCodecs.map(
+            size -> new EnumMap<>(UVDirection.class),
+            UVDirection.PACKET_CODEC,
+            UVQuad.PACKET_CODEC,
+            UVDirection.values().length
+    ).xmap(UVLayout::new, UVLayout::getQuads);
+
+    static final PacketCodec<ByteBuf, UVLayouts.Layer> UV_LAYER_CODEC = PacketCodec.tuple(
+            UV_CODEC, UVLayouts.Layer::left,
+            UV_CODEC, UVLayouts.Layer::right,
+            UVLayouts.Layer::new
+    );
+
+    static final PacketCodec<ByteBuf, UVLayouts> UV_LAYOUTS_CODEC = PacketCodec.tuple(
+            UV_LAYER_CODEC, UVLayouts::skin,
+            UV_LAYER_CODEC, UVLayouts::overlay,
+            UVLayouts::new
+    );
 }

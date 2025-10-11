@@ -18,11 +18,10 @@
 
 package com.wildfire.main.networking;
 
-import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.WildfireGender;
+import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.entitydata.Breasts;
 import com.wildfire.main.entitydata.PlayerConfig;
-import com.wildfire.main.uvs.UVLayout;
 import io.netty.buffer.ByteBuf;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -44,8 +43,8 @@ public final class ServerboundSyncPacket extends AbstractSyncPacket implements C
 		super(plr);
 	}
 
-	private ServerboundSyncPacket(UUID uuid, Gender gender, float bustSize, boolean hurtSounds, float voicePitch, BreastPhysics physics, Breasts breasts, UVLayout leftBreastUVLayout, UVLayout rightBreastUVLayout, UVLayout leftBreastOverlayUVLayout, UVLayout rightBreastOverlayUVLayout) {
-		super(uuid, gender, bustSize, hurtSounds, voicePitch, physics, breasts, leftBreastUVLayout, rightBreastUVLayout, leftBreastOverlayUVLayout, rightBreastOverlayUVLayout);
+	private ServerboundSyncPacket(UUID uuid, Gender gender, float bustSize, boolean hurtSounds, float voicePitch, BreastPhysics physics, Breasts breasts, UVLayouts uvLayouts) {
+		super(uuid, gender, bustSize, hurtSounds, voicePitch, physics, breasts, uvLayouts);
 	}
 
 	@Override
