@@ -180,7 +180,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 		if(isBreastCancerAwarenessMonth) {
 			int bcaY = y - 45;
 			ctx.fill(x - 159, bcaY + 106, x + 159, bcaY + 136, 0x55000000);
-			ctx.drawTextWithShadow(textRenderer, Text.translatable("wildfire_gender.cancer_awareness.title").formatted(Formatting.BOLD, Formatting.ITALIC), this.width / 2 - 148, bcaY + 117, 0xFFFFFF);
+			ctx.drawTextWithShadow(textRenderer, Text.translatable("wildfire_gender.cancer_awareness.title").formatted(Formatting.BOLD, Formatting.ITALIC), this.width / 2 - 148, bcaY + 117, 0xFFFFFFFF);
 			ctx.drawTexture(RenderPipelines.GUI_TEXTURED, TXTR_RIBBON, x + 130, bcaY + 109, 0, 0, 26, 26, 20, 20, 20, 20);
 		}
 

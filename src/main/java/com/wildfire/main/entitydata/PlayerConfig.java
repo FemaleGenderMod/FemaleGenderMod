@@ -83,14 +83,6 @@ public class PlayerConfig extends EntityConfig {
 		return cfg;
 	}
 
-	private <VALUE> boolean updateValue(ConfigKey<VALUE> key, VALUE value, Consumer<VALUE> setter) {
-		if (key.validate(value)) {
-			setter.accept(value);
-			return true;
-		}
-		return false;
-	}
-
 	public boolean updateGender(Gender value) {
 		return updateValue(Configuration.GENDER, value, v -> this.gender = v);
 	}

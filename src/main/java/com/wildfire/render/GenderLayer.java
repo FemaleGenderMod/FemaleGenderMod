@@ -22,6 +22,7 @@ import com.wildfire.api.IGenderArmor;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.config.ClientConfig;
+import com.wildfire.main.uvs.UVLayout;
 import com.wildfire.mixins.accessors.LivingEntityRendererAccessor;
 import com.wildfire.render.WildfireModelRenderer.BreastModelBox;
 import com.wildfire.render.WildfireModelRenderer.OverlayModelBox;
@@ -46,6 +47,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.*;
 
 import java.lang.Math;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 @Environment(EnvType.CLIENT)
@@ -54,11 +56,15 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 	private static final float DEG_TO_RAD = (float) (Math.PI / 180);
 
 	private BreastModelBox lBreast, rBreast;
-	private static final OverlayModelBox lBreastWear, rBreastWear;
+	private OverlayModelBox lBreastWear, rBreastWear;
+
+	private UVLayout prevLeftBreastUVLayout;
+	private UVLayout prevRightBreastUVLayout;
+	private UVLayout prevLeftBreastOverlayUVLayout;
+	private UVLayout prevRightBreastOverlayUVLayout;
 
 	private final FeatureRendererContext<S, M> context;
 
-	private float preBreastSize, preBreastOffsetZ;
 	private boolean isUniboob;
 	protected ItemStack armorStack; // although ItemStacks are mutable, this is safe as it is a copy of the real one
 	protected IGenderArmor genderArmor;
@@ -66,17 +72,9 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 	protected float breastOffsetX, breastOffsetY, breastOffsetZ, lPhysPositionY, lPhysPositionX, rPhysPositionY, rPhysPositionX,
 			lPhysBounceRotation, rPhysBounceRotation, breastSize, zOffset, outwardAngle;
 
-	static {
-		lBreastWear = new OverlayModelBox(true, 64, 64, 17, 34, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, false);
-		rBreastWear = new OverlayModelBox(false, 64, 64, 21, 34, 0, 0.0F, 0F, 4, 5, 3, 0.0F, false);
-	}
-
 	public GenderLayer(FeatureRendererContext<S, M> render) {
 		super(render);
 		this.context = render;
-		// this can't be static or final as we need the ability to resize this during render time
-		lBreast = new BreastModelBox(64, 64, 16, 17, -4F, 0.0F, 0F, 4, 5, 4, 0.0F, false);
-		rBreast = new BreastModelBox(64, 64, 20, 17, 0, 0.0F, 0F, 4, 5, 4, 0.0F, false);
 	}
 
 	/**
@@ -121,36 +119,36 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 	 * @return {@code true} if rendering should continue
 	 */
 	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
-	protected boolean setupRender(S state, GenderRenderState genderRenderState) {
+	protected boolean setupRender(S entityState, GenderRenderState genderState) {
 		if(!ClientConfig.RENDER_BREASTS) return false;
 
-		armorStack = state.equippedChestStack;
+		armorStack = entityState.equippedChestStack;
 		//Note: When the stack is empty the helper will fall back to an implementation that returns the proper data
 		genderArmor = WildfireHelper.getArmorConfig(armorStack);
-		isChestplateOccupied = genderArmor.coversBreasts() && !genderRenderState.armorPhysicsOverride;
-		if(genderArmor.alwaysHidesBreasts() || !genderRenderState.showBreastsInArmor && isChestplateOccupied) {
+		isChestplateOccupied = genderArmor.coversBreasts() && !genderState.armorPhysicsOverride;
+		if(genderArmor.alwaysHidesBreasts() || !genderState.showBreastsInArmor && isChestplateOccupied) {
 			//If the armor always hides breasts or there is armor and the player configured breasts
 			// to be hidden when wearing armor, we can just exit early rather than doing any calculations
 			return false;
 		}
 
-		if(!isLayerVisible(state)) {
+		if(!isLayerVisible(entityState)) {
 			return false;
 		}
 
-		GenderRenderState.BreastState breasts = genderRenderState.breasts;
+		GenderRenderState.BreastState breasts = genderState.breasts;
 		breastOffsetX = WildfireHelper.round(breasts.xOffset, 1);
 		breastOffsetY = -WildfireHelper.round(breasts.yOffset, 1);
 		breastOffsetZ = -WildfireHelper.round(breasts.zOffset, 1);
 
 		isUniboob = breasts.uniboob;
 
-		GenderRenderState.BreastPhysicsState leftPhysicsState = genderRenderState.leftBreastPhysics;
+		GenderRenderState.BreastPhysicsState leftPhysicsState = genderState.leftBreastPhysics;
 		final float bSize = leftPhysicsState.getBreastSize();
 		outwardAngle = Math.round(breasts.cleavage * 100f);
 		outwardAngle = Math.min(outwardAngle, 10);
 
-		resizeBox(bSize);
+		resizeBox(genderState, bSize);
 
 		lPhysPositionY = leftPhysicsState.getPositionY();
 		lPhysPositionX = leftPhysicsState.getPositionX();
@@ -160,7 +158,7 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 			rPhysPositionX = lPhysPositionX;
 			rPhysBounceRotation = lPhysBounceRotation;
 		} else {
-			GenderRenderState.BreastPhysicsState rightPhysicsState = genderRenderState.rightBreastPhysics;
+			GenderRenderState.BreastPhysicsState rightPhysicsState = genderState.rightBreastPhysics;
 			rPhysPositionY = rightPhysicsState.getPositionY();
 			rPhysPositionX = rightPhysicsState.getPositionX();
 			rPhysBounceRotation = rightPhysicsState.getBounceRotation();
@@ -180,8 +178,8 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		breastSize += 0.5f * Math.abs(bSize - 0.7f) * 2f; // Adjust breastSize based on bSize
 
 		float resistance = MathHelper.clamp(genderArmor.physicsResistance(), 0, 1);
-		breathingAnimation = ((genderRenderState.armorPhysicsOverride || resistance <= 0.5F) && genderRenderState.isBreathing);
-		bounceEnabled = genderRenderState.hasBreastPhysics && (!isChestplateOccupied || resistance < 1); //oh, you found this?
+		breathingAnimation = ((genderState.armorPhysicsOverride || resistance <= 0.5F) && genderState.isBreathing);
+		bounceEnabled = genderState.hasBreastPhysics && (!isChestplateOccupied || resistance < 1); //oh, you found this?
 		return true;
 	}
 
@@ -189,16 +187,22 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		return !state.invisibleToPlayer || state.hasOutline();
 	}
 
-	protected void resizeBox(float breastSize) {
-		float reducer = -1;
-		if(breastSize < 0.84f) reducer++;
-		if(breastSize < 0.72f) reducer++;
+	protected void resizeBox(GenderRenderState state, float breastSize) {
+		//TODO: Better way for this?
+		if(!Objects.equals(this.prevLeftBreastUVLayout, state.leftBreastUVLayout)
+				|| !Objects.equals(this.prevRightBreastUVLayout, state.rightBreastUVLayout)
+				|| !Objects.equals(this.prevLeftBreastOverlayUVLayout, state.leftBreastOverlayUVLayout)
+				|| !Objects.equals(this.prevRightBreastOverlayUVLayout, state.rightBreastOverlayUVLayout)) {
 
-		if(preBreastSize != breastSize || preBreastOffsetZ != breastOffsetZ) {
-			lBreast = new BreastModelBox(64, 64, 16, 17, -4F, 0.0F, 0F, 4, 5, (int) (4 - breastOffsetZ - reducer), 0.0F, false);
-			rBreast = new BreastModelBox(64, 64, 20, 17, 0, 0.0F, 0F, 4, 5, (int) (4 - breastOffsetZ - reducer), 0.0F, false);
-			preBreastSize = breastSize;
-			preBreastOffsetZ = breastOffsetZ;
+			this.prevLeftBreastUVLayout = state.leftBreastUVLayout;
+			this.prevRightBreastUVLayout = state.rightBreastUVLayout;
+			this.prevLeftBreastOverlayUVLayout = state.leftBreastOverlayUVLayout;
+			this.prevRightBreastOverlayUVLayout = state.rightBreastOverlayUVLayout;
+
+			this.lBreast = new BreastModelBox(64, 64, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, state.leftBreastUVLayout);
+			this.rBreast = new BreastModelBox(64, 64, 0F, 0.0F, 0F, 4, 5, 3, 0.0F, state.rightBreastUVLayout);
+			this.lBreastWear = new OverlayModelBox(64, 64, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, state.leftBreastOverlayUVLayout);
+			this.rBreastWear = new OverlayModelBox(64, 64, 0, 0.0F, 0F, 4, 5, 3, 0.0F, state.rightBreastOverlayUVLayout);
 		}
 	}
 
@@ -219,7 +223,7 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 			matrixStack.translate(0, (side.isLeft ? lPhysPositionY : rPhysPositionY) / 32f, 0);
 		}
 
-		matrixStack.translate((side.isLeft ? breastOffsetX : -breastOffsetX) * 0.0625f, 0.05625f + (breastOffsetY * 0.0625f), zOffset - 0.0625f * 2f + (breastOffsetZ * 0.0625f)); //shift down to correct position
+		matrixStack.translate((side.isLeft ? breastOffsetX : -breastOffsetX) * 0.0625f, 0.05625f + (breastOffsetY * 0.0625f), zOffset - 0.0625f * 2f + (breastOffsetZ * 0.0425f)); //shift down to correct position
 
 		if(!isUniboob) {
 			matrixStack.translate(-0.0625f * 2 * (side.isLeft ? 1 : -1), 0, 0);
@@ -298,11 +302,15 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		Matrix4f matrix4f = entry.getPositionMatrix();
 		Matrix3f matrix3f = entry.getNormalMatrix();
 		for(var quad : model.quads) {
-			Vector3f vector3f = new Vector3f(quad.normal.x, quad.normal.y, quad.normal.z).mul(matrix3f);
+
+			//Make sure UVs aren't set to zero. If they are, the textures screw up. Don't render the quad at all.
+			if(quad.uvs[0] == 0.0F && quad.uvs[1] == 0.0F && quad.uvs[2] == 0.0F && quad.uvs[3] == 0.0F) continue;
+
+			Vector3f vector3f = new Vector3f(quad.normal.x(), quad.normal.y(), quad.normal.z()).mul(matrix3f);
 			float normalX = vector3f.x;
 			float normalY = vector3f.y;
 			float normalZ = vector3f.z;
-			for(var vertex : quad.vertexPositions) {
+			for (var vertex : quad.vertexPositions) {
 				float j = vertex.x() / 16.0F;
 				float k = vertex.y() / 16.0F;
 				float l = vertex.z() / 16.0F;

@@ -20,6 +20,8 @@ package com.wildfire.render;
 
 import com.wildfire.api.IBreastArmorTexture;
 import com.wildfire.main.WildfireGender;
+import com.wildfire.main.uvs.UVLayout;
+import com.wildfire.main.uvs.UVQuad;
 import com.wildfire.mixins.accessors.EquipmentRendererAccessor;
 import com.wildfire.render.WildfireModelRenderer.BreastModelBox;
 import com.wildfire.render.ducks.MissingTextureLogger;
@@ -50,8 +52,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-
 @Environment(EnvType.CLIENT)
 public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedEntityModel<S>> extends GenderLayer<S, M> {
 
@@ -62,24 +62,38 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 	private GenderRenderState genderRenderState;
 	private @NotNull IBreastArmorTexture textureData = IBreastArmorTexture.DEFAULT;
 
+	static {
+		var left = new UVLayout(
+				new UVQuad(24, 21, 28, 26),  // EAST
+				new UVQuad(16, 21, 20, 26),  // WEST
+				new UVQuad(20, 17, 24, 21),  // DOWN
+				new UVQuad(20, 25, 24, 27),  // UP
+				new UVQuad(20, 21, 24, 26)   // NORTH
+		);
+
+		var right = new UVLayout(
+				new UVQuad(28, 21, 32, 26),  // EAST
+				new UVQuad(20, 21, 24, 26),  // WEST
+				new UVQuad(24, 17, 28, 21),  // DOWN
+				new UVQuad(24, 25, 28, 27),  // UP
+				new UVQuad(24, 21, 28, 26)   // NORTH
+		);
+
+		// apply a very slight delta to fix rare layering issues with the normal armor layer
+		// TODO look into how difficult it'd be to replicate Model render priority here
+		lTrim = new BreastModelBox(64, 32, -4F, 0.0F, 0F, 4, 5, 4, 0.001F, left);
+		rTrim = new BreastModelBox(64, 32, 0, 0.0F, 0F, 4, 5, 4, 0.001F, right);
+	}
+
 	private static boolean textureExists(Identifier texture) {
 		var texManager = MinecraftClient.getInstance().getTextureManager();
 		return !((MissingTextureLogger) texManager).wildfire_gender$missingTextures().contains(texture);
-	}
-
-	static {
-		// apply a very slight delta to fix rare layering issues with the normal armor layer
-		// TODO look into how difficult it'd be to replicate Model render priority here
-		lTrim = new BreastModelBox(64, 32, 16, 17, -4F, 0.0F, 0F, 4, 5, 4, 0.001F, false);
-		rTrim = new BreastModelBox(64, 32, 20, 17, 0, 0.0F, 0F, 4, 5, 4, 0.001F, false);
 	}
 
 	public GenderArmorLayer(FeatureRendererContext<S, M> render, EquipmentModelLoader equipmentModelLoader, EquipmentRenderer equipmentRenderer) {
 		super(render);
 		this.equipmentRenderer = equipmentRenderer;
 		this.equipmentModelLoader = equipmentModelLoader;
-		lBoobArmor = new BreastModelBox(64, 32, 16, 17, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, false);
-		rBoobArmor = new BreastModelBox(64, 32, 20, 17, 0, 0.0F, 0F, 4, 5, 3, 0.0F, false);
 	}
 
 	@Override
@@ -133,18 +147,25 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 	}
 
 	@Override
-	protected void resizeBox(float breastSize) {
-		if(genderArmor == null || Objects.equals(textureData, genderArmor.texture())) {
+	protected void resizeBox(GenderRenderState state, float breastSize) {
+		/*if(genderArmor == null || Objects.equals(textureData, genderArmor.texture())) {
 			return;
 		}
 
 		textureData = genderArmor.texture();
 		var texSize = textureData.textureSize();
 		var lUV = textureData.leftUv();
-		var dim = textureData.dimensions();
-		lBoobArmor = new BreastModelBox(texSize.x(), texSize.y(), lUV.x(), lUV.y(), -4F, 0.0F, 0F, dim.x(), dim.y(), 4, 0.0F, false);
 		var rUV = textureData.rightUv();
-		rBoobArmor = new BreastModelBox(texSize.x(), texSize.y(), rUV.x(), rUV.y(), 0, 0.0F, 0F, dim.x(), dim.y(), 4, 0.0F, false);
+		var dim = textureData.dimensions();*/
+
+		//lBoobArmor = new BreastModelBox(texSize.x(), texSize.y(), lUV.x(), lUV.y(), -4F, 0.0F, 0F, dim.x(), dim.y(), 4, 0.0F, false);
+		//rBoobArmor = new BreastModelBox(texSize.x(), texSize.y(), rUV.x(), rUV.y(), 0, 0.0F, 0F, dim.x(), dim.y(), 4, 0.0F, false);
+
+		// FIXME make this work with armor configs
+		if(this.lBoobArmor == null || this.rBoobArmor == null) {
+			lBoobArmor = new BreastModelBox(64, 32, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, state.leftBreastArmorUVLayout);
+			rBoobArmor = new BreastModelBox(64, 32, 0, 0.0F, 0F, 4, 5, 3, 0.0F, state.rightBreastArmorUVLayout);
+		}
 	}
 
 	@Override

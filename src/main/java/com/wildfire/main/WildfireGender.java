@@ -27,10 +27,10 @@ import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.networking.WildfireSync;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Direction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
-
 import java.time.Duration;
 import java.util.UUID;
 
@@ -64,6 +64,7 @@ public class WildfireGender implements ModInitializer {
 		});
 	}
 
+
 	@Override
 	public void onInitialize() {
 		WildfireSync.register();
@@ -82,4 +83,5 @@ public class WildfireGender implements ModInitializer {
 	public static Identifier id(String path) {
 		return Identifier.of(MODID, path);
 	}
+
 }

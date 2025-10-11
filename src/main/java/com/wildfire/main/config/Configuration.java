@@ -24,12 +24,11 @@ import com.wildfire.main.config.functions.BreastGetter;
 import com.wildfire.main.config.functions.BreastSetter;
 import com.wildfire.main.config.functions.PlayerGetter;
 import com.wildfire.main.config.functions.PlayerSetter;
-import com.wildfire.main.config.types.BooleanConfigKey;
-import com.wildfire.main.config.types.ConfigKey;
-import com.wildfire.main.config.types.EnumConfigKey;
-import com.wildfire.main.config.types.FloatConfigKey;
+import com.wildfire.main.config.types.*;
 import com.wildfire.main.entitydata.Breasts;
 import com.wildfire.main.entitydata.PlayerConfig;
+import com.wildfire.main.uvs.UVLayout;
+import com.wildfire.main.uvs.UVQuad;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
@@ -56,6 +55,64 @@ public class Configuration extends AbstractConfiguration {
 
 	public static final BooleanConfigKey HOLIDAY_THEMES = new BooleanConfigKey("holiday_themes", true);
 
+    // Base breasts
+    public static final ConfigKey<UVLayout> LEFT_BREAST_UV_LAYOUT =
+            new UVLayoutConfigKey("leftBreastUVLayout", new UVLayout(
+                    new UVQuad(24, 21, 27, 26),  // EAST
+                    new UVQuad(16, 21, 20, 26),  // WEST
+                    new UVQuad(20, 17, 24, 21),  // DOWN
+                    new UVQuad(20, 25, 24, 27),  // UP
+                    new UVQuad(20, 21, 24, 26)   // NORTH
+            ));
+
+    public static final ConfigKey<UVLayout> RIGHT_BREAST_UV_LAYOUT =
+            new UVLayoutConfigKey("rightBreastUVLayout", new UVLayout(
+                    new UVQuad(28, 21, 32, 26),  // EAST
+                    new UVQuad(21, 21, 24, 26),  // WEST
+                    new UVQuad(24, 17, 28, 21),  // DOWN
+                    new UVQuad(24, 25, 28, 27),  // UP
+                    new UVQuad(24, 21, 28, 26)   // NORTH
+            ));
+
+    // Overlay breasts
+    public static final ConfigKey<UVLayout> LEFT_BREAST_OVERLAY_UV_LAYOUT =
+            new UVLayoutConfigKey("leftBreastOverlayUVLayout", new UVLayout(
+                    new UVQuad( 0,  0,  0,  0),  // EAST (not used)
+                    new UVQuad(17, 37, 20, 42),  // WEST
+                    new UVQuad(20, 34, 24, 37),  // DOWN
+                    new UVQuad(20, 42, 24, 45),  // UP
+                    new UVQuad(20, 37, 24, 42)   // NORTH
+            ));
+
+    public static final ConfigKey<UVLayout> RIGHT_BREAST_OVERLAY_UV_LAYOUT =
+            new UVLayoutConfigKey("rightBreastOverlayUVLayout", new UVLayout(
+                    new UVQuad(28, 37, 31, 42),  // EAST
+                    new UVQuad( 0,  0,  0,  0),  // WEST (not used)
+                    new UVQuad(24, 34, 28, 37),  // DOWN
+                    new UVQuad(24, 42, 28, 45),  // UP
+                    new UVQuad(24, 37, 28, 42)   // NORTH
+            ));
+
+    // Armor breasts
+    public static final ConfigKey<UVLayout> LEFT_BREAST_ARMOR_UV_LAYOUT =
+            new UVLayoutConfigKey("leftBreastArmorUVLayout", new UVLayout(
+                    new UVQuad(24, 21, 28, 26),  // EAST
+                    new UVQuad(16, 21, 20, 26),  // WEST
+                    new UVQuad(20, 17, 24, 21),  // DOWN
+                    new UVQuad(20, 25, 24, 27),  // UP
+                    new UVQuad(20, 21, 24, 26)   // NORTH
+            ));
+
+    public static final ConfigKey<UVLayout> RIGHT_BREAST_ARMOR_UV_LAYOUT =
+            new UVLayoutConfigKey("rightBreastArmorUVLayout", new UVLayout(
+                    new UVQuad(28, 21, 32, 26),  // EAST
+                    new UVQuad(20, 21, 24, 26),  // WEST
+                    new UVQuad(24, 17, 28, 21),  // DOWN
+                    new UVQuad(24, 25, 28, 27),  // UP
+                    new UVQuad(24, 21, 28, 26)   // NORTH
+            ));
+
+
 	public static final @Unmodifiable List<RegisteredKey<?>> KEYS = List.of(
 			new RegisteredKey<>(GENDER, PlayerConfig::getGender, PlayerConfig::updateGender),
 			new RegisteredKey<>(BUST_SIZE, PlayerConfig::getBustSize, PlayerConfig::updateBustSize),
@@ -73,7 +130,13 @@ public class Configuration extends AbstractConfiguration {
 			new RegisteredKey<>(BOUNCE_MULTIPLIER, PlayerConfig::getBounceMultiplier, PlayerConfig::updateBounceMultiplier),
 			new RegisteredKey<>(FLOPPY_MULTIPLIER, PlayerConfig::getFloppiness, PlayerConfig::updateFloppiness),
 
-			new RegisteredKey<>(HOLIDAY_THEMES, PlayerConfig::hasHolidayThemes, PlayerConfig::updateHolidayThemes)
+			new RegisteredKey<>(HOLIDAY_THEMES, PlayerConfig::hasHolidayThemes, PlayerConfig::updateHolidayThemes),
+
+			new RegisteredKey<>(LEFT_BREAST_UV_LAYOUT, PlayerConfig::getLeftBreastUVLayout, PlayerConfig::updateLeftBreastUVLayout),
+			new RegisteredKey<>(RIGHT_BREAST_UV_LAYOUT, PlayerConfig::getRightBreastUVLayout, PlayerConfig::updateRightBreastUVLayout),
+
+			new RegisteredKey<>(LEFT_BREAST_OVERLAY_UV_LAYOUT, PlayerConfig::getLeftBreastOverlayUVLayout, PlayerConfig::updateLeftBreastOverlayUVLayout),
+			new RegisteredKey<>(RIGHT_BREAST_OVERLAY_UV_LAYOUT, PlayerConfig::getRightBreastOverlayUVLayout, PlayerConfig::updateRightBreastOverlayUVLayout)
 	);
 
 	public Configuration(String cfgName) {

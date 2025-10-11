@@ -18,8 +18,8 @@
 
 package com.wildfire.main.networking;
 
-import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.WildfireGender;
+import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.entitydata.Breasts;
 import com.wildfire.main.entitydata.PlayerConfig;
 import io.netty.buffer.ByteBuf;
@@ -43,8 +43,8 @@ public final class ClientboundSyncPacket extends AbstractSyncPacket implements C
 		super(plr);
 	}
 
-	private ClientboundSyncPacket(UUID uuid, Gender gender, float bustSize, boolean hurtSounds, float voicePitch, BreastPhysics physics, Breasts breasts) {
-		super(uuid, gender, bustSize, hurtSounds, voicePitch, physics,  breasts);
+	private ClientboundSyncPacket(UUID uuid, Gender gender, float bustSize, boolean hurtSounds, float voicePitch, BreastPhysics physics, Breasts breasts, UVLayouts uvLayouts) {
+		super(uuid, gender, bustSize, hurtSounds, voicePitch, physics,  breasts, uvLayouts);
 	}
 
 	@Override
