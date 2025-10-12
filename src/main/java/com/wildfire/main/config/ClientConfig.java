@@ -18,18 +18,24 @@
 
 package com.wildfire.main.config;
 
+import com.wildfire.main.WildfireGender;
 import com.wildfire.main.config.enums.ShowPlayerListMode;
 import com.wildfire.main.config.enums.SyncVerbosity;
 import com.wildfire.main.config.types.BooleanConfigKey;
 import com.wildfire.main.config.types.EnumConfigKey;
 import com.wildfire.main.config.types.StringConfigKey;
 import com.wildfire.main.config.types.TriStateConfigKey;
+import net.fabricmc.loader.api.FabricLoader;
+
+import java.io.File;
 
 public class ClientConfig extends AbstractConfiguration {
     public static final ClientConfig INSTANCE = new ClientConfig();
 
     private ClientConfig() {
-        super(".", "wildfire_gender");
+        super(".", "female_gender_mod");
+
+        migrateConfiguration(".", "wildfire_gender");
     }
 
     // note: these options are not intended to be saved in any persistent manner
@@ -38,6 +44,7 @@ public class ClientConfig extends AbstractConfiguration {
     public static final BooleanConfigKey ARMOR_PHYSICS_OVERRIDE = new BooleanConfigKey("armor_physics_override", false);
 
     public static final BooleanConfigKey FIRST_TIME_LOAD = new BooleanConfigKey("firstTimeLoad", true);
+    public static final BooleanConfigKey SHOW_TOAST = new BooleanConfigKey("showToast", true);
     public static final BooleanConfigKey CLOUD_SYNC_ENABLED = new BooleanConfigKey("cloud_sync", false);
     public static final BooleanConfigKey AUTOMATIC_CLOUD_SYNC = new BooleanConfigKey("sync_player_data", false);
     // see CloudSync#DEFAULT_CLOUD_URL for the actual default
@@ -65,6 +72,7 @@ public class ClientConfig extends AbstractConfiguration {
         INSTANCE.setDefault(ALWAYS_SHOW_LIST);
         INSTANCE.setDefault(ARMOR_STAT);
         INSTANCE.setDefault(HIDE_OWN_CONTRIBUTOR_TAG);
+        INSTANCE.setDefault(SHOW_TOAST);
         // HOLIDAY_COSMETICS is intentionally omitted
         // DISPLAY_OWN_NAMETAG is intentionally omitted
         if(!INSTANCE.exists()) {

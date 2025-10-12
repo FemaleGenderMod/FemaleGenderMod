@@ -31,11 +31,12 @@ import com.wildfire.main.uvs.UVLayout;
 import com.wildfire.main.uvs.UVQuad;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.nio.file.Path;
 import java.util.List;
 
 public class Configuration extends AbstractConfiguration {
 
-	private static final String CONFIG_DIR = "WildfireGender";
+	private static final String CONFIG_DIR = "FemaleGenderMod";
 
 	public static final EnumConfigKey<Gender> GENDER = new EnumConfigKey<>("gender", Gender.MALE, Gender.BY_ID);
 	public static final FloatConfigKey BUST_SIZE = new FloatConfigKey("bust_size", 0.6F, 0, 0.8f);
@@ -165,5 +166,9 @@ public class Configuration extends AbstractConfiguration {
 		public void writeToPlayer(PlayerConfig player) {
 			setter.set(player, player.getConfig().get(key));
 		}
+	}
+
+	public static String getConfigFile() {
+		return CONFIG_DIR;
 	}
 }

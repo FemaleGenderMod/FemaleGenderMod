@@ -125,4 +125,25 @@ public abstract class AbstractConfiguration {
 			WildfireGender.LOGGER.error("Failed to load config file", e);
 		}
 	}
+
+	public void migrateConfiguration(String oldDir, String oldName) {
+		if (!supportsSaving()) return;
+
+		File oldFile = FabricLoader.getInstance().getConfigDir().resolve(oldDir).resolve(oldName + ".json").toFile();
+		File newFile = cfgFile.getParentFile().toPath().resolve(cfgFile.getName()).toFile();
+
+		if (oldFile.exists() && !newFile.exists()) {
+			try {
+				Files.copy(oldFile.toPath(), newFile.toPath());
+				WildfireGender.LOGGER.info("Migrated config file from '{}' to '{}'", oldFile, newFile);
+
+				if (oldFile.delete()) {
+					WildfireGender.LOGGER.info("Deleted old config file after migration.");
+				}
+			} catch (IOException e) {
+				WildfireGender.LOGGER.error("Failed to migrate config file", e);
+			}
+		}
+	}
+
 }

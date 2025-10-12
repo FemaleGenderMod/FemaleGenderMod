@@ -21,6 +21,7 @@ package com.wildfire.main;
 import com.google.gson.JsonObject;
 import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.config.ClientConfig;
+import com.wildfire.main.config.Configuration;
 import com.wildfire.main.contributors.Contributors;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.networking.WildfireSync;
@@ -40,6 +41,10 @@ import net.minecraft.util.Util;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -61,6 +66,17 @@ public class WildfireGenderClient implements ClientModInitializer {
 			DebugHudEntries.register(PhysicsDebugHudEntry.ID, new PhysicsDebugHudEntry());
 		}
 		WildfireCommand.init();
+
+		//Migrate old folder.
+		Path oldConfigDir = FabricLoader.getInstance().getConfigDir().resolve("WildfireGender");
+		Path newConfigDir = FabricLoader.getInstance().getConfigDir().resolve(Configuration.getConfigFile()); // Migrate to new folder name.
+
+		try {
+			Files.move(oldConfigDir, newConfigDir, StandardCopyOption.REPLACE_EXISTING);
+			WildfireGender.LOGGER.info("Migrated config folder from '{}' to '{}'", oldConfigDir, newConfigDir);
+		} catch (IOException e) {
+			WildfireGender.LOGGER.error("Failed to rename config folder", e);
+		}
 	}
 
 	public static CompletableFuture<@Nullable PlayerConfig> loadGenderInfo(UUID uuid, boolean markForSync, boolean bypassQueue) {

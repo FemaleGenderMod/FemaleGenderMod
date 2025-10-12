@@ -25,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.wildfire.main.WildfireEventHandler;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireGenderClient;
+import com.wildfire.main.config.ClientConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
@@ -43,7 +44,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public class WildfireToast implements Toast {
-    private static final Identifier TEXTURE = Identifier.ofVanilla("toast/tutorial");
+    private static final Identifier TEXTURE = Identifier.ofVanilla("toast/advancement");
     private static final Identifier ICON = Identifier.of(WildfireGender.MODID, "textures/bc_ribbon.png");
     public static final int PROGRESS_BAR_WIDTH = 154;
     public static final int PROGRESS_BAR_HEIGHT = 1;
@@ -57,7 +58,7 @@ public class WildfireToast implements Toast {
 
     public WildfireToast(TextRenderer textRenderer, Text title, @Nullable Text description, boolean hasProgressBar, int i) {
         this.text = new ArrayList<>(2);
-        this.text.addAll(textRenderer.wrapLines(title.copy().withColor(Colors.PURPLE), 126));
+        this.text.addAll(textRenderer.wrapLines(title.copy().withColor(Colors.LIGHT_PINK), 126));
         if (description != null) {
             this.text.addAll(textRenderer.wrapLines(description, 126));
         }
@@ -79,6 +80,8 @@ public class WildfireToast implements Toast {
     public void update(ToastManager manager, long time) {
         if(WildfireEventHandler.getConfigKeybind().isPressed()) {
             this.visibility = Visibility.HIDE;
+            ClientConfig.INSTANCE.set(ClientConfig.SHOW_TOAST, false);
+            ClientConfig.INSTANCE.save();
         }
         //this.visibility = (double)time >= 10000.0 * manager.getNotificationDisplayTimeMultiplier() ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
     }
@@ -102,20 +105,7 @@ public class WildfireToast implements Toast {
         int k = 7 + (this.getTextHeight() - j) / 2;
 
         for (int l = 0; l < this.text.size(); l++) {
-            context.drawText(textRenderer, (OrderedText)this.text.get(l), 30, k + l * 11, -16777216, false);
-        }
-
-        if (this.hasProgressBar) {
-            int l = i - 4;
-            context.fill(3, l, 157, l + 1, -1);
-            int m;
-            if (this.progress >= this.lastProgress) {
-                m = -16755456;
-            } else {
-                m = -11206656;
-            }
-
-            context.fill(3, l, (int)(3.0F + 154.0F * this.lastProgress), l + 1, m);
+            context.drawText(textRenderer, (OrderedText)this.text.get(l), 30, k + l * 11, 0xFFFFFFFF, false);
         }
     }
 

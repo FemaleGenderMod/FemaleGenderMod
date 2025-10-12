@@ -20,6 +20,7 @@ package com.wildfire.main;
 
 import com.wildfire.events.*;
 import com.wildfire.gui.SyncedPlayerList;
+import com.wildfire.gui.WildfireToast;
 import com.wildfire.gui.screen.WardrobeBrowserScreen;
 import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.config.ClientConfig;
@@ -52,6 +53,7 @@ import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
+import net.minecraft.client.toast.ToastManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.*;
@@ -263,11 +265,12 @@ public final class WildfireEventHandler {
 	@Environment(EnvType.CLIENT)
 	private static void clientJoin(ClientPlayNetworkHandler var1, PacketSender var2, MinecraftClient client) {
 		if (client.player == null) return;
-		/*if (WildfireGender.getPlayerById(client.player.getUuid()) == null) {
+
+		if (ClientConfig.INSTANCE.get(ClientConfig.SHOW_TOAST)) {
 			var button = WildfireEventHandler.CONFIG_KEYBIND.getBoundKeyLocalizedText();
 			ToastManager toastManager = client.getToastManager();
 			toastManager.add(new WildfireToast(MinecraftClient.getInstance().textRenderer, Text.translatable("wildfire_gender.player_list.title"), Text.translatable("toast.wildfire_gender.get_started", button), false, 0));
-		}*/
+		}
 	}
 
 	/**
