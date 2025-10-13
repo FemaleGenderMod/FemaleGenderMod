@@ -6,6 +6,33 @@
 
 	"wildfire_gender.armor.tooltip": "+%s Brustverstärkung",
 
+	"wildfire_gender.uv_editor": "Brusttextur Editor",
+	"wildfire_gender.uv_editor.reset_defaults_all": "Alle UVs zurücksetzen",
+	"wildfire_gender.uv_editor.reset_defaults": "Auf Standard-UVs zurücksetzen",
+	"wildfire_gender.uv_editor.no_face_selected": "Wähle eine Texturfläche links aus, um sie zu bearbeiten.",
+	"wildfire_gender.uv_editor.selection.left_breast": "Links",
+	"wildfire_gender.uv_editor.selection.right_breast": "Rechts",
+	"wildfire_gender.uv_editor.selection.left_breast_overlay": "Links",
+	"wildfire_gender.uv_editor.selection.right_breast_overlay": "Rechts",
+
+	"wildfire_gender.uv_editor.selection.layer_body": "Innere Ebene",
+	"wildfire_gender.uv_editor.selection.layer_jacket": "Äußere Ebene",
+
+	"wildfire_gender.uv_editor.xpos": "X-Pos",
+	"wildfire_gender.uv_editor.ypos": "Y-Pos",
+		"wildfire_gender.uv_editor.width": "Breite",
+	"wildfire_gender.uv_editor.height": "Höhe",
+	"wildfire_gender.uv_editor.increment_tip.line1": "SHIFT gedrückt halten für +10",
+	"wildfire_gender.uv_editor.increment_tip.line2": "SHIFT+CTRL für +20",
+		"wildfire_gender.uv_editor.add": "Hinzufügen",
+		"wildfire_gender.uv_editor.remove": "Entfernen",
+
+	"wildfire_gender.uv_editor.faces.inner": "Innere Seite",
+	"wildfire_gender.uv_editor.faces.outer": "Äußere Seite",
+	"wildfire_gender.uv_editor.faces.top": "Obere Seite",
+	"wildfire_gender.uv_editor.faces.bottom": "Untere Seite",
+	"wildfire_gender.uv_editor.faces.front": "Vordere Seite",
+
 	"wildfire_gender.credits.title": "Mitwirkende",
 	"wildfire_gender.credits.description": "Dies ist eine Liste der tollen Menschen, die dieses Mod möglich gemacht haben!",
 	"wildfire_gender.credits.general": "Allgemein",
@@ -97,8 +124,8 @@
 	"wildfire_gender.cloud.automatic": "Automatische Synchronizierung: %s",
 	"wildfire_gender.cloud.automatic.tooltip.line1": "Wenn dies aktiviert ist werden deine Einstellungen nach jeder Änderung automatisch mit der Cloud synchronisiert.",
 	"wildfire_gender.cloud.automatic.tooltip.line2": "Wenn dies deaktiviert ist kannst du die Einstellungen dennoch manuell über den Knopf synchronisieren.",
-	
-  "wildfire_gender.cloud.sync": "Jetzt synchronizieren",
+
+	"wildfire_gender.cloud.sync": "Jetzt synchronisieren",
 	"wildfire_gender.cloud.syncing": "Synchroniziere...",
 	"wildfire_gender.cloud.syncing.success": "Synchroniziert",
 	"wildfire_gender.cloud.syncing.fail": "Synchronizierung fehlgeschlagen",
@@ -107,7 +134,7 @@
 	"wildfire_gender.cloud.deleted": "Gelöscht",
 	"wildfire_gender.cloud.delete_failed": "Löschen fehlgeschlagen",
 
-  "wildfire_gender.cloud.status_log": "Status Log",
+	"wildfire_gender.cloud.status_log": "Status Log",
 
 	"wildfire_gender.sync_log.authenticating_mojang": "Authentifiziere mit Mojang...",
 	"wildfire_gender.sync_log.authenticating_sync": "Authentifiziere mit Cloud-Sync...",
@@ -115,7 +142,6 @@
 	"wildfire_gender.sync_log.reauthenticating": "Überprüfung des Kontos erneut...",
 
 	"wildfire_gender.sync_log.failed_to_sync_data": "Daten konnten nicht synchronisiert werden.",
-	"wildfire_gender.sync_log.sync_to_cloud": "Synchronisiere Daten zu Cloud...",
 	"wildfire_gender.sync_log.attempting_sync": "Synchronisiere Profil...",
 	"wildfire_gender.sync_log.sync_success": "Synchronisierung erfolgreich.",
 	"wildfire_gender.sync_log.sync_too_frequently": "Synchronisierungsrate begrenzt.",
@@ -150,9 +176,9 @@
 	"wildfire_gender.contributor.role.generic": "Female Gender Mod Mitwirkender",
 	"wildfire_gender.contributor.role.generic.short": "Mitwirkender",
 
-  "wildfire_gender.misc.holiday_themes": "Feiertag Themes: %s",
+	"wildfire_gender.misc.holiday_themes": "Feiertag Themes: %s",
 	"wildfire_gender.tooltip.holiday_themes.line1": "Wenn aktiviert, werden automatisch Skins wie Weihnachtsmützen oder andere Dinge während der entsprechenden Feiertage angezeigt.",
 
-  "wildfire_gender.not_in_world.title": "Im Hauptmenü nicht verfügbar",
+	"wildfire_gender.not_in_world.title": "Im Hauptmenü nicht verfügbar",
 	"wildfire_gender.not_in_world": "Du musst in einer Welt sein, um deine Einstellungen zu ändern."
 }
