@@ -44,7 +44,6 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -55,6 +54,10 @@ public class WildfireGenderClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
+		tryMigrate("WildfireGender", Configuration.CONFIG_DIR);
+		tryMigrate("wildfire_gender.json", "female_gender_mod.json");
+
+		ClientConfig.INSTANCE.load();
 		WildfireSounds.register();
 		WildfireSync.registerClient();
 		WildfireEventHandler.registerClientEvents();
@@ -66,16 +69,26 @@ public class WildfireGenderClient implements ClientModInitializer {
 			DebugHudEntries.register(PhysicsDebugHudEntry.ID, new PhysicsDebugHudEntry());
 		}
 		WildfireCommand.init();
+	}
 
-		//Migrate old folder.
-		Path oldConfigDir = FabricLoader.getInstance().getConfigDir().resolve("WildfireGender");
-		Path newConfigDir = FabricLoader.getInstance().getConfigDir().resolve(Configuration.getConfigFile()); // Migrate to new folder name.
+	private static void tryMigrate(String oldPath, String newPath) {
+		Path oldFile = FabricLoader.getInstance().getConfigDir().resolve(oldPath);
+		Path newFile = FabricLoader.getInstance().getConfigDir().resolve(newPath);
+
+		if(Files.notExists(oldFile)) {
+			WildfireGender.LOGGER.debug("{} doesn't exist, nothing to migrate", oldPath);
+			return;
+		}
+		if(Files.exists(oldFile) && Files.exists(newFile)) {
+			WildfireGender.LOGGER.warn("Cannot migrate {} to {} as both exist", oldPath, oldPath);
+			return;
+		}
 
 		try {
-			Files.move(oldConfigDir, newConfigDir, StandardCopyOption.REPLACE_EXISTING);
-			WildfireGender.LOGGER.info("Migrated config folder from '{}' to '{}'", oldConfigDir, newConfigDir);
+			Files.move(oldFile, newFile);
+			WildfireGender.LOGGER.info("Migrated {} to '{}'", oldPath, newFile);
 		} catch (IOException e) {
-			WildfireGender.LOGGER.error("Failed to rename config folder", e);
+			WildfireGender.LOGGER.error("Failed to move {} to {}", oldPath, newFile, e);
 		}
 	}
 

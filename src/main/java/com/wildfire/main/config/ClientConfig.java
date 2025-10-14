@@ -18,24 +18,18 @@
 
 package com.wildfire.main.config;
 
-import com.wildfire.main.WildfireGender;
 import com.wildfire.main.config.enums.ShowPlayerListMode;
 import com.wildfire.main.config.enums.SyncVerbosity;
 import com.wildfire.main.config.types.BooleanConfigKey;
 import com.wildfire.main.config.types.EnumConfigKey;
 import com.wildfire.main.config.types.StringConfigKey;
 import com.wildfire.main.config.types.TriStateConfigKey;
-import net.fabricmc.loader.api.FabricLoader;
-
-import java.io.File;
 
 public class ClientConfig extends AbstractConfiguration {
     public static final ClientConfig INSTANCE = new ClientConfig();
 
     private ClientConfig() {
         super(".", "female_gender_mod");
-
-        migrateConfiguration(".", "wildfire_gender");
     }
 
     // note: this option is not intended to be saved in any persistent manner
