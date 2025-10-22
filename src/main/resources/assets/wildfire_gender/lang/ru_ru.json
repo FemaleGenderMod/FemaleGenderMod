@@ -2,9 +2,36 @@
 	"key.category.wildfire_gender.generic": "Wildfire's Female Gender Mod",
 	"key.wildfire_gender.gender_menu": "Меню",
 	"key.wildfire_gender.toggle": "Переключить визуализацию груди",
-	"toast.wildfire_gender.get_started": "Нажмите'%s' чтобы начать!",
+	"toast.wildfire_gender.get_started": "Нажмите %s чтобы начать!",
 
 	"wildfire_gender.armor.tooltip": "+%s Поддержка Груди",
+
+	"wildfire_gender.uv_editor": "Редактор текстуры груди",
+	"wildfire_gender.uv_editor.reset_defaults_all": "Сбросить все параметры UV",
+	"wildfire_gender.uv_editor.reset_defaults": "Сбросить UVs",
+	"wildfire_gender.uv_editor.no_face_selected": "Выберете текстуру ниже чтобы её редактировать.",
+	"wildfire_gender.uv_editor.selection.left_breast": "Левая",
+	"wildfire_gender.uv_editor.selection.right_breast": "Правая",
+	"wildfire_gender.uv_editor.selection.left_breast_overlay": "Левая",
+	"wildfire_gender.uv_editor.selection.right_breast_overlay": "Правая",
+
+	"wildfire_gender.uv_editor.selection.layer_body": "Слой тела",
+	"wildfire_gender.uv_editor.selection.layer_jacket": "Слой куртки",
+
+	"wildfire_gender.uv_editor.xpos": "X-Поз",
+	"wildfire_gender.uv_editor.ypos": "Y-Поз",
+	"wildfire_gender.uv_editor.width": "Толщина",
+	"wildfire_gender.uv_editor.height": "Высота",
+	"wildfire_gender.uv_editor.increment_tip.line1": "Удержи SHIFT на +10",
+	"wildfire_gender.uv_editor.increment_tip.line2": "Удержи SHIFT+CTRL на +20",
+    "wildfire_gender.uv_editor.add": "Добавить",
+    "wildfire_gender.uv_editor.remove": "Убрать",
+
+	"wildfire_gender.uv_editor.faces.inner": "Внутреняя текстура",
+	"wildfire_gender.uv_editor.faces.outer": "Внешняя текстура",
+	"wildfire_gender.uv_editor.faces.top": "Верхняя текстура",
+	"wildfire_gender.uv_editor.faces.bottom": "Нижняя текстура",
+	"wildfire_gender.uv_editor.faces.front": "Передняя текстура",
 
 	"wildfire_gender.credits.title": "Создатели мода",
 	"wildfire_gender.credits.description": "Это список замечательных людей которые помогали с разработкой мода!",
