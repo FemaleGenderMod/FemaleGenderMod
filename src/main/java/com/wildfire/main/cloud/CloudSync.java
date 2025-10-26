@@ -343,6 +343,9 @@ public final class CloudSync {
 		}, EXECUTOR);
 	}
 
+	/**
+	 * @see #getProfile(UUID, boolean)
+	 */
 	public static CompletableFuture<@Nullable JsonObject> getProfile(UUID uuid) {
 		return getProfile(uuid, false);
 	}
@@ -353,7 +356,7 @@ public final class CloudSync {
 	 * @param uuid The UUID of the player to get data for
 	 *
 	 * @return A {@link CompletableFuture} containing a {@link JsonObject} of the player's data if they have any data
-	 * 		   stored in the sync server, or {@code null} otherwise.
+	 *         stored in the sync server, or {@code null} otherwise.
 	 *
 	 * @apiNote The provided UUID <b>must</b> be {@link UUID#version() version 4}, otherwise the request will fail.
 	 *

@@ -91,12 +91,3 @@ The option to edit other players' characters has been removed and will not be re
 No, I don't want to edit the base game features. The breast model is an added layer to the default model. If I were to do a waist/torso thing, it would be editing the player model. It would also probably break compatibility with a lot more mods as well.
 
 </details>
-
-<details>
-<summary>10) Why are my settings not saving?</summary>
-
-If you are using a cracked Minecraft account or playing on a server in offline mode, your player's UUID is randomized whenever you join the game.
-
-We do not officially support this, and as such there are no plans to fix this. 
-
-</details>

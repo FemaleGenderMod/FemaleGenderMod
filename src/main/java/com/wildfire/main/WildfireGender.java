@@ -49,20 +49,16 @@ public class WildfireGender implements ModInitializer {
 		if(WildfireHelper.onClient()) {
 			builder.expireAfterAccess(Duration.ofMinutes(15));
 		}
-		CACHE = builder.build(new CacheLoader<>() {
-			@Override
-			public @NotNull PlayerConfig load(@NotNull UUID key) {
-				var config = new PlayerConfig(key);
-				// only attempt to load player data on the client, and if the provided uuid is valid
-				if(WildfireHelper.onClient() && key.version() == 4) {
-					// markForSync being true will only ever do anything for the client player
-					WildfireGenderClient.loadGenderInfo(config, true, false);
-				}
-				return config;
+		CACHE = builder.build(CacheLoader.from(key -> {
+			var config = new PlayerConfig(key);
+			// only attempt to load player data on the client
+			if(WildfireHelper.onClient()) {
+				// markForSync being true will only ever do anything for the client player
+				WildfireGenderClient.loadGenderInfo(config, true, false);
 			}
-		});
+			return config;
+		}));
 	}
-
 
 	@Override
 	public void onInitialize() {
@@ -81,5 +77,4 @@ public class WildfireGender implements ModInitializer {
 	public static Identifier id(String path) {
 		return Identifier.of(MODID, path);
 	}
-
 }
