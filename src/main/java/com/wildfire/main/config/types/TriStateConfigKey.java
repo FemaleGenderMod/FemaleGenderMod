@@ -25,35 +25,35 @@ import net.minecraft.util.TriState;
 
 public class TriStateConfigKey extends ConfigKey<TriState> {
 
-    public TriStateConfigKey(String key, TriState defaultValue) {
-        super(key, defaultValue);
-    }
+	public TriStateConfigKey(String key, TriState defaultValue) {
+		super(key, defaultValue);
+	}
 
-    public TriStateConfigKey(String key) {
-        this(key, TriState.DEFAULT);
-    }
+	public TriStateConfigKey(String key) {
+		this(key, TriState.DEFAULT);
+	}
 
-    @Override
-    protected TriState read(JsonElement element) {
-        if(element.isJsonNull()) {
-            return TriState.DEFAULT;
-        }
-        if(element instanceof JsonPrimitive primitive) {
-            if(primitive.isBoolean()) {
-                return primitive.getAsBoolean() ? TriState.TRUE : TriState.FALSE;
-            }
-            if(primitive.isString()) {
-                try {
-                    return TriState.valueOf(primitive.getAsString());
-                } catch(IllegalArgumentException ignored) {
-                }
-            }
-        }
-        return defaultValue;
-    }
+	@Override
+	protected TriState read(JsonElement element) {
+		if(element.isJsonNull()) {
+			return TriState.DEFAULT;
+		}
+		if(element instanceof JsonPrimitive primitive) {
+			if(primitive.isBoolean()) {
+				return primitive.getAsBoolean() ? TriState.TRUE : TriState.FALSE;
+			}
+			if(primitive.isString()) {
+				try {
+					return TriState.valueOf(primitive.getAsString());
+				} catch(IllegalArgumentException ignored) {
+				}
+			}
+		}
+		return defaultValue;
+	}
 
-    @Override
-    public void save(JsonObject object, TriState value) {
-        object.addProperty(key, value.toString());
-    }
+	@Override
+	public void save(JsonObject object, TriState value) {
+		object.addProperty(key, value.toString());
+	}
 }

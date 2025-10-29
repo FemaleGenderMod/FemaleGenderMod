@@ -31,13 +31,13 @@ import org.spongepowered.asm.mixin.Unique;
 @Mixin(PlayerSkin.class)
 @Environment(EnvType.CLIENT)
 abstract class PlayerSkinWildfireImplMixin implements SkinTexturesWildfire {
-    private @Unique @Nullable ClientAsset.Texture wildfiregender$overriddenCapeTexture = null;
+	private @Unique @Nullable ClientAsset.Texture wildfiregender$overriddenCapeTexture = null;
 
-    public void wildfiregender$overrideCapeTexture(@Nullable ClientAsset.Texture texture) {
-        this.wildfiregender$overriddenCapeTexture = texture;
-    }
+	public void wildfiregender$overrideCapeTexture(@Nullable ClientAsset.Texture texture) {
+		this.wildfiregender$overriddenCapeTexture = texture;
+	}
 
-    public @Nullable ClientAsset.Texture wildfiregender$getOverriddenCapeTexture() {
-        return wildfiregender$overriddenCapeTexture;
-    }
+	public @Nullable ClientAsset.Texture wildfiregender$getOverriddenCapeTexture() {
+		return wildfiregender$overriddenCapeTexture;
+	}
 }

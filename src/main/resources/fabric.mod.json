@@ -1,69 +1,69 @@
 {
-  "schemaVersion": 1,
-  "id": "wildfire_gender",
-  "version": "${version}+${minecraft_version}",
-  "name": "Female Gender Mod",
-  "description": "Adds extra customization options to the player model by adding breasts for a more feminine appearance",
-  "authors": [
-    "WildfireRomeo"
-  ],
-  "contributors": [
-    "Arcti_cc",
-    "BluelightAmelia",
-    "celeste",
-    "diademiemi",
-    "IzzyBizzy45",
-    "Kichura",
-    "PinguinLars",
-    "Powerless001",
-    "pupnewfster",
-    "RacoonDog"
-  ],
-  "contact": {
-    "homepage": "https://femalegendermod.net/",
-    "sources": "https://github.com/WildfireRomeo/WildfireFemaleGenderMod/tree/master",
-    "issues": "https://github.com/WildfireRomeo/WildfireFemaleGenderMod/issues"
-  },
-  "license": "LGPL-3.0",
-  "icon": "assets/wildfire_gender/icon.png",
-  "environment": "*",
-  "entrypoints": {
-    "main": [
-      "com.wildfire.main.WildfireGender"
-    ],
-    "client": [
-      "com.wildfire.main.WildfireGenderClient"
-    ],
-    "modmenu": [
-      "com.wildfire.compat.ModMenuIntegration"
-    ]
-  },
-  "mixins": [
-    "wildfire_gender.mixins.json"
-  ],
-  "accessWidener": "wildfire_gender.accesswidener",
-  "depends": {
-    "fabricloader": ">=0.15.0",
-    "fabric-networking-api-v1": "*",
-    "fabric-command-api-v2": "*",
-    "fabric-key-binding-api-v1": "*",
-    "fabric-lifecycle-events-v1": "*",
-    "fabric-rendering-v1": "*",
-    "fabric-resource-loader-v0": "*",
-    "fabric-registry-sync-v0": "*",
-    "minecraft": "${minecraft_dependency}",
-    "java": ">=21"
-  },
-  "conflicts": {
-    "skinlayers": "*",
-    "essential": "*",
-    "essential-loader": "*"
-  },
-  "custom": {
-    "modmenu": {
-      "links": {
-        "modmenu.discord": "https://discord.gg/4VDfQu4Wgb"
-      }
-    }
-  }
+	"schemaVersion": 1,
+	"id": "wildfire_gender",
+	"version": "${version}+${minecraft_version}",
+	"name": "Female Gender Mod",
+	"description": "Adds extra customization options to the player model by adding breasts for a more feminine appearance",
+	"authors": [
+		"WildfireRomeo"
+	],
+	"contributors": [
+		"Arcti_cc",
+		"BluelightAmelia",
+		"celeste",
+		"diademiemi",
+		"IzzyBizzy45",
+		"Kichura",
+		"PinguinLars",
+		"Powerless001",
+		"pupnewfster",
+		"RacoonDog"
+	],
+	"contact": {
+		"homepage": "https://femalegendermod.net/",
+		"sources": "https://github.com/WildfireRomeo/WildfireFemaleGenderMod/tree/master",
+		"issues": "https://github.com/WildfireRomeo/WildfireFemaleGenderMod/issues"
+	},
+	"license": "LGPL-3.0",
+	"icon": "assets/wildfire_gender/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.wildfire.main.WildfireGender"
+		],
+		"client": [
+			"com.wildfire.main.WildfireGenderClient"
+		],
+		"modmenu": [
+			"com.wildfire.compat.ModMenuIntegration"
+		]
+	},
+	"mixins": [
+		"wildfire_gender.mixins.json"
+	],
+	"accessWidener": "wildfire_gender.accesswidener",
+	"depends": {
+		"fabricloader": ">=0.15.0",
+		"fabric-networking-api-v1": "*",
+		"fabric-command-api-v2": "*",
+		"fabric-key-binding-api-v1": "*",
+		"fabric-lifecycle-events-v1": "*",
+		"fabric-rendering-v1": "*",
+		"fabric-resource-loader-v0": "*",
+		"fabric-registry-sync-v0": "*",
+		"minecraft": "${minecraft_dependency}",
+		"java": ">=21"
+	},
+	"conflicts": {
+		"skinlayers": "*",
+		"essential": "*",
+		"essential-loader": "*"
+	},
+	"custom": {
+		"modmenu": {
+			"links": {
+				"modmenu.discord": "https://discord.gg/4VDfQu4Wgb"
+			}
+		}
+	}
 }

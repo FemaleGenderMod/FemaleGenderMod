@@ -41,88 +41,88 @@ import java.util.function.Function;
 
 public final class WildfireHelper {
 
-    private WildfireHelper() {
-        throw new UnsupportedOperationException();
-    }
+	private WildfireHelper() {
+		throw new UnsupportedOperationException();
+	}
 
-    public static final PrimitiveCodec<TriState> TRISTATE = new PrimitiveCodec<>() {
-        @Override
-        public <T> DataResult<TriState> read(final DynamicOps<T> ops, final T input) {
-            return DataResult.success(ops.getBooleanValue(input)
-                    .map(v -> v ? TriState.TRUE : TriState.FALSE)
-                    .result().orElse(TriState.DEFAULT));
-        }
+	public static final PrimitiveCodec<TriState> TRISTATE = new PrimitiveCodec<>() {
+		@Override
+		public <T> DataResult<TriState> read(final DynamicOps<T> ops, final T input) {
+			return DataResult.success(ops.getBooleanValue(input)
+					.map(v -> v ? TriState.TRUE : TriState.FALSE)
+					.result().orElse(TriState.DEFAULT));
+		}
 
-        @Override
-        public <T> T write(final DynamicOps<T> ops, final TriState value) {
-            if(value == TriState.DEFAULT) {
-                return ops.empty();
-            }
-            return ops.createBoolean(value == TriState.TRUE);
-        }
+		@Override
+		public <T> T write(final DynamicOps<T> ops, final TriState value) {
+			if(value == TriState.DEFAULT) {
+				return ops.empty();
+			}
+			return ops.createBoolean(value == TriState.TRUE);
+		}
 
-        @Override
-        public String toString() {
-            return "TriState";
-        }
-    };
+		@Override
+		public String toString() {
+			return "TriState";
+		}
+	};
 
-    public static int randInt(int min, int max) {
-        return ThreadLocalRandom.current().nextInt(min, max + 1);
-    }
-    public static float randFloat(float min, float max) {
-        return (float) ThreadLocalRandom.current().nextDouble(min, (double) max + 1);
-    }
+	public static int randInt(int min, int max) {
+		return ThreadLocalRandom.current().nextInt(min, max + 1);
+	}
+	public static float randFloat(float min, float max) {
+		return (float) ThreadLocalRandom.current().nextDouble(min, (double) max + 1);
+	}
 
-    public static float round(float num, float decimalPlaces) {
-        float factor = (float) Math.pow(10, decimalPlaces);
-        return Math.round(num * factor) / factor;
-    }
+	public static float round(float num, float decimalPlaces) {
+		float factor = (float) Math.pow(10, decimalPlaces);
+		return Math.round(num * factor) / factor;
+	}
 
-    public static int[][] deepClone(int[][] src) {
-        if (src == null) return null;
-        int[][] copy = new int[src.length][];
-        for (int i = 0; i < src.length; i++) {
-            copy[i] = (src[i] != null) ? Arrays.copyOf(src[i], src[i].length) : null;
-        }
-        return copy;
-    }
+	public static int[][] deepClone(int[][] src) {
+		if (src == null) return null;
+		int[][] copy = new int[src.length][];
+		for (int i = 0; i < src.length; i++) {
+			copy[i] = (src[i] != null) ? Arrays.copyOf(src[i], src[i].length) : null;
+		}
+		return copy;
+	}
 
-    @SuppressWarnings("removal")
-    @Environment(EnvType.CLIENT)
-    public static IGenderArmor getArmorConfig(ItemStack stack) {
-        if(stack.isEmpty()) {
-            return IGenderArmor.EMPTY;
-        }
+	@SuppressWarnings("removal")
+	@Environment(EnvType.CLIENT)
+	public static IGenderArmor getArmorConfig(ItemStack stack) {
+		if(stack.isEmpty()) {
+			return IGenderArmor.EMPTY;
+		}
 
-        return GenderArmorResourceManager.get(stack).orElseGet(() -> {
-            var fallback = stack.has(DataComponents.EQUIPPABLE) ? IGenderArmor.DEFAULT : IGenderArmor.EMPTY;
-            return WildfireAPI.getGenderArmors().getOrDefault(stack.getItem(), fallback);
-        });
-    }
+		return GenderArmorResourceManager.get(stack).orElseGet(() -> {
+			var fallback = stack.has(DataComponents.EQUIPPABLE) ? IGenderArmor.DEFAULT : IGenderArmor.EMPTY;
+			return WildfireAPI.getGenderArmors().getOrDefault(stack.getItem(), fallback);
+		});
+	}
 
-    public static Codec<Float> boundedFloat(float minInclusive, float maxInclusive) {
-        return Codec.FLOAT.xmap(val -> Mth.clamp(val, minInclusive, maxInclusive), Function.identity());
-    }
+	public static Codec<Float> boundedFloat(float minInclusive, float maxInclusive) {
+		return Codec.FLOAT.xmap(val -> Mth.clamp(val, minInclusive, maxInclusive), Function.identity());
+	}
 
-    public static Codec<Float> boundedFloat(FloatConfigKey configKey) {
-        return boundedFloat(configKey.getMinInclusive(), configKey.getMaxInclusive());
-    }
+	public static Codec<Float> boundedFloat(FloatConfigKey configKey) {
+		return boundedFloat(configKey.getMinInclusive(), configKey.getMaxInclusive());
+	}
 
-    public static String getModVersion(String modId) {
-        var mod = FabricLoader.getInstance().getModContainer(modId).orElseThrow();
-        return mod.getMetadata().getVersion().getFriendlyString();
-    }
+	public static String getModVersion(String modId) {
+		var mod = FabricLoader.getInstance().getModContainer(modId).orElseThrow();
+		return mod.getMetadata().getVersion().getFriendlyString();
+	}
 
-    public static String toFormattedPercent(double value) {
-        return ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(value * 100.0);
-    }
+	public static String toFormattedPercent(double value) {
+		return ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(value * 100.0);
+	}
 
-    public static boolean onClient() {
-        return FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
-    }
+	public static boolean onClient() {
+		return FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
+	}
 
-    public static double snapToStep(double value, double stepSize) {
-        return Math.round(value / stepSize) * stepSize;
-    }
+	public static double snapToStep(double value, double stepSize) {
+		return Math.round(value / stepSize) * stepSize;
+	}
 }

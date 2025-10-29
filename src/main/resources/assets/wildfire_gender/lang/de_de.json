@@ -20,12 +20,12 @@
 
 	"wildfire_gender.uv_editor.xpos": "X-Pos",
 	"wildfire_gender.uv_editor.ypos": "Y-Pos",
-		"wildfire_gender.uv_editor.width": "Breite",
+	"wildfire_gender.uv_editor.width": "Breite",
 	"wildfire_gender.uv_editor.height": "Höhe",
 	"wildfire_gender.uv_editor.increment_tip.line1": "SHIFT gedrückt halten für +10",
 	"wildfire_gender.uv_editor.increment_tip.line2": "SHIFT+CTRL für +20",
-		"wildfire_gender.uv_editor.add": "Hinzufügen",
-		"wildfire_gender.uv_editor.remove": "Entfernen",
+	"wildfire_gender.uv_editor.add": "Hinzufügen",
+	"wildfire_gender.uv_editor.remove": "Entfernen",
 
 	"wildfire_gender.uv_editor.faces.inner": "Innere Seite",
 	"wildfire_gender.uv_editor.faces.outer": "Äußere Seite",

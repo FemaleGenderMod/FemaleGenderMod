@@ -90,22 +90,22 @@ public final class WildfireModelRenderer {
 					{vertex3, vertex4, vertex5, vertex6}	 // SOUTH
 			};
 
-            int i = 0;
-            for (Map.Entry<UVDirection, UVQuad> entry : dynamicUvLayouts.getAllSides().entrySet()) {
-                UVDirection direction = entry.getKey();
-                UVQuad quad = entry.getValue();
+			int i = 0;
+			for (Map.Entry<UVDirection, UVQuad> entry : dynamicUvLayouts.getAllSides().entrySet()) {
+				UVDirection direction = entry.getKey();
+				UVQuad quad = entry.getValue();
 
-                    this.quads[i] = new TexturedQuad(
-                            quad.x1(), quad.y1(), quad.x2(), quad.y2(),
-                            tW, tH,
-                            direction,
-                            faceVertices[i][0],
-                            faceVertices[i][1],
-                            faceVertices[i][2],
-                            faceVertices[i][3]
-                    );
-                    i++;
-            }
+					this.quads[i] = new TexturedQuad(
+							quad.x1(), quad.y1(), quad.x2(), quad.y2(),
+							tW, tH,
+							direction,
+							faceVertices[i][0],
+							faceVertices[i][1],
+							faceVertices[i][2],
+							faceVertices[i][3]
+					);
+					i++;
+			}
 		}
 	}
 

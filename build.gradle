@@ -13,7 +13,7 @@ base {
 repositories {
 	maven { url = "https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1" }
 	maven { url = "https://maven.terraformersmc.com/" }
-    maven { url = "https://maven.parchmentmc.org/" }
+	maven { url = "https://maven.parchmentmc.org/" }
 }
 
 dependencies {

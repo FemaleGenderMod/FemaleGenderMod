@@ -33,32 +33,32 @@ import java.util.Map;
 
 public class GenderConfigs {
 
-    public static final JsonObject DEFAULT_FEMALE;
-    public static final JsonObject DEFAULT_MALE;
+	public static final JsonObject DEFAULT_FEMALE;
+	public static final JsonObject DEFAULT_MALE;
 
-    static {
-        DEFAULT_FEMALE = loadConfig("modeldata/female_default.json");
-        DEFAULT_MALE = loadConfig("modeldata/male_default.json");
-    }
+	static {
+		DEFAULT_FEMALE = loadConfig("modeldata/female_default.json");
+		DEFAULT_MALE = loadConfig("modeldata/male_default.json");
+	}
 
-    private static JsonObject loadConfig(String cfgFile) {
-        JsonObject fObj = new JsonObject();
+	private static JsonObject loadConfig(String cfgFile) {
+		JsonObject fObj = new JsonObject();
 
-        try {
-            ResourceManager manager = Minecraft.getInstance().getResourceManager();
-            ResourceLocation id = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, cfgFile);
-            Resource resource = manager.getResource(id).orElseThrow();
+		try {
+			ResourceManager manager = Minecraft.getInstance().getResourceManager();
+			ResourceLocation id = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, cfgFile);
+			Resource resource = manager.getResource(id).orElseThrow();
 
-            try (InputStreamReader reader = new InputStreamReader(resource.open(), StandardCharsets.UTF_8)) {
-                JsonObject obj = new Gson().fromJson(reader, JsonObject.class);
-                for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
-                    fObj.add(entry.getKey(), entry.getValue());
-                }
-            }
-        } catch(IOException e) {
-            WildfireGender.LOGGER.error("Failed to load config file", e);
-        }
+			try (InputStreamReader reader = new InputStreamReader(resource.open(), StandardCharsets.UTF_8)) {
+				JsonObject obj = new Gson().fromJson(reader, JsonObject.class);
+				for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
+					fObj.add(entry.getKey(), entry.getValue());
+				}
+			}
+		} catch(IOException e) {
+			WildfireGender.LOGGER.error("Failed to load config file", e);
+		}
 
-        return fObj;
-    }
+		return fObj;
+	}
 }

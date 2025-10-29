@@ -31,11 +31,11 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(PlayerSkin.class)
 @Environment(EnvType.CLIENT)
 abstract class PlayerSkinMixin {
-    @ModifyReturnValue(method = {"cape", "elytra"}, at = @At("RETURN"))
-    public @Nullable ClientAsset.Texture wildfiregender$replaceCapeTexture(@Nullable ClientAsset.Texture original) {
-        if(original == null) {
-            return ((SkinTexturesWildfire) this).wildfiregender$getOverriddenCapeTexture();
-        }
-        return original;
-    }
+	@ModifyReturnValue(method = {"cape", "elytra"}, at = @At("RETURN"))
+	public @Nullable ClientAsset.Texture wildfiregender$replaceCapeTexture(@Nullable ClientAsset.Texture original) {
+		if(original == null) {
+			return ((SkinTexturesWildfire) this).wildfiregender$getOverriddenCapeTexture();
+		}
+		return original;
+	}
 }

@@ -34,17 +34,17 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(PlayerInfo.class)
 @Environment(EnvType.CLIENT)
 abstract class PlayerInfoMixin {
-    @Shadow
-    @Final
-    private GameProfile profile;
+	@Shadow
+	@Final
+	private GameProfile profile;
 
-    @SuppressWarnings("DataFlowIssue")
-    @ModifyReturnValue(method = "getSkin", at = @At("RETURN"))
-    public PlayerSkin wildfiregender$replaceCapeTexture(PlayerSkin original) {
-        var cape = CapeProvider.CACHE.getUnchecked(profile);
-        var duck = ((SkinTexturesWildfire)(Object)original);
-        var tex = cape.getNow(null);
-        duck.wildfiregender$overrideCapeTexture(tex);
-        return original;
-    }
+	@SuppressWarnings("DataFlowIssue")
+	@ModifyReturnValue(method = "getSkin", at = @At("RETURN"))
+	public PlayerSkin wildfiregender$replaceCapeTexture(PlayerSkin original) {
+		var cape = CapeProvider.CACHE.getUnchecked(profile);
+		var duck = ((SkinTexturesWildfire)(Object)original);
+		var tex = cape.getNow(null);
+		duck.wildfiregender$overrideCapeTexture(tex);
+		return original;
+	}
 }
