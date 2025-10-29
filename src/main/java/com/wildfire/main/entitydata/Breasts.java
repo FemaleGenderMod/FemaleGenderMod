@@ -18,14 +18,14 @@
 
 package com.wildfire.main.entitydata;
 
-import com.wildfire.main.config.types.ConfigKey;
 import com.wildfire.main.config.Configuration;
+import com.wildfire.main.config.types.ConfigKey;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import org.joml.Vector3f;
 
 import java.util.function.Consumer;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
 
 /**
  * Data class representing an entity's breast appearance settings

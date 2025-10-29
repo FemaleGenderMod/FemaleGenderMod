@@ -18,10 +18,11 @@
 
 package com.wildfire.main.config.enums;
 
-import java.util.function.IntFunction;
 import net.minecraft.commands.arguments.StringRepresentableArgument;
 import net.minecraft.util.ByIdMap;
 import net.minecraft.util.StringRepresentable;
+
+import java.util.function.IntFunction;
 
 public enum SyncVerbosity implements StringRepresentable {
 	DEFAULT,

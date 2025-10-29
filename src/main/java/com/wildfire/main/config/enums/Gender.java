@@ -20,15 +20,15 @@ package com.wildfire.main.config.enums;
 
 import com.wildfire.main.WildfireSounds;
 import io.netty.buffer.ByteBuf;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.function.IntFunction;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.ByIdMap;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.function.IntFunction;
 
 public enum Gender {
 

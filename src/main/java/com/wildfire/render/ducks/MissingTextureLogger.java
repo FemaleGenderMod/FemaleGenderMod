@@ -18,8 +18,9 @@
 
 package com.wildfire.render.ducks;
 
-import java.util.Set;
 import net.minecraft.resources.ResourceLocation;
+
+import java.util.Set;
 
 public interface MissingTextureLogger {
 	/**

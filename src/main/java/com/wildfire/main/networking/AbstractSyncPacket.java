@@ -26,11 +26,12 @@ import com.wildfire.main.uvs.UVDirection;
 import com.wildfire.main.uvs.UVLayout;
 import com.wildfire.main.uvs.UVQuad;
 import io.netty.buffer.ByteBuf;
-import java.util.EnumMap;
-import java.util.UUID;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+
+import java.util.EnumMap;
+import java.util.UUID;
 
 abstract class AbstractSyncPacket {
 

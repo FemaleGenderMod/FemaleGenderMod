@@ -27,17 +27,17 @@ import com.wildfire.main.contributors.Contributors;
 import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.mixins.accessors.ClientMannequinAccessor;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.ClientMannequin;
+import net.minecraft.client.renderer.PlayerSkinRenderCache;
+import net.minecraft.world.item.component.ResolvableProfile;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.ClientMannequin;
-import net.minecraft.client.renderer.PlayerSkinRenderCache;
-import net.minecraft.world.item.component.ResolvableProfile;
-import net.minecraft.world.level.Level;
 
 public class FakeGUIPlayer {
 

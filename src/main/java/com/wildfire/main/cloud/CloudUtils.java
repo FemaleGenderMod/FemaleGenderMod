@@ -22,8 +22,9 @@ import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.mixins.accessors.YggdrasilMinecraftSessionServiceAccessor;
-import java.util.Objects;
 import net.minecraft.client.Minecraft;
+
+import java.util.Objects;
 
 public final class CloudUtils {
 	private CloudUtils() {

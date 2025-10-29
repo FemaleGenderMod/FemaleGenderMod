@@ -18,16 +18,11 @@
 
 package com.wildfire.gui.screen;
 
+import com.wildfire.gui.GuiUtils;
 import com.wildfire.gui.WildfireButton;
 import com.wildfire.gui.WildfireSlider;
-import com.wildfire.gui.GuiUtils;
-import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.WildfireGender;
-
-import java.util.Objects;
-import java.util.UUID;
-import java.util.function.Consumer;
-
+import com.wildfire.main.entitydata.PlayerConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphics;
@@ -35,6 +30,10 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
+import java.util.UUID;
+import java.util.function.Consumer;
 
 @Environment(EnvType.CLIENT)
 public abstract class BaseWildfireScreen extends Screen {

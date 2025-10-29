@@ -18,11 +18,12 @@
 
 package com.wildfire.main.config.enums;
 
-import java.util.function.IntFunction;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ByIdMap;
+
+import java.util.function.IntFunction;
 
 public enum ShowPlayerListMode {
 	MOD_UI_ONLY,

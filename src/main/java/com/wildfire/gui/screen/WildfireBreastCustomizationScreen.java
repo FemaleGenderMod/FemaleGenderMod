@@ -20,11 +20,11 @@ package com.wildfire.gui.screen;
 
 import com.wildfire.events.EntityHurtSoundEvent;
 import com.wildfire.gui.WildfireSlider;
-import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.config.ClientConfig;
-import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.config.Configuration;
+import com.wildfire.main.config.enums.Gender;
+import com.wildfire.main.entitydata.PlayerConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.ChatFormatting;
@@ -37,7 +37,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import java.awt.event.KeyEvent;
+
 import java.util.Objects;
 import java.util.UUID;
 

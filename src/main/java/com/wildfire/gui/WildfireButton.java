@@ -18,6 +18,7 @@
 
 package com.wildfire.gui;
 
+import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
@@ -28,7 +29,7 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import com.mojang.blaze3d.platform.cursor.CursorTypes;
+
 import java.util.function.Supplier;
 
 @Environment(EnvType.CLIENT)

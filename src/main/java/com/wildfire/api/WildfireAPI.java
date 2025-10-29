@@ -20,11 +20,11 @@ package com.wildfire.api;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireGenderClient;
 import com.wildfire.main.config.Configuration;
-import com.wildfire.main.entitydata.PlayerConfig;
-import com.wildfire.main.WildfireGender;
 import com.wildfire.main.config.enums.Gender;
+import com.wildfire.main.entitydata.PlayerConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Util;

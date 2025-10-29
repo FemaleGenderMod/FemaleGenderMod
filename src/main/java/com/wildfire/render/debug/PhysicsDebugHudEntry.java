@@ -20,10 +20,6 @@ package com.wildfire.render.debug;
 
 import com.wildfire.main.WildfireGender;
 import com.wildfire.physics.BreastPhysics;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
-import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.debug.DebugScreenDisplayer;
@@ -31,6 +27,10 @@ import net.minecraft.client.gui.components.debug.DebugScreenEntry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PhysicsDebugHudEntry implements DebugScreenEntry {
 	public static final ResourceLocation ID = WildfireGender.rl("physics");

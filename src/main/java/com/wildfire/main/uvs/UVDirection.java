@@ -19,15 +19,15 @@
 package com.wildfire.main.uvs;
 
 import io.netty.buffer.ByteBuf;
-import org.joml.Vector3f;
-import org.joml.Vector3fc;
-
-import java.util.function.IntFunction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ByIdMap;
+import org.joml.Vector3f;
+import org.joml.Vector3fc;
+
+import java.util.function.IntFunction;
 
 public enum UVDirection {
     EAST("east", "", "E", 0xFFFF0000, new Vec3i(1, 0, 0)),

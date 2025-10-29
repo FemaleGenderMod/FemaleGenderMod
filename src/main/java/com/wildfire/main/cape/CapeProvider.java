@@ -25,17 +25,18 @@ import com.google.common.cache.RemovalNotification;
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.wildfire.main.WildfireGender;
-import org.jetbrains.annotations.Nullable;
-import java.io.FileNotFoundException;
-import java.net.URI;
-import java.time.Duration;
-import java.util.concurrent.CompletableFuture;
-import java.util.regex.Pattern;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.core.ClientAsset;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
+
+import java.io.FileNotFoundException;
+import java.net.URI;
+import java.time.Duration;
+import java.util.concurrent.CompletableFuture;
+import java.util.regex.Pattern;
 
 /**
  * Based on <a href="https://git.celestialfault.dev/celeste/kappa">celeste's fork</a>

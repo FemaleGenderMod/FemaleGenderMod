@@ -18,13 +18,8 @@
 
 package com.wildfire.gui;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.wildfire.main.WildfireEventHandler;
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.WildfireGenderClient;
 import com.wildfire.main.config.ClientConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -38,6 +33,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.CommonColors;
 import net.minecraft.util.FormattedCharSequence;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Environment(EnvType.CLIENT)
 public class WildfireToast implements Toast {

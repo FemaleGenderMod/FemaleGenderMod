@@ -18,8 +18,8 @@
 
 package com.wildfire.gui;
 
-import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.WildfireGender;
+import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.contributors.Contributors;
 import com.wildfire.main.entitydata.PlayerConfig;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -28,6 +28,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

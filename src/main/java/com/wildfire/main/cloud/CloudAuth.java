@@ -18,10 +18,11 @@
 
 package com.wildfire.main.cloud;
 
+import net.minecraft.client.Minecraft;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
-import net.minecraft.client.Minecraft;
 
 record CloudAuth(boolean success, String token, UUID account, Instant expires) {
 	// Assume that authentication tokens have already expired if they're due to expire within 30 seconds to account

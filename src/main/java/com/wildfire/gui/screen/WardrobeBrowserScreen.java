@@ -20,15 +20,10 @@ package com.wildfire.gui.screen;
 
 import com.wildfire.gui.GuiUtils;
 import com.wildfire.gui.SyncedPlayerList;
-import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.WildfireGender;
-
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.config.ClientConfig;
+import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.contributors.Contributors;
 import com.wildfire.main.entitydata.PlayerConfig;
 import net.fabricmc.api.EnvType;
@@ -49,6 +44,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.scores.PlayerTeam;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Environment(EnvType.CLIENT)
 public class WardrobeBrowserScreen extends BaseWildfireScreen {

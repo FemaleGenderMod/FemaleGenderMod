@@ -20,12 +20,13 @@ package com.wildfire.main.cloud;
 
 import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.config.enums.SyncVerbosity;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
+
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class SyncLog {
 	public static final List<Entry> SYNC_LOG = new ArrayList<>();
