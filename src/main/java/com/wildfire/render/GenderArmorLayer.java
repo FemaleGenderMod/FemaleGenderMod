@@ -23,7 +23,7 @@ import com.wildfire.api.IBreastArmorTexture;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.uvs.UVLayout;
 import com.wildfire.main.uvs.UVQuad;
-import com.wildfire.mixins.accessors.EquipmentRendererAccessor;
+import com.wildfire.mixins.accessors.EquipmentLayerRendererAccessor;
 import com.wildfire.render.WildfireModelRenderer.BreastModelBox;
 import com.wildfire.render.ducks.MissingTextureLogger;
 import net.fabricmc.api.EnvType;
@@ -203,7 +203,7 @@ public class GenderArmorLayer<S extends HumanoidRenderState, M extends HumanoidM
 		// (at least theoretically) more compatible with other mods, assuming they simply mixin to TrimSpriteKey
 		// to modify the armor trim sprite location.
 		var key = new EquipmentLayerRenderer.TrimSpriteKey(trim, EquipmentClientInfo.LayerType.HUMANOID, armorModel);
-		TextureAtlasSprite sprite = ((EquipmentRendererAccessor) equipmentRenderer).getTrimSpriteLookup().apply(key);
+		TextureAtlasSprite sprite = ((EquipmentLayerRendererAccessor) equipmentRenderer).getTrimSpriteLookup().apply(key);
 
 		var layer = Sheets.armorTrimsSheet(trim.pattern().value().decal());
 		queue.submitCustomGeometry(matrixStack, layer, BreastRenderCommand.trim(model, state, sprite));

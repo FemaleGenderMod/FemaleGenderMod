@@ -24,7 +24,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.wildfire.mixins.accessors.GameRendererAccessor;
-import com.wildfire.mixins.accessors.RenderDispatcherAccessor;
+import com.wildfire.mixins.accessors.FeatureRenderDispatcherAccessor;
 import com.wildfire.render.BreastRenderCommand;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -38,7 +38,7 @@ import net.minecraft.client.renderer.SubmitNodeStorage;
 import net.minecraft.client.renderer.feature.CustomFeatureRenderer;
 
 @Mixin(CustomFeatureRenderer.class)
-class CustomCommandRendererMixin {
+class CustomFeatureRendererMixin {
 	@WrapOperation(
 			method = "render",
 			at = @At(
@@ -61,7 +61,7 @@ class CustomCommandRendererMixin {
 			var layer = mapEntry.getKey();
 			if(layer.outline().isPresent()) {
 				var featureDispatcher = ((GameRendererAccessor) Minecraft.getInstance().gameRenderer).getRenderDispatcher();
-				var outlineVertexProvider = ((RenderDispatcherAccessor) featureDispatcher).getOutlineBufferSource();
+				var outlineVertexProvider = ((FeatureRenderDispatcherAccessor) featureDispatcher).getOutlineBufferSource();
 				original.call(instance, entry, outlineVertexProvider.getBuffer(layer));
 			}
 		}

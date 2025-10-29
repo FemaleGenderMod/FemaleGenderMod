@@ -16,28 +16,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.mixins.cape;
+package com.wildfire.mixins.accessors;
 
-import com.wildfire.main.cape.SkinTexturesWildfire;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.core.ClientAsset;
-import net.minecraft.world.entity.player.PlayerSkin;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-@SuppressWarnings("unused")
-@Mixin(PlayerSkin.class)
+import java.util.function.Function;
+
+@Mixin(EquipmentLayerRenderer.class)
 @Environment(EnvType.CLIENT)
-abstract class SkinTexturesWildfireImplMixin implements SkinTexturesWildfire {
-    private @Unique @Nullable ClientAsset.Texture wildfiregender$overriddenCapeTexture = null;
-
-    public void wildfiregender$overrideCapeTexture(@Nullable ClientAsset.Texture texture) {
-        this.wildfiregender$overriddenCapeTexture = texture;
-    }
-
-    public @Nullable ClientAsset.Texture wildfiregender$getOverriddenCapeTexture() {
-        return wildfiregender$overriddenCapeTexture;
-    }
+public interface EquipmentLayerRendererAccessor {
+    @Accessor
+    Function<EquipmentLayerRenderer.TrimSpriteKey, TextureAtlasSprite> getTrimSpriteLookup();
 }

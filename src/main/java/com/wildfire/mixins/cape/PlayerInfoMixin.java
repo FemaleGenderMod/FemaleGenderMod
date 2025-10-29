@@ -19,23 +19,32 @@
 package com.wildfire.mixins.cape;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.mojang.authlib.GameProfile;
+import com.wildfire.main.cape.CapeProvider;
 import com.wildfire.main.cape.SkinTexturesWildfire;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.core.ClientAsset;
+import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.world.entity.player.PlayerSkin;
-import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(PlayerSkin.class)
+@Mixin(PlayerInfo.class)
 @Environment(EnvType.CLIENT)
-abstract class SkinTexturesMixin {
-    @ModifyReturnValue(method = {"cape", "elytra"}, at = @At("RETURN"))
-    public @Nullable ClientAsset.Texture wildfiregender$replaceCapeTexture(@Nullable ClientAsset.Texture original) {
-        if(original == null) {
-            return ((SkinTexturesWildfire) this).wildfiregender$getOverriddenCapeTexture();
-        }
+abstract class PlayerInfoMixin {
+    @Shadow
+    @Final
+    private GameProfile profile;
+
+    @SuppressWarnings("DataFlowIssue")
+    @ModifyReturnValue(method = "getSkin", at = @At("RETURN"))
+    public PlayerSkin wildfiregender$replaceCapeTexture(PlayerSkin original) {
+        var cape = CapeProvider.CACHE.getUnchecked(profile);
+        var duck = ((SkinTexturesWildfire)(Object)original);
+        var tex = cape.getNow(null);
+        duck.wildfiregender$overrideCapeTexture(tex);
         return original;
     }
 }

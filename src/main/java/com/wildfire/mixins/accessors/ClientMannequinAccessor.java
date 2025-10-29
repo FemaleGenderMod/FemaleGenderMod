@@ -28,7 +28,7 @@ import net.minecraft.client.entity.ClientMannequin;
 import net.minecraft.world.entity.player.PlayerSkin;
 
 @Mixin(ClientMannequin.class)
-public interface ClientMannequinEntityAccessor {
+public interface ClientMannequinAccessor {
 	@Accessor CompletableFuture<Optional<PlayerSkin>> getSkinLookup();
 	@Accessor void setSkinLookup(CompletableFuture<Optional<PlayerSkin>> value);
 	@Invoker void invokeUpdateSkin();

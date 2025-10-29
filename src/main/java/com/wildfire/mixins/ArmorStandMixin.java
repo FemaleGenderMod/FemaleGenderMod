@@ -32,8 +32,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(ArmorStand.class)
-abstract class ArmorStandEntityMixin extends LivingEntity {
-	private ArmorStandEntityMixin(EntityType<? extends LivingEntity> entityType, Level world) {
+abstract class ArmorStandMixin extends LivingEntity {
+	private ArmorStandMixin(EntityType<? extends LivingEntity> entityType, Level world) {
 		super(entityType, world);
 	}
 

@@ -43,8 +43,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(AvatarRenderer.class)
 @Environment(EnvType.CLIENT)
-abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Player, AvatarRenderState, HumanoidModel<AvatarRenderState>> {
-	private PlayerEntityRendererMixin(EntityRendererProvider.Context ctx, HumanoidModel<AvatarRenderState> model, float shadowRadius) {
+abstract class AvatarRendererMixin extends LivingEntityRenderer<Avatar, AvatarRenderState, HumanoidModel<AvatarRenderState>> {
+	private AvatarRendererMixin(EntityRendererProvider.Context ctx, HumanoidModel<AvatarRenderState> model, float shadowRadius) {
 		super(ctx, model, shadowRadius);
 	}
 

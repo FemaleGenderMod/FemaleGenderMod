@@ -18,18 +18,12 @@
 
 package com.wildfire.mixins.accessors;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.OutlineBufferSource;
+import net.minecraft.client.renderer.feature.FeatureRenderDispatcher;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-import java.util.function.Function;
-
-@Mixin(EquipmentLayerRenderer.class)
-@Environment(EnvType.CLIENT)
-public interface EquipmentRendererAccessor {
-    @Accessor
-    Function<EquipmentLayerRenderer.TrimSpriteKey, TextureAtlasSprite> getTrimSpriteLookup();
+@Mixin(FeatureRenderDispatcher.class)
+public interface FeatureRenderDispatcherAccessor {
+	@Accessor OutlineBufferSource getOutlineBufferSource();
 }

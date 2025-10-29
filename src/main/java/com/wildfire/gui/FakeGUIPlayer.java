@@ -26,7 +26,7 @@ import com.wildfire.main.contributors.Contributor;
 import com.wildfire.main.contributors.Contributors;
 import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
-import com.wildfire.mixins.accessors.ClientMannequinEntityAccessor;
+import com.wildfire.mixins.accessors.ClientMannequinAccessor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -132,11 +132,11 @@ public class FakeGUIPlayer {
 			// this is being done as opposed to using data tracker to force a refresh to avoid interfering
 			// with other mods that might be injecting into the data tracker update methods to know
 			// when real entities in the world are updated
-			((ClientMannequinEntityAccessor) this).invokeUpdateSkin();
+			((ClientMannequinAccessor) this).invokeUpdateSkin();
 		}
 
 		public void applyLoadedSkin() {
-			var accessor = (ClientMannequinEntityAccessor) this;
+			var accessor = (ClientMannequinAccessor) this;
 			var skinLookup = accessor.getSkinLookup();
 			if(skinLookup != null && skinLookup.isDone()) {
 				try {
