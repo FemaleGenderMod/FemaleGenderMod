@@ -26,14 +26,14 @@ import com.wildfire.main.contributors.Contributor;
 import com.wildfire.main.contributors.Contributors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 import org.joml.Matrix3x2fStack;
 import org.joml.Vector2f;
 
@@ -45,10 +45,10 @@ import java.util.UUID;
 @Environment(EnvType.CLIENT)
 public class WildfireCreditsScreen extends BaseWildfireScreen {
 
-    private static final Identifier CREDIT_CONTAINER = Identifier.of(WildfireGender.MODID, "textures/gui/credits/credit_container.png");
-    private static final Identifier CREDIT_OUTLINE = Identifier.of(WildfireGender.MODID, "textures/gui/credits/credit_outline.png");
-    private static final Identifier BUTTON_CONTAINER = Identifier.of(WildfireGender.MODID, "textures/gui/credits/button_container.png");
-    private static final Identifier TAB_CONTAINER = Identifier.of(WildfireGender.MODID, "textures/gui/credits/tab_container.png");
+    private static final ResourceLocation CREDIT_CONTAINER = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/credits/credit_container.png");
+    private static final ResourceLocation CREDIT_OUTLINE = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/credits/credit_outline.png");
+    private static final ResourceLocation BUTTON_CONTAINER = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/credits/button_container.png");
+    private static final ResourceLocation TAB_CONTAINER = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/credits/tab_container.png");
 
     //General contributor list
     private final FakeGUIPlayer[] C_GENERAL = Contributors.getContributors().entrySet().stream()
@@ -79,7 +79,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
     private int creditsPage = 0;
 
     public WildfireCreditsScreen(Screen parent, UUID uuid) {
-        super(Text.translatable("wildfire_gender.credits.title"), parent, uuid);
+        super(Component.translatable("wildfire_gender.credits.title"), parent, uuid);
     }
 
     private int navigationY;
@@ -87,14 +87,14 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
     public void init() {
 
         final var ref = new Object() {
-            ClickableWidget prevPage, nextPage, generalTab, translatorTab;
+            AbstractWidget prevPage, nextPage, generalTab, translatorTab;
         };
 
         navigationY = this.height / 2 + 82;
 
         //category tab
         ref.generalTab = addButton(builder -> builder
-                .message(() -> Text.translatable("wildfire_gender.credits.general"))
+                .message(() -> Component.translatable("wildfire_gender.credits.general"))
                 .position(this.width / 2 - 89, navigationY + 34)
                 .size(87, 13)
                 .active(categoryTab == Category.TRANSLATORS)
@@ -109,7 +109,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
                 }));
 
         ref.translatorTab = addButton(builder -> builder
-                .message(() -> Text.translatable("wildfire_gender.credits.translators"))
+                .message(() -> Component.translatable("wildfire_gender.credits.translators"))
                 .position(this.width / 2 + 2, navigationY + 34)
                 .size(87, 13)
                 .active(categoryTab == Category.GENERAL)
@@ -124,13 +124,13 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
 
         //page tab
         addButton(builder -> builder
-                .message(() -> Text.translatable("wildfire_gender.details.go_back"))
+                .message(() -> Component.translatable("wildfire_gender.details.go_back"))
                 .position(this.width / 2 - 25, navigationY + 6)
                 .size(50, 13)
-                .onPress(button -> close()));
+                .onPress(button -> onClose()));
 
         ref.nextPage = addButton(builder -> builder
-                .message(() -> Text.translatable("wildfire_gender.details.next_page"))
+                .message(() -> Component.translatable("wildfire_gender.details.next_page"))
                 .position(this.width / 2 + 29, navigationY + 6)
                 .size(60, 13)
                 .active(creditsPage < getTotalPages()-1)
@@ -143,7 +143,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
                 }));
 
         ref.prevPage = addButton(builder -> builder
-                .message(() -> Text.translatable("wildfire_gender.details.prev_page"))
+                .message(() -> Component.translatable("wildfire_gender.details.prev_page"))
                 .position(this.width / 2 - 89, navigationY + 6)
                 .size(60, 13)
                 .active(creditsPage != 0)
@@ -172,22 +172,22 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
     }
 
     @Override
-    public void renderBackground(DrawContext ctx, int mouseX, int mouseY, float delta) {
-        this.renderInGameBackground(ctx);
+    public void renderBackground(GuiGraphics ctx, int mouseX, int mouseY, float delta) {
+        this.renderTransparentBackground(ctx);
     }
 
     @Override
-    public void render(DrawContext ctx, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics ctx, int mouseX, int mouseY, float delta) {
 
-        Matrix3x2fStack mStack = ctx.getMatrices();
+        Matrix3x2fStack mStack = ctx.pose();
 
         mStack.pushMatrix();
-        GuiUtils.drawCenteredText(ctx, textRenderer, Text.translatable("wildfire_gender.credits.title"), width / 2, height / 2 - 100, ColorHelper.fullAlpha(0xFFFFFF));
-        GuiUtils.drawCenteredText(ctx, textRenderer, Text.translatable("wildfire_gender.credits.description"), width / 2, height / 2 - 85, ColorHelper.fullAlpha(0x888888));
+        GuiUtils.drawCenteredText(ctx, font, Component.translatable("wildfire_gender.credits.title"), width / 2, height / 2 - 100, ARGB.opaque(0xFFFFFF));
+        GuiUtils.drawCenteredText(ctx, font, Component.translatable("wildfire_gender.credits.description"), width / 2, height / 2 - 85, ARGB.opaque(0x888888));
         mStack.popMatrix();
 
-        ctx.drawTexture(RenderPipelines.GUI_TEXTURED, BUTTON_CONTAINER, this.width / 2 - (190 / 2), navigationY, 0, 0, 190, 25, 190, 25);
-        ctx.drawTexture(RenderPipelines.GUI_TEXTURED, TAB_CONTAINER, this.width / 2 - (190 / 2), navigationY + 28, 0, 0, 190, 25, 190, 25);
+        ctx.blit(RenderPipelines.GUI_TEXTURED, BUTTON_CONTAINER, this.width / 2 - (190 / 2), navigationY, 0, 0, 190, 25, 190, 25);
+        ctx.blit(RenderPipelines.GUI_TEXTURED, TAB_CONTAINER, this.width / 2 - (190 / 2), navigationY + 28, 0, 0, 190, 25, 190, 25);
 
         int columns = 6;
         int boxW = 60;
@@ -212,11 +212,11 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
             int creditBoxX = startX + (col * boxW);
             int creditBoxY = startY + (row * boxH);
 
-            ctx.drawTexture(RenderPipelines.GUI_TEXTURED, CREDIT_CONTAINER, creditBoxX, creditBoxY, 0, 0, 52, 68, 52, 68);
+            ctx.blit(RenderPipelines.GUI_TEXTURED, CREDIT_CONTAINER, creditBoxX, creditBoxY, 0, 0, 52, 68, 52, 68);
 
-            ctx.getMatrices().pushMatrix();
-            ctx.drawTexture(RenderPipelines.GUI_TEXTURED, CREDIT_OUTLINE, creditBoxX+3, creditBoxY+3, 0, 0, 46, 53, 46, 53, ColorHelper.fullAlpha(creditBox.getRole().getColor()));
-            ctx.getMatrices().popMatrix();
+            ctx.pose().pushMatrix();
+            ctx.blit(RenderPipelines.GUI_TEXTURED, CREDIT_OUTLINE, creditBoxX+3, creditBoxY+3, 0, 0, 46, 53, 46, 53, ARGB.opaque(creditBox.getRole().getColor()));
+            ctx.pose().popMatrix();
 
             int xP = creditBoxX + (52 / 2);
             int yP = creditBoxY + (68 / 2);
@@ -228,20 +228,20 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
             mStack.translate(xP, yP + 47);
             mStack.scale(new Vector2f(0.55f, 0.55f));
             mStack.translate(-xP, (-yP) - 47);
-            GuiUtils.drawCenteredTextWrapped(ctx, textRenderer, Text.literal(creditBox.getName()), xP, yP + 7, (int) (50 * 1.45f), ColorHelper.fullAlpha(0xFFFFFF));
+            GuiUtils.drawCenteredTextWrapped(ctx, font, Component.literal(creditBox.getName()), xP, yP + 7, (int) (50 * 1.45f), ARGB.opaque(0xFFFFFF));
             mStack.popMatrix();
 
             if (mouseX > xP - 24 && mouseX < xP + 23 && mouseY > yP + 22 && mouseY < yP + 31) {
-                List<Text> txtList = new ArrayList<>();
+                List<Component> txtList = new ArrayList<>();
                 var role = creditBox.getRoleOrGeneric();
-                txtList.add(role.withColor(Text.empty()
+                txtList.add(role.withColor(Component.empty()
                         .append(creditBox.getName())
-                        .append(Text.literal(" - ").formatted(Formatting.DARK_GRAY))
+                        .append(Component.literal(" - ").withStyle(ChatFormatting.DARK_GRAY))
                         .append(role.shortName())));
                 if (creditBox.getDescription() != null && !creditBox.getDescription().isEmpty()) {
-                    txtList.add(Text.literal(creditBox.getDescription()).formatted(Formatting.GRAY));
+                    txtList.add(Component.literal(creditBox.getDescription()).withStyle(ChatFormatting.GRAY));
                 }
-                ctx.drawTooltip(textRenderer, txtList, mouseX, mouseY);
+                ctx.setComponentTooltipForNextFrame(font, txtList, mouseX, mouseY);
             }
         }
 

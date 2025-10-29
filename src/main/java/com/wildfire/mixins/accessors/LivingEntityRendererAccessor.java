@@ -20,9 +20,9 @@ package com.wildfire.mixins.accessors;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.entity.LivingEntityRenderer;
-import net.minecraft.client.render.entity.state.LivingEntityRenderState;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
@@ -30,5 +30,5 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Environment(EnvType.CLIENT)
 public interface LivingEntityRendererAccessor {
 	@Invoker
-	RenderLayer invokeGetRenderLayer(LivingEntityRenderState state, boolean showBody, boolean translucent, boolean showOutline);
+	RenderType invokeGetRenderType(LivingEntityRenderState state, boolean showBody, boolean translucent, boolean showOutline);
 }

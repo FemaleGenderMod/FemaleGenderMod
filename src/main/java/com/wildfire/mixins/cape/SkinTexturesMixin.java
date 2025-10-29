@@ -20,16 +20,19 @@ package com.wildfire.mixins.cape;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.wildfire.main.cape.SkinTexturesWildfire;
-import net.minecraft.entity.player.SkinTextures;
-import net.minecraft.util.AssetInfo;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.core.ClientAsset;
+import net.minecraft.world.entity.player.PlayerSkin;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(SkinTextures.class)
+@Mixin(PlayerSkin.class)
+@Environment(EnvType.CLIENT)
 abstract class SkinTexturesMixin {
     @ModifyReturnValue(method = {"cape", "elytra"}, at = @At("RETURN"))
-    public @Nullable AssetInfo.TextureAsset wildfiregender$replaceCapeTexture(@Nullable AssetInfo.TextureAsset original) {
+    public @Nullable ClientAsset.Texture wildfiregender$replaceCapeTexture(@Nullable ClientAsset.Texture original) {
         if(original == null) {
             return ((SkinTexturesWildfire) this).wildfiregender$getOverriddenCapeTexture();
         }

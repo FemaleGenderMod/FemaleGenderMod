@@ -18,19 +18,19 @@
 
 package com.wildfire.mixins.accessors;
 
-import net.minecraft.client.network.ClientMannequinEntity;
-import net.minecraft.entity.player.SkinTextures;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.client.entity.ClientMannequin;
+import net.minecraft.world.entity.player.PlayerSkin;
 
-@Mixin(ClientMannequinEntity.class)
+@Mixin(ClientMannequin.class)
 public interface ClientMannequinEntityAccessor {
-	@Accessor CompletableFuture<Optional<SkinTextures>> getSkinLookup();
-	@Accessor void setSkinLookup(CompletableFuture<Optional<SkinTextures>> value);
-	@Invoker void invokeRefreshSkin();
-	@Invoker void invokeSetSkin(SkinTextures skin);
+	@Accessor CompletableFuture<Optional<PlayerSkin>> getSkinLookup();
+	@Accessor void setSkinLookup(CompletableFuture<Optional<PlayerSkin>> value);
+	@Invoker void invokeUpdateSkin();
+	@Invoker void invokeSetSkin(PlayerSkin skin);
 }

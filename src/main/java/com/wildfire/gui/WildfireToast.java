@@ -28,27 +28,24 @@ import com.wildfire.main.WildfireGenderClient;
 import com.wildfire.main.config.ClientConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.toast.Toast;
-import net.minecraft.client.toast.Toast.Visibility;
-import net.minecraft.client.toast.ToastManager;
-import net.minecraft.text.OrderedText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Colors;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.toasts.Toast;
+import net.minecraft.client.gui.components.toasts.ToastManager;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.CommonColors;
+import net.minecraft.util.FormattedCharSequence;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public class WildfireToast implements Toast {
-    private static final Identifier TEXTURE = Identifier.ofVanilla("toast/advancement");
-    private static final Identifier ICON = Identifier.of(WildfireGender.MODID, "textures/bc_ribbon.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.withDefaultNamespace("toast/advancement");
+    private static final ResourceLocation ICON = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/bc_ribbon.png");
     public static final int PROGRESS_BAR_WIDTH = 154;
     public static final int PROGRESS_BAR_HEIGHT = 1;
-    private final List<OrderedText> text;
+    private final List<FormattedCharSequence> text;
     private Visibility visibility = Visibility.SHOW;
     private long lastTime;
     private float lastProgress;
@@ -56,29 +53,29 @@ public class WildfireToast implements Toast {
     private final boolean hasProgressBar;
     private final int displayDuration;
 
-    public WildfireToast(TextRenderer textRenderer, Text title, @Nullable Text description, boolean hasProgressBar, int i) {
+    public WildfireToast(Font textRenderer, Component title, @Nullable Component description, boolean hasProgressBar, int i) {
         this.text = new ArrayList<>(2);
-        this.text.addAll(textRenderer.wrapLines(title.copy().withColor(Colors.LIGHT_PINK), 126));
+        this.text.addAll(textRenderer.split(title.copy().withColor(CommonColors.COSMOS_PINK), 126));
         if (description != null) {
-            this.text.addAll(textRenderer.wrapLines(description, 126));
+            this.text.addAll(textRenderer.split(description, 126));
         }
 
         this.hasProgressBar = hasProgressBar;
         this.displayDuration = i;
     }
 
-    public WildfireToast(TextRenderer textRenderer, Text title, @Nullable Text description, boolean hasProgressBar) {
+    public WildfireToast(Font textRenderer, Component title, @Nullable Component description, boolean hasProgressBar) {
         this(textRenderer, title, description, hasProgressBar, 0);
     }
 
     @Override
-    public Visibility getVisibility() {
+    public Visibility getWantedVisibility() {
         return this.visibility;
     }
 
     @Override
     public void update(ToastManager manager, long time) {
-        if(WildfireEventHandler.getConfigKeybind().isPressed()) {
+        if(WildfireEventHandler.getConfigKeybind().isDown()) {
             this.visibility = Visibility.HIDE;
             ClientConfig.INSTANCE.set(ClientConfig.SHOW_TOAST, false);
             ClientConfig.INSTANCE.save();
@@ -87,7 +84,7 @@ public class WildfireToast implements Toast {
     }
 
     @Override
-    public int getHeight() {
+    public int height() {
         return 7 + this.getTextHeight() + 3;
     }
 
@@ -96,16 +93,16 @@ public class WildfireToast implements Toast {
     }
 
     @Override
-    public void draw(DrawContext context, TextRenderer textRenderer, long startTime) {
-        int i = this.getHeight();
-        context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, 0, this.getWidth(), i);
+    public void render(GuiGraphics context, Font textRenderer, long startTime) {
+        int i = this.height();
+        context.blitSprite(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, 0, this.width(), i);
 
-        context.drawTexture(RenderPipelines.GUI_TEXTURED, ICON, 6, 6, 0, 0, 20, 20, 20, 20, 20, 20);
+        context.blit(RenderPipelines.GUI_TEXTURED, ICON, 6, 6, 0, 0, 20, 20, 20, 20, 20, 20);
         int j = this.text.size() * 11;
         int k = 7 + (this.getTextHeight() - j) / 2;
 
         for (int l = 0; l < this.text.size(); l++) {
-            context.drawText(textRenderer, (OrderedText)this.text.get(l), 30, k + l * 11, 0xFFFFFFFF, false);
+            context.drawString(textRenderer, (FormattedCharSequence)this.text.get(l), 30, k + l * 11, 0xFFFFFFFF, false);
         }
     }
 

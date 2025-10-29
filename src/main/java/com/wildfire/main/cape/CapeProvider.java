@@ -23,19 +23,19 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalNotification;
 import com.mojang.authlib.GameProfile;
+import com.mojang.blaze3d.platform.NativeImage;
 import com.wildfire.main.WildfireGender;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.util.AssetInfo;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 import java.io.FileNotFoundException;
 import java.net.URI;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
+import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.core.ClientAsset;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Based on <a href="https://git.celestialfault.dev/celeste/kappa">celeste's fork</a>
@@ -49,7 +49,7 @@ public class CapeProvider {
         return Duration.ofMinutes(30);
     });
 
-    public static final LoadingCache<GameProfile, CompletableFuture<AssetInfo.TextureAsset>> CACHE = CacheBuilder.newBuilder()
+    public static final LoadingCache<GameProfile, CompletableFuture<ClientAsset.Texture>> CACHE = CacheBuilder.newBuilder()
             .expireAfterAccess(CACHE_DURATION)
             .removalListener(CapeProvider::remove)
             .build(CacheLoader.from(CapeProvider::loadCape));
@@ -57,7 +57,7 @@ public class CapeProvider {
     private static final Pattern USERNAME = Pattern.compile("^[a-z0-9_]{1,16}$", Pattern.CASE_INSENSITIVE);
     private static final String CAPE_URL = "https://femalegendermod.net/capes/{uuid}.png";
 
-    private static void remove(RemovalNotification<GameProfile, CompletableFuture<AssetInfo.TextureAsset>> entry) {
+    private static void remove(RemovalNotification<GameProfile, CompletableFuture<ClientAsset.Texture>> entry) {
         var future = entry.getValue();
         if(future == null) {
             WildfireGender.LOGGER.warn("Got a null value for removed cache entry with key {}; this shouldn't happen!", entry.getKey());
@@ -68,12 +68,12 @@ public class CapeProvider {
         if(tex != null) {
             var id = tex.texturePath();
             WildfireGender.LOGGER.debug("Destroying texture {}", id);
-            MinecraftClient.getInstance().getTextureManager().destroyTexture(id);
+            Minecraft.getInstance().getTextureManager().release(id);
         }
     }
 
     // This loads the cape for one player, doesn't matter if it's the player or not.
-    private static CompletableFuture<AssetInfo.TextureAsset> loadCape(GameProfile player) {
+    private static CompletableFuture<ClientAsset.Texture> loadCape(GameProfile player) {
         return CompletableFuture.supplyAsync(() -> {
             // immediately ignore any profiles that look obviously invalid; while it's possible that this
             // could ignore valid profiles (illegal characters in usernames have been known to exist),
@@ -83,7 +83,7 @@ public class CapeProvider {
             }
 
             return tryUrl(player, CAPE_URL.replace("{uuid}", player.id().toString()));
-        }, Util.getIoWorkerExecutor());
+        }, Util.ioPool());
     }
 
     // This is a provider specific implementation.
@@ -96,7 +96,7 @@ public class CapeProvider {
         NativeImage out = new NativeImage(64 * zoom, 32 * zoom, true);
         for (int x = 0; x < srcWidth; x++) {
             for (int y = 0; y < srcHeight; y++) {
-                out.setColorArgb(x, y, in.getColorArgb(x, y));
+                out.setPixel(x, y, in.getPixel(x, y));
             }
         }
         return out;
@@ -104,17 +104,17 @@ public class CapeProvider {
 
     // Try to load a cape from a URL.
     // If this fails, it'll return null, and let us try another url.
-    private static @Nullable AssetInfo.TextureAsset tryUrl(GameProfile player, String urlFrom) {
+    private static @Nullable ClientAsset.Texture tryUrl(GameProfile player, String urlFrom) {
         try {
             WildfireGender.LOGGER.debug("Attempting to fetch cape from {}", urlFrom);
             var url = URI.create(urlFrom).toURL();
             var image = uncrop(NativeImage.read(url.openStream()));
             WildfireGender.LOGGER.debug("Got cape texture");
 
-            var id = Identifier.of(WildfireGender.MODID, "cape/" + player.id().toString().replace("-", ""));
+            var id = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "cape/" + player.id().toString().replace("-", ""));
             register(id, image).join();
 
-            return new AssetInfo.SkinAssetInfo(id, urlFrom);
+            return new ClientAsset.DownloadedTexture(id, urlFrom);
         } catch(FileNotFoundException e) {
             // Getting the cape was successful! But there's no cape, so don't retry.
             WildfireGender.LOGGER.debug("No cape texture found");
@@ -125,10 +125,10 @@ public class CapeProvider {
         }
     }
 
-    private static CompletableFuture<Void> register(final Identifier id, final NativeImage image) {
-        return MinecraftClient.getInstance().submit(() -> {
-            var texture = new NativeImageBackedTexture(id::toString, image);
-            MinecraftClient.getInstance().getTextureManager().registerTexture(id, texture);
+    private static CompletableFuture<Void> register(final ResourceLocation id, final NativeImage image) {
+        return Minecraft.getInstance().submit(() -> {
+            var texture = new DynamicTexture(id::toString, image);
+            Minecraft.getInstance().getTextureManager().register(id, texture);
         });
     }
 

@@ -28,15 +28,15 @@ import com.wildfire.physics.BreastPhysics;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.RenderStateDataKey;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.entity.state.EntityRenderState;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.PlayerLikeEntity;
-import net.minecraft.entity.effect.StatusEffectUtil;
-import net.minecraft.entity.player.PlayerModelPart;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
+import net.minecraft.world.effect.MobEffectUtil;
+import net.minecraft.world.entity.Avatar;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.PlayerModelPart;
+import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -82,7 +82,7 @@ public class GenderRenderState {
     public UVLayout rightBreastArmorUVLayout;
 
     public boolean isBreathing;
-    public @Nullable Text nametag;
+    public @Nullable Component nametag;
 
     /**
      * Updates the data in this render state to match the given entity.
@@ -95,7 +95,7 @@ public class GenderRenderState {
         this.leftBreastPhysics.update(entityConfig.getLeftBreastPhysics());
         this.rightBreastPhysics.update(entityConfig.getRightBreastPhysics());
 
-        this.partialTicks = MinecraftClient.getInstance().getRenderTickCounter().getTickProgress(true);
+        this.partialTicks = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true);
 
         this.gender = entityConfig.getGender();
         this.bustSize = entityConfig.getBustSize();
@@ -105,8 +105,8 @@ public class GenderRenderState {
         this.armorPhysicsOverride = entityConfig.getArmorPhysicsOverride();
         this.showBreastsInArmor = entityConfig.showBreastsInArmor();
 
-        if(entity instanceof PlayerLikeEntity playerLikeEntity) {
-            this.hasJacketLayer = playerLikeEntity.isModelPartVisible(PlayerModelPart.JACKET);
+        if(entity instanceof Avatar playerLikeEntity) {
+            this.hasJacketLayer = playerLikeEntity.isModelPartShown(PlayerModelPart.JACKET);
         } else {
             this.hasJacketLayer = entityConfig instanceof PlayerConfig || entityConfig.hasJacketLayer();
         }
@@ -124,9 +124,9 @@ public class GenderRenderState {
         this.leftBreastArmorUVLayout = entityConfig.getLeftBreastArmorUVLayout().copy();
         this.rightBreastArmorUVLayout = entityConfig.getRightBreastArmorUVLayout().copy();
 
-        this.isBreathing = !entity.isSubmergedInWater() || StatusEffectUtil.hasWaterBreathing(entity) ||
-            entity.getEntityWorld().getBlockState(entity.getBlockPos()).isOf(Blocks.BUBBLE_COLUMN);
-        this.nametag = entity.isPlayer() ? WildfireGenderClient.getNametag(entity.getUuid()) : null;
+        this.isBreathing = !entity.isUnderWater() || MobEffectUtil.hasWaterBreathing(entity) ||
+            entity.level().getBlockState(entity.blockPosition()).is(Blocks.BUBBLE_COLUMN);
+        this.nametag = entity.isAlwaysTicking() ? WildfireGenderClient.getNametag(entity.getUUID()) : null;
     }
 
     public static class BreastState {
@@ -163,19 +163,19 @@ public class GenderRenderState {
         }
 
         public float getPositionY() {
-            return MathHelper.lerp(partialTicks, this.prePositionY, this.positionY);
+            return Mth.lerp(partialTicks, this.prePositionY, this.positionY);
         }
 
         public float getPositionX() {
-            return MathHelper.lerp(partialTicks, this.prePositionX, this.positionX);
+            return Mth.lerp(partialTicks, this.prePositionX, this.positionX);
         }
 
         public float getBounceRotation() {
-            return MathHelper.lerp(partialTicks, this.preBounceRotation, this.bounceRotation);
+            return Mth.lerp(partialTicks, this.preBounceRotation, this.bounceRotation);
         }
 
         public float getBreastSize() {
-            return MathHelper.lerp(partialTicks, this.preBreastSize, this.breastSize);
+            return Mth.lerp(partialTicks, this.preBreastSize, this.breastSize);
         }
     }
 }

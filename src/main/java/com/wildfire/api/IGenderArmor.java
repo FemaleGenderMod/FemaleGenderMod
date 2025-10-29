@@ -38,7 +38,7 @@ public interface IGenderArmor {
     };
 
     /**
-     * Default implementation used when the player {@link net.minecraft.item.ItemStack#isEmpty() isn't wearing a chestplate},
+     * Default implementation used when the player {@link net.minecraft.world.item.ItemStack#isEmpty() isn't wearing a chestplate},
      * or if the worn chestplate specifies that it doesn't cover the breasts.
      */
     IGenderArmor EMPTY = new IGenderArmor() {
@@ -82,7 +82,7 @@ public interface IGenderArmor {
         if(!covers) {
             return EMPTY;
         }
-        return new GenderArmor(resistance, tightness, true, hideBreasts, armorStands.asBoolean(resistance == 1f), texture);
+        return new GenderArmor(resistance, tightness, true, hideBreasts, armorStands.toBoolean(resistance == 1f), texture);
     }));
 
     /**

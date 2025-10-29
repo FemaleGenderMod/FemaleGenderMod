@@ -21,11 +21,11 @@ package com.wildfire.main.entitydata;
 import com.wildfire.main.config.types.ConfigKey;
 import com.wildfire.main.config.Configuration;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
 import org.joml.Vector3f;
 
 import java.util.function.Consumer;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
 /**
  * Data class representing an entity's breast appearance settings
@@ -33,12 +33,12 @@ import java.util.function.Consumer;
 @SuppressWarnings("UnusedReturnValue")
 public final class Breasts {
 
-    public static final PacketCodec<ByteBuf, Breasts> CODEC = PacketCodec.tuple(
-            PacketCodecs.FLOAT, Breasts::getXOffset,
-            PacketCodecs.FLOAT, Breasts::getYOffset,
-            PacketCodecs.FLOAT, Breasts::getZOffset,
-            PacketCodecs.BOOLEAN, Breasts::isUniboob,
-            PacketCodecs.FLOAT, Breasts::getCleavage,
+    public static final StreamCodec<ByteBuf, Breasts> CODEC = StreamCodec.composite(
+            ByteBufCodecs.FLOAT, Breasts::getXOffset,
+            ByteBufCodecs.FLOAT, Breasts::getYOffset,
+            ByteBufCodecs.FLOAT, Breasts::getZOffset,
+            ByteBufCodecs.BOOL, Breasts::isUniboob,
+            ByteBufCodecs.FLOAT, Breasts::getCleavage,
             (x, y, z, uniboob, cleavage) -> {
                 Breasts breasts = new Breasts();
                 breasts.xOffset = x;

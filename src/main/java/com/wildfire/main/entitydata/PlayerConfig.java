@@ -30,8 +30,8 @@ import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.config.types.ConfigKey;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -222,10 +222,10 @@ public class PlayerConfig extends EntityConfig {
 
 	@ApiStatus.Internal
 	public void attemptCloudSync() {
-		var client = MinecraftClient.getInstance();
-		if(client.player == null || !this.uuid.equals(client.player.getUuid())) return;
+		var client = Minecraft.getInstance();
+		if(client.player == null || !this.uuid.equals(client.player.getUUID())) return;
 		if(!needsCloudSync) return;
-		if(client.currentScreen instanceof BaseWildfireScreen) return;
+		if(client.screen instanceof BaseWildfireScreen) return;
 		if(!ClientConfig.INSTANCE.get(ClientConfig.AUTOMATIC_CLOUD_SYNC)) return;
 		if(CloudSync.syncOnCooldown()) return;
 

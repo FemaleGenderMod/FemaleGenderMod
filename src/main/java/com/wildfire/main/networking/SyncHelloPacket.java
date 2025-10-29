@@ -24,10 +24,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.packet.CustomPayload;
-
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import java.util.function.Function;
 
 /**
@@ -38,14 +37,14 @@ import java.util.function.Function;
  *
  * @since 5.0.0-Beta.2
  */
-public sealed interface SyncHelloPacket extends CustomPayload {
+public sealed interface SyncHelloPacket extends CustomPacketPayload {
 	/*static*/ int VERSION = 1;
 
 	int version();
 
-	static <T extends SyncHelloPacket> PacketCodec<ByteBuf, T> codec(Function<Integer, T> constructor) {
-		return PacketCodec.tuple(
-				PacketCodecs.VAR_INT, SyncHelloPacket::version,
+	static <T extends SyncHelloPacket> StreamCodec<ByteBuf, T> codec(Function<Integer, T> constructor) {
+		return StreamCodec.composite(
+				ByteBufCodecs.VAR_INT, SyncHelloPacket::version,
 				constructor
 		);
 	}
@@ -57,11 +56,11 @@ public sealed interface SyncHelloPacket extends CustomPayload {
 			this(VERSION);
 		}
 
-		public static final Id<Clientbound> ID = new CustomPayload.Id<>(WildfireGender.id("clientbound/hello"));
-		public static final PacketCodec<ByteBuf, Clientbound> CODEC = codec(Clientbound::new);
+		public static final Type<Clientbound> ID = new CustomPacketPayload.Type<>(WildfireGender.rl("clientbound/hello"));
+		public static final StreamCodec<ByteBuf, Clientbound> CODEC = codec(Clientbound::new);
 
 		@Override
-		public Id<? extends CustomPayload> getId() {
+		public Type<? extends CustomPacketPayload> type() {
 			return ID;
 		}
 
@@ -80,16 +79,16 @@ public sealed interface SyncHelloPacket extends CustomPayload {
 			this(VERSION);
 		}
 
-		public static final Id<Serverbound> ID = new CustomPayload.Id<>(WildfireGender.id("serverbound/hello"));
-		public static final PacketCodec<ByteBuf, Serverbound> CODEC = codec(Serverbound::new);
+		public static final Type<Serverbound> ID = new CustomPacketPayload.Type<>(WildfireGender.rl("serverbound/hello"));
+		public static final StreamCodec<ByteBuf, Serverbound> CODEC = codec(Serverbound::new);
 
 		@Override
-		public Id<? extends CustomPayload> getId() {
+		public Type<? extends CustomPacketPayload> type() {
 			return ID;
 		}
 
 		public void handle(ServerPlayNetworking.Context context) {
-			WildfireSync.LOGGER.info("Received hello from player {} using sync protocol version {}", context.player().getUuid(), version);
+			WildfireSync.LOGGER.info("Received hello from player {} using sync protocol version {}", context.player().getUUID(), version);
 			// note that while the only action the client performs upon receiving this response is printing some messages
 			// to the game logs, this should still be treated as a required response to any client that sends it
 			// if the server supports it.

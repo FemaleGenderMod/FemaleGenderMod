@@ -18,7 +18,7 @@ repositories {
 dependencies {
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.fabricmc:yarn:${project.minecraft_version}+build.${project.yarn_build}:v2"
+	mappings loom.officialMojangMappings()
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	modImplementation fabricApi.module("fabric-networking-api-v1", project.fabric_version)
@@ -42,9 +42,12 @@ dependencies {
 processResources {
 	inputs.property "version", project.mod_version
 	inputs.property "minecraft_version", project.minecraft_version
+	inputs.property "minecraft_dependency", project.minecraft_dependency
 
 	filesMatching("fabric.mod.json") {
-		expand "version": project.mod_version, "minecraft_version": project.minecraft_version
+		expand "version": project.mod_version,
+				"minecraft_version": project.minecraft_version,
+				"minecraft_dependency": project.minecraft_dependency
 	}
 }
 
@@ -59,6 +62,12 @@ java {
 }
 
 loom {
+	decompilers {
+		named("vineflower") {
+			options.put("mark-corresponding-synthetics", "1")
+		}
+	}
+
 	accessWidenerPath = file("src/main/resources/wildfire_gender.accesswidener")
 }
 

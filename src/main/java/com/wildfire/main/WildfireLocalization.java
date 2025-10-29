@@ -18,32 +18,31 @@
 
 package com.wildfire.main;
 
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 
 //I mostly made this file for the "status log" text in the cloud sync screen.
 public class WildfireLocalization {
 
-    public static final Text ENABLED = Text.translatable("wildfire_gender.label.enabled").formatted(Formatting.GREEN);
-    public static final Text DISABLED = Text.translatable("wildfire_gender.label.disabled").formatted(Formatting.RED);
-    public static final Text OFF = Text.translatable("wildfire_gender.label.off");
+    public static final Component ENABLED = Component.translatable("wildfire_gender.label.enabled").withStyle(ChatFormatting.GREEN);
+    public static final Component DISABLED = Component.translatable("wildfire_gender.label.disabled").withStyle(ChatFormatting.RED);
+    public static final Component OFF = Component.translatable("wildfire_gender.label.off");
 
-    public static final Text SYNC_LOG_AUTHENTICATING_MOJANG = Text.translatable("wildfire_gender.sync_log.authenticating_mojang");
-    public static final Text SYNC_LOG_AUTHENTICATING_CLOUD_SYNC = Text.translatable("wildfire_gender.sync_log.authenticating_sync");
-    public static final Text SYNC_LOG_AUTHENTICATION_FAILED = Text.translatable("wildfire_gender.sync_log.authentication_failed");
-    public static final Text SYNC_LOG_REAUTHENTICATING = Text.translatable("wildfire_gender.sync_log.reauthenticating");
-    public static final Text SYNC_LOG_ATTEMPTING_SYNC = Text.translatable("wildfire_gender.sync_log.attempting_sync");
-    public static final Text SYNC_LOG_SYNC_SUCCESS = Text.translatable("wildfire_gender.sync_log.sync_success");
-    public static final Text SYNC_LOG_SYNC_TOO_FREQUENTLY = Text.translatable("wildfire_gender.sync_log.sync_too_frequently");
-    public static final Text SYNC_LOG_FAILED_TO_SYNC_DATA = Text.translatable("wildfire_gender.sync_log.failed_to_sync_data");
-    public static final Text SYNC_LOG_SYNC_TO_CLOUD = Text.translatable("wildfire_gender.sync_log.sync_to_cloud");
+    public static final Component SYNC_LOG_AUTHENTICATING_MOJANG = Component.translatable("wildfire_gender.sync_log.authenticating_mojang");
+    public static final Component SYNC_LOG_AUTHENTICATING_CLOUD_SYNC = Component.translatable("wildfire_gender.sync_log.authenticating_sync");
+    public static final Component SYNC_LOG_AUTHENTICATION_FAILED = Component.translatable("wildfire_gender.sync_log.authentication_failed");
+    public static final Component SYNC_LOG_REAUTHENTICATING = Component.translatable("wildfire_gender.sync_log.reauthenticating");
+    public static final Component SYNC_LOG_ATTEMPTING_SYNC = Component.translatable("wildfire_gender.sync_log.attempting_sync");
+    public static final Component SYNC_LOG_SYNC_SUCCESS = Component.translatable("wildfire_gender.sync_log.sync_success");
+    public static final Component SYNC_LOG_SYNC_TOO_FREQUENTLY = Component.translatable("wildfire_gender.sync_log.sync_too_frequently");
+    public static final Component SYNC_LOG_FAILED_TO_SYNC_DATA = Component.translatable("wildfire_gender.sync_log.failed_to_sync_data");
 
-    public static final Text SYNC_LOG_DELETED = Text.translatable("wildfire_gender.sync_log.data_deleted");
-    public static final Text SYNC_LOG_DELETION_FAILED = Text.translatable("wildfire_gender.sync_log.data_deletion_failed");
-    public static final Text SYNC_LOG_NO_PROFILE_TO_DELETE = Text.translatable("wildfire_gender.sync_log.no_data_to_delete");
+    public static final Component SYNC_LOG_DELETED = Component.translatable("wildfire_gender.sync_log.data_deleted");
+    public static final Component SYNC_LOG_DELETION_FAILED = Component.translatable("wildfire_gender.sync_log.data_deletion_failed");
+    public static final Component SYNC_LOG_NO_PROFILE_TO_DELETE = Component.translatable("wildfire_gender.sync_log.no_data_to_delete");
 
-    public static final Text SYNC_LOG_GET_SINGLE_PROFILE = Text.translatable("wildfire_gender.sync_log.get_single_profile");
-    public static final Text SYNC_LOG_GET_MULTIPLE_PROFILES = Text.translatable("wildfire_gender.sync_log.get_multiple_profiles");
+    public static final Component SYNC_LOG_GET_SINGLE_PROFILE = Component.translatable("wildfire_gender.sync_log.get_single_profile");
+    public static final Component SYNC_LOG_GET_MULTIPLE_PROFILES = Component.translatable("wildfire_gender.sync_log.get_multiple_profiles");
 
 
 

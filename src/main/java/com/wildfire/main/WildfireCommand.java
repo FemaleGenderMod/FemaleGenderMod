@@ -35,23 +35,23 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.decoration.ArmorStandEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.equipment.trim.ArmorTrim;
-import net.minecraft.item.equipment.trim.ArmorTrimMaterials;
-import net.minecraft.item.equipment.trim.ArmorTrimPatterns;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.Text;
-import net.minecraft.text.Texts;
-import net.minecraft.util.Formatting;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentUtils;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.equipment.trim.ArmorTrim;
+import net.minecraft.world.item.equipment.trim.TrimMaterials;
+import net.minecraft.world.item.equipment.trim.TrimPatterns;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -63,29 +63,29 @@ import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.arg
 
 @Environment(EnvType.CLIENT)
 public class WildfireCommand {
-	private static final Text COMMAND_PREFIX = Text.empty()
-			.append(Text.literal("[").formatted(Formatting.GRAY))
-			.append(Text.literal("F").formatted(Formatting.LIGHT_PURPLE))
-			.append(Text.literal("GM").formatted(Formatting.WHITE))
-			.append(Text.literal("] ").formatted(Formatting.GRAY));
+	private static final Component COMMAND_PREFIX = Component.empty()
+			.append(Component.literal("[").withStyle(ChatFormatting.GRAY))
+			.append(Component.literal("F").withStyle(ChatFormatting.LIGHT_PURPLE))
+			.append(Component.literal("GM").withStyle(ChatFormatting.WHITE))
+			.append(Component.literal("] ").withStyle(ChatFormatting.GRAY));
 
 	static void init() {
 		ClientCommandRegistrationCallback.EVENT.register(WildfireCommand::register);
 	}
 
-	private static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess registry) {
-		MinecraftClient client = MinecraftClient.getInstance();
+	private static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext context) {
+		Minecraft client = Minecraft.getInstance();
 
 		var debug = ClientCommandManager.literal("debug")
 				.executes((ctx) -> {
-					sendHelp(ctx, Text.literal("Debug Commands:"),
+					sendHelp(ctx, Component.literal("Debug Commands:"),
 							"invalidatecache", "Clears the player & entity caches",
 							"target", "Show debug info for entity you are looking at",
 							"cache [allPlayers] [showEntities]", "Display cached entities/players",
 							"firsttime", "Display the first time setup screen",
 							"syncverbosity [level]", "Change how verbose the sync log is");
-					ctx.getSource().sendFeedback(Text.empty());
-					sendHelp(ctx, Text.literal("Singleplayer Commands:"),
+					ctx.getSource().sendFeedback(Component.empty());
+					sendHelp(ctx, Component.literal("Singleplayer Commands:"),
 							"trim [glint]", "Equips a chestplate with a trim pre-applied onto yourself",
 							"armorstand", "Spawns an armor stand with armor copying your breast settings pre-equipped");
 					return 1;
@@ -97,7 +97,7 @@ public class WildfireCommand {
 				.then(ClientCommandManager.literal("firsttime")
 						.executes(ctx -> {
 							client.execute(() -> {
-								client.send(() -> client.setScreen(new WildfireFirstTimeSetupScreen(null, client.player.getUuid())));
+								client.schedule(() -> client.setScreen(new WildfireFirstTimeSetupScreen(null, client.player.getUUID())));
 							});
 							return Command.SINGLE_SUCCESS;
 						}))
@@ -111,7 +111,7 @@ public class WildfireCommand {
 						.then(argument("level", new SyncVerbosity.SyncVerbosityArgumentType())
 								.executes(WildfireCommand::setLogLevel)));
 
-		if(MinecraftClient.getInstance().isInSingleplayer()) {
+		if(Minecraft.getInstance().isLocalServer()) {
 			debug
 					.then(ClientCommandManager.literal("trim")
 							.then(ClientCommandManager.argument("glint", BoolArgumentType.bool())
@@ -139,47 +139,47 @@ public class WildfireCommand {
 	}
 
 	public static void send(CommandContext<FabricClientCommandSource> ctx, String text) {
-		ctx.getSource().sendFeedback(Text.empty().append(COMMAND_PREFIX).append(text));
+		ctx.getSource().sendFeedback(Component.empty().append(COMMAND_PREFIX).append(text));
 	}
 
-	public static void send(CommandContext<FabricClientCommandSource> ctx, Text text) {
-		ctx.getSource().sendFeedback(Text.empty().append(COMMAND_PREFIX).append(text));
+	public static void send(CommandContext<FabricClientCommandSource> ctx, Component text) {
+		ctx.getSource().sendFeedback(Component.empty().append(COMMAND_PREFIX).append(text));
 	}
 
-	public static void sendHelp(CommandContext<FabricClientCommandSource> ctx, Text header, String... nameToDescription) {
+	public static void sendHelp(CommandContext<FabricClientCommandSource> ctx, Component header, String... nameToDescription) {
 		assert nameToDescription.length % 2 == 0;
-		List<Text> lines = new ArrayList<>();
-		lines.add(Text.empty().append(COMMAND_PREFIX).append(header).formatted(Formatting.UNDERLINE));
+		List<Component> lines = new ArrayList<>();
+		lines.add(Component.empty().append(COMMAND_PREFIX).append(header).withStyle(ChatFormatting.UNDERLINE));
 
 		for(int i = 0; i < nameToDescription.length / 2; i++) {
 			var name = nameToDescription[i * 2];
 			var description = nameToDescription[(i * 2) + 1];
-			lines.add(Text.empty().append(COMMAND_PREFIX)
-				.append(Text.literal(name).formatted(Formatting.AQUA))
-				.append(Text.literal(" - ").formatted(Formatting.GRAY))
-				.append(Text.literal(description)));
+			lines.add(Component.empty().append(COMMAND_PREFIX)
+				.append(Component.literal(name).withStyle(ChatFormatting.AQUA))
+				.append(Component.literal(" - ").withStyle(ChatFormatting.GRAY))
+				.append(Component.literal(description)));
 		}
 
-		ctx.getSource().sendFeedback(Texts.join(lines, Text.literal("\n")));
+		ctx.getSource().sendFeedback(ComponentUtils.formatList(lines, Component.literal("\n")));
 	}
 
 	private static int openConfig(CommandContext<FabricClientCommandSource> ctx) {
 		final var client = ctx.getSource().getClient();
 		final var player = ctx.getSource().getPlayer();
 		// the .send() is necessary as otherwise the chat screen will simply immediately close the opened screen
-		client.send(() -> WardrobeBrowserScreen.open(client, player));
+		client.schedule(() -> WardrobeBrowserScreen.open(client, player));
 		return 1;
 	}
 
 	private static int getEntityLookingAt(CommandContext<FabricClientCommandSource> ctx) {
-		var target = ctx.getSource().getClient().targetedEntity;
+		var target = ctx.getSource().getClient().crosshairPickEntity;
 
 		if(target != null) {
 			send(ctx, "Looking at: " + target.getName().getString());
-			send(ctx, "UUID: " + target.getUuidAsString());
+			send(ctx, "UUID: " + target.getStringUUID());
 			send(ctx, "Type: " + target.getType());
 			send(ctx, "Class: " + target.getClass());
-			send(ctx, "Renderer: " + MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(target));
+			send(ctx, "Renderer: " + Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(target));
 		} else {
 			send(ctx, "No entity in sight.");
 		}
@@ -221,8 +221,8 @@ public class WildfireCommand {
 		return 1;
 	}
 
-	private static List<Text> dump(Cache<UUID, ? extends EntityConfig> cache, @NotNull World world, boolean ignoreEmptyConfig) {
-		List<Text> lines = new ArrayList<>();
+	private static List<Component> dump(Cache<UUID, ? extends EntityConfig> cache, @NotNull Level world, boolean ignoreEmptyConfig) {
+		List<Component> lines = new ArrayList<>();
 		for(var entry : cache.asMap().entrySet()) {
 			var uuid = entry.getKey();
 			var config = entry.getValue();
@@ -235,13 +235,13 @@ public class WildfireCommand {
 			var entity = world.getEntity(uuid);
 			if(entity == null) continue;
 
-			var info = Texts.join(config.getDebugInfo(), Text.literal("\n"), Text::literal);
+			var info = ComponentUtils.formatList(config.getDebugInfo(), Component.literal("\n"), Component::literal);
 
-			lines.add(Text.empty()
+			lines.add(Component.empty()
 					.append(entity.getDisplayName())
 					.append(" - ")
 					.append(config.getGender().getDisplayName())
-					.styled(style -> style.withHoverEvent(new HoverEvent.ShowText(info))));
+					.withStyle(style -> style.withHoverEvent(new HoverEvent.ShowText(info))));
 		}
 		return lines;
 	}
@@ -255,50 +255,50 @@ public class WildfireCommand {
 	}
 
 	/**
-	 * Takes a client-sided {@link CommandContext} and returns the {@link ServerPlayerEntity} for the invoking player
+	 * Takes a client-sided {@link CommandContext} and returns the {@link ServerPlayer} for the invoking player
 	 * when in singleplayer, or throws an error.
 	 */
-	private static ServerPlayerEntity getIntegratedServerPlayer(CommandContext<FabricClientCommandSource> ctx) {
-		var integratedServer = Objects.requireNonNull(MinecraftClient.getInstance().getServer());
-		var playerManager = Objects.requireNonNull(integratedServer.getPlayerManager());
-		return Objects.requireNonNull(playerManager.getPlayer(ctx.getSource().getPlayer().getUuid()));
+	private static ServerPlayer getIntegratedServerPlayer(CommandContext<FabricClientCommandSource> ctx) {
+		var integratedServer = Objects.requireNonNull(Minecraft.getInstance().getSingleplayerServer());
+		var playerManager = Objects.requireNonNull(integratedServer.getPlayerList());
+		return Objects.requireNonNull(playerManager.getPlayer(ctx.getSource().getPlayer().getUUID()));
 	}
 
 	private static int equipTrimmedChestplate(CommandContext<FabricClientCommandSource> ctx) {
 		Boolean glint = getOrDefault(ctx, "glint", null, Boolean.class);
 		var player = getIntegratedServerPlayer(ctx);
-		if(!player.hasPermissionLevel(2)) return 0;
+		if(!player.hasPermissions(2)) return 0;
 		var item = new ItemStack(Items.IRON_CHESTPLATE);
-		var material = player.getRegistryManager().getOrThrow(RegistryKeys.TRIM_MATERIAL).getOrThrow(ArmorTrimMaterials.AMETHYST);
-		var pattern = player.getRegistryManager().getOrThrow(RegistryKeys.TRIM_PATTERN).getOrThrow(ArmorTrimPatterns.COAST);
-		item.set(DataComponentTypes.TRIM, new ArmorTrim(material, pattern));
+		var material = player.registryAccess().lookupOrThrow(Registries.TRIM_MATERIAL).getOrThrow(TrimMaterials.AMETHYST);
+		var pattern = player.registryAccess().lookupOrThrow(Registries.TRIM_PATTERN).getOrThrow(TrimPatterns.COAST);
+		item.set(DataComponents.TRIM, new ArmorTrim(material, pattern));
 		if(glint != null) {
-			item.set(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, glint);
+			item.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, glint);
 		}
-		player.equipStack(EquipmentSlot.CHEST, item);
+		player.setItemSlot(EquipmentSlot.CHEST, item);
 		return 1;
 	}
 
 	private static int spawnArmorStand(CommandContext<FabricClientCommandSource> ctx) {
 		var player = getIntegratedServerPlayer(ctx);
-		if(!player.hasPermissionLevel(2)) return 0;
-		var world = player.getEntityWorld();
+		if(!player.hasPermissions(2)) return 0;
+		var world = player.level();
 
 		var item = new ItemStack(Items.IRON_CHESTPLATE);
-		var config = WildfireGender.getOrAddPlayerById(player.getUuid());
+		var config = WildfireGender.getOrAddPlayerById(player.getUUID());
 		var component = BreastDataComponent.fromPlayer(player, config);
 		if(component == null) {
-			ctx.getSource().sendError(Text.literal("Returned breast data component was null; do you have Hide in Armor on?"));
+			ctx.getSource().sendError(Component.literal("Returned breast data component was null; do you have Hide in Armor on?"));
 			return 0;
 		}
 		component.write(item);
 
-		var stand = new ArmorStandEntity(world, player.getBlockX(), player.getBlockY(), player.getBlockZ());
-		stand.equipStack(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
-		stand.equipStack(EquipmentSlot.CHEST, item);
-		stand.equipStack(EquipmentSlot.LEGS, new ItemStack(Items.IRON_LEGGINGS));
-		stand.equipStack(EquipmentSlot.FEET, new ItemStack(Items.IRON_BOOTS));
-		world.spawnEntity(stand);
+		var stand = new ArmorStand(world, player.getBlockX(), player.getBlockY(), player.getBlockZ());
+		stand.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
+		stand.setItemSlot(EquipmentSlot.CHEST, item);
+		stand.setItemSlot(EquipmentSlot.LEGS, new ItemStack(Items.IRON_LEGGINGS));
+		stand.setItemSlot(EquipmentSlot.FEET, new ItemStack(Items.IRON_BOOTS));
+		world.addFreshEntity(stand);
 
 		return 1;
 	}

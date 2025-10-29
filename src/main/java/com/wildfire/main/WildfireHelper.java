@@ -29,13 +29,11 @@ import com.wildfire.resources.GenderArmorResourceManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.AttributeModifiersComponent;
-import net.minecraft.item.ItemStack;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.util.Mth;
 import net.minecraft.util.TriState;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
-
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
@@ -97,13 +95,13 @@ public final class WildfireHelper {
         }
 
         return GenderArmorResourceManager.get(stack).orElseGet(() -> {
-            var fallback = stack.contains(DataComponentTypes.EQUIPPABLE) ? IGenderArmor.DEFAULT : IGenderArmor.EMPTY;
+            var fallback = stack.has(DataComponents.EQUIPPABLE) ? IGenderArmor.DEFAULT : IGenderArmor.EMPTY;
             return WildfireAPI.getGenderArmors().getOrDefault(stack.getItem(), fallback);
         });
     }
 
     public static Codec<Float> boundedFloat(float minInclusive, float maxInclusive) {
-        return Codec.FLOAT.xmap(val -> MathHelper.clamp(val, minInclusive, maxInclusive), Function.identity());
+        return Codec.FLOAT.xmap(val -> Mth.clamp(val, minInclusive, maxInclusive), Function.identity());
     }
 
     public static Codec<Float> boundedFloat(FloatConfigKey configKey) {
@@ -116,7 +114,7 @@ public final class WildfireHelper {
     }
 
     public static String toFormattedPercent(double value) {
-        return AttributeModifiersComponent.DECIMAL_FORMAT.format(value * 100.0);
+        return ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(value * 100.0);
     }
 
     public static boolean onClient() {

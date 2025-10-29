@@ -18,19 +18,18 @@
 
 package com.wildfire.main.config.enums;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.text.Text;
-import net.minecraft.util.function.ValueLists;
-
 import java.util.function.IntFunction;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.ByIdMap;
 
 public enum ShowPlayerListMode {
 	MOD_UI_ONLY,
 	TAB_LIST_OPEN,
 	ALWAYS;
 
-	public static final IntFunction<ShowPlayerListMode> BY_ID = ValueLists.createIndexToValueFunction(ShowPlayerListMode::ordinal, values(), ValueLists.OutOfBoundsHandling.WRAP);
+	public static final IntFunction<ShowPlayerListMode> BY_ID = ByIdMap.continuous(ShowPlayerListMode::ordinal, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
 
 	public ShowPlayerListMode next() {
 		return BY_ID.apply(this.ordinal() + 1);
@@ -39,20 +38,20 @@ public enum ShowPlayerListMode {
 	public boolean isVisible() {
 		return switch(this) {
 			case MOD_UI_ONLY -> false;
-			case TAB_LIST_OPEN -> MinecraftClient.getInstance().options.playerListKey.isPressed();
+			case TAB_LIST_OPEN -> Minecraft.getInstance().options.keyPlayerList.isDown();
 			case ALWAYS -> true;
 		};
 	}
 
-	public Text text() {
-		return Text.translatable("wildfire_gender.always_show_list." + name().toLowerCase());
+	public Component text() {
+		return Component.translatable("wildfire_gender.always_show_list." + name().toLowerCase());
 	}
 
 	public Tooltip tooltip() {
 		if(this == TAB_LIST_OPEN) {
-			var button = MinecraftClient.getInstance().options.playerListKey.getBoundKeyLocalizedText();
-			return Tooltip.of(Text.translatable("wildfire_gender.always_show_list." + name().toLowerCase() + ".tooltip", button));
+			var button = Minecraft.getInstance().options.keyPlayerList.getTranslatedKeyMessage();
+			return Tooltip.create(Component.translatable("wildfire_gender.always_show_list." + name().toLowerCase() + ".tooltip", button));
 		}
-		return Tooltip.of(Text.translatable("wildfire_gender.always_show_list." + name().toLowerCase() + ".tooltip"));
+		return Tooltip.create(Component.translatable("wildfire_gender.always_show_list." + name().toLowerCase() + ".tooltip"));
 	}
 }

@@ -22,17 +22,15 @@ import com.wildfire.api.IGenderArmor;
 import com.wildfire.main.WildfireGender;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.EquippableComponent;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.resource.JsonDataLoader;
-import net.minecraft.resource.ResourceFinder;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceReloader;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.profiler.Profiler;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.resources.FileToIdConverter;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.equipment.Equippable;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -41,28 +39,28 @@ import java.util.Map;
 import java.util.Optional;
 
 @Environment(EnvType.CLIENT)
-public final class GenderArmorResourceManager extends JsonDataLoader<IGenderArmor> {
+public final class GenderArmorResourceManager extends SimpleJsonResourceReloadListener<IGenderArmor> {
 	private GenderArmorResourceManager() {
-		super(IGenderArmor.CODEC, ResourceFinder.json("wildfire_gender_data"));
+		super(IGenderArmor.CODEC, FileToIdConverter.json("wildfire_gender_data"));
 	}
 
-	public static final Identifier ID = WildfireGender.id("armor_data");
+	public static final ResourceLocation ID = WildfireGender.rl("armor_data");
 	public static final GenderArmorResourceManager INSTANCE = new GenderArmorResourceManager();
-	private @Unmodifiable Map<Identifier, IGenderArmor> configs = Map.of();
+	private @Unmodifiable Map<ResourceLocation, IGenderArmor> configs = Map.of();
 
-	public static @Nullable IGenderArmor get(Identifier model) {
+	public static @Nullable IGenderArmor get(ResourceLocation model) {
 		return INSTANCE.configs.get(model);
 	}
 
 	public static Optional<IGenderArmor> get(ItemStack item) {
-		return Optional.ofNullable(item.get(DataComponentTypes.EQUIPPABLE))
-				.flatMap(EquippableComponent::assetId)
-				.map(RegistryKey::getValue)
+		return Optional.ofNullable(item.get(DataComponents.EQUIPPABLE))
+				.flatMap(Equippable::assetId)
+				.map(ResourceKey::location)
 				.map(GenderArmorResourceManager::get);
 	}
 
 	@Override
-	protected void apply(Map<Identifier, IGenderArmor> prepared, ResourceManager manager, Profiler profiler) {
+	protected void apply(Map<ResourceLocation, IGenderArmor> prepared, ResourceManager manager, ProfilerFiller profiler) {
 		this.configs = Collections.unmodifiableMap(prepared);
 	}
 }

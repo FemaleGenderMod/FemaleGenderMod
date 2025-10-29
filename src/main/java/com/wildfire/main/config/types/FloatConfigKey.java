@@ -20,7 +20,7 @@ package com.wildfire.main.config.types;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
 
 public class FloatConfigKey extends NumberConfigKey<Float> {
 
@@ -37,7 +37,7 @@ public class FloatConfigKey extends NumberConfigKey<Float> {
         // note that we clamp float values instead of allowing them to be reset to their default to
         // be a bit more user-friendly if the min/max value for this key is modified, and the player's
         // previous config value would now be outside the allowed range for this key.
-        return MathHelper.clamp(super.read(element), getMinInclusive(), getMaxInclusive());
+        return Mth.clamp(super.read(element), getMinInclusive(), getMaxInclusive());
     }
 
     @Override

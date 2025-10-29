@@ -18,13 +18,12 @@
 
 package com.wildfire.mixins.accessors;
 
-import net.minecraft.client.render.OutlineVertexConsumerProvider;
-import net.minecraft.client.render.command.RenderDispatcher;
+import net.minecraft.client.renderer.OutlineBufferSource;
+import net.minecraft.client.renderer.feature.FeatureRenderDispatcher;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(RenderDispatcher.class)
+@Mixin(FeatureRenderDispatcher.class)
 public interface RenderDispatcherAccessor {
-	@Accessor("outlineVertexConsumers")
-	OutlineVertexConsumerProvider getOutlineVertexConsumerProvider();
+	@Accessor OutlineBufferSource getOutlineBufferSource();
 }

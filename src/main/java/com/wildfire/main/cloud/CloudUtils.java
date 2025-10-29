@@ -22,9 +22,8 @@ import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.mixins.accessors.YggdrasilMinecraftSessionServiceAccessor;
-import net.minecraft.client.MinecraftClient;
-
 import java.util.Objects;
+import net.minecraft.client.Minecraft;
 
 public final class CloudUtils {
 	private CloudUtils() {
@@ -34,7 +33,7 @@ public final class CloudUtils {
 	private static final String EXPECTED_YGGDRASIL_BASE_URL = "https://sessionserver.mojang.com/session/minecraft/";
 
 	static MinecraftSessionService getSessionService() {
-		return MinecraftClient.getInstance().getApiServices().sessionService();
+		return Minecraft.getInstance().services().sessionService();
 	}
 
 	static boolean hasTheSessionServiceBeenTamperedWith() {

@@ -27,17 +27,16 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import java.util.UUID;
 
-public final class ClientboundSyncPacket extends AbstractSyncPacket implements CustomPayload {
+public final class ClientboundSyncPacket extends AbstractSyncPacket implements CustomPacketPayload {
 
-	public static final Id<ClientboundSyncPacket> ID = new CustomPayload.Id<>(Identifier.of(WildfireGender.MODID, "sync"));
-	public static final PacketCodec<ByteBuf, ClientboundSyncPacket> CODEC = codec(ClientboundSyncPacket::new);
+	public static final Type<ClientboundSyncPacket> ID = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "sync"));
+	public static final StreamCodec<ByteBuf, ClientboundSyncPacket> CODEC = codec(ClientboundSyncPacket::new);
 
 	public ClientboundSyncPacket(PlayerConfig plr) {
 		super(plr);
@@ -48,17 +47,17 @@ public final class ClientboundSyncPacket extends AbstractSyncPacket implements C
 	}
 
 	@Override
-	public Id<? extends CustomPayload> getId() {
+	public Type<? extends CustomPacketPayload> type() {
 		return ID;
 	}
 
-	public static boolean canSend(ServerPlayerEntity player) {
+	public static boolean canSend(ServerPlayer player) {
 		return ServerPlayNetworking.canSend(player, ID);
 	}
 
 	@Environment(EnvType.CLIENT)
 	public void handle(ClientPlayNetworking.Context context) {
-		if(context.player().getUuid().equals(uuid)) {
+		if(context.player().getUUID().equals(uuid)) {
 			WildfireGender.LOGGER.warn("Ignoring sync packet referring to the client player");
 			return;
 		}

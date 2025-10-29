@@ -24,16 +24,16 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.wildfire.events.ArmorStatsTooltipEvent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.AttributeModifierSlot;
-import net.minecraft.component.type.AttributeModifiersComponent;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.text.Text;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import org.apache.commons.lang3.function.TriConsumer;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.jetbrains.annotations.Nullable;
@@ -48,20 +48,20 @@ import java.util.function.Consumer;
 abstract class ItemStackMixin {
 	@Shadow public abstract Item getItem();
 
-	@WrapOperation(method = "appendAttributeModifiersTooltip", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;applyAttributeModifier(Lnet/minecraft/component/type/AttributeModifierSlot;Lorg/apache/commons/lang3/function/TriConsumer;)V"))
+	@WrapOperation(method = "addAttributeTooltips", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;forEachModifier(Lnet/minecraft/world/entity/EquipmentSlotGroup;Lorg/apache/commons/lang3/function/TriConsumer;)V"))
 	public void wildfiregender$appendPhysicsStats(
 			ItemStack instance,
-			AttributeModifierSlot slot,
-			TriConsumer<RegistryEntry<EntityAttribute>, EntityAttributeModifier, AttributeModifiersComponent.Display> attributeModifierConsumer,
+			EquipmentSlotGroup slot,
+			TriConsumer<Holder<Attribute>, AttributeModifier, ItemAttributeModifiers.Display> attributeModifierConsumer,
 			Operation<Void> original,
 			@Local MutableBoolean missingAttribute,
-			@Local(argsOnly = true) @Nullable PlayerEntity player,
-			@Local(argsOnly = true) Consumer<Text> textConsumer
+			@Local(argsOnly = true) @Nullable Player player,
+			@Local(argsOnly = true) Consumer<Component> textConsumer
 	) {
 		original.call(instance, slot, attributeModifierConsumer);
-		if(slot == AttributeModifierSlot.CHEST && missingAttribute.isFalse()) {
+		if(slot == EquipmentSlotGroup.CHEST && missingAttribute.isFalse()) {
 			var item = (ItemStack)(Object)this;
-			if(item.get(DataComponentTypes.EQUIPPABLE) == null) {
+			if(item.get(DataComponents.EQUIPPABLE) == null) {
 				return;
 			}
 			ArmorStatsTooltipEvent.EVENT.invoker().appendTooltips(item, textConsumer, player);

@@ -22,9 +22,9 @@ import com.google.common.base.Preconditions;
 import com.google.gson.annotations.SerializedName;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,7 +42,7 @@ public record Contributor(
 		@Nullable Boolean showInCredits
 ) {
 	// requireNonNull() to help IDEs figure out that @Nullable only applies to non-color Formatting entries
-	private static final int DEFAULT_COLOR = Objects.requireNonNull(Formatting.GOLD.getColorValue());
+	private static final int DEFAULT_COLOR = Objects.requireNonNull(ChatFormatting.GOLD.getColor());
 
 	public int getColor() {
 		if(color != null) {
@@ -51,7 +51,7 @@ public record Contributor(
 		return getRole().getColor();
 	}
 
-	public @Nullable Text asText() {
+	public @Nullable Component asText() {
 		return getRole().nametag().withColor(getColor());
 	}
 
@@ -72,7 +72,7 @@ public record Contributor(
 	public enum Role {
 		// New entries should be added at the bottom of this enum, as otherwise existing bitmasks will
 		// reference the wrong entries
-		MOD_CREATOR(Formatting.LIGHT_PURPLE.getColorValue()),
+		MOD_CREATOR(ChatFormatting.LIGHT_PURPLE.getColor()),
 		// TODO should this have a special color as well? this is currently set to an light blue/purple-ish color
 		FABRIC_MAINTAINER(0xA78FFF),
 		NEOFORGE_MAINTAINER(0xA78FFF),
@@ -105,7 +105,7 @@ public record Contributor(
 			return color == null ? DEFAULT_COLOR : color;
 		}
 
-		public @NotNull MutableText withColor(@NotNull MutableText text) {
+		public @NotNull MutableComponent withColor(@NotNull MutableComponent text) {
 			Preconditions.checkNotNull(text);
 			if(color != null) {
 				return text.withColor(color);
@@ -113,22 +113,22 @@ public record Contributor(
 			return text;
 		}
 
-		public @NotNull MutableText withColor(@NotNull MutableText text, @NotNull Formatting defaultColor) {
+		public @NotNull MutableComponent withColor(@NotNull MutableComponent text, @NotNull ChatFormatting defaultColor) {
 			Preconditions.checkNotNull(text);
 			if(color != null) {
 				return text.withColor(color);
 			}
 
-			Preconditions.checkNotNull(defaultColor.getColorValue());
-			return text.withColor(defaultColor.getColorValue());
+			Preconditions.checkNotNull(defaultColor.getColor());
+			return text.withColor(defaultColor.getColor());
 		}
 
-		public @NotNull MutableText nametag() {
-			return Text.translatable("wildfire_gender.contributor.role." + name().toLowerCase(Locale.ROOT));
+		public @NotNull MutableComponent nametag() {
+			return Component.translatable("wildfire_gender.contributor.role." + name().toLowerCase(Locale.ROOT));
 		}
 
-		public @NotNull MutableText shortName() {
-			return Text.translatable("wildfire_gender.contributor.role." + name().toLowerCase(Locale.ROOT) + ".short");
+		public @NotNull MutableComponent shortName() {
+			return Component.translatable("wildfire_gender.contributor.role." + name().toLowerCase(Locale.ROOT) + ".short");
 		}
 	}
 }

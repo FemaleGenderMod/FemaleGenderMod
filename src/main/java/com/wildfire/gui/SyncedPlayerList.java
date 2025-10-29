@@ -20,16 +20,14 @@ package com.wildfire.gui;
 
 import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.contributors.Contributor;
 import com.wildfire.main.contributors.Contributors;
 import com.wildfire.main.entitydata.PlayerConfig;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -47,31 +45,31 @@ public final class SyncedPlayerList {
 		ClientTickEvents.END_CLIENT_TICK.register(SyncedPlayerList::onTick);
 	}
 
-	public static void drawSyncedPlayers(DrawContext context, TextRenderer textRenderer) {
+	public static void drawSyncedPlayers(GuiGraphics context, Font textRenderer) {
 		if(syncedPlayers.isEmpty()) {
 			return;
 		}
 
-		var header = Text.translatable("wildfire_gender.wardrobe.players_using_mod").formatted(Formatting.AQUA);
-		context.drawText(textRenderer, header, 5, 5, 0xFFFFFFFF, true);
+		var header = Component.translatable("wildfire_gender.wardrobe.players_using_mod").withStyle(ChatFormatting.AQUA);
+		context.drawString(textRenderer, header, 5, 5, 0xFFFFFFFF, true);
 
 		int yPos = 18;
 		for(var entry : syncedPlayers) {
-			var text = Text.empty()
-					.append(Text.literal(entry.name()).withColor(entry.color()))
+			var text = Component.empty()
+					.append(Component.literal(entry.name()).withColor(entry.color()))
 					.append(" - ")
 					.append(entry.gender().getDisplayName());
-			context.drawText(textRenderer, text, 10, yPos, 0xFFFFFFFF, false);
+			context.drawString(textRenderer, text, 10, yPos, 0xFFFFFFFF, false);
 			yPos += 10;
 		}
 	}
 
-	private static void onTick(MinecraftClient client) {
+	private static void onTick(Minecraft client) {
 		if(ticks++ % 5 != 0) {
 			return;
 		}
 
-		var clientPlayer = MinecraftClient.getInstance().player;
+		var clientPlayer = Minecraft.getInstance().player;
 		if(clientPlayer == null) {
 			syncedPlayers = Collections.emptyList();
 			return;
@@ -79,8 +77,8 @@ public final class SyncedPlayerList {
 
 		var list = new ArrayList<SyncedPlayer>();
 
-		for(var entry : clientPlayer.networkHandler.getListedPlayerListEntries()) {
-			if(Objects.equals(entry.getProfile().id(), clientPlayer.getUuid())) {
+		for(var entry : clientPlayer.connection.getListedOnlinePlayers()) {
+			if(Objects.equals(entry.getProfile().id(), clientPlayer.getUUID())) {
 				continue;
 			}
 

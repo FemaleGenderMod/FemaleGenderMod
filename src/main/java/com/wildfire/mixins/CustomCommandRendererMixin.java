@@ -21,37 +21,37 @@ package com.wildfire.mixins;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.wildfire.mixins.accessors.GameRendererAccessor;
 import com.wildfire.mixins.accessors.RenderDispatcherAccessor;
 import com.wildfire.render.BreastRenderCommand;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.command.CustomCommandRenderer;
-import net.minecraft.client.render.command.OrderedRenderCommandQueue;
-import net.minecraft.client.render.command.OrderedRenderCommandQueueImpl;
-import net.minecraft.client.util.math.MatrixStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 import java.util.List;
 import java.util.Map;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.SubmitNodeStorage;
+import net.minecraft.client.renderer.feature.CustomFeatureRenderer;
 
-@Mixin(CustomCommandRenderer.class)
+@Mixin(CustomFeatureRenderer.class)
 class CustomCommandRendererMixin {
 	@WrapOperation(
 			method = "render",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/render/command/OrderedRenderCommandQueue$Custom;render(Lnet/minecraft/client/util/math/MatrixStack$Entry;Lnet/minecraft/client/render/VertexConsumer;)V"
+					target = "Lnet/minecraft/client/renderer/SubmitNodeCollector$CustomGeometryRenderer;render(Lcom/mojang/blaze3d/vertex/PoseStack$Pose;Lcom/mojang/blaze3d/vertex/VertexConsumer;)V"
 			)
 	)
 	public void wildfiregender$dodgyRenderingHackToRenderBreastLayerWithOutline(
-			OrderedRenderCommandQueue.Custom instance,
-			MatrixStack.Entry entry,
+			SubmitNodeCollector.CustomGeometryRenderer instance,
+			PoseStack.Pose entry,
 			VertexConsumer vertexConsumer,
 			Operation<Void> original,
-			@Local Map.Entry<RenderLayer, List<OrderedRenderCommandQueueImpl.CustomCommand>> mapEntry
+			@Local Map.Entry<RenderType, List<SubmitNodeStorage.CustomGeometrySubmit>> mapEntry
 	) {
 		original.call(instance, entry, vertexConsumer);
 
@@ -59,9 +59,9 @@ class CustomCommandRendererMixin {
 		// wherever applicable.
 		if(instance instanceof BreastRenderCommand breastRenderCommand && breastRenderCommand.outline() != 0) {
 			var layer = mapEntry.getKey();
-			if(layer.getAffectedOutline().isPresent()) {
-				var featureDispatcher = ((GameRendererAccessor) MinecraftClient.getInstance().gameRenderer).getRenderDispatcher();
-				var outlineVertexProvider = ((RenderDispatcherAccessor) featureDispatcher).getOutlineVertexConsumerProvider();
+			if(layer.outline().isPresent()) {
+				var featureDispatcher = ((GameRendererAccessor) Minecraft.getInstance().gameRenderer).getRenderDispatcher();
+				var outlineVertexProvider = ((RenderDispatcherAccessor) featureDispatcher).getOutlineBufferSource();
 				original.call(instance, entry, outlineVertexProvider.getBuffer(layer));
 			}
 		}

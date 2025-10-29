@@ -30,10 +30,10 @@ import java.util.function.Consumer;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
@@ -43,15 +43,15 @@ public abstract class BaseWildfireScreen extends Screen {
     protected final Screen parent;
 
     //Keira Emberlyn - The Mod's New Mascot
-    protected static final Identifier KEIRA_LOOK = Identifier.of(WildfireGender.MODID, "textures/gui/mascot/keira_look.png");
-    protected static final Identifier KEIRA_WAVE = Identifier.of(WildfireGender.MODID, "textures/gui/mascot/keira_wave.png");
-    protected static final Identifier KEIRA_LEATHER = Identifier.of(WildfireGender.MODID, "textures/gui/mascot/keira_leather.png");
-    protected static final Identifier KEIRA_NETHERITE = Identifier.of(WildfireGender.MODID, "textures/gui/mascot/keira_netherite.png");
+    protected static final ResourceLocation KEIRA_LOOK = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/mascot/keira_look.png");
+    protected static final ResourceLocation KEIRA_WAVE = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/mascot/keira_wave.png");
+    protected static final ResourceLocation KEIRA_LEATHER = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/mascot/keira_leather.png");
+    protected static final ResourceLocation KEIRA_NETHERITE = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/mascot/keira_netherite.png");
     protected static final int KEIRA_WIDTH = 610;
     protected static final int KEIRA_HEIGHT = 736;
     //Keira test ctx.drawTexture(RenderPipelines.GUI_TEXTURED, KEIRA_LOOK, x, y, 0, 0, 26, 26, KEIRA_WIDTH, KEIRA_HEIGHT, KEIRA_WIDTH, KEIRA_HEIGHT);
 
-    protected BaseWildfireScreen(Text title, Screen parent, UUID uuid) {
+    protected BaseWildfireScreen(Component title, Screen parent, UUID uuid) {
         super(title);
         this.parent = parent;
         this.playerUUID = uuid;
@@ -60,22 +60,22 @@ public abstract class BaseWildfireScreen extends Screen {
     protected WildfireButton addButton(Consumer<WildfireButton.Builder> builder) {
         var buttonBuilder = new WildfireButton.Builder();
         builder.accept(buttonBuilder);
-        return addDrawableChild(buttonBuilder.build());
+        return addRenderableWidget(buttonBuilder.build());
     }
 
     protected WildfireSlider addSlider(Consumer<WildfireSlider.Builder> builder) {
         var sliderBuilder = new WildfireSlider.Builder();
         sliderBuilder.save(ignored -> Objects.requireNonNull(getPlayer(), "getPlayer()").save());
         builder.accept(sliderBuilder);
-        return addDrawableChild(sliderBuilder.build());
+        return addRenderableWidget(sliderBuilder.build());
     }
 
     public @Nullable PlayerConfig getPlayer() {
         return WildfireGender.getPlayerById(this.playerUUID);
     }
 
-    protected void renderPlayerInFrame(DrawContext ctx, int xP, int yP, int mouseX, int mouseY) {
-        var player = Objects.requireNonNull(client).player;
+    protected void renderPlayerInFrame(GuiGraphics ctx, int xP, int yP, int mouseX, int mouseY) {
+        var player = Objects.requireNonNull(minecraft).player;
         if(player == null) return;
         // This sucks. In order to position the player properly, we need to trick the player renderer into
         // thinking the area the player should be rendered is much taller than it actually is.
@@ -85,12 +85,12 @@ public abstract class BaseWildfireScreen extends Screen {
     }
 
     @Override
-    public boolean shouldPause() {
+    public boolean isPauseScreen() {
         return false;
     }
 
     @Override
-    public void close() {
-        Objects.requireNonNull(client).setScreen(parent);
+    public void onClose() {
+        Objects.requireNonNull(minecraft).setScreen(parent);
     }
 }

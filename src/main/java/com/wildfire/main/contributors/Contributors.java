@@ -24,8 +24,8 @@ import com.wildfire.main.WildfireGender;
 import com.wildfire.main.cloud.CloudSync;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.text.Text;
-import net.minecraft.util.Nullables;
+import net.minecraft.Optionull;
+import net.minecraft.network.chat.Component;
 import org.intellij.lang.annotations.Language;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.NotNull;
@@ -92,14 +92,14 @@ public final class Contributors {
 	}
 
 	private static <T> @Nullable T map(UUID uuid, Function<Contributor, T> mapping) {
-		return Nullables.map(getContributors().get(uuid), mapping);
+		return Optionull.map(getContributors().get(uuid), mapping);
 	}
 
 	public static @Nullable Contributor.Role getRole(UUID uuid) {
 		return map(uuid, Contributor::getRole);
 	}
 
-	public static @Nullable Text getNametag(UUID uuid) {
+	public static @Nullable Component getNametag(UUID uuid) {
 		return map(uuid, Contributor::asText);
 	}
 

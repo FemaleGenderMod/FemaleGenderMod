@@ -27,17 +27,16 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import java.util.UUID;
 
-public final class ServerboundSyncPacket extends AbstractSyncPacket implements CustomPayload {
+public final class ServerboundSyncPacket extends AbstractSyncPacket implements CustomPacketPayload {
 
-	public static final Id<ServerboundSyncPacket> ID = new CustomPayload.Id<>(Identifier.of(WildfireGender.MODID, "send_gender_info"));
-	public static final PacketCodec<ByteBuf, ServerboundSyncPacket> CODEC = codec(ServerboundSyncPacket::new);
+	public static final Type<ServerboundSyncPacket> ID = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "send_gender_info"));
+	public static final StreamCodec<ByteBuf, ServerboundSyncPacket> CODEC = codec(ServerboundSyncPacket::new);
 
 	public ServerboundSyncPacket(PlayerConfig plr) {
 		super(plr);
@@ -48,7 +47,7 @@ public final class ServerboundSyncPacket extends AbstractSyncPacket implements C
 	}
 
 	@Override
-	public Id<? extends CustomPayload> getId() {
+	public Type<? extends CustomPacketPayload> type() {
 		return ID;
 	}
 
@@ -58,8 +57,8 @@ public final class ServerboundSyncPacket extends AbstractSyncPacket implements C
 	}
 
 	public void handle(ServerPlayNetworking.Context context) {
-		ServerPlayerEntity player = context.player();
-		PlayerConfig plr = WildfireGender.getOrAddPlayerById(player.getUuid());
+		ServerPlayer player = context.player();
+		PlayerConfig plr = WildfireGender.getOrAddPlayerById(player.getUUID());
 		updatePlayerFromPacket(plr);
 		WildfireSync.sendToAllClients(player, plr);
 	}

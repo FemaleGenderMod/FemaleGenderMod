@@ -25,7 +25,7 @@ import com.mojang.logging.LogUtils;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.networking.WildfireSync;
 import net.fabricmc.api.ModInitializer;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -74,7 +74,7 @@ public class WildfireGender implements ModInitializer {
 		return CACHE.getUnchecked(id);
 	}
 
-	public static Identifier id(String path) {
-		return Identifier.of(MODID, path);
+	public static ResourceLocation rl(String path) {
+		return ResourceLocation.fromNamespaceAndPath(MODID, path);
 	}
 }

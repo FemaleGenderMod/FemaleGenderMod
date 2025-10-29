@@ -19,22 +19,25 @@
 package com.wildfire.mixins.cape;
 
 import com.wildfire.main.cape.SkinTexturesWildfire;
-import net.minecraft.entity.player.SkinTextures;
-import net.minecraft.util.AssetInfo;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.core.ClientAsset;
+import net.minecraft.world.entity.player.PlayerSkin;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
 @SuppressWarnings("unused")
-@Mixin(SkinTextures.class)
+@Mixin(PlayerSkin.class)
+@Environment(EnvType.CLIENT)
 abstract class SkinTexturesWildfireImplMixin implements SkinTexturesWildfire {
-    private @Unique @Nullable AssetInfo.TextureAsset wildfiregender$overriddenCapeTexture = null;
+    private @Unique @Nullable ClientAsset.Texture wildfiregender$overriddenCapeTexture = null;
 
-    public void wildfiregender$overrideCapeTexture(@Nullable AssetInfo.TextureAsset texture) {
+    public void wildfiregender$overrideCapeTexture(@Nullable ClientAsset.Texture texture) {
         this.wildfiregender$overriddenCapeTexture = texture;
     }
 
-    public @Nullable AssetInfo.TextureAsset wildfiregender$getOverriddenCapeTexture() {
+    public @Nullable ClientAsset.Texture wildfiregender$getOverriddenCapeTexture() {
         return wildfiregender$overriddenCapeTexture;
     }
 }

@@ -18,14 +18,14 @@
 
 package com.wildfire.main.cloud;
 
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 
 public enum SyncUnavailable {
 	INVALID_ACCOUNT,
 	OFFLINE_SERVER,
 	;
 
-	public Text text() {
-		return Text.translatable("wildfire_gender.cloud.unavailable." + name().toLowerCase());
+	public Component text() {
+		return Component.translatable("wildfire_gender.cloud.unavailable." + name().toLowerCase());
 	}
 }

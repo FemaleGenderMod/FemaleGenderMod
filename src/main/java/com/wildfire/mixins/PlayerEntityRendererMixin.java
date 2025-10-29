@@ -20,38 +20,38 @@ package com.wildfire.mixins;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.wildfire.events.PlayerNametagRenderEvent;
 import com.wildfire.main.config.ClientConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.render.command.OrderedRenderCommandQueue;
-import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.entity.LivingEntityRenderer;
-import net.minecraft.client.render.entity.PlayerEntityRenderer;
-import net.minecraft.client.render.entity.model.BipedEntityModel;
-import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
-import net.minecraft.client.render.state.CameraRenderState;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.PlayerLikeEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.player.AvatarRenderer;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.world.entity.Avatar;
+import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(PlayerEntityRenderer.class)
+@Mixin(AvatarRenderer.class)
 @Environment(EnvType.CLIENT)
-abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<PlayerEntity, PlayerEntityRenderState, BipedEntityModel<PlayerEntityRenderState>> {
-	private PlayerEntityRendererMixin(EntityRendererFactory.Context ctx, BipedEntityModel<PlayerEntityRenderState> model, float shadowRadius) {
+abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Player, AvatarRenderState, HumanoidModel<AvatarRenderState>> {
+	private PlayerEntityRendererMixin(EntityRendererProvider.Context ctx, HumanoidModel<AvatarRenderState> model, float shadowRadius) {
 		super(ctx, model, shadowRadius);
 	}
 
-	@ModifyReturnValue(method = "hasLabel(Lnet/minecraft/entity/PlayerLikeEntity;D)Z", at = @At("RETURN"))
-	public boolean wildfiregender$forceLabel(boolean original, @Local(argsOnly = true) PlayerLikeEntity player) {
+	@ModifyReturnValue(method = "shouldShowName(Lnet/minecraft/world/entity/Avatar;D)Z", at = @At("RETURN"))
+	public boolean wildfiregender$forceLabel(boolean original, @Local(argsOnly = true) Avatar player) {
 		if(FabricLoader.getInstance().isDevelopmentEnvironment()) {
-			if(player instanceof ClientPlayerEntity && ClientConfig.INSTANCE.get(ClientConfig.DISPLAY_OWN_NAMETAG)) {
+			if(player instanceof LocalPlayer && ClientConfig.INSTANCE.get(ClientConfig.DISPLAY_OWN_NAMETAG)) {
 				return true;
 			}
 		}
@@ -60,19 +60,19 @@ abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<PlayerEnti
 
 	@SuppressWarnings("CodeBlock2Expr")
 	@Inject(
-		method = "renderLabelIfPresent(Lnet/minecraft/client/render/entity/state/PlayerEntityRenderState;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/command/OrderedRenderCommandQueue;Lnet/minecraft/client/render/state/CameraRenderState;)V",
-		at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;push()V", shift = At.Shift.AFTER)
+		method = "submitNameTag(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V",
+		at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;pushPose()V", shift = At.Shift.AFTER)
 	)
-	public void wildfiregender$renderNametag(PlayerEntityRenderState state, MatrixStack matrixStack, OrderedRenderCommandQueue queue, CameraRenderState cameraState, CallbackInfo ci) {
+	public void wildfiregender$renderNametag(AvatarRenderState state, PoseStack matrixStack, SubmitNodeCollector queue, CameraRenderState cameraState, CallbackInfo ci) {
 		PlayerNametagRenderEvent.EVENT.invoker().onRenderNameTag(state, matrixStack, (text) -> {
-			queue.submitLabel(
+			queue.submitNameTag(
 					matrixStack,
-					state.nameLabelPos,
-					state.extraEars ? -10 : 0,
+					state.nameTagAttachment,
+					state.showExtraEars ? -10 : 0,
 					text,
-					!state.sneaking,
-					state.light,
-					state.squaredDistanceToCamera,
+					!state.isDiscrete,
+					state.lightCoords,
+					state.distanceToCameraSq,
 					cameraState
 			);
 		});

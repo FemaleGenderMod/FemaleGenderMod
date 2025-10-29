@@ -20,9 +20,9 @@ package com.wildfire.events;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Events invoked when a player interacts with the {@link EquipmentSlot#CHEST chest slot} on an armor stand
@@ -57,7 +57,7 @@ public final class ArmorStandInteractEvents {
 
 	@FunctionalInterface
 	public interface EquipItem {
-		void onEquip(PlayerEntity player, ItemStack item);
+		void onEquip(Player player, ItemStack item);
 	}
 
 	@FunctionalInterface

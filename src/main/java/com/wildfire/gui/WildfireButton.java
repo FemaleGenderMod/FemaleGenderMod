@@ -20,26 +20,25 @@ package com.wildfire.gui;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.cursor.StandardCursors;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
+import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import java.util.function.Supplier;
 
 @Environment(EnvType.CLIENT)
-public class WildfireButton extends ButtonWidget {
+public class WildfireButton extends Button {
 
    private final @Nullable ButtonRenderer renderer;
-   private final Supplier<Text> messageSupplier;
+   private final Supplier<Component> messageSupplier;
    public boolean transparent = false;
 
-   private WildfireButton(int x, int y, int w, int h, Supplier<Text> text, ButtonWidget.PressAction onPress, NarrationSupplier narrationSupplier, @Nullable ButtonRenderer renderer) {
+   private WildfireButton(int x, int y, int w, int h, Supplier<Component> text, Button.OnPress onPress, CreateNarration narrationSupplier, @Nullable ButtonRenderer renderer) {
       super(x, y, w, h, text.get(), onPress, narrationSupplier);
       messageSupplier = text;
       this.renderer = renderer;
@@ -49,13 +48,13 @@ public class WildfireButton extends ButtonWidget {
       setMessage(messageSupplier.get());
    }
 
-   protected void drawInner(DrawContext ctx, int mouseX, int mouseY, float partialTicks) {
+   protected void drawInner(GuiGraphics ctx, int mouseX, int mouseY, float partialTicks) {
       if(renderer != null) {
          renderer.render(this, ctx, mouseX, mouseY, partialTicks);
          return;
       }
-      MinecraftClient minecraft = MinecraftClient.getInstance();
-      TextRenderer font = minecraft.textRenderer;
+      Minecraft minecraft = Minecraft.getInstance();
+      Font font = minecraft.font;
       int textColor = active ? 0xFFFFFF : 0x666666;
       int i = this.getX() + 2;
       int j = this.getX() + this.getWidth() - 2;
@@ -63,15 +62,15 @@ public class WildfireButton extends ButtonWidget {
    }
 
    @Override
-   protected void renderWidget(DrawContext ctx, int mouseX, int mouseY, float partialTicks) {
+   protected void renderWidget(GuiGraphics ctx, int mouseX, int mouseY, float partialTicks) {
       int clr = 0x444444 + (84 << 24);
-      if(this.isSelected()) clr = 0x666666 + (84 << 24);
+      if(this.isHoveredOrFocused()) clr = 0x666666 + (84 << 24);
       if(!active) clr = 0x222222 + (84 << 24);
       if(!transparent) ctx.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), clr);
 
       drawInner(ctx, mouseX, mouseY, partialTicks);
       if(isHovered()) {
-         ctx.setCursor(active ? StandardCursors.POINTING_HAND : StandardCursors.NOT_ALLOWED);
+         ctx.requestCursor(active ? CursorTypes.POINTING_HAND : CursorTypes.NOT_ALLOWED);
       }
    }
 
@@ -86,15 +85,15 @@ public class WildfireButton extends ButtonWidget {
    }
 
    public static final class Builder {
-      private Supplier<Text> messageSupplier;
+      private Supplier<Component> messageSupplier;
       private int x, y, width, height;
       private PressAction onPress;
-      private NarrationSupplier narrationSupplier = DEFAULT_NARRATION_SUPPLIER;
+      private CreateNarration narrationSupplier = DEFAULT_NARRATION;
       private Tooltip tooltip = null;
       private ButtonRenderer renderer = null;
       private boolean active = true;
 
-      public Builder message(@NotNull Supplier<Text> messageSupplier) {
+      public Builder message(@NotNull Supplier<Component> messageSupplier) {
          this.messageSupplier = messageSupplier;
          return this;
       }
@@ -116,7 +115,7 @@ public class WildfireButton extends ButtonWidget {
          return this;
       }
 
-      public Builder narration(@NotNull NarrationSupplier narrationSupplier) {
+      public Builder narration(@NotNull CreateNarration narrationSupplier) {
          this.narrationSupplier = narrationSupplier;
          return this;
       }
@@ -147,8 +146,8 @@ public class WildfireButton extends ButtonWidget {
    }
 
    @FunctionalInterface
-   public interface PressAction extends ButtonWidget.PressAction {
-      default void onPress(ButtonWidget button) {
+   public interface PressAction extends Button.OnPress {
+      default void onPress(Button button) {
          onPress((WildfireButton) button);
       }
 
@@ -157,6 +156,6 @@ public class WildfireButton extends ButtonWidget {
 
    @FunctionalInterface
    public interface ButtonRenderer {
-      void render(WildfireButton button, DrawContext ctx, int mouseX, int mouseY, float partialTicks);
+      void render(WildfireButton button, GuiGraphics ctx, int mouseX, int mouseY, float partialTicks);
    }
 }

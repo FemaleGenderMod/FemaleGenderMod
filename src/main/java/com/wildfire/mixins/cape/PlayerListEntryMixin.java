@@ -22,22 +22,25 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.mojang.authlib.GameProfile;
 import com.wildfire.main.cape.CapeProvider;
 import com.wildfire.main.cape.SkinTexturesWildfire;
-import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.entity.player.SkinTextures;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.world.entity.player.PlayerSkin;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(PlayerListEntry.class)
+@Mixin(PlayerInfo.class)
+@Environment(EnvType.CLIENT)
 abstract class PlayerListEntryMixin {
     @Shadow
     @Final
     private GameProfile profile;
 
     @SuppressWarnings("DataFlowIssue")
-    @ModifyReturnValue(method = "getSkinTextures", at = @At("RETURN"))
-    public SkinTextures wildfiregender$replaceCapeTexture(SkinTextures original) {
+    @ModifyReturnValue(method = "getSkin", at = @At("RETURN"))
+    public PlayerSkin wildfiregender$replaceCapeTexture(PlayerSkin original) {
         var cape = CapeProvider.CACHE.getUnchecked(profile);
         var duck = ((SkinTexturesWildfire)(Object)original);
         var tex = cape.getNow(null);

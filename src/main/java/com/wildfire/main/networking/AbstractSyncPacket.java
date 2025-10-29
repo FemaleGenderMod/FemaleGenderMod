@@ -26,24 +26,23 @@ import com.wildfire.main.uvs.UVDirection;
 import com.wildfire.main.uvs.UVLayout;
 import com.wildfire.main.uvs.UVQuad;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.util.Uuids;
-
 import java.util.EnumMap;
 import java.util.UUID;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
 abstract class AbstractSyncPacket {
 
     // remember to update SyncHelloPacket.VERSION when modifying this codec if the changes result in a change
     // to the underlying packet structure
-    protected static <T extends AbstractSyncPacket> PacketCodec<ByteBuf, T> codec(SyncPacketConstructor<T> constructor) {
-        return PacketCodec.tuple(
-                Uuids.PACKET_CODEC, p -> p.uuid,
+    protected static <T extends AbstractSyncPacket> StreamCodec<ByteBuf, T> codec(SyncPacketConstructor<T> constructor) {
+        return StreamCodec.composite(
+                UUIDUtil.STREAM_CODEC, p -> p.uuid,
                 Gender.CODEC, p -> p.gender,
-                PacketCodecs.FLOAT, p -> p.bustSize,
-                PacketCodecs.BOOLEAN, p -> p.hurtSounds,
-                PacketCodecs.FLOAT, p -> p.voicePitch,
+                ByteBufCodecs.FLOAT, p -> p.bustSize,
+                ByteBufCodecs.BOOL, p -> p.hurtSounds,
+                ByteBufCodecs.FLOAT, p -> p.voicePitch,
                 BreastPhysics.CODEC, p -> p.physics,
                 Breasts.CODEC, p -> p.breasts,
                 UV_LAYOUTS_CODEC, p -> p.uvLayouts,
@@ -88,11 +87,11 @@ abstract class AbstractSyncPacket {
 
     protected record BreastPhysics(boolean physics, boolean showInArmor, float bounceMultiplier, float floppyMultiplier) {
 
-        public static final PacketCodec<ByteBuf, BreastPhysics> CODEC = PacketCodec.tuple(
-                PacketCodecs.BOOLEAN, BreastPhysics::physics,
-                PacketCodecs.BOOLEAN, BreastPhysics::showInArmor,
-                PacketCodecs.FLOAT, BreastPhysics::bounceMultiplier,
-                PacketCodecs.FLOAT, BreastPhysics::floppyMultiplier,
+        public static final StreamCodec<ByteBuf, BreastPhysics> CODEC = StreamCodec.composite(
+                ByteBufCodecs.BOOL, BreastPhysics::physics,
+                ByteBufCodecs.BOOL, BreastPhysics::showInArmor,
+                ByteBufCodecs.FLOAT, BreastPhysics::bounceMultiplier,
+                ByteBufCodecs.FLOAT, BreastPhysics::floppyMultiplier,
                 BreastPhysics::new
         );
 
@@ -131,20 +130,20 @@ abstract class AbstractSyncPacket {
         }
     }
 
-    static final PacketCodec<ByteBuf, UVLayout> UV_CODEC = PacketCodecs.map(
+    static final StreamCodec<ByteBuf, UVLayout> UV_CODEC = ByteBufCodecs.map(
             size -> new EnumMap<>(UVDirection.class),
             UVDirection.PACKET_CODEC,
             UVQuad.PACKET_CODEC,
             UVDirection.values().length
-    ).xmap(UVLayout::new, UVLayout::getQuads);
+    ).map(UVLayout::new, UVLayout::getQuads);
 
-    static final PacketCodec<ByteBuf, UVLayouts.Layer> UV_LAYER_CODEC = PacketCodec.tuple(
+    static final StreamCodec<ByteBuf, UVLayouts.Layer> UV_LAYER_CODEC = StreamCodec.composite(
             UV_CODEC, UVLayouts.Layer::left,
             UV_CODEC, UVLayouts.Layer::right,
             UVLayouts.Layer::new
     );
 
-    static final PacketCodec<ByteBuf, UVLayouts> UV_LAYOUTS_CODEC = PacketCodec.tuple(
+    static final StreamCodec<ByteBuf, UVLayouts> UV_LAYOUTS_CODEC = StreamCodec.composite(
             UV_LAYER_CODEC, UVLayouts::skin,
             UV_LAYER_CODEC, UVLayouts::overlay,
             UVLayouts::new

@@ -27,9 +27,9 @@ import com.wildfire.main.WildfireGender;
 import com.wildfire.main.config.enums.Gender;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
@@ -52,7 +52,7 @@ public final class WildfireAPI {
     ).apply(instance, Vector2i::new));
 
     /* package-private */ static final Codec<Vector2ic> VECTOR_2I_CODEC = Codec.withAlternative(Codec.INT_STREAM.comapFlatMap(
-            stream -> Util.decodeFixedLengthArray(stream, 2).map(Vector2i::new),
+            stream -> Util.fixedSize(stream, 2).map(Vector2i::new),
             vec2i -> IntStream.of(vec2i.x(), vec2i.y())
     ), VEC2I_LEGACY_CODEC);
 
@@ -75,12 +75,12 @@ public final class WildfireAPI {
     }
 
     /**
-     * Get the cached config for a {@link PlayerEntity}
+     * Get the cached config for a {@link Player}
      *
      * @apiNote This method will not load a player's config if they aren't already cached, and will only return
      *          the config of players the mod has already loaded.
      *
-     * @param  uuid  the uuid of the target {@link PlayerEntity}
+     * @param  uuid  the uuid of the target {@link Player}
      * @see    PlayerConfig
      */
     public static @Nullable PlayerConfig getPlayerById(UUID uuid) {
@@ -90,7 +90,7 @@ public final class WildfireAPI {
     /**
      * Get the player's {@link Gender}
      *
-     * @param  uuid  the uuid of the target {@link PlayerEntity}.
+     * @param  uuid  the uuid of the target {@link Player}.
      * @see    Gender
      */
     public static @NotNull Gender getPlayerGender(UUID uuid) {
@@ -112,7 +112,7 @@ public final class WildfireAPI {
      * @deprecated This method will likely be removed in the future; if you depend on this for any reason,
      *             please open an issue explaining your use case.
      *
-     * @param  uuid  the uuid of the target {@link PlayerEntity}
+     * @param  uuid  the uuid of the target {@link Player}
      * @param  markForSync {@code true} if player data should be synced to the server upon being loaded; this only has an effect on the client player.
      */
     @Deprecated(since = "4.3.3", forRemoval = true)

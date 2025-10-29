@@ -21,15 +21,14 @@ package com.wildfire.main;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.resource.Resource;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.util.Identifier;
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
 
 public class GenderConfigs {
 
@@ -45,11 +44,11 @@ public class GenderConfigs {
         JsonObject fObj = new JsonObject();
 
         try {
-            ResourceManager manager = MinecraftClient.getInstance().getResourceManager();
-            Identifier id = Identifier.of(WildfireGender.MODID, cfgFile);
+            ResourceManager manager = Minecraft.getInstance().getResourceManager();
+            ResourceLocation id = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, cfgFile);
             Resource resource = manager.getResource(id).orElseThrow();
 
-            try (InputStreamReader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8)) {
+            try (InputStreamReader reader = new InputStreamReader(resource.open(), StandardCharsets.UTF_8)) {
                 JsonObject obj = new Gson().fromJson(reader, JsonObject.class);
                 for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
                     fObj.add(entry.getKey(), entry.getValue());

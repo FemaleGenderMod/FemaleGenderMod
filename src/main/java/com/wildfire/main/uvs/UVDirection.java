@@ -19,15 +19,15 @@
 package com.wildfire.main.uvs;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.text.Text;
-import net.minecraft.util.function.ValueLists;
-import net.minecraft.util.math.Vec3i;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
 import java.util.function.IntFunction;
+import net.minecraft.core.Vec3i;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.ByIdMap;
 
 public enum UVDirection {
     EAST("east", "", "E", 0xFFFF0000, new Vec3i(1, 0, 0)),
@@ -42,8 +42,8 @@ public enum UVDirection {
     private final int baseColor;
     private final Vector3fc floatVector;
 
-    public static final IntFunction<UVDirection> BY_ID = ValueLists.createIndexToValueFunction(UVDirection::ordinal, values(), ValueLists.OutOfBoundsHandling.WRAP);
-    public static final PacketCodec<ByteBuf, UVDirection> PACKET_CODEC = PacketCodecs.indexed(BY_ID, UVDirection::ordinal);
+    public static final IntFunction<UVDirection> BY_ID = ByIdMap.continuous(UVDirection::ordinal, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
+    public static final StreamCodec<ByteBuf, UVDirection> PACKET_CODEC = ByteBufCodecs.idMapper(BY_ID, UVDirection::ordinal);
 
     UVDirection(String saveName, String unlocalizedName, String shortName, int baseColor, Vec3i vector) {
         this.unlocalizedName = unlocalizedName;
@@ -65,20 +65,20 @@ public enum UVDirection {
         return new Vector3f(this.floatVector);
     }
 
-    public Text getDirectionText(BreastTypes type) {
+    public Component getDirectionText(BreastTypes type) {
 
         if (this == EAST || this == WEST) {
             String key = (type == BreastTypes.LEFT || type == BreastTypes.LEFT_OVERLAY)
                     ? "wildfire_gender.uv_editor.faces.inner"
                     : "wildfire_gender.uv_editor.faces.outer";
-            return Text.translatable(key);
+            return Component.translatable(key);
         }
 
         if (unlocalizedName != null && !unlocalizedName.isEmpty()) {
-            return Text.translatable(unlocalizedName);
+            return Component.translatable(unlocalizedName);
         }
 
-        return Text.literal(saveName);
+        return Component.literal(saveName);
     }
 
     public String getSaveName() {

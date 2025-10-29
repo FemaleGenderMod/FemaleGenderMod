@@ -21,11 +21,6 @@ package com.wildfire.mixins;
 import com.wildfire.render.ducks.MissingTextureLogger;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSets;
-import net.minecraft.client.texture.ReloadableTexture;
-import net.minecraft.client.texture.TextureContents;
-import net.minecraft.client.texture.TextureManager;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -35,24 +30,29 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Set;
 import java.util.concurrent.Executor;
+import net.minecraft.client.renderer.texture.ReloadableTexture;
+import net.minecraft.client.renderer.texture.TextureContents;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
 
 @Mixin(TextureManager.class)
 abstract class TextureManagerMixin implements MissingTextureLogger {
-	private static final @Unique Set<Identifier> wildfire_gender$missingTextures = ObjectSets.synchronize(new ObjectOpenHashSet<>());
+	private static final @Unique Set<ResourceLocation> wildfire_gender$missingTextures = ObjectSets.synchronize(new ObjectOpenHashSet<>());
 
 	@Inject(
-			method = "loadTexture(Lnet/minecraft/util/Identifier;Lnet/minecraft/client/texture/ReloadableTexture;)Lnet/minecraft/client/texture/TextureContents;",
-			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/texture/TextureContents;createMissing()Lnet/minecraft/client/texture/TextureContents;")
+			method = "loadContentsSafe",
+			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/texture/TextureContents;createMissing()Lnet/minecraft/client/renderer/texture/TextureContents;")
 	)
-	private void wildfire_gender$logMissingTexture(Identifier id, ReloadableTexture texture, CallbackInfoReturnable<TextureContents> cir) {
+	private void wildfire_gender$logMissingTexture(ResourceLocation id, ReloadableTexture texture, CallbackInfoReturnable<TextureContents> cir) {
 		wildfire_gender$missingTextures.add(id);
 	}
 
 	@Inject(
-			method = "loadTexture(Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/util/Identifier;Lnet/minecraft/client/texture/ReloadableTexture;)Lnet/minecraft/client/texture/TextureContents;",
-			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/texture/TextureContents;createMissing()Lnet/minecraft/client/texture/TextureContents;")
+			method = "loadContents",
+			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/texture/TextureContents;createMissing()Lnet/minecraft/client/renderer/texture/TextureContents;")
 	)
-	private static void wildfire_gender$logMissingTexture(ResourceManager resourceManager, Identifier id, ReloadableTexture texture, CallbackInfoReturnable<TextureContents> cir) {
+	private static void wildfire_gender$logMissingTexture(ResourceManager resourceManager, ResourceLocation id, ReloadableTexture texture, CallbackInfoReturnable<TextureContents> cir) {
 		wildfire_gender$missingTextures.add(id);
 	}
 
@@ -61,13 +61,14 @@ abstract class TextureManagerMixin implements MissingTextureLogger {
 		wildfire_gender$missingTextures.clear();
 	}
 
-	@Inject(method = "reloadTexture", at = @At("HEAD"))
-	private static void wildfire_gender$removeOnReload(ResourceManager resourceManager, Identifier textureId, ReloadableTexture texture, Executor prepareExecutor, CallbackInfoReturnable<Object> cir) {
+	// targets the CompletableFuture.supplyAsync() lambda in #scheduleLoad
+	@Inject(method = "method_65881", at = @At("HEAD"))
+	private static void wildfire_gender$removeOnReload(ResourceManager resourceManager, ResourceLocation textureId, ReloadableTexture reloadableTexture, CallbackInfoReturnable<TextureContents> cir) {
 		wildfire_gender$missingTextures.remove(textureId);
 	}
 
 	@Override
-	public Set<Identifier> wildfire_gender$missingTextures() {
+	public Set<ResourceLocation> wildfire_gender$missingTextures() {
 		return wildfire_gender$missingTextures;
 	}
 }

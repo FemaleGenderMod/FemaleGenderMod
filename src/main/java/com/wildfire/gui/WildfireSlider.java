@@ -18,34 +18,34 @@
 
 package com.wildfire.gui;
 
+import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.config.types.FloatConfigKey;
 import it.unimi.dsi.fastutil.floats.Float2ObjectFunction;
 import it.unimi.dsi.fastutil.floats.FloatConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.cursor.StandardCursors;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.screen.narration.NarrationPart;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarratedElementType;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
-public class WildfireSlider extends ClickableWidget {
+public class WildfireSlider extends AbstractWidget {
 	private double value;
 	private final double minValue;
 	private final double maxValue;
 	private final FloatConsumer valueUpdate;
-	private final Float2ObjectFunction<Text> messageUpdate;
+	private final Float2ObjectFunction<Component> messageUpdate;
 	private final FloatConsumer onSave;
 
 	private float lastValue;
@@ -56,8 +56,8 @@ public class WildfireSlider extends ClickableWidget {
 	private double arrowKeyStep = 0.05;
 
 	private WildfireSlider(int xPos, int yPos, int width, int height, double minVal, double maxVal, double currentVal, FloatConsumer valueUpdate,
-	                      Float2ObjectFunction<Text> messageUpdate, FloatConsumer onSave) {
-		super(xPos, yPos, width, height, Text.empty());
+	                      Float2ObjectFunction<Component> messageUpdate, FloatConsumer onSave) {
+		super(xPos, yPos, width, height, Component.empty());
 		this.minValue = minVal;
 		this.maxValue = maxVal;
 		this.valueUpdate = valueUpdate;
@@ -95,23 +95,23 @@ public class WildfireSlider extends ClickableWidget {
 	}
 
 	@Override
-	public void onRelease(Click event) {
+	public void onRelease(MouseButtonEvent event) {
 		this.dragging = false;
 		save();
 	}
 
 	@Override
-	public void onClick(Click event, boolean doubleClick) {
+	public void onClick(MouseButtonEvent event, boolean doubleClick) {
 		this.dragging = true;
 		this.setValueFromMouse(event.x());
 	}
 
 	@Override
-	public boolean keyPressed(KeyInput event) {
+	public boolean keyPressed(KeyEvent event) {
 		int keyCode = event.key();
 		if(keyCode == GLFW.GLFW_KEY_LEFT || keyCode == GLFW.GLFW_KEY_RIGHT) {
 			value += (keyCode == GLFW.GLFW_KEY_LEFT ? -arrowKeyStep : arrowKeyStep);
-			value = WildfireHelper.snapToStep(MathHelper.clamp(value, 0, 1), arrowKeyStep);
+			value = WildfireHelper.snapToStep(Mth.clamp(value, 0, 1), arrowKeyStep);
 			applyValue();
 			updateMessage();
 			return true;
@@ -120,12 +120,12 @@ public class WildfireSlider extends ClickableWidget {
 	}
 
 	@Override
-	protected void onDrag(Click event, double d, double e) {
+	protected void onDrag(MouseButtonEvent event, double d, double e) {
 		this.setValueFromMouse(event.x());
 	}
 
 	@Override
-	public boolean keyReleased(KeyInput event) {
+	public boolean keyReleased(KeyEvent event) {
 		var keyCode = event.key();
 		if(keyCode == GLFW.GLFW_KEY_LEFT || keyCode == GLFW.GLFW_KEY_RIGHT) {
 			save();
@@ -134,12 +134,12 @@ public class WildfireSlider extends ClickableWidget {
 		return super.keyReleased(event);
 	}
 
-	protected MutableText getNarrationMessage() {
-		return Text.translatable("gui.narrate.slider", this.getMessage());
+	protected @NotNull MutableComponent createNarrationMessage() {
+		return Component.translatable("gui.narrate.slider", this.getMessage());
 	}
 
 	@Override
-	protected void renderWidget(DrawContext ctx, int mouseX, int mouseY, float delta) {
+	protected void renderWidget(GuiGraphics ctx, int mouseX, int mouseY, float delta) {
 		if (!this.visible) {
 			return;
 		}
@@ -153,11 +153,11 @@ public class WildfireSlider extends ClickableWidget {
 			int xPos2 = this.getX() + 3 + (int) (this.value * (float) (this.width - 4));
 			ctx.fill(xPos2 - 2, getY() + 1, xPos2, getY() + this.height - 1, 0xFFFFFF + (120 << 24));
 		}
-		TextRenderer font = MinecraftClient.getInstance().textRenderer;
+		Font font = Minecraft.getInstance().font;
 		int i = this.getX() + 2;
 		int j = this.getX() + this.getWidth() - 2;
 
-		int textColor = (isSelected()&&active) || changed ? 0xFFFF55 : 0xFFFFFF;
+		int textColor = (isHoveredOrFocused()&&active) || changed ? 0xFFFF55 : 0xFFFFFF;
 		if(!active) {
 			textColor = 0x666666;
 		}
@@ -165,9 +165,9 @@ public class WildfireSlider extends ClickableWidget {
 
 		if(isHovered() || dragging) {
 			if(!active) {
-				ctx.setCursor(StandardCursors.NOT_ALLOWED);
+				ctx.requestCursor(CursorTypes.NOT_ALLOWED);
 			} else {
-				ctx.setCursor(dragging ? StandardCursors.RESIZE_EW : StandardCursors.POINTING_HAND);
+				ctx.requestCursor(dragging ? CursorTypes.RESIZE_EW : CursorTypes.POINTING_HAND);
 			}
 		}
 	}
@@ -186,7 +186,7 @@ public class WildfireSlider extends ClickableWidget {
 	}
 
 	private void setValueInternal(double value) {
-		this.value = MathHelper.clamp((value - this.minValue) / (this.maxValue - this.minValue), 0, 1);
+		this.value = Mth.clamp((value - this.minValue) / (this.maxValue - this.minValue), 0, 1);
 		this.lastValue = (float) value;
 		updateMessage();
 		//Note: Does not call applyValue
@@ -197,24 +197,24 @@ public class WildfireSlider extends ClickableWidget {
 	}
 
 	@Override
-	public void appendClickableNarrations(NarrationMessageBuilder builder) {
-		builder.put(NarrationPart.TITLE, Text.translatable("gui.narrate.slider", this.getMessage()));
+	public void updateWidgetNarration(NarrationElementOutput builder) {
+		builder.add(NarratedElementType.TITLE, Component.translatable("gui.narrate.slider", this.getMessage()));
 		if(active) {
 			if(isFocused()) {
-				builder.put(NarrationPart.USAGE, Text.translatable("narration.slider.usage.focused"));
+				builder.add(NarratedElementType.USAGE, Component.translatable("narration.slider.usage.focused"));
 			} else {
-				builder.put(NarrationPart.USAGE, Text.translatable("narration.slider.usage.hovered"));
+				builder.add(NarratedElementType.USAGE, Component.translatable("narration.slider.usage.hovered"));
 			}
 		}
 	}
 
 	private void setValueFromMouse(double mouseX) {
 		this.value = ((mouseX - (double)(this.getX() + 4)) / (double)(this.getWidth() - 8));
-		this.value = MathHelper.clamp(this.value, 0, 1);
+		this.value = Mth.clamp(this.value, 0, 1);
 
 		if (mouseStep > 0) {
 			double snapped = Math.round(this.value / mouseStep) * mouseStep;
-			this.value = MathHelper.clamp(snapped, 0, 1);
+			this.value = Mth.clamp(snapped, 0, 1);
 		}
 
 		applyValue();
@@ -229,10 +229,10 @@ public class WildfireSlider extends ClickableWidget {
 		private Double step = null;
 		private Double mouseStep = null;
 		private boolean active = true;
-		private Float2ObjectFunction<Text> messageSupplier;
+		private Float2ObjectFunction<Component> messageSupplier;
 		private FloatConsumer onUpdate, onSave;
 
-		public Builder message(@NotNull Float2ObjectFunction<Text> messageSupplier) {
+		public Builder message(@NotNull Float2ObjectFunction<Component> messageSupplier) {
 			this.messageSupplier = messageSupplier;
 			return this;
 		}

@@ -20,14 +20,13 @@ package com.wildfire.render;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.command.OrderedRenderCommandQueue;
-import net.minecraft.client.render.entity.state.LivingEntityRenderState;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import org.jetbrains.annotations.Nullable;
-
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import java.util.function.UnaryOperator;
 
 @Environment(EnvType.CLIENT)
@@ -38,17 +37,17 @@ public record BreastRenderCommand(
 		int color,
 		int outline,
 		@Nullable UnaryOperator<VertexConsumer> consumerOperator
-) implements OrderedRenderCommandQueue.Custom {
+) implements SubmitNodeCollector.CustomGeometryRenderer {
 	public BreastRenderCommand(WildfireModelRenderer.ModelBox model, LivingEntityRenderState state, int overlay, int color) {
-		this(model, state.light, overlay, color, state.outlineColor, null);
+		this(model, state.lightCoords, overlay, color, state.outlineColor, null);
 	}
 
-	public static BreastRenderCommand trim(WildfireModelRenderer.ModelBox model, LivingEntityRenderState state, Sprite trimSprite) {
-		return new BreastRenderCommand(model, state.light, OverlayTexture.DEFAULT_UV, -1, 0, trimSprite::getTextureSpecificVertexConsumer);
+	public static BreastRenderCommand trim(WildfireModelRenderer.ModelBox model, LivingEntityRenderState state, TextureAtlasSprite trimSprite) {
+		return new BreastRenderCommand(model, state.lightCoords, OverlayTexture.NO_OVERLAY, -1, 0, trimSprite::wrap);
 	}
 
 	@Override
-	public void render(MatrixStack.Entry matricesEntry, VertexConsumer vertexConsumer) {
+	public void render(PoseStack.Pose matricesEntry, VertexConsumer vertexConsumer) {
 		if(consumerOperator != null) {
 			vertexConsumer = consumerOperator.apply(vertexConsumer);
 		}
