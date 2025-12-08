@@ -22,7 +22,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 
@@ -46,7 +46,7 @@ public class GenderConfigs {
 
 		try {
 			ResourceManager manager = Minecraft.getInstance().getResourceManager();
-			ResourceLocation id = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, cfgFile);
+			Identifier id = Identifier.fromNamespaceAndPath(WildfireGender.MODID, cfgFile);
 			Resource resource = manager.getResource(id).orElseThrow();
 
 			try (InputStreamReader reader = new InputStreamReader(resource.open(), StandardCharsets.UTF_8)) {

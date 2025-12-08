@@ -24,25 +24,26 @@ import com.wildfire.main.config.ClientConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.model.geom.PartNames;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.resources.Identifier;
 
 import java.util.Calendar;
 
 @Environment(EnvType.CLIENT)
 public class HolidayFeaturesRenderer extends RenderLayer<AvatarRenderState, PlayerModel> {
-	private static final ResourceLocation SANTA_HAT_TEXTURE = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/santa_hat.png");
+	private static final Identifier SANTA_HAT_TEXTURE = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/santa_hat.png");
 	private static final HumanoidModel<AvatarRenderState> SANTA_HAT_MODEL = new SantaHatModel();
 	private static final boolean christmas = isAroundChristmas();
 
@@ -64,7 +65,7 @@ public class HolidayFeaturesRenderer extends RenderLayer<AvatarRenderState, Play
 
 		matrixStack.pushPose();
 		int overlay = LivingEntityRenderer.getOverlayCoords(state, 0);
-		RenderType renderLayer = RenderType.entityTranslucent(SANTA_HAT_TEXTURE);
+		RenderType renderLayer = RenderTypes.entityTranslucent(SANTA_HAT_TEXTURE);
 
 		if(state.isBaby) {
 			matrixStack.scale(state.ageScale, state.ageScale, state.ageScale);

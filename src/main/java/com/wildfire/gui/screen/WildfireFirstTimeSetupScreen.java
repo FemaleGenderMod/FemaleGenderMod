@@ -35,7 +35,7 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import org.joml.Vector2f;
 
@@ -55,7 +55,7 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 	private static final Component ENABLE_CLOUD_SYNCING = Component.translatable("wildfire_gender.first_time_setup.enable").withStyle(ChatFormatting.GREEN);
 	private static final Component DISABLE_CLOUD_SYNCING = Component.translatable("wildfire_gender.first_time_setup.disable").withStyle(ChatFormatting.RED);
 
-	private static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/first_time_bg.png");
+	private static final Identifier BACKGROUND = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/first_time_bg.png");
 
 	private static final UUID keiraUUID = UUID.fromString("372271ab-28f2-44bd-b585-95f43e010c22");
 
@@ -176,7 +176,7 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 		mStack.popMatrix();
 
 		var fakeKeira = this.fakeKeira.get().getEntity();
-		GuiUtils.drawEntityOnScreenNoScissor(ctx, 0, 0.4f, x - 132, y - 13, x - 75, y + 60, 50, mouseX, mouseY, fakeKeira);
+		GuiUtils.drawEntityOnScreen(ctx, x - 132, y - 13, x - 75, y + 60, 50, mouseX, mouseY, 0, 0.4f, fakeKeira);
 	}
 
 	@Override

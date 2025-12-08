@@ -56,7 +56,7 @@ public final class SyncLog {
 		public int color() {
 			long secondsPassed = Instant.now().getEpochSecond() - timestamp.getEpochSecond();
 			float delta = Mth.clamp(secondsPassed / 60f, 0f, 1f);
-			return ARGB.lerp(delta, NEW_COLOR, OLD_COLOR);
+			return ARGB.linearLerp(delta, NEW_COLOR, OLD_COLOR);
 		}
 	}
 }

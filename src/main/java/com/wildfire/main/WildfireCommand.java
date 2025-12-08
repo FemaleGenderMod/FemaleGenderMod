@@ -44,6 +44,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.item.ItemStack;
@@ -267,7 +268,7 @@ public class WildfireCommand {
 	private static int equipTrimmedChestplate(CommandContext<FabricClientCommandSource> ctx) {
 		Boolean glint = getOrDefault(ctx, "glint", null, Boolean.class);
 		var player = getIntegratedServerPlayer(ctx);
-		if(!player.hasPermissions(2)) return 0;
+		if(!player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) return 0;
 		var item = new ItemStack(Items.IRON_CHESTPLATE);
 		var material = player.registryAccess().lookupOrThrow(Registries.TRIM_MATERIAL).getOrThrow(TrimMaterials.AMETHYST);
 		var pattern = player.registryAccess().lookupOrThrow(Registries.TRIM_PATTERN).getOrThrow(TrimPatterns.COAST);
@@ -281,7 +282,7 @@ public class WildfireCommand {
 
 	private static int spawnArmorStand(CommandContext<FabricClientCommandSource> ctx) {
 		var player = getIntegratedServerPlayer(ctx);
-		if(!player.hasPermissions(2)) return 0;
+		if(!player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) return 0;
 		var world = player.level();
 
 		var item = new ItemStack(Items.IRON_CHESTPLATE);

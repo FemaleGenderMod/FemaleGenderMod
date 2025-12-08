@@ -34,7 +34,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.FormattedCharSequence;
@@ -46,8 +46,8 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
 	private static final Component TITLE = Component.translatable("wildfire_gender.uv_editor");
 
-	private static final ResourceLocation TEXTURE_ADD = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/widgets/add.png");
-	private static final ResourceLocation TEXTURE_SUBTRACT = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/widgets/subtract.png");
+	private static final Identifier TEXTURE_ADD = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/widgets/add.png");
+	private static final Identifier TEXTURE_SUBTRACT = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/widgets/subtract.png");
 
 	private UVLayout selectedUVs = null;
 	private BreastTypes selectedBreastIndex = BreastTypes.LEFT;

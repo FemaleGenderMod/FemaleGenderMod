@@ -63,7 +63,7 @@ public class WildfireButton extends Button {
 	}
 
 	@Override
-	protected void renderWidget(GuiGraphics ctx, int mouseX, int mouseY, float partialTicks) {
+	protected void renderContents(GuiGraphics ctx, int mouseX, int mouseY, float partialTicks) {
 		int clr = 0x444444 + (84 << 24);
 		if(this.isHoveredOrFocused()) clr = 0x666666 + (84 << 24);
 		if(!active) clr = 0x222222 + (84 << 24);

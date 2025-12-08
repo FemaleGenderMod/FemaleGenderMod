@@ -28,7 +28,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -42,10 +42,10 @@ public abstract class BaseWildfireScreen extends Screen {
 	protected final Screen parent;
 
 	//Keira Emberlyn - The Mod's New Mascot
-	protected static final ResourceLocation KEIRA_LOOK = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/mascot/keira_look.png");
-	protected static final ResourceLocation KEIRA_WAVE = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/mascot/keira_wave.png");
-	protected static final ResourceLocation KEIRA_LEATHER = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/mascot/keira_leather.png");
-	protected static final ResourceLocation KEIRA_NETHERITE = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/mascot/keira_netherite.png");
+	protected static final Identifier KEIRA_LOOK = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/mascot/keira_look.png");
+	protected static final Identifier KEIRA_WAVE = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/mascot/keira_wave.png");
+	protected static final Identifier KEIRA_LEATHER = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/mascot/keira_leather.png");
+	protected static final Identifier KEIRA_NETHERITE = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/mascot/keira_netherite.png");
 	protected static final int KEIRA_WIDTH = 610;
 	protected static final int KEIRA_HEIGHT = 736;
 	//Keira test ctx.drawTexture(RenderPipelines.GUI_TEXTURED, KEIRA_LOOK, x, y, 0, 0, 26, 26, KEIRA_WIDTH, KEIRA_HEIGHT, KEIRA_WIDTH, KEIRA_HEIGHT);
@@ -79,7 +79,7 @@ public abstract class BaseWildfireScreen extends Screen {
 		// This sucks. In order to position the player properly, we need to trick the player renderer into
 		// thinking the area the player should be rendered is much taller than it actually is.
 		ctx.enableScissor(xP - 38, yP - 79, xP + 38, yP + 9);
-		GuiUtils.drawEntityOnScreenNoScissor(ctx, xP - 38, yP - 79, xP + 38, yP + 69, 70, mouseX, mouseY + 35, player);
+		GuiUtils.drawEntityOnScreen(ctx, xP - 38, yP - 79, xP + 38, yP + 69, 70, mouseX, mouseY + 35, player);
 		ctx.disableScissor();
 	}
 

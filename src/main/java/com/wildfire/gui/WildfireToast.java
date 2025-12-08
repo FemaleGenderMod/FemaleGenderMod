@@ -29,7 +29,7 @@ import net.minecraft.client.gui.components.toasts.Toast;
 import net.minecraft.client.gui.components.toasts.ToastManager;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.CommonColors;
 import net.minecraft.util.FormattedCharSequence;
 import org.jetbrains.annotations.Nullable;
@@ -39,8 +39,8 @@ import java.util.List;
 
 @Environment(EnvType.CLIENT)
 public class WildfireToast implements Toast {
-	private static final ResourceLocation TEXTURE = ResourceLocation.withDefaultNamespace("toast/advancement");
-	private static final ResourceLocation ICON = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/bc_ribbon.png");
+	private static final Identifier TEXTURE = Identifier.withDefaultNamespace("toast/advancement");
+	private static final Identifier ICON = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/bc_ribbon.png");
 	public static final int PROGRESS_BAR_WIDTH = 154;
 	public static final int PROGRESS_BAR_HEIGHT = 1;
 	private final List<FormattedCharSequence> text;

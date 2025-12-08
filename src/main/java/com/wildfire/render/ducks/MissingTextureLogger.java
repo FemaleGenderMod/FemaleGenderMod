@@ -18,13 +18,13 @@
 
 package com.wildfire.render.ducks;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Set;
 
 public interface MissingTextureLogger {
 	/**
-	 * Provides a {@link Set} containing texture {@link ResourceLocation}s that have failed to load
+	 * Provides a {@link Set} containing texture {@link Identifier}s that have failed to load
 	 */
-	Set<ResourceLocation> wildfire_gender$missingTextures();
+	Set<Identifier> wildfire_gender$missingTextures();
 }

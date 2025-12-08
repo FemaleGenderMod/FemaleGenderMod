@@ -20,18 +20,20 @@ package com.wildfire.gui;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
+import net.minecraft.util.Util;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Pose;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -98,77 +100,36 @@ public final class GuiUtils {
 		}
 	}
 
-	// Copy of InventoryScreen#drawEntity that doesn't call DrawContext#enableScissor or DrawContext#disableScissor
-	public static void drawEntityOnScreenNoScissor(GuiGraphics context, int x1, int y1, int x2, int y2, int size, float mouseX, float mouseY, LivingEntity entity) {
-		float f = 0.0625F;
-		float g = (x1 + x2) / 2.0F;
-		float h = (y1 + y2) / 2.0F;
-		float i = (float)Math.atan((g - mouseX) / 40.0F);
-		float j = (float)Math.atan((h - mouseY) / 40.0F);
+	// copy of InventoryScreen#drawEntity that allows for applying an X/Y offset to the drawn entity
+	public static void drawEntityOnScreen(GuiGraphics context, int x1, int y1, int x2, int y2, int size, float mouseX, float mouseY, float xOffset, float yOffset, LivingEntity entity) {
+		float scale = 0.0625F;
+		float f = (x1 + x2) / 2.0F;
+		float g = (y1 + y2) / 2.0F;
+		float h = (float)Math.atan((f - mouseX) / 40.0F);
+		float i = (float)Math.atan((g - mouseY) / 40.0F);
 		Quaternionf quaternionf = new Quaternionf().rotateZ((float) Math.PI);
-		Quaternionf quaternionf2 = new Quaternionf().rotateX(j * 20.0F * (float) (Math.PI / 180.0));
+		Quaternionf quaternionf2 = new Quaternionf().rotateX(i * 20.0F * (float) (Math.PI / 180.0));
 		quaternionf.mul(quaternionf2);
-		float k = entity.yBodyRot;
-		float l = entity.getYRot();
-		float m = entity.getXRot();
-		float n = entity.yHeadRotO;
-		float o = entity.yHeadRot;
-		entity.yBodyRot = 180.0F + i * 20.0F;
-		entity.setYRot(180.0F + i * 40.0F);
-		entity.setXRot(-j * 20.0F);
-		entity.yHeadRot = entity.getYRot();
-		entity.yHeadRotO = entity.getYRot();
-		float p = entity.getScale();
-		Vector3f vector3f = new Vector3f(0.0F, entity.getBbHeight() / 2.0F + f * p, 0.0F);
-		float q = size / p;
-		InventoryScreen.renderEntityInInventory(context, x1, y1, x2, y2, q, vector3f, quaternionf, quaternionf2, entity);
-		entity.yBodyRot = k;
-		entity.setYRot(l);
-		entity.setXRot(m);
-		entity.yHeadRotO = n;
-		entity.yHeadRot = o;
+		EntityRenderState entityRenderState = InventoryScreen.extractRenderState(entity);
+		if (entityRenderState instanceof LivingEntityRenderState livingEntityRenderState) {
+			livingEntityRenderState.bodyRot = 180.0F + h * 20.0F;
+			livingEntityRenderState.yRot = h * 20.0F;
+			if (livingEntityRenderState.pose != Pose.FALL_FLYING) {
+				livingEntityRenderState.xRot = -i * 20.0F;
+			} else {
+				livingEntityRenderState.xRot = 0.0F;
+			}
+
+			livingEntityRenderState.boundingBoxWidth = livingEntityRenderState.boundingBoxWidth / livingEntityRenderState.scale;
+			livingEntityRenderState.boundingBoxHeight = livingEntityRenderState.boundingBoxHeight / livingEntityRenderState.scale;
+			livingEntityRenderState.scale = 1.0F;
+		}
+
+		Vector3f vector3f = new Vector3f(xOffset, entityRenderState.boundingBoxHeight / 2.0F + scale + yOffset, 0.0F);
+		context.submitEntityRenderState(entityRenderState, size, vector3f, quaternionf, quaternionf2, x1, y1, x2, y2);
 	}
 
-	// Copy of InventoryScreen#drawEntity that doesn't call DrawContext#enableScissor or DrawContext#disableScissor
-	// Allows adjusting entity x and y offsets.
-	public static void drawEntityOnScreenNoScissor(GuiGraphics context, float entXOff, float entYOff, int x1, int y1, int x2, int y2, int size, float mouseX, float mouseY, LivingEntity entity) {
-		float f = 0.0625F;
-		float g = (x1 + x2) / 2.0F;
-		float h = (y1 + y2) / 2.0F;
-		float i = (float)Math.atan((g - mouseX) / 40.0F);
-		float j = (float)Math.atan((h - mouseY) / 40.0F);
-		Quaternionf quaternionf = new Quaternionf().rotateZ((float) Math.PI);
-		Quaternionf quaternionf2 = new Quaternionf().rotateX(j * 20.0F * (float) (Math.PI / 180.0));
-		quaternionf.mul(quaternionf2);
-		float k = entity.yBodyRot;
-		float l = entity.getYRot();
-		float m = entity.getXRot();
-		float n = entity.yHeadRotO;
-		float o = entity.yHeadRot;
-		entity.yBodyRot = 180.0F + i * 20.0F;
-		entity.setYRot(180.0F + i * 40.0F);
-		entity.setXRot(-j * 20.0F);
-		entity.yHeadRot = entity.getYRot();
-		entity.yHeadRotO = entity.getYRot();
-		float p = entity.getScale();
-		Vector3f vector3f = new Vector3f(entXOff, entity.getBbHeight() / 2.0F + f * p + entYOff, 0.0F);
-		float q = size / p;
-		InventoryScreen.renderEntityInInventory(context, x1, y1, x2, y2, q, vector3f, quaternionf, quaternionf2, entity);
-		entity.yBodyRot = k;
-		entity.setYRot(l);
-		entity.setXRot(m);
-		entity.yHeadRotO = n;
-		entity.yHeadRot = o;
+	public static void drawEntityOnScreen(GuiGraphics context, int x1, int y1, int x2, int y2, int size, float mouseX, float mouseY, LivingEntity entity) {
+		drawEntityOnScreen(context, x1, y1, x2, y2, size, mouseX, mouseY, 0f, 0f, entity);
 	}
-
-	//Unknown if I want to use this yet, but it's here for now.
-	public static final Component FEMALE_GENDER_MOD_LOGO_TEXT = Component.empty()
-			.append(Component.literal("F").withStyle(ChatFormatting.LIGHT_PURPLE))
-			.append(Component.literal("emale").withStyle(ChatFormatting.WHITE))
-			.append(" ")
-			.append(Component.literal("G").withStyle(ChatFormatting.LIGHT_PURPLE))
-			.append(Component.literal("ender").withStyle(ChatFormatting.WHITE))
-			.append(" ")
-			.append(Component.literal("M").withStyle(ChatFormatting.LIGHT_PURPLE))
-			.append(Component.literal("od").withStyle(ChatFormatting.WHITE));
 }

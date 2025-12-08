@@ -29,14 +29,14 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.UUID;
 
 public final class ServerboundSyncPacket extends AbstractSyncPacket implements CustomPacketPayload {
 
-	public static final Type<ServerboundSyncPacket> ID = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "send_gender_info"));
+	public static final Type<ServerboundSyncPacket> ID = new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(WildfireGender.MODID, "send_gender_info"));
 	public static final StreamCodec<ByteBuf, ServerboundSyncPacket> CODEC = codec(ServerboundSyncPacket::new);
 
 	public ServerboundSyncPacket(PlayerConfig plr) {

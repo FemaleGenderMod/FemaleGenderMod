@@ -40,7 +40,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.scores.PlayerTeam;
 import org.jetbrains.annotations.Nullable;
@@ -51,12 +51,12 @@ import java.util.stream.Collectors;
 
 @Environment(EnvType.CLIENT)
 public class WardrobeBrowserScreen extends BaseWildfireScreen {
-	private static final ResourceLocation BACKGROUND_MALE = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/wardrobe_bg_male.png");
-	private static final ResourceLocation BACKGROUND_FEMALE = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/wardrobe_bg_female.png");
-	private static final ResourceLocation BACKGROUND_OTHER = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/wardrobe_bg_other.png");
+	private static final Identifier BACKGROUND_MALE = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/wardrobe_bg_male.png");
+	private static final Identifier BACKGROUND_FEMALE = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/wardrobe_bg_female.png");
+	private static final Identifier BACKGROUND_OTHER = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/wardrobe_bg_other.png");
 
-	private static final ResourceLocation TXTR_RIBBON = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/bc_ribbon.png");
-	private static final ResourceLocation CLOUD_ICON = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/cloud.png");
+	private static final Identifier TXTR_RIBBON = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/bc_ribbon.png");
+	private static final Identifier CLOUD_ICON = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/cloud.png");
 
 	private static final boolean isBreastCancerAwarenessMonth = Calendar.getInstance().get(Calendar.MONTH) == Calendar.OCTOBER;
 
@@ -154,7 +154,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 
 		PlayerConfig plr = getPlayer();
 		if(plr == null) return;
-		ResourceLocation backgroundTexture = switch(plr.getGender()) {
+		Identifier backgroundTexture = switch(plr.getGender()) {
 			case Gender.MALE -> BACKGROUND_MALE;
 			case Gender.FEMALE -> BACKGROUND_FEMALE;
 			case Gender.OTHER -> BACKGROUND_OTHER;

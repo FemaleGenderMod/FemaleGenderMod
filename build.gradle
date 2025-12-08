@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.12-SNAPSHOT'
+	id "fabric-loom" version "${loom_version}"
 }
 
 version = "fabric-${project.mod_version}+${project.minecraft_version}"
@@ -20,7 +20,10 @@ dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings loom.layered() {
 		officialMojangMappings()
-		parchment("org.parchmentmc.data:parchment-${project.minecraft_version}:${project.parchment_version}@zip")
+		def parchment = project.parchment_version
+		if(!parchment.isEmpty()) {
+			parchment("org.parchmentmc.data:parchment-${project.minecraft_version}:${project.parchment_version}@zip")
+		}
 	}
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
@@ -35,6 +38,10 @@ dependencies {
 	// Allow logging into an actual Minecraft account in a dev env
 	// See https://github.com/DJtheRedstoner/DevAuth
 	modLocalRuntime "me.djtheredstoner:DevAuth-fabric:1.2.1"
+	// TODO mojang removed their dependency on Apache HTTP, which breaks DevAuth; for the time being, just re-import it
+	//      as a dev env dependency.
+	localRuntime "org.apache.httpcomponents:httpclient:4.5.14"
+	localRuntime "org.apache.httpcomponents:httpcore:4.4.16"
 
 	// If you want to load Mod Menu in a development environment, change this to modImplementation
 	// and uncomment the associated Fabric API module.

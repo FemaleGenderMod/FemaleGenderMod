@@ -20,7 +20,7 @@ package com.wildfire.main;
 
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 
 public final class WildfireSounds {
@@ -28,7 +28,7 @@ public final class WildfireSounds {
 		throw new UnsupportedOperationException();
 	}
 
-	public static final SoundEvent FEMALE_HURT = SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "female_hurt"));
+	public static final SoundEvent FEMALE_HURT = SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(WildfireGender.MODID, "female_hurt"));
 
 	static void register() {
 		Registry.register(BuiltInRegistries.SOUND_EVENT, FEMALE_HURT.location(), FEMALE_HURT);

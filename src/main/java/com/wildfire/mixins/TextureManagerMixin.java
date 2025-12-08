@@ -24,7 +24,7 @@ import it.unimi.dsi.fastutil.objects.ObjectSets;
 import net.minecraft.client.renderer.texture.ReloadableTexture;
 import net.minecraft.client.renderer.texture.TextureContents;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -37,13 +37,13 @@ import java.util.Set;
 
 @Mixin(TextureManager.class)
 abstract class TextureManagerMixin implements MissingTextureLogger {
-	private static final @Unique Set<ResourceLocation> wildfire_gender$missingTextures = ObjectSets.synchronize(new ObjectOpenHashSet<>());
+	private static final @Unique Set<Identifier> wildfire_gender$missingTextures = ObjectSets.synchronize(new ObjectOpenHashSet<>());
 
 	@Inject(
 			method = "loadContentsSafe",
 			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/texture/TextureContents;createMissing()Lnet/minecraft/client/renderer/texture/TextureContents;")
 	)
-	private void wildfire_gender$logMissingTexture(ResourceLocation id, ReloadableTexture texture, CallbackInfoReturnable<TextureContents> cir) {
+	private void wildfire_gender$logMissingTexture(Identifier id, ReloadableTexture texture, CallbackInfoReturnable<TextureContents> cir) {
 		wildfire_gender$missingTextures.add(id);
 	}
 
@@ -51,7 +51,7 @@ abstract class TextureManagerMixin implements MissingTextureLogger {
 			method = "loadContents",
 			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/texture/TextureContents;createMissing()Lnet/minecraft/client/renderer/texture/TextureContents;")
 	)
-	private static void wildfire_gender$logMissingTexture(ResourceManager resourceManager, ResourceLocation id, ReloadableTexture texture, CallbackInfoReturnable<TextureContents> cir) {
+	private static void wildfire_gender$logMissingTexture(ResourceManager resourceManager, Identifier id, ReloadableTexture texture, CallbackInfoReturnable<TextureContents> cir) {
 		wildfire_gender$missingTextures.add(id);
 	}
 
@@ -62,12 +62,12 @@ abstract class TextureManagerMixin implements MissingTextureLogger {
 
 	// targets the CompletableFuture.supplyAsync() lambda in #scheduleLoad
 	@Inject(method = "method_65881", at = @At("HEAD"))
-	private static void wildfire_gender$removeOnReload(ResourceManager resourceManager, ResourceLocation textureId, ReloadableTexture reloadableTexture, CallbackInfoReturnable<TextureContents> cir) {
+	private static void wildfire_gender$removeOnReload(ResourceManager resourceManager, Identifier textureId, ReloadableTexture reloadableTexture, CallbackInfoReturnable<TextureContents> cir) {
 		wildfire_gender$missingTextures.remove(textureId);
 	}
 
 	@Override
-	public Set<ResourceLocation> wildfire_gender$missingTextures() {
+	public Set<Identifier> wildfire_gender$missingTextures() {
 		return wildfire_gender$missingTextures;
 	}
 }

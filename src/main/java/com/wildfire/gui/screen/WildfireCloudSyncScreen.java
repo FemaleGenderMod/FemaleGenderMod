@@ -35,7 +35,7 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -45,7 +45,7 @@ import java.util.concurrent.CompletionException;
 @Environment(EnvType.CLIENT)
 public class WildfireCloudSyncScreen extends BaseWildfireScreen {
 
-	private static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/sync_bg_v2.png");
+	private static final Identifier BACKGROUND = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/sync_bg_v2.png");
 
 	protected WildfireCloudSyncScreen(Screen parent, UUID uuid) {
 		super(Component.translatable("wildfire_gender.cloud_settings"), parent, uuid);

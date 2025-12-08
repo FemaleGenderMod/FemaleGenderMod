@@ -25,11 +25,11 @@ import com.google.common.cache.RemovalNotification;
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.wildfire.main.WildfireGender;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.core.ClientAsset;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.FileNotFoundException;
@@ -112,7 +112,7 @@ public class CapeProvider {
 			var image = uncrop(NativeImage.read(url.openStream()));
 			WildfireGender.LOGGER.debug("Got cape texture");
 
-			var id = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "cape/" + player.id().toString().replace("-", ""));
+			var id = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "cape/" + player.id().toString().replace("-", ""));
 			register(id, image).join();
 
 			return new ClientAsset.DownloadedTexture(id, urlFrom);
@@ -126,7 +126,7 @@ public class CapeProvider {
 		}
 	}
 
-	private static CompletableFuture<Void> register(final ResourceLocation id, final NativeImage image) {
+	private static CompletableFuture<Void> register(final Identifier id, final NativeImage image) {
 		return Minecraft.getInstance().submit(() -> {
 			var texture = new DynamicTexture(id::toString, image);
 			Minecraft.getInstance().getTextureManager().register(id, texture);

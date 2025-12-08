@@ -36,7 +36,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -50,12 +50,12 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
 	private static final Component ENABLED = Component.translatable("wildfire_gender.label.enabled").withStyle(ChatFormatting.GREEN);
 	private static final Component DISABLED = Component.translatable("wildfire_gender.label.disabled").withStyle(ChatFormatting.RED);
 
-	private static final ResourceLocation BACKGROUND_FEMALE = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/breast_customization.png");
-	private static final ResourceLocation BACKGROUND_OTHER = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/breast_customization_other.png");
+	private static final Identifier BACKGROUND_FEMALE = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/breast_customization.png");
+	private static final Identifier BACKGROUND_OTHER = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/breast_customization_other.png");
 
-	private static final ResourceLocation BACKGROUND_CUSTOMIZATION = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/tabs/breast_customization_tab.png");
-	private static final ResourceLocation BACKGROUND_PHYSICS = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/tabs/breast_physics_tab.png");
-	private static final ResourceLocation BACKGROUND_MISC = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/tabs/miscellaneous_tab.png");
+	private static final Identifier BACKGROUND_CUSTOMIZATION = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/tabs/breast_customization_tab.png");
+	private static final Identifier BACKGROUND_PHYSICS = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/tabs/breast_physics_tab.png");
+	private static final Identifier BACKGROUND_MISC = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/tabs/miscellaneous_tab.png");
 
 	private Tab currentTab = Tab.CUSTOMIZATION;
 
@@ -337,7 +337,7 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
 
 		PlayerConfig plr = getPlayer();
 		if(plr == null) return;
-		ResourceLocation backgroundTexture = switch(plr.getGender()) {
+		Identifier backgroundTexture = switch(plr.getGender()) {
 			case Gender.MALE -> null;
 			case Gender.FEMALE -> BACKGROUND_FEMALE;
 			case Gender.OTHER -> BACKGROUND_OTHER;
@@ -380,10 +380,10 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
 		MISC(BACKGROUND_MISC, 128),
 		;
 
-		final ResourceLocation background;
+		final Identifier background;
 		final int backgroundHeight;
 
-		Tab(ResourceLocation background, int backgroundHeight) {
+		Tab(Identifier background, int backgroundHeight) {
 			this.background = background;
 			this.backgroundHeight = backgroundHeight;
 		}

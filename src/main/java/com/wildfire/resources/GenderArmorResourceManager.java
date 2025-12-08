@@ -25,7 +25,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -44,23 +44,23 @@ public final class GenderArmorResourceManager extends SimpleJsonResourceReloadLi
 		super(IGenderArmor.CODEC, FileToIdConverter.json("wildfire_gender_data"));
 	}
 
-	public static final ResourceLocation ID = WildfireGender.rl("armor_data");
+	public static final Identifier ID = WildfireGender.rl("armor_data");
 	public static final GenderArmorResourceManager INSTANCE = new GenderArmorResourceManager();
-	private @Unmodifiable Map<ResourceLocation, IGenderArmor> configs = Map.of();
+	private @Unmodifiable Map<Identifier, IGenderArmor> configs = Map.of();
 
-	public static @Nullable IGenderArmor get(ResourceLocation model) {
+	public static @Nullable IGenderArmor get(Identifier model) {
 		return INSTANCE.configs.get(model);
 	}
 
 	public static Optional<IGenderArmor> get(ItemStack item) {
 		return Optional.ofNullable(item.get(DataComponents.EQUIPPABLE))
 				.flatMap(Equippable::assetId)
-				.map(ResourceKey::location)
+				.map(ResourceKey::identifier)
 				.map(GenderArmorResourceManager::get);
 	}
 
 	@Override
-	protected void apply(Map<ResourceLocation, IGenderArmor> prepared, ResourceManager manager, ProfilerFiller profiler) {
+	protected void apply(Map<Identifier, IGenderArmor> prepared, ResourceManager manager, ProfilerFiller profiler) {
 		this.configs = Collections.unmodifiableMap(prepared);
 	}
 }

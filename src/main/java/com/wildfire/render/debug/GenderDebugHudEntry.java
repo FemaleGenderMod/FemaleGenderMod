@@ -29,7 +29,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.debug.DebugScreenDisplayer;
 import net.minecraft.client.gui.components.debug.DebugScreenEntry;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -41,11 +41,11 @@ import java.util.List;
 import java.util.function.Function;
 
 public class GenderDebugHudEntry implements DebugScreenEntry {
-	private final ResourceLocation id;
+	private final Identifier id;
 	private final boolean clientPlayer;
 
-	public static final ResourceLocation SELF = WildfireGender.rl("self_gender_info");
-	public static final ResourceLocation OTHER = WildfireGender.rl("target_gender_info");
+	public static final Identifier SELF = WildfireGender.rl("self_gender_info");
+	public static final Identifier OTHER = WildfireGender.rl("target_gender_info");
 
 	private static final String PREFIX =
 			ChatFormatting.GRAY + "" + ChatFormatting.UNDERLINE + "["
@@ -87,7 +87,7 @@ public class GenderDebugHudEntry implements DebugScreenEntry {
 		lines.add("");
 		lines.add(PREFIX + " Equipped Chestplate");
 
-		var id = asset.location();
+		var id = asset.identifier();
 		var armorConfig = Optionull.mapOrDefault(GenderArmorResourceManager.get(id), Function.identity(), IGenderArmor.DEFAULT);
 		lines.add("Material: " + id);
 		if(!armorConfig.coversBreasts()) {

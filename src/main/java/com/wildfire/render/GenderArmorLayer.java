@@ -30,20 +30,21 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
 import net.minecraft.client.renderer.entity.state.ArmorStandRenderState;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.EquipmentAssetManager;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
@@ -85,7 +86,7 @@ public class GenderArmorLayer<S extends HumanoidRenderState, M extends HumanoidM
 		rTrim = new BreastModelBox(64, 32, 0, 0.0F, 0F, 4, 5, 4, 0.001F, right);
 	}
 
-	private static boolean textureExists(ResourceLocation texture) {
+	private static boolean textureExists(Identifier texture) {
 		var texManager = Minecraft.getInstance().getTextureManager();
 		return !((MissingTextureLogger) texManager).wildfire_gender$missingTextures().contains(texture);
 	}
@@ -180,14 +181,14 @@ public class GenderArmorLayer<S extends HumanoidRenderState, M extends HumanoidM
 	}
 
 	// TODO eventually expose some way for mods to override this, maybe through a default impl in IGenderArmor or similar
-	protected void renderBreastArmor(ResourceLocation texture, PoseStack matrixStack, SubmitNodeCollector queue,
+	protected void renderBreastArmor(Identifier texture, PoseStack matrixStack, SubmitNodeCollector queue,
 	                                 S state, BreastSide side, int color, boolean glint) {
 		if(!textureExists(texture)) {
 			return;
 		}
 
 		var model = side.isLeft ? lBoobArmor : rBoobArmor;
-		var layer = RenderType.armorCutoutNoCull(texture);
+		var layer = RenderTypes.armorCutoutNoCull(texture);
 		queue.submitCustomGeometry(matrixStack, layer, new BreastRenderCommand(model, state, OverlayTexture.NO_OVERLAY, ARGB.opaque(color)));
 
 		if(glint) {
@@ -214,7 +215,7 @@ public class GenderArmorLayer<S extends HumanoidRenderState, M extends HumanoidM
 	}
 
 	protected void renderGlint(PoseStack matrixStack, SubmitNodeCollector renderQueue, S state, BreastModelBox box) {
-		var glintLayer = RenderType.armorEntityGlint();
+		var glintLayer = RenderTypes.armorEntityGlint();
 		renderQueue.submitCustomGeometry(matrixStack, glintLayer, new BreastRenderCommand(box, state, OverlayTexture.NO_OVERLAY, -1));
 	}
 }

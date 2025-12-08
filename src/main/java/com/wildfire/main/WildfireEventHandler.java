@@ -48,7 +48,7 @@ import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -62,7 +62,7 @@ import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -135,7 +135,7 @@ public final class WildfireEventHandler {
 		LivingEntityFeatureRendererRegistrationCallback.EVENT.register(WildfireEventHandler::registerRenderLayers);
 		HudElementRegistry.attachElementAfter(
 				VanillaHudElements.MISC_OVERLAYS,
-				ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "player_list"),
+				Identifier.fromNamespaceAndPath(WildfireGender.MODID, "player_list"),
 				WildfireEventHandler::renderHud
 		);
 		ArmorStatsTooltipEvent.EVENT.register(WildfireEventHandler::renderTooltip);

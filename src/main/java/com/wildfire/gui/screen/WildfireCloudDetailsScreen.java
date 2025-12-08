@@ -27,7 +27,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.UUID;
 
@@ -42,7 +42,7 @@ public class WildfireCloudDetailsScreen extends BaseWildfireScreen {
 
 	private static final Component NEXT_PAGE = Component.translatable("wildfire_gender.details.next_page");
 	private static final Component PREV_PAGE = Component.translatable("wildfire_gender.details.prev_page");
-	private static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/details_page.png");
+	private static final Identifier BACKGROUND = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/details_page.png");
 
 	private int currentPage = 0;
 

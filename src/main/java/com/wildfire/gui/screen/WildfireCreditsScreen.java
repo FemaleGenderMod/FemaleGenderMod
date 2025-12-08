@@ -32,7 +32,7 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import org.joml.Matrix3x2fStack;
 import org.joml.Vector2f;
@@ -45,10 +45,10 @@ import java.util.UUID;
 @Environment(EnvType.CLIENT)
 public class WildfireCreditsScreen extends BaseWildfireScreen {
 
-	private static final ResourceLocation CREDIT_CONTAINER = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/credits/credit_container.png");
-	private static final ResourceLocation CREDIT_OUTLINE = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/credits/credit_outline.png");
-	private static final ResourceLocation BUTTON_CONTAINER = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/credits/button_container.png");
-	private static final ResourceLocation TAB_CONTAINER = ResourceLocation.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/credits/tab_container.png");
+	private static final Identifier CREDIT_CONTAINER = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/credits/credit_container.png");
+	private static final Identifier CREDIT_OUTLINE = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/credits/credit_outline.png");
+	private static final Identifier BUTTON_CONTAINER = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/credits/button_container.png");
+	private static final Identifier TAB_CONTAINER = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/credits/tab_container.png");
 
 	//General contributor list
 	private final FakeGUIPlayer[] C_GENERAL = Contributors.getContributors().entrySet().stream()
@@ -221,7 +221,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
 			int xP = creditBoxX + (52 / 2);
 			int yP = creditBoxY + (68 / 2);
 			ctx.enableScissor(xP - 21, yP - 79, xP + 21, yP + 20);
-			GuiUtils.drawEntityOnScreenNoScissor(ctx, xP - 38, yP - 29, xP + 38, yP + 59, 40, mouseX, mouseY + 35, creditBox.getEntity());
+			GuiUtils.drawEntityOnScreen(ctx, xP - 38, yP - 29, xP + 38, yP + 59, 40, mouseX, mouseY + 35, creditBox.getEntity());
 			ctx.disableScissor();
 
 			mStack.pushMatrix();
