@@ -31,6 +31,7 @@ public final class CloudUtils {
 		throw new UnsupportedOperationException();
 	}
 
+	private static boolean loggedSessionTamperWarning = false;
 	private static final String EXPECTED_YGGDRASIL_BASE_URL = "https://sessionserver.mojang.com/session/minecraft/";
 
 	static MinecraftSessionService getSessionService() {
@@ -42,17 +43,31 @@ public final class CloudUtils {
 		// minecraft normally uses yggdrasil here; if this is not the case, either mojang has made some serious
 		// changes to sessions, or someone is replacing this with something that shouldn't be here.
 		if(sessionService.getClass() != YggdrasilMinecraftSessionService.class) {
-			WildfireGender.LOGGER.info("Detected likely session service tampering; got {} instead of the expected Yggdrasil session service", sessionService.getClass());
+			logSessionTamperWarning("Detected likely session service tampering; got {} instead of the expected Yggdrasil session service", sessionService.getClass());
 			return true;
 		} else {
 			// additionally verify for potential cracked client tampering here
 			var accessor = (YggdrasilMinecraftSessionServiceAccessor) sessionService;
 			if(!Objects.equals(accessor.getBaseUrl(), EXPECTED_YGGDRASIL_BASE_URL)) {
-				WildfireGender.LOGGER.info("Detected likely session service tampering; Yggdrasil base URL is not the expected Mojang-provided value");
+				logSessionTamperWarning("Detected likely session service tampering; Yggdrasil base URL is not the expected Mojang-provided value");
 				return true;
 			}
 		}
 
 		return false;
+	}
+
+	@SuppressWarnings("SameParameterValue")
+	private static void logSessionTamperWarning(String message) {
+		if(loggedSessionTamperWarning) return;
+		WildfireGender.LOGGER.info(message);
+		loggedSessionTamperWarning = true;
+	}
+
+	@SuppressWarnings("SameParameterValue")
+	private static void logSessionTamperWarning(String message, Object arg1) {
+		if(loggedSessionTamperWarning) return;
+		WildfireGender.LOGGER.info(message, arg1);
+		loggedSessionTamperWarning = true;
 	}
 }
