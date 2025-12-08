@@ -50,7 +50,7 @@ public class CapeProvider {
 		return Duration.ofMinutes(30);
 	});
 
-	public static final LoadingCache<GameProfile, CompletableFuture<ClientAsset.Texture>> CACHE = CacheBuilder.newBuilder()
+	public static final LoadingCache<GameProfile, CompletableFuture<ClientAsset.@Nullable Texture>> CACHE = CacheBuilder.newBuilder()
 			.expireAfterAccess(CACHE_DURATION)
 			.removalListener(CapeProvider::remove)
 			.build(CacheLoader.from(CapeProvider::loadCape));
@@ -58,7 +58,7 @@ public class CapeProvider {
 	private static final Pattern USERNAME = Pattern.compile("^[a-z0-9_]{1,16}$", Pattern.CASE_INSENSITIVE);
 	private static final String CAPE_URL = "https://femalegendermod.net/capes/{uuid}.png";
 
-	private static void remove(RemovalNotification<GameProfile, CompletableFuture<ClientAsset.Texture>> entry) {
+	private static void remove(RemovalNotification<GameProfile, CompletableFuture<ClientAsset.@Nullable Texture>> entry) {
 		var future = entry.getValue();
 		if(future == null) {
 			WildfireGender.LOGGER.warn("Got a null value for removed cache entry with key {}; this shouldn't happen!", entry.getKey());
@@ -74,7 +74,7 @@ public class CapeProvider {
 	}
 
 	// This loads the cape for one player, doesn't matter if it's the player or not.
-	private static CompletableFuture<ClientAsset.Texture> loadCape(GameProfile player) {
+	private static CompletableFuture<ClientAsset.@Nullable Texture> loadCape(GameProfile player) {
 		return CompletableFuture.supplyAsync(() -> {
 			// immediately ignore any profiles that look obviously invalid; while it's possible that this
 			// could ignore valid profiles (illegal characters in usernames have been known to exist),

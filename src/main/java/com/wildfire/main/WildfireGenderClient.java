@@ -38,7 +38,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.debug.DebugScreenEntries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackType;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -100,7 +99,7 @@ public class WildfireGenderClient implements ClientModInitializer {
 		return loadGenderInfo(cache, markForSync, bypassQueue);
 	}
 
-	public static CompletableFuture<@NotNull PlayerConfig> loadGenderInfo(PlayerConfig player, boolean markForSync, boolean bypassQueue) {
+	public static CompletableFuture<PlayerConfig> loadGenderInfo(PlayerConfig player, boolean markForSync, boolean bypassQueue) {
 		return CompletableFuture.supplyAsync(() -> {
 			var uuid = player.uuid;
 			if(player.hasLocalConfig()) {

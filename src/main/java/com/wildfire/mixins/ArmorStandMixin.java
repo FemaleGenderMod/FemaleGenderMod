@@ -46,7 +46,7 @@ abstract class ArmorStandMixin extends LivingEntity {
 		index = 1
 	)
 	public ItemStack wildfiregender$attachBreastData(ItemStack stack, @Local(argsOnly = true) EquipmentSlot slot, @Local(argsOnly = true) Player player) {
-		if(player == null || level().isClientSide() || slot != EquipmentSlot.CHEST || stack.isEmpty()) {
+		if(level().isClientSide() || slot != EquipmentSlot.CHEST || stack.isEmpty()) {
 			return stack;
 		}
 

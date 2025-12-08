@@ -38,6 +38,7 @@ import net.minecraft.world.entity.monster.Strider;
 import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.minecraft.world.entity.vehicle.minecart.Minecart;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
 public class BreastPhysics {
 
@@ -52,9 +53,9 @@ public class BreastPhysics {
 
 	private float breastSize = 0, preBreastSize = 0;
 
-	private Pose lastPose;
+	private @Nullable Pose lastPose;
 	private int lastSwingDuration = 6, lastSwingTick = 0;
-	private Vec3 prePos;
+	private @Nullable Vec3 prePos;
 
 	private final EntityConfig entityConfig;
 	private int randomB = 1;

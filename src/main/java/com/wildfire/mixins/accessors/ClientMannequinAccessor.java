@@ -20,6 +20,7 @@ package com.wildfire.mixins.accessors;
 
 import net.minecraft.client.entity.ClientMannequin;
 import net.minecraft.world.entity.player.PlayerSkin;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
@@ -29,8 +30,8 @@ import java.util.concurrent.CompletableFuture;
 
 @Mixin(ClientMannequin.class)
 public interface ClientMannequinAccessor {
-	@Accessor CompletableFuture<Optional<PlayerSkin>> getSkinLookup();
-	@Accessor void setSkinLookup(CompletableFuture<Optional<PlayerSkin>> value);
+	@Accessor @Nullable CompletableFuture<Optional<PlayerSkin>> getSkinLookup();
+	@Accessor void setSkinLookup(@Nullable CompletableFuture<Optional<PlayerSkin>> value);
 	@Invoker void invokeUpdateSkin();
 	@Invoker void invokeSetSkin(PlayerSkin skin);
 }

@@ -33,7 +33,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.UUID;
@@ -74,7 +73,7 @@ public class PlayerConfig extends EntityConfig {
 
 	// these shouldn't ever be called on players, but just to be safe, override with a noop.
 	@Override
-	public void readFromStack(@NotNull ItemStack chestplate) {
+	public void readFromStack(ItemStack chestplate) {
 	}
 
 	public Configuration getConfig() {
@@ -247,7 +246,7 @@ public class PlayerConfig extends EntityConfig {
 	 *
 	 * @param json The {@link JsonObject} to merge with the existing config for this player
 	 */
-	public void updateFromJson(@NotNull JsonObject json) {
+	public void updateFromJson(JsonObject json) {
 		json.asMap().forEach(this.cfg::set);
 		loadFromConfig(false);
 		this.syncStatus = SyncStatus.SYNCED;

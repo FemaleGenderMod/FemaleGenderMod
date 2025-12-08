@@ -44,7 +44,6 @@ import net.minecraft.client.Minecraft;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Blocking;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.math.BigInteger;
@@ -75,7 +74,7 @@ public final class CloudSync {
 	private static Instant lastSync = Instant.EPOCH;
 	private static final List<Instant> fetchErrors = new ArrayList<>();
 	private static @Nullable Instant disableFetchingUntil;
-	private static CloudAuth auth;
+	private static @Nullable CloudAuth auth;
 
 	private static final Object AUTH_LOCK = new Object();
 	private static final Object SYNC_LOCK = new Object();
@@ -118,7 +117,7 @@ public final class CloudSync {
 	public static @Nullable SyncUnavailable unavailableReason() {
 		var sessionUuid = Minecraft.getInstance().getUser().getProfileId();
 		// offline mode sessions use a version 3 UUID
-		if(sessionUuid == null || sessionUuid.version() != 4) {
+		if(sessionUuid.version() != 4) {
 			return SyncUnavailable.INVALID_ACCOUNT;
 		}
 
@@ -271,7 +270,7 @@ public final class CloudSync {
 	 * @return A {@link CompletableFuture} indicating when the process has finished, or with an exception if
 	 *         syncing failed.
 	 */
-	public static CompletableFuture<Void> sync(@NotNull PlayerConfig config) {
+	public static CompletableFuture<Void> sync(PlayerConfig config) {
 		if(!isEnabled()) {
 			return CompletableFuture.completedFuture(null);
 		}

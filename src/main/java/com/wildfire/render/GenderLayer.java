@@ -44,6 +44,7 @@ import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 import org.joml.*;
 
 import java.lang.Math;
@@ -55,19 +56,20 @@ public class GenderLayer<S extends HumanoidRenderState, M extends HumanoidModel<
 
 	private static final float DEG_TO_RAD = (float) (Math.PI / 180);
 
+	@UnknownNullability("null until #resizeBox() is first called")
 	private BreastModelBox lBreast, rBreast;
+	@UnknownNullability("null until #resizeBox() is first called")
 	private OverlayModelBox lBreastWear, rBreastWear;
 
-	private UVLayout prevLeftBreastUVLayout;
-	private UVLayout prevRightBreastUVLayout;
-	private UVLayout prevLeftBreastOverlayUVLayout;
-	private UVLayout prevRightBreastOverlayUVLayout;
+	private @Nullable UVLayout prevLeftBreastUVLayout, prevRightBreastUVLayout,
+		prevLeftBreastOverlayUVLayout, prevRightBreastOverlayUVLayout;
 
 	private final RenderLayerParent<S, M> context;
 
 	private boolean isUniboob;
-	protected ItemStack armorStack; // although ItemStacks are mutable, this is safe as it is a copy of the real one
-	protected IGenderArmor genderArmor;
+	// although ItemStack instances are mutable, this is safe to keep a reference to as this is a copy of the real stack
+	protected ItemStack armorStack = ItemStack.EMPTY;
+	protected IGenderArmor genderArmor = IGenderArmor.EMPTY;
 	protected boolean isChestplateOccupied, bounceEnabled, breathingAnimation;
 	protected float breastOffsetX, breastOffsetY, breastOffsetZ, lPhysPositionY, lPhysPositionX, rPhysPositionY, rPhysPositionX,
 			lPhysBounceRotation, rPhysBounceRotation, breastSize, zOffset, outwardAngle;

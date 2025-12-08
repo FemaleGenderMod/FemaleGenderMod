@@ -22,7 +22,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.wildfire.api.impl.BreastArmorTexture;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2i;
 import org.joml.Vector2ic;
 
@@ -70,7 +69,7 @@ public interface IBreastArmorTexture {
 	 *
 	 * @return A {@link Vector2ic} indicating how large the texture file is
 	 */
-	default @NotNull Vector2ic textureSize() {
+	default Vector2ic textureSize() {
 		return DEFAULT_TEXTURE_SIZE;
 	}
 
@@ -85,7 +84,7 @@ public interface IBreastArmorTexture {
 	 * @return A {@link Vector2ic} indicating how large of an area should be grabbed from the texture sprite to display over
 	 *         the wearer's breasts
 	 */
-	default @NotNull Vector2ic dimensions() {
+	default Vector2ic dimensions() {
 		return DEFAULT_DIMENSIONS;
 	}
 
@@ -96,7 +95,7 @@ public interface IBreastArmorTexture {
 	 *
 	 * @return A {@link Vector2ic} indicating the UV to use for the left breast
 	 */
-	default @NotNull Vector2ic leftUv() {
+	default Vector2ic leftUv() {
 		return DEFAULT_LEFT_UV;
 	}
 
@@ -107,7 +106,7 @@ public interface IBreastArmorTexture {
 	 *
 	 * @return A {@link Vector2ic} indicating the UV to use for the right breast
 	 */
-	default @NotNull Vector2ic rightUv() {
+	default Vector2ic rightUv() {
 		return DEFAULT_RIGHT_UV;
 	}
 }

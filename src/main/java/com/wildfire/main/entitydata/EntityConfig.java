@@ -41,7 +41,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
@@ -62,12 +61,7 @@ public class EntityConfig {
 
 	public static final LoadingCache<UUID, EntityConfig> CACHE = CacheBuilder.newBuilder()
 			.expireAfterAccess(Duration.ofMinutes(5))
-			.build(new CacheLoader<>() {
-				@Override
-				public @NotNull EntityConfig load(@NotNull UUID key) {
-					return new EntityConfig(key);
-				}
-			});
+			.build(CacheLoader.from(EntityConfig::new));
 
 	public final UUID uuid;
 	protected Gender gender = Configuration.GENDER.getDefault();
@@ -114,7 +108,7 @@ public class EntityConfig {
 	 *
 	 * @see BreastDataComponent
 	 */
-	public void readFromStack(@NotNull ItemStack chestplate) {
+	public void readFromStack(ItemStack chestplate) {
 		CustomData component = chestplate.get(DataComponents.CUSTOM_DATA);
 		if(chestplate.isEmpty() || component == null) {
 			this.fromComponent = null;
@@ -159,18 +153,18 @@ public class EntityConfig {
 	 *
 	 * @return The relevant {@link EntityConfig}, or {@link PlayerConfig} if given a {@link Player player}
 	 */
-	public static @NotNull EntityConfig getEntity(@NotNull LivingEntity entity) {
+	public static EntityConfig getEntity(LivingEntity entity) {
 		if(entity instanceof Player) {
 			return WildfireGender.getOrAddPlayerById(entity.getUUID());
 		}
 		return CACHE.getUnchecked(entity.getUUID());
 	}
 
-	public @NotNull Gender getGender() {
+	public Gender getGender() {
 		return gender;
 	}
 
-	public @NotNull Breasts getBreasts() {
+	public Breasts getBreasts() {
 		return breasts;
 	}
 
@@ -207,10 +201,10 @@ public class EntityConfig {
 		return this.voicePitch;
 	}
 
-	public @NotNull BreastPhysics getLeftBreastPhysics() {
+	public BreastPhysics getLeftBreastPhysics() {
 		return lBreastPhysics;
 	}
-	public @NotNull BreastPhysics getRightBreastPhysics() {
+	public BreastPhysics getRightBreastPhysics() {
 		return rBreastPhysics;
 	}
 
@@ -276,7 +270,7 @@ public class EntityConfig {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void tickBreastPhysics(@NotNull LivingEntity entity) {
+	public void tickBreastPhysics(LivingEntity entity) {
 		IGenderArmor armor = WildfireHelper.getArmorConfig(entity.getItemBySlot(EquipmentSlot.CHEST));
 
 		getLeftBreastPhysics().update(entity, armor);

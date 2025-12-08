@@ -38,6 +38,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.FormattedCharSequence;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 import org.joml.Vector2i;
 
 import java.util.*;
@@ -49,13 +51,12 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 	private static final Identifier TEXTURE_ADD = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/widgets/add.png");
 	private static final Identifier TEXTURE_SUBTRACT = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/widgets/subtract.png");
 
-	private UVLayout selectedUVs = null;
+	private @Nullable UVLayout selectedUVs = null;
 	private BreastTypes selectedBreastIndex = BreastTypes.LEFT;
-	private UVDirection selectedDirection = null;
+	private @Nullable UVDirection selectedDirection = null;
 
 	//Positions & Widths
-	private Vector2i winElementPos;
-	private Vector2i uvWindowPos;
+	private @UnknownNullability Vector2i winElementPos, uvWindowPos;
 
 	private static final int sidebarWidth = 180;
 	private static final int textureDrawWidth = 196;
@@ -68,8 +69,6 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
 	@Override
 	public void init() {
-		if(minecraft == null) return;
-
 		uvWindowPos = new Vector2i(5, this.height / 2 - textureDrawWidth / 2);
 		winElementPos = new Vector2i(this.width - sidebarWidth + 7, 32);
 
@@ -151,10 +150,11 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 						.position(uvPositionWindowX + xOffset, y + buttonArrayY + yOffset)
 						.size(12, 12)
 						.onPress(button -> {
-							if(selectedDirection == null) return;
+							if(selectedDirection == null || selectedUVs == null) return;
 							final var player = Objects.requireNonNull(getPlayer(), "getPlayer()");
 
 							UVQuad quad = selectedUVs.getAllSides().get(selectedDirection);
+							assert quad != null; // TODO can this assumption ever be broken without the user meddling with the config?
 							int increment = getPositionIncrement();
 							int toAdd = delta * increment;
 
@@ -214,7 +214,7 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 	// TODO this should be broken up into smaller methods
 	@Override
 	public void render(GuiGraphics ctx, int mouseX, int mouseY, float delta) {
-		if(minecraft == null || minecraft.level == null || minecraft.player == null) return;
+		if(minecraft.level == null || minecraft.player == null) return;
 		var player = getPlayer();
 
 		if(player != null && selectedUVs != null) {

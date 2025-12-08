@@ -19,15 +19,16 @@
 package com.wildfire.main.uvs;
 
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 
 public class UVLayout {
-	private final EnumMap<UVDirection, UVQuad> quads = new EnumMap<>(UVDirection.class);
+	private final EnumMap<UVDirection, @Nullable UVQuad> quads = new EnumMap<>(UVDirection.class);
 
-	public UVLayout(Map<UVDirection, UVQuad> map) {
+	public UVLayout(Map<UVDirection, @Nullable UVQuad> map) {
 		this.quads.putAll(map);
 		fillMissing();
 	}
@@ -36,7 +37,7 @@ public class UVLayout {
 		quads.put(UVDirection.EAST,  east);
 		quads.put(UVDirection.WEST,  west);
 		quads.put(UVDirection.DOWN,  down);
-		quads.put(UVDirection.UP,	up);
+		quads.put(UVDirection.UP,    up);
 		quads.put(UVDirection.NORTH, north);
 	}
 
@@ -48,7 +49,7 @@ public class UVLayout {
 		quads.putIfAbsent(UVDirection.EAST,  null);
 		quads.putIfAbsent(UVDirection.WEST,  null);
 		quads.putIfAbsent(UVDirection.DOWN,  null);
-		quads.putIfAbsent(UVDirection.UP,	null);
+		quads.putIfAbsent(UVDirection.UP,    null);
 		quads.putIfAbsent(UVDirection.NORTH, null);
 	}
 
@@ -56,7 +57,7 @@ public class UVLayout {
 		quads.put(dir, quad);
 	}
 
-	public UVQuad get(UVDirection dir) {
+	public @Nullable UVQuad get(UVDirection dir) {
 		return quads.get(dir);
 	}
 
@@ -64,12 +65,15 @@ public class UVLayout {
 		return quads.containsKey(dir) && quads.get(dir) != null;
 	}
 
+	@SuppressWarnings("NullableProblems") // not actually a problem
 	@ApiStatus.Internal
 	public EnumMap<UVDirection, UVQuad> getQuads() {
-		return quads.clone();
+		var clone = quads.clone();
+		clone.entrySet().removeIf(entry -> entry.getValue() == null);
+		return clone;
 	}
 
-	public Map<UVDirection, UVQuad> getAllSides() {
+	public Map<UVDirection, @Nullable UVQuad> getAllSides() {
 		return Collections.unmodifiableMap(quads);
 	}
 

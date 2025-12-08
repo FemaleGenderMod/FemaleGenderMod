@@ -44,8 +44,8 @@ public class GenderDebugHudEntry implements DebugScreenEntry {
 	private final Identifier id;
 	private final boolean clientPlayer;
 
-	public static final Identifier SELF = WildfireGender.rl("self_gender_info");
-	public static final Identifier OTHER = WildfireGender.rl("target_gender_info");
+	public static final Identifier SELF = WildfireGender.id("self_gender_info");
+	public static final Identifier OTHER = WildfireGender.id("target_gender_info");
 
 	private static final String PREFIX =
 			ChatFormatting.GRAY + "" + ChatFormatting.UNDERLINE + "["
@@ -81,6 +81,8 @@ public class GenderDebugHudEntry implements DebugScreenEntry {
 	private void addEquippedChestplate(List<String> lines, EntityConfig config, LivingEntity entity) {
 		var equippedChestplate = entity.getItemBySlot(EquipmentSlot.CHEST);
 		var equippable = equippedChestplate.get(DataComponents.EQUIPPABLE);
+		// null is perfectly valid to return here
+		//noinspection DataFlowIssue
 		var asset = Optionull.map(equippable, (it) -> it.assetId().orElse(null));
 		if(asset == null) return;
 

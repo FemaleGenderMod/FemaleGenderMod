@@ -34,13 +34,11 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
+import org.jetbrains.annotations.UnknownNullability;
 import org.joml.Matrix3x2fStack;
 import org.joml.Vector2f;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Environment(EnvType.CLIENT)
 public class WildfireCreditsScreen extends BaseWildfireScreen {
@@ -87,6 +85,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
 	public void init() {
 
 		final var ref = new Object() {
+			@UnknownNullability
 			AbstractWidget prevPage, nextPage, generalTab, translatorTab;
 		};
 
@@ -215,7 +214,8 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
 			ctx.blit(RenderPipelines.GUI_TEXTURED, CREDIT_CONTAINER, creditBoxX, creditBoxY, 0, 0, 52, 68, 52, 68);
 
 			ctx.pose().pushMatrix();
-			ctx.blit(RenderPipelines.GUI_TEXTURED, CREDIT_OUTLINE, creditBoxX+3, creditBoxY+3, 0, 0, 46, 53, 46, 53, ARGB.opaque(creditBox.getRole().getColor()));
+			int color = ARGB.opaque(Objects.requireNonNull(creditBox.getRole()).getColor());
+			ctx.blit(RenderPipelines.GUI_TEXTURED, CREDIT_OUTLINE, creditBoxX + 3, creditBoxY + 3, 0, 0, 46, 53, 46, 53, color);
 			ctx.pose().popMatrix();
 
 			int xP = creditBoxX + (52 / 2);

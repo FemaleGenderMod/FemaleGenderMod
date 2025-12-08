@@ -30,7 +30,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
@@ -43,25 +42,30 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.EquipmentAssetManager;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.item.equipment.EquipmentAsset;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnknownNullability;
 
 @Environment(EnvType.CLIENT)
 public class GenderArmorLayer<S extends HumanoidRenderState, M extends HumanoidModel<S>> extends GenderLayer<S, M> {
 
 	private final EquipmentLayerRenderer equipmentRenderer;
 	private final EquipmentAssetManager equipmentModelLoader;
-	protected BreastModelBox lBoobArmor, rBoobArmor;
 	protected static final BreastModelBox lTrim, rTrim;
+
+	@UnknownNullability("null until #resizeBox() is first called")
+	protected BreastModelBox lBoobArmor, rBoobArmor;
+	@UnknownNullability("null until first render pass")
 	private GenderRenderState genderRenderState;
-	private @NotNull IBreastArmorTexture textureData = IBreastArmorTexture.DEFAULT;
+
+	@SuppressWarnings({"unused", "FieldMayBeFinal"}) // TODO fix this
+	private IBreastArmorTexture textureData = IBreastArmorTexture.DEFAULT;
 
 	static {
 		var left = new UVLayout(

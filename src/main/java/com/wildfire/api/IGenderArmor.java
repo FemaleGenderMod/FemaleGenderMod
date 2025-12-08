@@ -25,7 +25,6 @@ import com.wildfire.api.impl.GenderArmor;
 import com.wildfire.main.WildfireHelper;
 import net.minecraft.util.TriState;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Interface supplying values to determine how an armor piece interacts with a wearer's breasts
@@ -171,7 +170,7 @@ public interface IGenderArmor {
 	 * @see IBreastArmorTexture
 	 * @see BreastArmorTexture
 	 */
-	default @NotNull IBreastArmorTexture texture() {
+	default IBreastArmorTexture texture() {
 		return IBreastArmorTexture.DEFAULT;
 	}
 }

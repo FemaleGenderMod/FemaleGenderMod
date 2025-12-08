@@ -53,7 +53,7 @@ import net.minecraft.world.item.equipment.trim.ArmorTrim;
 import net.minecraft.world.item.equipment.trim.TrimMaterials;
 import net.minecraft.world.item.equipment.trim.TrimPatterns;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -131,7 +131,8 @@ public class WildfireCommand {
 	}
 
 	@SuppressWarnings("SameParameterValue")
-	private static <T> T getOrDefault(CommandContext<FabricClientCommandSource> ctx, String name, T defaultValue, Class<T> clazz) {
+	@UnknownNullability("nullability depends on the relevant ArgumentType & defaultValue")
+	private static <T> T getOrDefault(CommandContext<FabricClientCommandSource> ctx, String name, @UnknownNullability T defaultValue, Class<T> clazz) {
 		T value = defaultValue;
 		try {
 			value = ctx.getArgument(name, clazz);
@@ -167,7 +168,7 @@ public class WildfireCommand {
 	private static int openConfig(CommandContext<FabricClientCommandSource> ctx) {
 		final var client = ctx.getSource().getClient();
 		final var player = ctx.getSource().getPlayer();
-		// the .send() is necessary as otherwise the chat screen will simply immediately close the opened screen
+		// the .schedule() is necessary as otherwise the chat screen will simply immediately close the opened screen
 		client.schedule(() -> WardrobeBrowserScreen.open(client, player));
 		return 1;
 	}
@@ -222,7 +223,7 @@ public class WildfireCommand {
 		return 1;
 	}
 
-	private static List<Component> dump(Cache<UUID, ? extends EntityConfig> cache, @NotNull Level world, boolean ignoreEmptyConfig) {
+	private static List<Component> dump(Cache<UUID, ? extends EntityConfig> cache, Level world, boolean ignoreEmptyConfig) {
 		List<Component> lines = new ArrayList<>();
 		for(var entry : cache.asMap().entrySet()) {
 			var uuid = entry.getKey();

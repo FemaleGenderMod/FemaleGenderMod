@@ -44,7 +44,7 @@ public final class GenderArmorResourceManager extends SimpleJsonResourceReloadLi
 		super(IGenderArmor.CODEC, FileToIdConverter.json("wildfire_gender_data"));
 	}
 
-	public static final Identifier ID = WildfireGender.rl("armor_data");
+	public static final Identifier ID = WildfireGender.id("armor_data");
 	public static final GenderArmorResourceManager INSTANCE = new GenderArmorResourceManager();
 	private @Unmodifiable Map<Identifier, IGenderArmor> configs = Map.of();
 

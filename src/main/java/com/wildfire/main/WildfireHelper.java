@@ -35,7 +35,6 @@ import net.minecraft.util.TriState;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 
-import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
@@ -77,15 +76,6 @@ public final class WildfireHelper {
 	public static float round(float num, float decimalPlaces) {
 		float factor = (float) Math.pow(10, decimalPlaces);
 		return Math.round(num * factor) / factor;
-	}
-
-	public static int[][] deepClone(int[][] src) {
-		if (src == null) return null;
-		int[][] copy = new int[src.length][];
-		for (int i = 0; i < src.length; i++) {
-			copy[i] = (src[i] != null) ? Arrays.copyOf(src[i], src[i].length) : null;
-		}
-		return copy;
 	}
 
 	@SuppressWarnings("removal")

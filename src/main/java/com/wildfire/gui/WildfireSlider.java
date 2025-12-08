@@ -36,7 +36,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
@@ -134,7 +134,8 @@ public class WildfireSlider extends AbstractWidget {
 		return super.keyReleased(event);
 	}
 
-	protected @NotNull MutableComponent createNarrationMessage() {
+	@Override
+	protected MutableComponent createNarrationMessage() {
 		return Component.translatable("gui.narrate.slider", this.getMessage());
 	}
 
@@ -192,10 +193,6 @@ public class WildfireSlider extends AbstractWidget {
 		//Note: Does not call applyValue
 	}
 
-	protected void onDrag(double mouseX, double mouseY, double deltaX, double deltaY) {
-		this.setValueFromMouse(mouseX);
-	}
-
 	@Override
 	public void updateWidgetNarration(NarrationElementOutput builder) {
 		builder.add(NarratedElementType.TITLE, Component.translatable("gui.narrate.slider", this.getMessage()));
@@ -221,18 +218,18 @@ public class WildfireSlider extends AbstractWidget {
 		updateMessage();
 	}
 
-	@SuppressWarnings("UnusedReturnValue")
+	@SuppressWarnings({"NotNullFieldNotInitialized", "UnusedReturnValue"})
 	public static final class Builder {
 		private int x, y, width, height;
 		private float min, max;
 		private double value;
-		private Double step = null;
-		private Double mouseStep = null;
+		private @Nullable Double step = null;
+		private @Nullable Double mouseStep = null;
 		private boolean active = true;
 		private Float2ObjectFunction<Component> messageSupplier;
 		private FloatConsumer onUpdate, onSave;
 
-		public Builder message(@NotNull Float2ObjectFunction<Component> messageSupplier) {
+		public Builder message(Float2ObjectFunction<Component> messageSupplier) {
 			this.messageSupplier = messageSupplier;
 			return this;
 		}
@@ -249,17 +246,17 @@ public class WildfireSlider extends AbstractWidget {
 			return this;
 		}
 
-		public Builder update(@NotNull FloatConsumer onUpdate) {
+		public Builder update(FloatConsumer onUpdate) {
 			this.onUpdate = onUpdate;
 			return this;
 		}
 
-		public Builder save(@NotNull FloatConsumer onSave) {
+		public Builder save(FloatConsumer onSave) {
 			this.onSave = onSave;
 			return this;
 		}
 
-		public Builder range(@NotNull FloatConfigKey key) {
+		public Builder range(FloatConfigKey key) {
 			return range(key.getMinInclusive(), key.getMaxInclusive());
 		}
 

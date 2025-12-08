@@ -20,6 +20,7 @@ package com.wildfire.main.config.types;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class ConfigKey<TYPE> {
 
@@ -55,7 +56,7 @@ public abstract class ConfigKey<TYPE> {
 
 	public abstract void save(JsonObject object, TYPE value);
 
-	public boolean validate(TYPE value) {
+	public boolean validate(@Nullable TYPE value) {
 		return value != null;
 	}
 }

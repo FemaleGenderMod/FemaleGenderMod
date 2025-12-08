@@ -20,6 +20,7 @@ package com.wildfire.api.impl;
 
 import com.wildfire.api.IBreastArmorTexture;
 import com.wildfire.api.IGenderArmor;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Default record implementation of {@link IGenderArmor} used for resource pack entries
@@ -37,12 +38,14 @@ public record GenderArmor(
 	/**
 	 * @deprecated Use {@link IGenderArmor#DEFAULT} instead
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true)
+	@ApiStatus.ScheduledForRemoval(inVersion = "First release of 26.1")
 	public static final IGenderArmor DEFAULT = IGenderArmor.DEFAULT;
 
 	/**
 	 * @deprecated Use {@link IGenderArmor#EMPTY} instead
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true)
+	@ApiStatus.ScheduledForRemoval(inVersion = "First release of 26.1")
 	public static final IGenderArmor EMPTY = IGenderArmor.EMPTY;
 }

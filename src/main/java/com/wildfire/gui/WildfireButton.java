@@ -27,7 +27,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
@@ -85,16 +84,17 @@ public class WildfireButton extends Button {
 		return this;
 	}
 
+	@SuppressWarnings({"NotNullFieldNotInitialized", "UnusedReturnValue"})
 	public static final class Builder {
 		private Supplier<Component> messageSupplier;
 		private int x, y, width, height;
 		private PressAction onPress;
 		private CreateNarration narrationSupplier = DEFAULT_NARRATION;
-		private Tooltip tooltip = null;
-		private ButtonRenderer renderer = null;
+		private @Nullable Tooltip tooltip = null;
+		private @Nullable ButtonRenderer renderer = null;
 		private boolean active = true;
 
-		public Builder message(@NotNull Supplier<Component> messageSupplier) {
+		public Builder message(Supplier<Component> messageSupplier) {
 			this.messageSupplier = messageSupplier;
 			return this;
 		}
@@ -111,12 +111,12 @@ public class WildfireButton extends Button {
 			return this;
 		}
 
-		public Builder onPress(@NotNull PressAction onPress) {
+		public Builder onPress(PressAction onPress) {
 			this.onPress = onPress;
 			return this;
 		}
 
-		public Builder narration(@NotNull CreateNarration narrationSupplier) {
+		public Builder narration(CreateNarration narrationSupplier) {
 			this.narrationSupplier = narrationSupplier;
 			return this;
 		}

@@ -37,6 +37,8 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 import org.joml.Vector2f;
 
 import java.util.Objects;
@@ -61,7 +63,7 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 
 	private final Supplier<FakeGUIPlayer> fakeKeira = Suppliers.memoize(() -> new FakeGUIPlayer("KeiaraFGM", keiraUUID, GenderConfigs.DEFAULT_FEMALE));
 
-	public WildfireFirstTimeSetupScreen(Screen parent, UUID uuid) {
+	public WildfireFirstTimeSetupScreen(@Nullable Screen parent, UUID uuid) {
 		super(Component.translatable("wildfire_gender.cloud_settings"), parent, uuid);
 	}
 
@@ -72,7 +74,8 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 
 		final var config = ClientConfig.INSTANCE;
 		final var ref = new Object() {
-			WildfireButton no = null;
+			@UnknownNullability
+			WildfireButton no;
 		};
 
 		addButton(builder -> builder
@@ -111,6 +114,7 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 
 	private CompletableFuture<Void> doInitialSync() {
 		var client = Objects.requireNonNull(this.minecraft);
+		assert client.player != null;
 		var clientUUID = client.player.getUUID();
 
 		WildfireGender.CACHE.asMap().values()
@@ -153,7 +157,7 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 
 	@Override
 	public void render(GuiGraphics ctx, int mouseX, int mouseY, float delta) {
-		if(minecraft == null || minecraft.level == null) return;
+		if(minecraft.level == null) return;
 		super.render(ctx, mouseX, mouseY, delta);
 
 		var mStack = ctx.pose();

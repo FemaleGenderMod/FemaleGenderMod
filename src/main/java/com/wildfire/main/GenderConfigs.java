@@ -19,7 +19,6 @@
 package com.wildfire.main;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
@@ -28,10 +27,12 @@ import net.minecraft.server.packs.resources.ResourceManager;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 public class GenderConfigs {
+
+	private static final Gson GSON = new Gson();
 
 	public static final JsonObject DEFAULT_FEMALE;
 	public static final JsonObject DEFAULT_MALE;
@@ -42,23 +43,16 @@ public class GenderConfigs {
 	}
 
 	private static JsonObject loadConfig(String cfgFile) {
-		JsonObject fObj = new JsonObject();
-
 		try {
 			ResourceManager manager = Minecraft.getInstance().getResourceManager();
-			Identifier id = Identifier.fromNamespaceAndPath(WildfireGender.MODID, cfgFile);
+			Identifier id = WildfireGender.id(cfgFile);
 			Resource resource = manager.getResource(id).orElseThrow();
 
-			try (InputStreamReader reader = new InputStreamReader(resource.open(), StandardCharsets.UTF_8)) {
-				JsonObject obj = new Gson().fromJson(reader, JsonObject.class);
-				for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
-					fObj.add(entry.getKey(), entry.getValue());
-				}
+			try(var reader = new InputStreamReader(resource.open(), StandardCharsets.UTF_8)) {
+				return GSON.fromJson(reader, JsonObject.class);
 			}
 		} catch(IOException e) {
-			WildfireGender.LOGGER.error("Failed to load config file", e);
+			throw new UncheckedIOException(e);
 		}
-
-		return fObj;
 	}
 }

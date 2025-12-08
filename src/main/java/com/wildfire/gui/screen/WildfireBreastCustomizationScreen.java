@@ -37,6 +37,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -104,17 +105,15 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
 			case MISC -> initMiscTab(tabOffsetY);
 		}
 
-		if(Minecraft.getInstance().options != null) {
-			if (Minecraft.getInstance().options.keyJump.isDown()) {
-				Minecraft.getInstance().options.keyJump.setDown(false);
-			}
+		if(minecraft.options.keyJump.isDown()) {
+			minecraft.options.keyJump.setDown(false);
 		}
 	}
 
 	@Override
 	public void removed() {
-		if(Minecraft.getInstance().options.keyJump.isDown()) {
-			Minecraft.getInstance().options.keyJump.setDown(false);
+		if(minecraft.options.keyJump.isDown()) {
+			minecraft.options.keyJump.setDown(false);
 		}
 	}
 
@@ -183,6 +182,7 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
 		final var plr = Objects.requireNonNull(getPlayer(), "getPlayer()");
 		final var breasts = plr.getBreasts();
 		final var ref = new Object() {
+			@UnknownNullability
 			AbstractWidget bounceSlider, floppySlider, overridePhysics, dualPhysics;
 		};
 
@@ -267,6 +267,7 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
 		final var plr = Objects.requireNonNull(getPlayer(), "getPlayer()");
 		final var config = ClientConfig.INSTANCE;
 		final var ref = new Object() {
+			@UnknownNullability
 			AbstractWidget pitchSlider;
 		};
 

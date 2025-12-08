@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PhysicsDebugHudEntry implements DebugScreenEntry {
-	public static final Identifier ID = WildfireGender.rl("physics");
+	public static final Identifier ID = WildfireGender.id("physics");
 
 	@Override
 	public void display(DebugScreenDisplayer lines, @Nullable Level world, @Nullable LevelChunk clientChunk, @Nullable LevelChunk chunk) {

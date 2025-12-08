@@ -30,7 +30,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.util.Util;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 import org.joml.Vector2ic;
@@ -70,6 +70,7 @@ public final class WildfireAPI {
 	 * @see	IGenderArmor
 	 */
 	@Deprecated(since = "4.3.5", forRemoval = true)
+	@ApiStatus.ScheduledForRemoval(inVersion = "First release of 26.1")
 	public static void addGenderArmor(Item item, IGenderArmor genderArmor) {
 		GENDER_ARMORS.put(item, genderArmor);
 	}
@@ -93,7 +94,7 @@ public final class WildfireAPI {
 	 * @param  uuid  the uuid of the target {@link Player}.
 	 * @see	Gender
 	 */
-	public static @NotNull Gender getPlayerGender(UUID uuid) {
+	public static Gender getPlayerGender(UUID uuid) {
 		PlayerConfig cfg = WildfireGender.getPlayerById(uuid);
 		if(cfg == null) return Configuration.GENDER.getDefault();
 		return cfg.getGender();
@@ -116,6 +117,7 @@ public final class WildfireAPI {
 	 * @param  markForSync {@code true} if player data should be synced to the server upon being loaded; this only has an effect on the client player.
 	 */
 	@Deprecated(since = "4.3.3", forRemoval = true)
+	@ApiStatus.ScheduledForRemoval(inVersion = "First release of 26.1")
 	@Environment(EnvType.CLIENT)
 	public static CompletableFuture<@Nullable PlayerConfig> loadGenderInfo(UUID uuid, boolean markForSync) {
 		return WildfireGenderClient.loadGenderInfo(uuid, markForSync, false);
@@ -133,6 +135,7 @@ public final class WildfireAPI {
 	 * @see #addGenderArmor
 	 */
 	@Deprecated(since = "4.3.5", forRemoval = true)
+	@ApiStatus.ScheduledForRemoval(inVersion = "First release of 26.1")
 	public static Map<Item, IGenderArmor> getGenderArmors() {
 		return GENDER_ARMORS;
 	}

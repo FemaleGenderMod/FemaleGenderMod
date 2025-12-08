@@ -105,7 +105,7 @@ public record Contributor(
 			return color == null ? DEFAULT_COLOR : color;
 		}
 
-		public @NotNull MutableComponent withColor(@NotNull MutableComponent text) {
+		public MutableComponent withColor(MutableComponent text) {
 			Preconditions.checkNotNull(text);
 			if(color != null) {
 				return text.withColor(color);
@@ -113,7 +113,7 @@ public record Contributor(
 			return text;
 		}
 
-		public @NotNull MutableComponent withColor(@NotNull MutableComponent text, @NotNull ChatFormatting defaultColor) {
+		public MutableComponent withColor(MutableComponent text, ChatFormatting defaultColor) {
 			Preconditions.checkNotNull(text);
 			if(color != null) {
 				return text.withColor(color);
@@ -123,11 +123,11 @@ public record Contributor(
 			return text.withColor(defaultColor.getColor());
 		}
 
-		public @NotNull MutableComponent nametag() {
+		public MutableComponent nametag() {
 			return Component.translatable("wildfire_gender.contributor.role." + name().toLowerCase(Locale.ROOT));
 		}
 
-		public @NotNull MutableComponent shortName() {
+		public MutableComponent shortName() {
 			return Component.translatable("wildfire_gender.contributor.role." + name().toLowerCase(Locale.ROOT) + ".short");
 		}
 	}

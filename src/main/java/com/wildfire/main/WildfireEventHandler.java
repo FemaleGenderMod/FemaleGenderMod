@@ -96,7 +96,7 @@ public final class WildfireEventHandler {
 		// note that all the Util.make()s are required, as otherwise a dedicated server will crash during
 		// static class initialization due to references to classes that don't exist
 		if(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
-			var category = Util.make(() -> KeyMapping.Category.register(WildfireGender.rl("generic")));
+			var category = Util.make(() -> KeyMapping.Category.register(WildfireGender.id("generic")));
 			CONFIG_KEYBIND = Util.make(() -> {
 				KeyMapping keybind = new KeyMapping("key.wildfire_gender.gender_menu", GLFW.GLFW_KEY_H, category);
 				KeyBindingHelper.registerKeyBinding(keybind);

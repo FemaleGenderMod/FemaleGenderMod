@@ -32,7 +32,6 @@ import net.minecraft.client.entity.ClientMannequin;
 import net.minecraft.client.renderer.PlayerSkinRenderCache;
 import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -44,29 +43,28 @@ public class FakeGUIPlayer {
 	private final String name;
 	private final UUID uuid;
 	private final Supplier<GUIMannequin> entity;
+	private final @Nullable String description;
 
-	private final String description;
-
-	public FakeGUIPlayer(@NotNull String name, @NotNull UUID uuid, @Nullable String description, @Nullable JsonObject defaultGenderSettings) {
+	public FakeGUIPlayer(String name, UUID uuid, @Nullable String description, @Nullable JsonObject defaultGenderSettings) {
 		this.name = name;
 		this.uuid = uuid;
 		this.entity = createPlayerSupplier(uuid, defaultGenderSettings);
 		this.description = description;
 	}
 
-	public FakeGUIPlayer(@NotNull String name, @NotNull UUID uuid, @Nullable JsonObject defaultGenderSettings) {
+	public FakeGUIPlayer(String name, UUID uuid, @Nullable JsonObject defaultGenderSettings) {
 		this(name, uuid, null, defaultGenderSettings);
 	}
 
-	public @NotNull ClientMannequin getEntity() {
+	public ClientMannequin getEntity() {
 		return entity.get();
 	}
 
-	public @NotNull UUID getUUID() {
+	public UUID getUUID() {
 		return uuid;
 	}
 
-	public @NotNull String getName() {
+	public String getName() {
 		return name;
 	}
 
@@ -74,7 +72,7 @@ public class FakeGUIPlayer {
 		return Contributors.getRole(uuid);
 	}
 
-	public @NotNull Contributor.Role getRoleOrGeneric() {
+	public Contributor.Role getRoleOrGeneric() {
 		var role = getRole();
 		return role == null ? Contributor.Role.GENERIC : role;
 	}
@@ -89,7 +87,7 @@ public class FakeGUIPlayer {
 		EntityConfig.getEntity(getEntity()).tickBreastPhysics(getEntity());
 	}
 
-	private static Supplier<GUIMannequin> createPlayerSupplier(final UUID uuid, final JsonObject defaultGenderData) {
+	private static Supplier<GUIMannequin> createPlayerSupplier(final UUID uuid, final @Nullable JsonObject defaultGenderData) {
 		return Suppliers.memoize(() -> {
 			var client = Minecraft.getInstance();
 			assert client.level != null;
@@ -148,7 +146,7 @@ public class FakeGUIPlayer {
 		}
 
 		@Override
-		protected @NotNull ResolvableProfile getProfile() {
+		protected ResolvableProfile getProfile() {
 			return copySkinFrom;
 		}
 	}

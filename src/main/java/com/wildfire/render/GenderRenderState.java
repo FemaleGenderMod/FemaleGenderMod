@@ -35,6 +35,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectUtil;
 import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.Nullable;
@@ -44,56 +45,48 @@ import org.jetbrains.annotations.Nullable;
  */
 @Environment(EnvType.CLIENT)
 public class GenderRenderState {
-	private static final RenderStateDataKey<@Nullable GenderRenderState> STATE = RenderStateDataKey.create(() -> "GenderRenderState");
+	private static final RenderStateDataKey<GenderRenderState> STATE = RenderStateDataKey.create(() -> "GenderRenderState");
 
 	public static void update(LivingEntity entity, EntityRenderState state) {
 		if(!EntityConfig.isSupportedEntity(entity)) return;
 		var config = EntityConfig.getEntity(entity);
-		var modState = new GenderRenderState();
-		modState.update(config, entity);
-		state.setData(STATE, modState);
+		state.setData(STATE, new GenderRenderState(config, entity));
 	}
 
 	public static @Nullable GenderRenderState get(EntityRenderState state) {
 		return state.getData(STATE);
 	}
 
-	public final BreastState breasts = new BreastState();
-	public final BreastPhysicsState leftBreastPhysics = new BreastPhysicsState();
-	public final BreastPhysicsState rightBreastPhysics = new BreastPhysicsState();
+	public final BreastState breasts;
+	public final BreastPhysicsState leftBreastPhysics;
+	public final BreastPhysicsState rightBreastPhysics;
 
-	public float partialTicks;
+	public final float partialTicks;
 
-	public Gender gender;
-	public float bustSize;
-	public boolean hasBreastPhysics;
-	public float bounceMultiplier;
-	public float floppyMultiplier;
-	public boolean armorPhysicsOverride;
-	public boolean showBreastsInArmor;
-	public boolean hasJacketLayer;
-	public boolean hasHolidayThemes;
+	public final Gender gender;
+	public final float bustSize;
+	public final boolean hasBreastPhysics;
+	public final float bounceMultiplier;
+	public final float floppyMultiplier;
+	public final boolean armorPhysicsOverride;
+	public final boolean showBreastsInArmor;
+	public final boolean hasJacketLayer;
+	public final boolean hasHolidayThemes;
 
-	public UVLayout leftBreastUVLayout;
-	public UVLayout rightBreastUVLayout;
-	public UVLayout leftBreastOverlayUVLayout;
-	public UVLayout rightBreastOverlayUVLayout;
-	public UVLayout leftBreastArmorUVLayout;
-	public UVLayout rightBreastArmorUVLayout;
+	public final UVLayout leftBreastUVLayout;
+	public final UVLayout rightBreastUVLayout;
+	public final UVLayout leftBreastOverlayUVLayout;
+	public final UVLayout rightBreastOverlayUVLayout;
+	public final UVLayout leftBreastArmorUVLayout;
+	public final UVLayout rightBreastArmorUVLayout;
 
-	public boolean isBreathing;
-	public @Nullable Component nametag;
+	public final boolean isBreathing;
+	public final @Nullable Component nametag;
 
-	/**
-	 * Updates the data in this render state to match the given entity.
-	 *
-	 * @param entityConfig the entity config
-	 * @param entity the entity associated with the config
-	 */
-	public void update(EntityConfig entityConfig, LivingEntity entity) {
-		this.breasts.update(entityConfig.getBreasts());
-		this.leftBreastPhysics.update(entityConfig.getLeftBreastPhysics());
-		this.rightBreastPhysics.update(entityConfig.getRightBreastPhysics());
+	private GenderRenderState(EntityConfig entityConfig, LivingEntity entity) {
+		this.breasts = new BreastState(entityConfig.getBreasts());
+		this.leftBreastPhysics = new BreastPhysicsState(entityConfig.getLeftBreastPhysics());
+		this.rightBreastPhysics = new BreastPhysicsState(entityConfig.getRightBreastPhysics());
 
 		this.partialTicks = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true);
 
@@ -126,17 +119,17 @@ public class GenderRenderState {
 
 		this.isBreathing = !entity.isUnderWater() || MobEffectUtil.hasWaterBreathing(entity) ||
 			entity.level().getBlockState(entity.blockPosition()).is(Blocks.BUBBLE_COLUMN);
-		this.nametag = entity.isAlwaysTicking() ? WildfireGenderClient.getNametag(entity.getUUID()) : null;
+		this.nametag = entity instanceof Player ? WildfireGenderClient.getNametag(entity.getUUID()) : null;
 	}
 
 	public static class BreastState {
-		public float xOffset;
-		public float yOffset;
-		public float zOffset;
-		public float cleavage;
-		public boolean uniboob;
+		public final float xOffset;
+		public final float yOffset;
+		public final float zOffset;
+		public final float cleavage;
+		public final boolean uniboob;
 
-		public void update(Breasts breasts) {
+		private BreastState(Breasts breasts) {
 			this.xOffset = breasts.getXOffset();
 			this.yOffset = breasts.getYOffset();
 			this.zOffset = breasts.getZOffset();
@@ -146,12 +139,12 @@ public class GenderRenderState {
 	}
 
 	public class BreastPhysicsState {
-		private float prePositionY, positionY;
-		private float prePositionX, positionX;
-		private float preBounceRotation, bounceRotation;
-		private float preBreastSize, breastSize;
+		private final float prePositionY, positionY;
+		private final float prePositionX, positionX;
+		private final float preBounceRotation, bounceRotation;
+		private final float preBreastSize, breastSize;
 
-		public void update(BreastPhysics breastPhysics) {
+		private BreastPhysicsState(BreastPhysics breastPhysics) {
 			this.prePositionY = breastPhysics.getPrePositionY();
 			this.positionY = breastPhysics.getPositionY();
 			this.prePositionX = breastPhysics.getPrePositionX();

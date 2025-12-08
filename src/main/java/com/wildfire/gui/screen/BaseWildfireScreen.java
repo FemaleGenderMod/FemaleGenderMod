@@ -39,7 +39,7 @@ import java.util.function.Consumer;
 public abstract class BaseWildfireScreen extends Screen {
 
 	protected final UUID playerUUID;
-	protected final Screen parent;
+	protected final @Nullable Screen parent;
 
 	//Keira Emberlyn - The Mod's New Mascot
 	protected static final Identifier KEIRA_LOOK = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/mascot/keira_look.png");
@@ -50,7 +50,7 @@ public abstract class BaseWildfireScreen extends Screen {
 	protected static final int KEIRA_HEIGHT = 736;
 	//Keira test ctx.drawTexture(RenderPipelines.GUI_TEXTURED, KEIRA_LOOK, x, y, 0, 0, 26, 26, KEIRA_WIDTH, KEIRA_HEIGHT, KEIRA_WIDTH, KEIRA_HEIGHT);
 
-	protected BaseWildfireScreen(Component title, Screen parent, UUID uuid) {
+	protected BaseWildfireScreen(Component title, @Nullable Screen parent, UUID uuid) {
 		super(title);
 		this.parent = parent;
 		this.playerUUID = uuid;

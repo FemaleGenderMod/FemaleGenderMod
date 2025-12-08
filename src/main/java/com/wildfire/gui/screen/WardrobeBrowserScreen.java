@@ -62,7 +62,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 
 	private final WidgetTooltipHolder contribTooltip = new WidgetTooltipHolder();
 
-	public WardrobeBrowserScreen(Screen parent, UUID uuid) {
+	public WardrobeBrowserScreen(@Nullable Screen parent, UUID uuid) {
 		super(Component.translatable("wildfire_gender.wardrobe.title"), parent, uuid);
 	}
 
@@ -221,7 +221,6 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 				&& mouseX > this.width / 2 - textWidth / 2 && mouseX < this.width / 2 + textWidth / 2
 				&& mouseY > creatorY - 2 && mouseY < creatorY + (9 * lines)) {
 			var contributorNames = toList.stream()
-					.filter(Objects::nonNull)
 					.map(entry -> PlayerTeam.formatNameForTeam(entry.getTeam(), Component.nullToEmpty(entry.getProfile().name())))
 					.toList();
 
