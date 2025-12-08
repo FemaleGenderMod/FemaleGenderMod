@@ -272,7 +272,7 @@ public final class WildfireEventHandler {
 		if (ClientConfig.INSTANCE.get(ClientConfig.SHOW_TOAST)) {
 			var button = WildfireEventHandler.CONFIG_KEYBIND.getTranslatedKeyMessage();
 			ToastManager toastManager = client.getToastManager();
-			toastManager.addToast(new WildfireToast(Minecraft.getInstance().font, Component.translatable("wildfire_gender.player_list.title"), Component.translatable("toast.wildfire_gender.get_started", button), false, 0));
+			toastManager.addToast(new WildfireToast(Minecraft.getInstance().font, Component.translatable("wildfire_gender.player_list.title"), Component.translatable("toast.wildfire_gender.get_started", button)));
 		}
 	}
 
