@@ -49,7 +49,7 @@
 		"fabric-key-binding-api-v1": "*",
 		"fabric-lifecycle-events-v1": "*",
 		"fabric-rendering-v1": "*",
-		"fabric-resource-loader-v0": "*",
+		"fabric-resource-loader-v1": "*",
 		"fabric-registry-sync-v0": "*",
 		"minecraft": "${minecraft_dependency}",
 		"java": ">=21"
