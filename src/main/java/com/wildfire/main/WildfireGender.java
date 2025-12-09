@@ -46,6 +46,14 @@ public class WildfireGender implements ModInitializer {
 		// Note that servers will manually invalidate cache entries upon a player disconnecting
 		// (see WildfireEventHandler#playerDisconnected).
 		if(WildfireHelper.onClient()) {
+			// TODO this design is super janky, and has some potential edge case issues around LAN worlds;
+			//		notably, connected players could potentially have their configs expire, although this is currently
+			//		prevented through further jank with how SyncedPlayerList is implemented (which should also
+			//		be addressed along with this)
+			// best solution to this issue is likely going to be simply splitting the client & server caches into
+			// their own dedicated (Loading)Cache instances at some point in the future.
+			// might also be nice to take the opportunity to also properly split the configs into a server/client
+			// pattern (like entities are right now), although that's probably not going to be very fun to do
 			builder.expireAfterAccess(Duration.ofMinutes(15));
 		}
 		CACHE = builder.build(CacheLoader.from(key -> {

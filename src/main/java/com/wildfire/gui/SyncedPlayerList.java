@@ -46,13 +46,13 @@ public final class SyncedPlayerList {
 		ClientTickEvents.END_CLIENT_TICK.register(SyncedPlayerList::onTick);
 	}
 
-	public static void drawSyncedPlayers(GuiGraphics context, Font textRenderer) {
+	public static void drawSyncedPlayers(GuiGraphics context, Font font) {
 		if(syncedPlayers.isEmpty()) {
 			return;
 		}
 
 		var header = Component.translatable("wildfire_gender.wardrobe.players_using_mod").withStyle(ChatFormatting.AQUA);
-		context.drawString(textRenderer, header, 5, 5, 0xFFFFFFFF, true);
+		context.drawString(font, header, 5, 5, 0xFFFFFFFF, true);
 
 		int yPos = 18;
 		for(var entry : syncedPlayers) {
@@ -60,11 +60,14 @@ public final class SyncedPlayerList {
 					.append(Component.literal(entry.name()).withColor(entry.color()))
 					.append(" - ")
 					.append(entry.gender().getDisplayName());
-			context.drawString(textRenderer, text, 10, yPos, 0xFFFFFFFF, false);
+			context.drawString(font, text, 10, yPos, 0xFFFFFFFF, false);
 			yPos += 10;
 		}
 	}
 
+	// TODO this design is largely redundant now, as this was designed at a point where it was assumed
+	//		that HUD rendering would also receive the same render split treatment as entities did, which
+	//		appears to now be incorrect
 	private static void onTick(Minecraft client) {
 		if(ticks++ % 5 != 0) {
 			return;

@@ -43,8 +43,26 @@ import java.util.concurrent.CompletableFuture;
  */
 public class PlayerConfig extends EntityConfig {
 
+	/**
+	 * <p>{@code true} if this config should be synced to the connected server on the next attempt</p>
+	 *
+	 * <p>This only has an effect for the client player.</p>
+	 */
 	public boolean needsSync;
+
+	/**
+	 * <p>{@code true} if this config should be synced to the {@link CloudSync cloud sync server} on the next attempt</p>
+	 *
+	 * <p>This only has an effect for the client player.</p>
+	 */
 	public boolean needsCloudSync;
+
+	/**
+	 * The current sync status of this player config
+	 *
+	 * @see #needsSync
+	 * @see SyncStatus
+	 */
 	public SyncStatus syncStatus = SyncStatus.UNKNOWN;
 
 	private final Configuration cfg;
@@ -208,13 +226,14 @@ public class PlayerConfig extends EntityConfig {
 	 * @deprecated Use {@code plr.save()} instead
 	 */
 	@Deprecated(forRemoval = true)
+	@ApiStatus.ScheduledForRemoval(inVersion = "First release of 26.1")
 	public static void saveGenderInfo(PlayerConfig plr) {
 		plr.save();
 	}
 
 	@Override
 	public boolean hasJacketLayer() {
-		throw new UnsupportedOperationException("PlayerConfig does not support #hasJacketLayer(); use PlayerEntity#isPartVisible instead");
+		throw new UnsupportedOperationException("PlayerConfig does not support #hasJacketLayer(); use Player#isModelPartShown instead");
 	}
 
 	@ApiStatus.Internal
@@ -262,6 +281,30 @@ public class PlayerConfig extends EntityConfig {
 	}
 
 	public enum SyncStatus {
-		CACHED, SYNCED, UNKNOWN
+		/**
+		 * <p>Indicates that the relevant configuration has had its data loaded from a file on disk.</p>
+		 *
+		 * <p>This is only applicable on a client, as dedicated servers do not read player data from
+		 * configuration files.</p>
+		 */
+		CACHED,
+
+		/**
+		 * <p>Indicates that the relevant configuration has had its data loaded from a sync packet,
+		 * or from a profile retrieved from {@link CloudSync the cloud sync server}.</p>
+		 *
+		 * <p>This is currently only set on the client.</p>
+		 */
+		// TODO this should be set on dedicated servers if/when the player config cache is split
+		//		into separate server-sided & client-sided caches
+		SYNCED,
+
+		/**
+		 * <p>Indicates that this configuration has an unknown sync state.</p>
+		 *
+		 * <p>This is the default sync state for new configuration instances, and on dedicated servers is
+		 * the only sync state.</p>
+		 */
+		UNKNOWN,
 	}
 }

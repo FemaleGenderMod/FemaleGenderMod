@@ -28,7 +28,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -40,15 +39,6 @@ public abstract class BaseWildfireScreen extends Screen {
 
 	protected final UUID playerUUID;
 	protected final @Nullable Screen parent;
-
-	//Keira Emberlyn - The Mod's New Mascot
-	protected static final Identifier KEIRA_LOOK = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/mascot/keira_look.png");
-	protected static final Identifier KEIRA_WAVE = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/mascot/keira_wave.png");
-	protected static final Identifier KEIRA_LEATHER = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/mascot/keira_leather.png");
-	protected static final Identifier KEIRA_NETHERITE = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/mascot/keira_netherite.png");
-	protected static final int KEIRA_WIDTH = 610;
-	protected static final int KEIRA_HEIGHT = 736;
-	//Keira test ctx.drawTexture(RenderPipelines.GUI_TEXTURED, KEIRA_LOOK, x, y, 0, 0, 26, 26, KEIRA_WIDTH, KEIRA_HEIGHT, KEIRA_WIDTH, KEIRA_HEIGHT);
 
 	protected BaseWildfireScreen(Component title, @Nullable Screen parent, UUID uuid) {
 		super(title);
@@ -74,7 +64,7 @@ public abstract class BaseWildfireScreen extends Screen {
 	}
 
 	protected void renderPlayerInFrame(GuiGraphics ctx, int xP, int yP, int mouseX, int mouseY) {
-		var player = Objects.requireNonNull(minecraft).player;
+		var player = minecraft.player;
 		if(player == null) return;
 		// This sucks. In order to position the player properly, we need to trick the player renderer into
 		// thinking the area the player should be rendered is much taller than it actually is.
@@ -90,6 +80,6 @@ public abstract class BaseWildfireScreen extends Screen {
 
 	@Override
 	public void onClose() {
-		Objects.requireNonNull(minecraft).setScreen(parent);
+		minecraft.setScreen(parent);
 	}
 }

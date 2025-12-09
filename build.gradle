@@ -20,8 +20,7 @@ dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings loom.layered() {
 		officialMojangMappings()
-		def parchment = project.parchment_version
-		if(!parchment.isEmpty()) {
+		if(!project.parchment_version.isEmpty()) {
 			parchment("org.parchmentmc.data:parchment-${project.minecraft_version}:${project.parchment_version}@zip")
 		}
 	}

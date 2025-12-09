@@ -37,14 +37,13 @@ import net.minecraft.world.entity.Pose;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-import java.util.Objects;
-
 @Environment(EnvType.CLIENT)
 public final class GuiUtils {
 	public enum Justify {
 		LEFT, CENTER
 	}
 
+	private static final float ENTITY_SCALE = 0.0625F;
 	private static final double HALF_PI = Math.PI / 2;
 	private static final double DOUBLE_PI = Math.PI * 2;
 
@@ -57,29 +56,27 @@ public final class GuiUtils {
 	}
 
 	// Reimplementation of DrawContext#drawCenteredTextWithShadow but with the text shadow removed
-	public static void drawCenteredText(GuiGraphics ctx, Font textRenderer, Component text, int x, int y, int color) {
-		int centeredX = x - textRenderer.width(text) / 2;
-		ctx.drawString(textRenderer, text, centeredX, y, color, false);
+	public static void drawCenteredText(GuiGraphics ctx, Font font, Component text, int x, int y, int color) {
+		int centeredX = x - font.width(text) / 2;
+		ctx.drawString(font, text, centeredX, y, color, false);
 	}
 
-	public static void drawCenteredText(GuiGraphics ctx, Font textRenderer, FormattedCharSequence text, int x, int y, int color) {
-		int centeredX = x - textRenderer.width(text) / 2;
-		ctx.drawString(textRenderer, text, centeredX, y, color, false);
+	public static void drawCenteredText(GuiGraphics ctx, Font font, FormattedCharSequence text, int x, int y, int color) {
+		int centeredX = x - font.width(text) / 2;
+		ctx.drawString(font, text, centeredX, y, color, false);
 	}
 
-	public static void drawCenteredTextWrapped(GuiGraphics ctx, Font textRenderer, FormattedText text, int x, int y, int width, int color) {
-		for(var var7 = textRenderer.split(text, width).iterator(); var7.hasNext(); y += 9) {
+	public static void drawCenteredTextWrapped(GuiGraphics ctx, Font font, FormattedText text, int x, int y, int width, int color) {
+		for(var var7 = font.split(text, width).iterator(); var7.hasNext(); y += 9) {
 			FormattedCharSequence orderedText = var7.next();
-			GuiUtils.drawCenteredText(ctx, textRenderer, orderedText, x, y, color);
-			Objects.requireNonNull(textRenderer);
+			GuiUtils.drawCenteredText(ctx, font, orderedText, x, y, color);
 		}
-
 	}
 
 	// Reimplementation of ClickableWidget#drawScrollableText but with the text shadow removed
-	public static void drawScrollableTextWithoutShadow(Justify justify, GuiGraphics context, Font textRenderer, Component text, int left, int top, int right, int bottom, int color) {
+	public static void drawScrollableTextWithoutShadow(Justify justify, GuiGraphics context, Font font, Component text, int left, int top, int right, int bottom, int color) {
 		color = ARGB.opaque(color);
-		int i = textRenderer.width(text);
+		int i = font.width(text);
 		int j = (top + bottom - 9) / 2 + 1;
 		int k = right - left;
 		if (i > k) {
@@ -89,33 +86,32 @@ public final class GuiUtils {
 			double f = Math.sin(HALF_PI * Math.cos(DOUBLE_PI * d / e)) / 2.0 + 0.5;
 			double g = Mth.lerp(f, 0.0, l);
 			context.enableScissor(left, top, right, bottom);
-			context.drawString(textRenderer, text, left - (int)g, j, color, false);
+			context.drawString(font, text, left - (int)g, j, color, false);
 			context.disableScissor();
 		} else {
 			if(justify == Justify.CENTER) {
-				drawCenteredText(context, textRenderer, text, (left + right) / 2, j, color);
+				drawCenteredText(context, font, text, (left + right) / 2, j, color);
 			} else if(justify == Justify.LEFT) {
-				context.drawString(textRenderer, text, left, j, color, false);
+				context.drawString(font, text, left, j, color, false);
 			}
 		}
 	}
 
-	// copy of InventoryScreen#drawEntity that allows for applying an X/Y offset to the drawn entity
-	public static void drawEntityOnScreen(GuiGraphics context, int x1, int y1, int x2, int y2, int size, float mouseX, float mouseY, float xOffset, float yOffset, LivingEntity entity) {
-		float scale = 0.0625F;
-		float f = (x1 + x2) / 2.0F;
-		float g = (y1 + y2) / 2.0F;
-		float h = (float)Math.atan((f - mouseX) / 40.0F);
-		float i = (float)Math.atan((g - mouseY) / 40.0F);
-		Quaternionf quaternionf = new Quaternionf().rotateZ((float) Math.PI);
-		Quaternionf quaternionf2 = new Quaternionf().rotateX(i * 20.0F * (float) (Math.PI / 180.0));
-		quaternionf.mul(quaternionf2);
+	// copy of InventoryScreen#renderEntityInInventoryFollowsMouse that allows for applying an X/Y offset to the drawn entity
+	public static void drawEntityOnScreen(GuiGraphics graphics, int x1, int y1, int x2, int y2, int size, float mouseX, float mouseY, float xOffset, float yOffset, LivingEntity entity) {
+		float centerX = (x1 + x2) / 2.0F;
+		float centerY = (y1 + y2) / 2.0F;
+		float xAngle = (float)Math.atan((centerX - mouseX) / 40.0F);
+		float yAngle = (float)Math.atan((centerY - mouseY) / 40.0F);
+		Quaternionf rotation = new Quaternionf().rotateZ((float) Math.PI);
+		Quaternionf xRotation = new Quaternionf().rotateX(yAngle * 20.0F * (float) (Math.PI / 180.0));
+		rotation.mul(xRotation);
 		EntityRenderState entityRenderState = InventoryScreen.extractRenderState(entity);
 		if (entityRenderState instanceof LivingEntityRenderState livingEntityRenderState) {
-			livingEntityRenderState.bodyRot = 180.0F + h * 20.0F;
-			livingEntityRenderState.yRot = h * 20.0F;
+			livingEntityRenderState.bodyRot = 180.0F + xAngle * 20.0F;
+			livingEntityRenderState.yRot = xAngle * 20.0F;
 			if (livingEntityRenderState.pose != Pose.FALL_FLYING) {
-				livingEntityRenderState.xRot = -i * 20.0F;
+				livingEntityRenderState.xRot = -yAngle * 20.0F;
 			} else {
 				livingEntityRenderState.xRot = 0.0F;
 			}
@@ -125,11 +121,12 @@ public final class GuiUtils {
 			livingEntityRenderState.scale = 1.0F;
 		}
 
-		Vector3f vector3f = new Vector3f(xOffset, entityRenderState.boundingBoxHeight / 2.0F + scale + yOffset, 0.0F);
-		context.submitEntityRenderState(entityRenderState, size, vector3f, quaternionf, quaternionf2, x1, y1, x2, y2);
+		Vector3f translation = new Vector3f(xOffset, entityRenderState.boundingBoxHeight / 2.0F + ENTITY_SCALE + yOffset, 0.0F);
+		graphics.submitEntityRenderState(entityRenderState, size, translation, rotation, xRotation, x1, y1, x2, y2);
 	}
 
-	public static void drawEntityOnScreen(GuiGraphics context, int x1, int y1, int x2, int y2, int size, float mouseX, float mouseY, LivingEntity entity) {
-		drawEntityOnScreen(context, x1, y1, x2, y2, size, mouseX, mouseY, 0f, 0f, entity);
+	// TODO this could probably be removed and replaced with references to the real method we're copying here
+	public static void drawEntityOnScreen(GuiGraphics graphics, int x1, int y1, int x2, int y2, int size, float mouseX, float mouseY, LivingEntity entity) {
+		drawEntityOnScreen(graphics, x1, y1, x2, y2, size, mouseX, mouseY, 0f, 0f, entity);
 	}
 }
