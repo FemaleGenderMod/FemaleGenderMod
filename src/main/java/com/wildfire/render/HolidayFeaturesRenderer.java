@@ -60,6 +60,7 @@ public class HolidayFeaturesRenderer extends RenderLayer<AvatarRenderState, Play
 	}
 
 	private void renderSantaHat(AvatarRenderState state, PoseStack matrixStack, SubmitNodeCollector renderQueue, int light) {
+		if(state.isInvisible) return;
 		if(!state.showHat) return;
 		if(!ClientConfig.INSTANCE.get(ClientConfig.HOLIDAY_COSMETICS).toBoolean(christmas)) return;
 
