@@ -83,8 +83,8 @@
 
 	"wildfire_gender.char_settings.hide_in_armor": "Itago Sa Baluti: %s",
 	"wildfire_gender.char_settings.show_armor_stat": "Ipakita ang Tooltip ng Baluti: %s",
-	"wildfire_gender.char_settings.hurt_sounds": "Tunog ng Nasaktan na Babae: %s",
-	"wildfire_gender.tooltip.hurt_sounds": "Tutunog ang iyong karakter ng tunong ng nasaktan na babae kapag nagkaroon ng pinsala kapag ang iyong kasarian ay nakatakda bilang Babae of Iba",
+	"wildfire_gender.char_settings.hurt_sounds": "Babaeng tunog sa pagkasaktan: %s",
+	"wildfire_gender.tooltip.hurt_sounds": "Tutunog ang iyong karakter ng babaeng tunog sa pagkasaktan kapag nagkaroon ka ng pinsala kung ang iyong kasarian ay nakatakda bilang Babae of Iba",
 
 	"wildfire_gender.breast_customization.dual_physics": "Dual na Pisiks: %s",
 
