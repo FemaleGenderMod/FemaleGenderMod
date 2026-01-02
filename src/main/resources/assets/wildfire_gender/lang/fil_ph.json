@@ -1,0 +1,184 @@
+{
+	"key.category.wildfire_gender.generic": "Female Gender Mod",
+	"key.wildfire_gender.gender_menu": "Female Gender Menu",
+	"key.wildfire_gender.toggle": "I-toggle and pag-render ng suso",
+	"toast.wildfire_gender.get_started": "Pindutin ang %s para magsimula!",
+
+	"wildfire_gender.armor.tooltip": "+%s Suporta sa Suso",
+
+	"wildfire_gender.uv_editor": "Editor ng Tekstura ng Suso",
+	"wildfire_gender.uv_editor.reset_defaults_all": "I-reset lahat sa mga Default na UV",
+	"wildfire_gender.uv_editor.reset_defaults": "I-reset sa mga Default na UV",
+	"wildfire_gender.uv_editor.no_face_selected": "Pumili ng harap ng tekstura sa kaliwa para i-edit ito.",
+	"wildfire_gender.uv_editor.selection.left_breast": "Kaliwa",
+	"wildfire_gender.uv_editor.selection.right_breast": "Kanan",
+	"wildfire_gender.uv_editor.selection.left_breast_overlay": "Kaliwa",
+	"wildfire_gender.uv_editor.selection.right_breast_overlay": "Kanan",
+
+	"wildfire_gender.uv_editor.selection.layer_body": "Layer ng Katawan",
+	"wildfire_gender.uv_editor.selection.layer_jacket": "Layer ng Dyaket",
+
+	"wildfire_gender.uv_editor.xpos": "X-Pos",
+	"wildfire_gender.uv_editor.ypos": "Y-Pos",
+	"wildfire_gender.uv_editor.width": "Lapad",
+	"wildfire_gender.uv_editor.height": "Taas",
+	"wildfire_gender.uv_editor.increment_tip.line1": "I-hold ang SHIFT para sa +10",
+	"wildfire_gender.uv_editor.increment_tip.line2": "SHIFT+CTRL para sa +20",
+	"wildfire_gender.uv_editor.add": "Idagdag",
+	"wildfire_gender.uv_editor.remove": "Tanggalin",
+
+	"wildfire_gender.uv_editor.faces.inner": "Panloob na Harap",
+	"wildfire_gender.uv_editor.faces.outer": "Panlabas na Harap",
+	"wildfire_gender.uv_editor.faces.top": "Itaas na Harap",
+	"wildfire_gender.uv_editor.faces.bottom": "Ibaba na Harap",
+	"wildfire_gender.uv_editor.faces.front": "Unahang Harap",
+
+	"wildfire_gender.credits.title": "Mga Kredito ng Mod",
+	"wildfire_gender.credits.description": "Ito ang listahan ng mga kahanga-hangang tao na ginawang posible ang mod na ito!",
+	"wildfire_gender.credits.general": "Pangkalahatan",
+	"wildfire_gender.credits.translators": "Mga Tagasalin",
+
+	"wildfire_gender.player_list.title": "Female Gender Mod",
+	"wildfire_gender.player_list.settings_button": "Mga Setting",
+	"wildfire_gender.player_list.sync_status": "Status ng Pag-sync",
+	"wildfire_gender.player_list.state.loading": "Nilo-load ang Data...",
+	"wildfire_gender.player_list.state.synced": "Naka-sync na Manlalaro",
+	"wildfire_gender.player_list.bounce_multiplier": "Multiplier ng Talbog: %sx",
+	"wildfire_gender.player_list.breast_momentum": "Momentum mg Suso: %s%%",
+	"wildfire_gender.player_list.female_sounds": "Mga Tunong ng Babae: %s",
+	"wildfire_gender.wardrobe.players_using_mod": "Mga Naka-sync na Manlalaro:",
+
+	"wildfire_gender.always_show_list": "Ipakita ang Mga Naka-sync na Manlalaro: %s",
+	"wildfire_gender.always_show_list.mod_ui_only": "Itong screen",
+	"wildfire_gender.always_show_list.mod_ui_only.tooltip": "Ipapakita lamang ang listahan ng mga naka-sync na manlalaro habang nasa menu na ito.",
+	"wildfire_gender.always_show_list.tab_list_open": "Listahan ng manlalaro",
+	"wildfire_gender.always_show_list.tab_list_open.tooltip": "Ipapakita ang listahan ng mga naka-sync na manlalaro habang nasa menu na ito o sa pagpindot ng %s",
+	"wildfire_gender.always_show_list.always": "Palagi",
+	"wildfire_gender.always_show_list.always.tooltip": "Ipapakita palagi ang listahan ng mga naka-sync na manlalaro",
+
+	"wildfire_gender.wardrobe.title": "Female Gender Mod",
+	"wildfire_gender.breast_customization.tab_customization": "Pagpapasadya",
+	"wildfire_gender.breast_customization.tab_physics": "Pisiks ng Suso",
+	"wildfire_gender.breast_customization.tab_miscellaneous": "Iba pa",
+
+	"wildfire_gender.breast_customization.presets.add_new": "Magdagdag...",
+	"wildfire_gender.breast_customization.presets.delete": "Burahin",
+
+	"wildfire_gender.wardrobe.slider.breast_size": "Laki ng Suso: %s%%",
+	"wildfire_gender.wardrobe.slider.separation": "Paghihiwalay: %s",
+	"wildfire_gender.wardrobe.slider.height": "Taas: %s",
+	"wildfire_gender.wardrobe.slider.depth": "Lalim: %s",
+	"wildfire_gender.wardrobe.slider.rotation": "Pag-ikot: %s°",
+	"wildfire_gender.slider.voice_pitch": "Pitch: %s%%",
+
+	"wildfire_gender.appearance_settings.title": "Pagsasapersonal ng Karakter",
+	"wildfire_gender.char_settings.title": "Mga Setting ng Karakter (LUMA)",
+	"wildfire_gender.char_settings.physics": "Pisiks ng Suso: %s",
+	"wildfire_gender.char_settings.jump": "Tumalon",
+	"wildfire_gender.char_settings.jumping": "Tumigil sa Pagtalon",
+
+	"wildfire_gender.char_settings.override_armor_physics": "Pisiks ng Baluti: %s",
+	"wildfire_gender.tooltip.override_armor_physics.line1": "Hindi na babawasan/papalitan ng anumang sinusuot na baluti ang pisiks ng suso habang naka-enable; ito ay pangunahing inilaan para sa paggamit ng mga resource pack na nagtatago ng mga baluti",
+	"wildfire_gender.tooltip.override_armor_physics.line2": "Inaapektuhan nito kung panno mo nakikita ang ibang mga manlalaro at sarili mo, ngunit hindi inaapektuhan kung paano ka nakikita.",
+
+	"wildfire_gender.char_settings.hide_in_armor": "Itago Sa Baluti: %s",
+	"wildfire_gender.char_settings.show_armor_stat": "Ipakita ang Tooltip ng Baluti: %s",
+	"wildfire_gender.char_settings.hurt_sounds": "Babaeng tunog sa pagkasaktan: %s",
+	"wildfire_gender.tooltip.hurt_sounds": "Tutunog ang iyong karakter ng babaeng tunog sa pagkasaktan kapag nagkaroon ka ng pinsala kung ang iyong kasarian ay nakatakda bilang Babae of Iba",
+
+	"wildfire_gender.breast_customization.dual_physics": "Dual na Pisiks: %s",
+
+	"wildfire_gender.label.gender": "Kasarian",
+	"wildfire_gender.label.female": "Babae",
+	"wildfire_gender.label.male": "Lalaki",
+	"wildfire_gender.label.other": "Iba",
+
+	"wildfire_gender.label.enabled": "Naka-enable",
+	"wildfire_gender.label.disabled": "Naka-disable",
+	"wildfire_gender.label.on": "Nakabukas",
+	"wildfire_gender.label.off": "Nakapatay",
+	"wildfire_gender.label.yes": "Oo",
+	"wildfire_gender.label.no": "Hindi",
+	"wildfire_gender.label.with_creator": "Naglalaro ka sa isang server kasama ang tagalikha ng mod na ito!",
+	"wildfire_gender.label.with_contributor": "Naglalaro ka sa isang server kasama ang isang kontribyutor ng mod na ito!",
+	"wildfire_gender.label.with_both": "Naglalaro ka sa isang server kasama ang tagalikha at isang kontribyutor ng mod na ito!",
+
+	"wildfire_gender.slider.bounce": "Tindi: %s%%",
+	"wildfire_gender.slider.floppy": "Momentum: %s%%",
+
+	"wildfire_gender.cancer_awareness.title": "Uy, Buwan ng Kamalayan ng Kanser sa Suso ngayon!",
+
+	"wildfire_gender.first_time_setup.title": "Maligayang Pagdating sa Female Gender Mod!",
+	"wildfire_gender.first_time_setup.description": "Gusto mo bang paganahin ang cloud server syncing para sa iyong mga setting ng kasarian? Nagbibigay-daan ang feature na ito na makita ng mga ibang manlalaro ang iyong pinasadyang hitsura ng kasarian, kahit na hindi na-install ng server ang mod na ito.",
+	"wildfire_gender.first_time_setup.notice": "Maaari mong baguhin ang setting na ito mamaya sa mod menu.",
+	"wildfire_gender.first_time_setup.enable": "Paganahin ang Pag-sync sa Cloud",
+	"wildfire_gender.first_time_setup.disable": "Huwag Paganahin ang Pag-sync sa Cloud",
+	"wildfire_gender.first_time_setup.enable.tooltip.line1": "Kapag naka-enable ang pag-sync ng cloud, iniimbak ang iyong pagsasaayos at ibibigay sa ibang mga manlalaro kahit na kasalukuyang hindi mo ininstall ang mod na ito.",
+	"wildfire_gender.first_time_setup.enable.tooltip.line2": "Maaari mong burahin ang iyong profile ng pag-sync ng cloud sa anumang oras sa mga setting ng Pag-sync sa Cloud pagkatapos mo ito patayin.",
+
+	"wildfire_gender.cloud_settings": "Mga Setting sa Pag-Sync sa Cloud",
+	"wildfire_gender.cloud.tooltip": "Pag-sync sa Cloud",
+	"wildfire_gender.cloud.unavailable.invalid_account": "Hindi available ang pag-sync sa cloud dahil kasalukuyang hindi ka naka-sign in sa isang wastong Minecraft account.",
+	"wildfire_gender.cloud.unavailable.offline_server": "Hindi available ang pag-sync sa cloud dahil nakakonekta ka sa isang server na nasa offline mode.",
+	"wildfire_gender.cloud.status": "Pag-sync sa Cloud: %s",
+	"wildfire_gender.cloud.automatic": "Awtomatikong Pag-sync: %s",
+	"wildfire_gender.cloud.automatic.tooltip.line1": "Kapag naka-enable, awtomatikong isi-sync sa cloud ang iyong pagsasaayos pagkatapos gumawa ng anumang pagbabago.",
+	"wildfire_gender.cloud.automatic.tooltip.line2": "Maaari ka pa ring manwal na mag-sync gamit ang button sa ibabaa kung naka-disable ito.",
+
+	"wildfire_gender.cloud.sync": "Mag-sync ngayon",
+	"wildfire_gender.cloud.syncing": "Nagsi-sync...",
+	"wildfire_gender.cloud.syncing.success": "Naka-sync",
+	"wildfire_gender.cloud.syncing.fail": "Nabigo ang Pag-aync",
+
+	"wildfire_gender.cloud.delete": "Burahin",
+	"wildfire_gender.cloud.deleted": "Binura",
+	"wildfire_gender.cloud.delete_failed": "Nabigong burahin",
+
+	"wildfire_gender.cloud.status_log": "Log ng Status",
+
+	"wildfire_gender.sync_log.authenticating_mojang": "Nagpapatunay sa Mojang...",
+	"wildfire_gender.sync_log.authenticating_sync": "Nagpapatunay sa cloud sync...",
+	"wildfire_gender.sync_log.authentication_failed": "Nabigo ang pagpapatunay.",
+	"wildfire_gender.sync_log.reauthenticating": "Nagpapatunay muli...",
+
+	"wildfire_gender.sync_log.failed_to_sync_data": "Nabigong i-sync ang data.",
+	"wildfire_gender.sync_log.attempting_sync": "Sini-sync ang profile...",
+	"wildfire_gender.sync_log.sync_success": "Matagumpay na na-sync.",
+	"wildfire_gender.sync_log.sync_too_frequently": "Na-rate limit ang pag-sync.",
+
+	"wildfire_gender.sync_log.data_deleted": "Binura ang profile ng pag-sync.",
+	"wildfire_gender.sync_log.data_deletion_failed": "Nabigong burahin ang profile ng pag-sync sa cloud.",
+	"wildfire_gender.sync_log.no_data_to_delete": "Walang nahanap na cloud sync profile.",
+
+	"wildfire_gender.sync_log.get_single_profile": "Kinukuha ang profile...",
+	"wildfire_gender.sync_log.get_multiple_profiles": "Kinukuha ang mga profile...",
+
+	"wildfire_gender.details.next_page": "Susunod na pahina",
+	"wildfire_gender.details.prev_page": "Nakaraang Pahina",
+	"wildfire_gender.details.go_back": "Bumalik",
+
+	"wildfire_gender.cloud_details.title": "Impormasyon ng Pag-sync sa Cloud",
+
+	"wildfire_gender.contributor.role.mod_creator": "Tagalikha ng Female Gender Mod",
+	"wildfire_gender.contributor.role.mod_creator.short": "Tagalikha ng Mod",
+	"wildfire_gender.contributor.role.fabric_maintainer": "Tagapangasiwa ng Female Gender Mod",
+	"wildfire_gender.contributor.role.fabric_maintainer.short": "Tagapangasiwa (Fabric)",
+	"wildfire_gender.contributor.role.neoforge_maintainer": "Tagapangasiwa ng Female Gender Mod",
+	"wildfire_gender.contributor.role.neoforge_maintainer.short": "Tagapangasiwa (NeoForge)",
+	"wildfire_gender.contributor.role.developer": "Kontribyutor ng Female Gender Mod",
+	"wildfire_gender.contributor.role.developer.short": "Programmer",
+	"wildfire_gender.contributor.role.translator": "Tagasalin ng Female Gender Mod",
+	"wildfire_gender.contributor.role.translator.short": "Tagasalin ng Mod",
+	"wildfire_gender.contributor.role.mascot": "Maskot ng Female Gender Mod",
+	"wildfire_gender.contributor.role.mascot.short": "Maskot ng Mod",
+	"wildfire_gender.contributor.role.voice_actor_female": "Keira Emberlyn - Aktres sa Boses",
+	"wildfire_gender.contributor.role.voice_actor_female.short": "Aktres sa Boses",
+	"wildfire_gender.contributor.role.generic": "Kontribyutor ng Female Gender Mod",
+	"wildfire_gender.contributor.role.generic.short": "Kontribyutor",
+
+	"wildfire_gender.misc.holiday_themes": "Mga Tema ng Holiday: %s",
+	"wildfire_gender.tooltip.holiday_themes.line1": "Kapag pinagana, awtomatikong ipapakita ng feature na ito ang mga kosmetiko tulad ng mga sumbrero ni Santa at iba pang mga bagay na may temang pang-holiday sa panahon ng kani-kanilang mga holiday.",
+
+	"wildfire_gender.not_in_world.title": "Hindi available sa Main Menu",
+	"wildfire_gender.not_in_world": "Kailangang nasa isa kang mundo para ayusin ang iyong mga setting sa kasarian."
+}
