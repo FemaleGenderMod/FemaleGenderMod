@@ -24,8 +24,8 @@
 	"wildfire_gender.uv_editor.height": "Высота",
 	"wildfire_gender.uv_editor.increment_tip.line1": "Удержи SHIFT на +10",
 	"wildfire_gender.uv_editor.increment_tip.line2": "Удержи SHIFT+CTRL на +20",
-    "wildfire_gender.uv_editor.add": "Добавить",
-    "wildfire_gender.uv_editor.remove": "Убрать",
+	"wildfire_gender.uv_editor.add": "Добавить",
+	"wildfire_gender.uv_editor.remove": "Убрать",
 
 	"wildfire_gender.uv_editor.faces.inner": "Внутреняя текстура",
 	"wildfire_gender.uv_editor.faces.outer": "Внешняя текстура",
@@ -37,7 +37,7 @@
 	"wildfire_gender.credits.description": "Это список замечательных людей которые помогали с разработкой мода!",
 	"wildfire_gender.credits.general": "Общий",
 	"wildfire_gender.credits.translators": "Переводчики",
-	
+
 	"wildfire_gender.player_list.title": "Female Gender Mod",
 	"wildfire_gender.player_list.settings_button": "Настройки",
 	"wildfire_gender.player_list.sync_status": "Состояние синхронизации",
@@ -85,7 +85,7 @@
 	"wildfire_gender.char_settings.show_armor_stat": "Подсказки по броне: %s",
 	"wildfire_gender.char_settings.hurt_sounds": "Женские звуки урона: %s",
 	"wildfire_gender.tooltip.hurt_sounds": "Ваш персонаж будет издавать женский звук при получении урона, если ваш пол установлен как Женский или Другой.",
-	
+
 	"wildfire_gender.breast_customization.dual_physics": "Двойная физика: %s",
 
 	"wildfire_gender.label.gender": "Пол",
@@ -124,7 +124,7 @@
 	"wildfire_gender.cloud.automatic": "Авто-синхронизация: %s",
 	"wildfire_gender.cloud.automatic.tooltip.line1": "Если эта функция включена, ваша конфигурация будет автоматически синхронизироваться с облаком после внесения любых изменений.",
 	"wildfire_gender.cloud.automatic.tooltip.line2": "Если эта функция отключена, вы по-прежнему можете выполнить синхронизацию вручную с помощью кнопки ниже.",
-	
+
 	"wildfire_gender.cloud.sync": "Синхронизировать сейчас",
 	"wildfire_gender.cloud.syncing": "Синхронизация...",
 	"wildfire_gender.cloud.syncing.success": "Синхронизировано",

@@ -26,13 +26,12 @@ import com.wildfire.main.contributors.Contributor;
 import com.wildfire.main.contributors.Contributors;
 import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
-import com.wildfire.mixins.accessors.ClientMannequinEntityAccessor;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientMannequinEntity;
-import net.minecraft.client.texture.PlayerSkinCache;
-import net.minecraft.component.type.ProfileComponent;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.NotNull;
+import com.wildfire.mixins.accessors.ClientMannequinAccessor;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.ClientMannequin;
+import net.minecraft.client.renderer.PlayerSkinRenderCache;
+import net.minecraft.world.item.component.ResolvableProfile;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -44,29 +43,28 @@ public class FakeGUIPlayer {
 	private final String name;
 	private final UUID uuid;
 	private final Supplier<GUIMannequin> entity;
+	private final @Nullable String description;
 
-	private final String description;
-
-	public FakeGUIPlayer(@NotNull String name, @NotNull UUID uuid, @Nullable String description, @Nullable JsonObject defaultGenderSettings) {
+	public FakeGUIPlayer(String name, UUID uuid, @Nullable String description, @Nullable JsonObject defaultGenderSettings) {
 		this.name = name;
 		this.uuid = uuid;
 		this.entity = createPlayerSupplier(uuid, defaultGenderSettings);
 		this.description = description;
 	}
 
-	public FakeGUIPlayer(@NotNull String name, @NotNull UUID uuid, @Nullable JsonObject defaultGenderSettings) {
+	public FakeGUIPlayer(String name, UUID uuid, @Nullable JsonObject defaultGenderSettings) {
 		this(name, uuid, null, defaultGenderSettings);
 	}
 
-	public @NotNull ClientMannequinEntity getEntity() {
+	public ClientMannequin getEntity() {
 		return entity.get();
 	}
 
-	public @NotNull UUID getUUID() {
+	public UUID getUUID() {
 		return uuid;
 	}
 
-	public @NotNull String getName() {
+	public String getName() {
 		return name;
 	}
 
@@ -74,7 +72,7 @@ public class FakeGUIPlayer {
 		return Contributors.getRole(uuid);
 	}
 
-	public @NotNull Contributor.Role getRoleOrGeneric() {
+	public Contributor.Role getRoleOrGeneric() {
 		var role = getRole();
 		return role == null ? Contributor.Role.GENERIC : role;
 	}
@@ -85,21 +83,21 @@ public class FakeGUIPlayer {
 
 	public void tick() {
 		entity.get().applyLoadedSkin();
-		entity.get().age++; // This allows for playing the breathing animation
+		entity.get().tickCount++; // This allows for playing the breathing animation
 		EntityConfig.getEntity(getEntity()).tickBreastPhysics(getEntity());
 	}
 
-	private static Supplier<GUIMannequin> createPlayerSupplier(final UUID uuid, final JsonObject defaultGenderData) {
+	private static Supplier<GUIMannequin> createPlayerSupplier(final UUID uuid, final @Nullable JsonObject defaultGenderData) {
 		return Suppliers.memoize(() -> {
-			var client = MinecraftClient.getInstance();
-			assert client.world != null;
+			var client = Minecraft.getInstance();
+			assert client.level != null;
 
-			var entity = new GUIMannequin(client.world, client.getPlayerSkinCache(), ProfileComponent.ofDynamic(uuid));
+			var entity = new GUIMannequin(client.level, client.playerSkinRenderCache(), ResolvableProfile.createUnresolved(uuid));
 
 			PlayerConfig config;
 			try {
 				// while we don't have proper support for mannequins right now, we can most certainly fake it
-				config = (PlayerConfig) EntityConfig.CACHE.get(entity.getUuid(), () -> new PlayerConfig(entity.getUuid()));
+				config = (PlayerConfig) EntityConfig.CACHE.get(entity.getUUID(), () -> new PlayerConfig(entity.getUUID()));
 			} catch(ExecutionException | ClassCastException ignored) {
 				return entity;
 			}
@@ -123,20 +121,20 @@ public class FakeGUIPlayer {
 		});
 	}
 
-	private static class GUIMannequin extends ClientMannequinEntity {
-		private final ProfileComponent copySkinFrom;
+	private static class GUIMannequin extends ClientMannequin {
+		private final ResolvableProfile copySkinFrom;
 
-		public GUIMannequin(World world, PlayerSkinCache skinCache, ProfileComponent copySkinFrom) {
+		public GUIMannequin(Level world, PlayerSkinRenderCache skinCache, ResolvableProfile copySkinFrom) {
 			super(world, skinCache);
 			this.copySkinFrom = copySkinFrom;
 			// this is being done as opposed to using data tracker to force a refresh to avoid interfering
 			// with other mods that might be injecting into the data tracker update methods to know
 			// when real entities in the world are updated
-			((ClientMannequinEntityAccessor) this).invokeRefreshSkin();
+			((ClientMannequinAccessor) this).invokeUpdateSkin();
 		}
 
 		public void applyLoadedSkin() {
-			var accessor = (ClientMannequinEntityAccessor) this;
+			var accessor = (ClientMannequinAccessor) this;
 			var skinLookup = accessor.getSkinLookup();
 			if(skinLookup != null && skinLookup.isDone()) {
 				try {
@@ -148,7 +146,7 @@ public class FakeGUIPlayer {
 		}
 
 		@Override
-		protected ProfileComponent getMannequinProfile() {
+		protected ResolvableProfile getProfile() {
 			return copySkinFrom;
 		}
 	}

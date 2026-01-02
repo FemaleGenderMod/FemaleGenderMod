@@ -20,9 +20,9 @@ package com.wildfire.main.cloud;
 
 import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.config.enums.SyncVerbosity;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.ColorHelper;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.ARGB;
+import net.minecraft.util.Mth;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -35,28 +35,28 @@ public final class SyncLog {
 		return ClientConfig.INSTANCE.get(ClientConfig.SYNC_VERBOSITY).ordinal();
 	}
 
-	public static void add(Text text, SyncVerbosity verbosity) {
+	public static void add(Component text, SyncVerbosity verbosity) {
 		if(verbosity() < verbosity.ordinal()) {
 			return;
 		}
 		add(text);
 	}
 
-	public static void add(Text text) {
+	public static void add(Component text) {
 		SYNC_LOG.add(new Entry(text, Instant.now()));
 		if(SYNC_LOG.size() > 6) {
 			SYNC_LOG.removeFirst();
 		}
 	}
 
-	public record Entry(Text text, Instant timestamp) {
+	public record Entry(Component text, Instant timestamp) {
 		public static final int NEW_COLOR = 0x00FF00;
 		public static final int OLD_COLOR = 0x34A100;
 
 		public int color() {
 			long secondsPassed = Instant.now().getEpochSecond() - timestamp.getEpochSecond();
-			float delta = MathHelper.clamp(secondsPassed / 60f, 0f, 1f);
-			return ColorHelper.lerp(delta, NEW_COLOR, OLD_COLOR);
+			float delta = Mth.clamp(secondsPassed / 60f, 0f, 1f);
+			return ARGB.linearLerp(delta, NEW_COLOR, OLD_COLOR);
 		}
 	}
 }

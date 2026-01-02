@@ -19,15 +19,15 @@
 package com.wildfire.main.uvs;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
 public record UVQuad(int x1, int y1, int x2, int y2) {
-	public static final PacketCodec<ByteBuf, UVQuad> PACKET_CODEC = PacketCodec.tuple(
-			PacketCodecs.VAR_INT, UVQuad::x1,
-			PacketCodecs.VAR_INT, UVQuad::y1,
-			PacketCodecs.VAR_INT, UVQuad::x2,
-			PacketCodecs.VAR_INT, UVQuad::y2,
+	public static final StreamCodec<ByteBuf, UVQuad> PACKET_CODEC = StreamCodec.composite(
+			ByteBufCodecs.VAR_INT, UVQuad::x1,
+			ByteBufCodecs.VAR_INT, UVQuad::y1,
+			ByteBufCodecs.VAR_INT, UVQuad::x2,
+			ByteBufCodecs.VAR_INT, UVQuad::y2,
 			UVQuad::new
 	);
 

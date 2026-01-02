@@ -18,49 +18,54 @@
 
 package com.wildfire.render;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.wildfire.api.IBreastArmorTexture;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.uvs.UVLayout;
 import com.wildfire.main.uvs.UVQuad;
-import com.wildfire.mixins.accessors.EquipmentRendererAccessor;
+import com.wildfire.mixins.accessors.EquipmentLayerRendererAccessor;
 import com.wildfire.render.WildfireModelRenderer.BreastModelBox;
 import com.wildfire.render.ducks.MissingTextureLogger;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.TexturedRenderLayers;
-import net.minecraft.client.render.command.OrderedRenderCommandQueue;
-import net.minecraft.client.render.entity.equipment.EquipmentModel;
-import net.minecraft.client.render.entity.equipment.EquipmentModelLoader;
-import net.minecraft.client.render.entity.equipment.EquipmentRenderer;
-import net.minecraft.client.render.entity.feature.FeatureRendererContext;
-import net.minecraft.client.render.entity.model.BipedEntityModel;
-import net.minecraft.client.render.entity.state.ArmorStandEntityRenderState;
-import net.minecraft.client.render.entity.state.BipedEntityRenderState;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.DyedColorComponent;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.equipment.EquipmentAsset;
-import net.minecraft.item.equipment.trim.ArmorTrim;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.renderer.Sheets;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
+import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
+import net.minecraft.client.renderer.entity.state.ArmorStandRenderState;
+import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.EquipmentAssetManager;
+import net.minecraft.client.resources.model.EquipmentClientInfo;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.ARGB;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.DyedItemColor;
+import net.minecraft.world.item.equipment.EquipmentAsset;
+import net.minecraft.world.item.equipment.trim.ArmorTrim;
+import org.jetbrains.annotations.UnknownNullability;
 
 @Environment(EnvType.CLIENT)
-public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedEntityModel<S>> extends GenderLayer<S, M> {
+public class GenderArmorLayer<S extends HumanoidRenderState, M extends HumanoidModel<S>> extends GenderLayer<S, M> {
 
-	private final EquipmentRenderer equipmentRenderer;
-	private final EquipmentModelLoader equipmentModelLoader;
-	protected BreastModelBox lBoobArmor, rBoobArmor;
+	private final EquipmentLayerRenderer equipmentRenderer;
+	private final EquipmentAssetManager equipmentModelLoader;
 	protected static final BreastModelBox lTrim, rTrim;
+
+	@UnknownNullability("null until #resizeBox() is first called")
+	protected BreastModelBox lBoobArmor, rBoobArmor;
+	@UnknownNullability("null until first render pass")
 	private GenderRenderState genderRenderState;
-	private @NotNull IBreastArmorTexture textureData = IBreastArmorTexture.DEFAULT;
+
+	@SuppressWarnings({"unused", "FieldMayBeFinal"}) // TODO fix this
+	private IBreastArmorTexture textureData = IBreastArmorTexture.DEFAULT;
 
 	static {
 		var left = new UVLayout(
@@ -86,19 +91,19 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 	}
 
 	private static boolean textureExists(Identifier texture) {
-		var texManager = MinecraftClient.getInstance().getTextureManager();
+		var texManager = Minecraft.getInstance().getTextureManager();
 		return !((MissingTextureLogger) texManager).wildfire_gender$missingTextures().contains(texture);
 	}
 
-	public GenderArmorLayer(FeatureRendererContext<S, M> render, EquipmentModelLoader equipmentModelLoader, EquipmentRenderer equipmentRenderer) {
+	public GenderArmorLayer(RenderLayerParent<S, M> render, EquipmentAssetManager equipmentModelLoader, EquipmentLayerRenderer equipmentRenderer) {
 		super(render);
 		this.equipmentRenderer = equipmentRenderer;
 		this.equipmentModelLoader = equipmentModelLoader;
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, OrderedRenderCommandQueue queue, int light, S state, float limbAngle, float limbDistance) {
-		if(MinecraftClient.getInstance().world == null) {
+	public void submit(PoseStack matrixStack, SubmitNodeCollector queue, int light, S state, float limbAngle, float limbDistance) {
+		if(Minecraft.getInstance().level == null) {
 			// TODO rendering in a menu is harder to support as we only tick physics when in a world,
 			//		and entities rendered in the main menu are naturally not in a world
 			return;
@@ -107,31 +112,31 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 		this.genderRenderState = GenderRenderState.get(state);
 		if (this.genderRenderState == null) return;
 
-		final ItemStack chestplate = state.equippedChestStack;
+		final ItemStack chestplate = state.chestEquipment;
 		// Check if the worn item in the chest slot is actually equippable in the chest slot, and has a model to render
-		var component = chestplate.get(DataComponentTypes.EQUIPPABLE);
+		var component = chestplate.get(DataComponents.EQUIPPABLE);
 		if(component == null || component.slot() != EquipmentSlot.CHEST) return;
 		var asset = component.assetId().orElse(null);
 		if(asset == null) return;
-		var layers = equipmentModelLoader.get(asset).getLayers(EquipmentModel.LayerType.HUMANOID);
+		var layers = equipmentModelLoader.get(asset).getLayers(EquipmentClientInfo.LayerType.HUMANOID);
 		if(layers.isEmpty()) return;
 
 		try {
 			if(!setupRender(state, this.genderRenderState)) return;
-			if(state instanceof ArmorStandEntityRenderState && !genderArmor.armorStandsCopySettings()) return;
+			if(state instanceof ArmorStandRenderState && !genderArmor.armorStandsCopySettings()) return;
 
-			int color = DyedColorComponent.getColor(chestplate, 0);
-			boolean glint = chestplate.hasGlint();
+			int color = DyedItemColor.getOrDefault(chestplate, 0);
+			boolean glint = chestplate.hasFoil();
 
-			renderSides(state, getContextModel(), matrixStack, side -> {
+			renderSides(state, getParentModel(), matrixStack, side -> {
 				// TODO is there still a need to allow for overriding the armor texture identifier?
 				layers.forEach(layer -> {
-					int layerColor = EquipmentRenderer.getDyeColor(layer, color);
-					var texture = layer.getFullTextureId(EquipmentModel.LayerType.HUMANOID);
+					int layerColor = EquipmentLayerRenderer.getColorForLayer(layer, color);
+					var texture = layer.getTextureLocation(EquipmentClientInfo.LayerType.HUMANOID);
 					renderBreastArmor(texture, matrixStack, queue, state, side, layerColor, glint);
 				});
 
-				var trim = armorStack.get(DataComponentTypes.TRIM);
+				var trim = armorStack.get(DataComponents.TRIM);
 				if(trim != null) {
 					renderArmorTrim(asset, matrixStack, queue, state, trim, side, glint);
 				}
@@ -169,7 +174,7 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 	}
 
 	@Override
-	protected void setupTransformations(S state, M model, MatrixStack matrixStack, BreastSide side) {
+	protected void setupTransformations(S state, M model, PoseStack matrixStack, BreastSide side) {
 		super.setupTransformations(state, model, matrixStack, side);
 		if (genderRenderState.hasJacketLayer) {
 			matrixStack.translate(0, 0, -0.015f);
@@ -180,41 +185,41 @@ public class GenderArmorLayer<S extends BipedEntityRenderState, M extends BipedE
 	}
 
 	// TODO eventually expose some way for mods to override this, maybe through a default impl in IGenderArmor or similar
-	protected void renderBreastArmor(Identifier texture, MatrixStack matrixStack, OrderedRenderCommandQueue queue,
+	protected void renderBreastArmor(Identifier texture, PoseStack matrixStack, SubmitNodeCollector queue,
 	                                 S state, BreastSide side, int color, boolean glint) {
 		if(!textureExists(texture)) {
 			return;
 		}
 
 		var model = side.isLeft ? lBoobArmor : rBoobArmor;
-		var layer = RenderLayer.getArmorCutoutNoCull(texture);
-		queue.submitCustom(matrixStack, layer, new BreastRenderCommand(model, state, OverlayTexture.DEFAULT_UV, ColorHelper.fullAlpha(color)));
+		var layer = RenderTypes.armorCutoutNoCull(texture);
+		queue.submitCustomGeometry(matrixStack, layer, new BreastRenderCommand(model, state, OverlayTexture.NO_OVERLAY, ARGB.opaque(color)));
 
 		if(glint) {
 			renderGlint(matrixStack, queue, state, model);
 		}
 	}
 
-	protected void renderArmorTrim(RegistryKey<EquipmentAsset> armorModel, MatrixStack matrixStack, OrderedRenderCommandQueue queue,
+	protected void renderArmorTrim(ResourceKey<EquipmentAsset> armorModel, PoseStack matrixStack, SubmitNodeCollector queue,
 								   S state, ArmorTrim trim, BreastSide side, boolean glint) {
 		var model = side.isLeft ? lTrim : rTrim;
 
 		// this sucks, but it sucks less than simply copy/pasting the entire relevant block of code, and is
 		// (at least theoretically) more compatible with other mods, assuming they simply mixin to TrimSpriteKey
 		// to modify the armor trim sprite location.
-		var key = new EquipmentRenderer.TrimSpriteKey(trim, EquipmentModel.LayerType.HUMANOID, armorModel);
-		Sprite sprite = ((EquipmentRendererAccessor)equipmentRenderer).getTrimSprites().apply(key);
+		var key = new EquipmentLayerRenderer.TrimSpriteKey(trim, EquipmentClientInfo.LayerType.HUMANOID, armorModel);
+		TextureAtlasSprite sprite = ((EquipmentLayerRendererAccessor) equipmentRenderer).getTrimSpriteLookup().apply(key);
 
-		var layer = TexturedRenderLayers.getArmorTrims(trim.pattern().value().decal());
-		queue.submitCustom(matrixStack, layer, BreastRenderCommand.trim(model, state, sprite));
+		var layer = Sheets.armorTrimsSheet(trim.pattern().value().decal());
+		queue.submitCustomGeometry(matrixStack, layer, BreastRenderCommand.trim(model, state, sprite));
 
 		if(glint) {
 			renderGlint(matrixStack, queue, state, model);
 		}
 	}
 
-	protected void renderGlint(MatrixStack matrixStack, OrderedRenderCommandQueue renderQueue, S state, BreastModelBox box) {
-		var glintLayer = RenderLayer.getArmorEntityGlint();
-		renderQueue.submitCustom(matrixStack, glintLayer, new BreastRenderCommand(box, state, OverlayTexture.DEFAULT_UV, -1));
+	protected void renderGlint(PoseStack matrixStack, SubmitNodeCollector renderQueue, S state, BreastModelBox box) {
+		var glintLayer = RenderTypes.armorEntityGlint();
+		renderQueue.submitCustomGeometry(matrixStack, glintLayer, new BreastRenderCommand(box, state, OverlayTexture.NO_OVERLAY, -1));
 	}
 }

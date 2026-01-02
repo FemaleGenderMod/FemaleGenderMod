@@ -39,12 +39,11 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Util;
+import net.minecraft.client.Minecraft;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Blocking;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.math.BigInteger;
@@ -75,11 +74,11 @@ public final class CloudSync {
 	private static Instant lastSync = Instant.EPOCH;
 	private static final List<Instant> fetchErrors = new ArrayList<>();
 	private static @Nullable Instant disableFetchingUntil;
-	private static CloudAuth auth;
+	private static @Nullable CloudAuth auth;
 
 	private static final Object AUTH_LOCK = new Object();
 	private static final Object SYNC_LOCK = new Object();
-	private static final Executor EXECUTOR = Util.getIoWorkerExecutor().named("wildfire_gender$cloudSync");
+	private static final Executor EXECUTOR = Util.ioPool().forName("wildfire_gender$cloudSync");
 	private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantTypeAdapter()).create();
 
 	private static final HttpClient CLIENT = Util.make(() -> {
@@ -116,9 +115,9 @@ public final class CloudSync {
 	 * @return A {@link SyncUnavailable} enum indicating the reason for syncing being unavailable, or {@code null} if available
 	 */
 	public static @Nullable SyncUnavailable unavailableReason() {
-		var sessionUuid = MinecraftClient.getInstance().getSession().getUuidOrNull();
+		var sessionUuid = Minecraft.getInstance().getUser().getProfileId();
 		// offline mode sessions use a version 3 UUID
-		if(sessionUuid == null || sessionUuid.version() != 4) {
+		if(sessionUuid.version() != 4) {
 			return SyncUnavailable.INVALID_ACCOUNT;
 		}
 
@@ -126,9 +125,9 @@ public final class CloudSync {
 			return SyncUnavailable.INVALID_ACCOUNT;
 		}
 
-		var client = MinecraftClient.getInstance();
-		var netHandler = client.getNetworkHandler();
-		if(!client.isInSingleplayer() && netHandler != null && !netHandler.getConnection().isEncrypted()) {
+		var client = Minecraft.getInstance();
+		var netHandler = client.getConnection();
+		if(!client.isLocalServer() && netHandler != null && !netHandler.getConnection().isEncrypted()) {
 			return SyncUnavailable.OFFLINE_SERVER;
 		}
 		return null;
@@ -223,7 +222,7 @@ public final class CloudSync {
 	@Blocking
 	private static String getAuthToken() {
 		synchronized(AUTH_LOCK) {
-			var client = MinecraftClient.getInstance();
+			var client = Minecraft.getInstance();
 			if(client.player == null) {
 				SyncLog.add(WildfireLocalization.SYNC_LOG_AUTHENTICATION_FAILED);
 				throw new IllegalStateException("Cannot get a new auth token while the client player is unset");
@@ -233,10 +232,10 @@ public final class CloudSync {
 				SyncLog.add(WildfireLocalization.SYNC_LOG_AUTHENTICATING_MOJANG);
 
 				var serverId = generateServerId();
-				var session = client.getSession();
+				var session = client.getUser();
 
 				try {
-					CloudUtils.getSessionService().joinServer(Objects.requireNonNull(session.getUuidOrNull()), session.getAccessToken(), serverId);
+					CloudUtils.getSessionService().joinServer(Objects.requireNonNull(session.getProfileId()), session.getAccessToken(), serverId);
 				} catch(AuthenticationException e) {
 					SyncLog.add(WildfireLocalization.SYNC_LOG_AUTHENTICATION_FAILED);
 					throw new RuntimeException(e);
@@ -244,7 +243,7 @@ public final class CloudSync {
 
 				WildfireGender.LOGGER.info("Obtaining new authentication token from the cloud sync server");
 				SyncLog.add(WildfireLocalization.SYNC_LOG_AUTHENTICATING_CLOUD_SYNC);
-				var query = HttpAuthenticationService.buildQuery(Map.of("serverId", serverId, "username", session.getUsername()));
+				var query = HttpAuthenticationService.buildQuery(Map.of("serverId", serverId, "username", session.getName()));
 				var uri = URI.create(getCloudServer() + "/auth?" + query);
 				var request = createRequest(uri).GET().build();
 				var response = CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString()).join();
@@ -255,7 +254,7 @@ public final class CloudSync {
 
 				auth = GSON.fromJson(response.body(), CloudAuth.class);
 				if(auth.isInvalidForClientPlayer()) {
-					WildfireGender.LOGGER.warn("Authenticated account {} does not match the current player ({}); you likely have a misbehaving account switcher mod installed!", auth.account(), client.player.getUuid());
+					WildfireGender.LOGGER.warn("Authenticated account {} does not match the current player ({}); you likely have a misbehaving account switcher mod installed!", auth.account(), client.player.getUUID());
 				}
 				WildfireGender.LOGGER.info("Obtained authentication token for {}, expiry {}", auth.account(), auth.expires());
 			}
@@ -271,7 +270,7 @@ public final class CloudSync {
 	 * @return A {@link CompletableFuture} indicating when the process has finished, or with an exception if
 	 *         syncing failed.
 	 */
-	public static CompletableFuture<Void> sync(@NotNull PlayerConfig config) {
+	public static CompletableFuture<Void> sync(PlayerConfig config) {
 		if(!isEnabled()) {
 			return CompletableFuture.completedFuture(null);
 		}

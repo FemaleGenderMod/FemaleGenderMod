@@ -18,10 +18,10 @@
 
 package com.wildfire.main.cape;
 
-import net.minecraft.util.AssetInfo;
+import net.minecraft.core.ClientAsset;
 import org.jetbrains.annotations.Nullable;
 
 public interface SkinTexturesWildfire {
-    void wildfiregender$overrideCapeTexture(@Nullable AssetInfo.TextureAsset texture);
-    @Nullable AssetInfo.TextureAsset wildfiregender$getOverriddenCapeTexture();
+	void wildfiregender$overrideCapeTexture(@Nullable ClientAsset.Texture texture);
+	@Nullable ClientAsset.Texture wildfiregender$getOverriddenCapeTexture();
 }

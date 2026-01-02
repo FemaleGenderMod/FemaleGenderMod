@@ -19,21 +19,26 @@
 package com.wildfire.physics;
 
 import com.wildfire.api.IGenderArmor;
-import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.main.WildfireHelper;
+import com.wildfire.main.entitydata.EntityConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.decoration.ArmorStandEntity;
-import net.minecraft.entity.passive.*;
-import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.entity.vehicle.MinecartEntity;
-import net.minecraft.util.Arm;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.animal.chicken.Chicken;
+import net.minecraft.world.entity.animal.pig.Pig;
+import net.minecraft.world.entity.animal.camel.Camel;
+import net.minecraft.world.entity.animal.equine.AbstractHorse;
+import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.monster.Strider;
+import net.minecraft.world.entity.vehicle.boat.Boat;
+import net.minecraft.world.entity.vehicle.minecart.Minecart;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
 public class BreastPhysics {
 
@@ -48,9 +53,9 @@ public class BreastPhysics {
 
 	private float breastSize = 0, preBreastSize = 0;
 
-	private EntityPose lastPose;
+	private @Nullable Pose lastPose;
 	private int lastSwingDuration = 6, lastSwingTick = 0;
-	private Vec3d prePos;
+	private @Nullable Vec3 prePos;
 
 	private final EntityConfig entityConfig;
 	private int randomB = 1;
@@ -66,13 +71,13 @@ public class BreastPhysics {
 				// means like /ride, and as chickens attempt to force the rider's body yaw to the same yaw
 				// as the chicken (which is likely intended only for baby zombies), this results in unintended
 				// behavior with what we're doing
-				vehicle instanceof ChickenEntity
+				vehicle instanceof Chicken
 				// unsaddled horses (and llamas, which also extend AbstractDonkeyEntity?) also break rotation
 				// physics, despite acting similarly to other entities where the rider's body yaw is allowed to
 				// (somewhat) freely move around
-				|| vehicle instanceof AbstractHorseEntity horseLike && !horseLike.hasSaddleEquipped()
+				|| vehicle instanceof AbstractHorse horseLike && !horseLike.isSaddled()
 				// camels also suffer from largely the same issue as unsaddled horses when sitting or standing up
-				|| vehicle instanceof CamelEntity camel && camel.isStationary()
+				|| vehicle instanceof Camel camel && camel.refuseToMove()
 		);
 	}
 
@@ -81,10 +86,10 @@ public class BreastPhysics {
 				vehicle.hasControllingPassenger()
 				// boats will typically be caught by the above #hasControllingPassenger() check, but still
 				// special case these to catch any weird modded cases that might arise
-				|| vehicle instanceof BoatEntity
+				|| vehicle instanceof Boat
 				// general catch-all for other entities that force the rider's body yaw to match theirs,
 				// such as horses
-				|| vehicle.getBodyYaw() == rider.getBodyYaw()
+				|| vehicle.getVisualRotationYInDegrees() == rider.getVisualRotationYInDegrees()
 		);
 	}
 
@@ -94,12 +99,12 @@ public class BreastPhysics {
 			if(vehicleSuppressesRotation(vehicle)) {
 				return 0f;
 			} else if(shouldUseVehicleYaw(entity, vehicle)) {
-				float previous = vehicle instanceof LivingEntity living ? living.lastBodyYaw : vehicle.lastYaw;
-				return -((vehicle.getBodyYaw() - previous) / 15f) * bounceIntensity;
+				float previous = vehicle instanceof LivingEntity living ? living.yBodyRotO : vehicle.yRotO;
+				return -((vehicle.getVisualRotationYInDegrees() - previous) / 15f) * bounceIntensity;
 			}
 		}
 
-		return -((entity.bodyYaw - entity.lastBodyYaw) / 15f) * bounceIntensity;
+		return -((entity.yBodyRot - entity.yBodyRotO) / 15f) * bounceIntensity;
 	}
 
 	// this class cannot be blanket marked as client-side only, as this is referenced in the constructor for EntityConfig;
@@ -107,7 +112,7 @@ public class BreastPhysics {
 	@Environment(EnvType.CLIENT)
 	public void update(LivingEntity entity, IGenderArmor armor) {
 		// always suppress the full physics calculations on armor stands
-		if(entity instanceof ArmorStandEntity || entityConfig.forceSimplifiedPhysics) {
+		if(entity instanceof ArmorStand || entityConfig.forceSimplifiedPhysics) {
 			simplifiedTick(armor);
 			return;
 		}
@@ -118,7 +123,7 @@ public class BreastPhysics {
 		this.preBreastSize = this.breastSize;
 
 		if(this.prePos == null) {
-			this.prePos = entity.getEntityPos();
+			this.prePos = entity.position();
 			return;
 		}
 
@@ -128,7 +133,7 @@ public class BreastPhysics {
 		if (!entityConfig.getGender().canHaveBreasts()) {
 			targetBreastSize = 0;
 		} else {
-			float tightness = MathHelper.clamp(armor.tightness(), 0, 1);
+			float tightness = Mth.clamp(armor.tightness(), 0, 1);
 			if(entityConfig.getArmorPhysicsOverride()) tightness = 0; //override resistance
 			//Scale breast size by how tight the armor is, clamping at a max adjustment of shrinking by 0.15
 			targetBreastSize *= 1 - TIGHTNESS_REDUCTION_FACTOR * tightness;
@@ -136,11 +141,11 @@ public class BreastPhysics {
 
 		breastSize += (breastSize < targetBreastSize) ? Math.abs(breastSize - targetBreastSize) / 2f : -Math.abs(breastSize - targetBreastSize) / 2f;
 
-		Vec3d motion = entity.getEntityPos().subtract(this.prePos);
-		this.prePos = entity.getEntityPos();
+		Vec3 motion = entity.position().subtract(this.prePos);
+		this.prePos = entity.position();
 
 		float bounceIntensity = (targetBreastSize * 3f) * Math.round((entityConfig.getBounceMultiplier() * 3) * 100) / 100f;
-		float resistance = MathHelper.clamp(armor.physicsResistance(), 0, 1);
+		float resistance = Mth.clamp(armor.physicsResistance(), 0, 1);
 		if(entityConfig.getArmorPhysicsOverride()) resistance = 0; //override resistance
 
 		//Adjust bounce intensity by physics resistance of the worn armor
@@ -161,7 +166,7 @@ public class BreastPhysics {
 		if(entityConfig.getGender().canHaveBreasts()) {
 			this.breastSize = entityConfig.getBustSize();
 			if(!entityConfig.getArmorPhysicsOverride()) {
-				float tightness = MathHelper.clamp(armor.tightness(), 0, 1);
+				float tightness = Mth.clamp(armor.tightness(), 0, 1);
 				this.breastSize *= 1 - TIGHTNESS_REDUCTION_FACTOR * tightness;
 			}
 			this.preBreastSize = this.breastSize;
@@ -170,12 +175,12 @@ public class BreastPhysics {
 		}
 	}
 
-	private void tickMovement(final LivingEntity entity, final Vec3d motion, final float bounceIntensity, final float breastWeight) {
-		double vertVelocity = entity.getVelocity().y;
+	private void tickMovement(final LivingEntity entity, final Vec3 motion, final float bounceIntensity, final float breastWeight) {
+		double vertVelocity = entity.getDeltaMovement().y;
 		// Randomize which side the breast will angle toward when the player jumps/has upward velocity applied to them,
 		// or stops falling
 		if((lastVerticalMoveVelocity <= 0 && vertVelocity > 0) || (lastVerticalMoveVelocity < 0 && vertVelocity == 0)) {
-			randomB = entity.getEntityWorld().random.nextBoolean() ? -1 : 1;
+			randomB = entity.level().random.nextBoolean() ? -1 : 1;
 		}
 		lastVerticalMoveVelocity = vertVelocity;
 
@@ -187,18 +192,18 @@ public class BreastPhysics {
 
 		this.targetBounceX = -calcRotation(entity, bounceIntensity) / 10f;
 
-		float f2 = (float) entity.getVelocity().lengthSquared() / 0.2F;
+		float f2 = (float) entity.getDeltaMovement().lengthSqr() / 0.2F;
 		f2 = f2 * f2 * f2;
 		if(f2 < 1.0F) f2 = 1.0F;
-		this.targetBounceY += MathHelper.cos(entity.limbAnimator.getAnimationProgress() * 0.6662F + (float)Math.PI) * 0.5F * entity.limbAnimator.getSpeed() * 0.5F / f2;
+		this.targetBounceY += Mth.cos(entity.walkAnimation.position() * 0.6662F + (float)Math.PI) * 0.5F * entity.walkAnimation.speed() * 0.5F / f2;
 	}
 
 	private void tickPose(final LivingEntity entity, final float bounceIntensity) {
-		EntityPose pose = entity.getPose();
+		Pose pose = entity.getPose();
 		if(pose != lastPose) {
-			if(pose == EntityPose.CROUCHING || lastPose == EntityPose.CROUCHING) {
+			if(pose == Pose.CROUCHING || lastPose == Pose.CROUCHING) {
 				this.targetBounceY += bounceIntensity;
-			} else if(pose == EntityPose.SLEEPING || lastPose == EntityPose.SLEEPING) {
+			} else if(pose == Pose.SLEEPING || lastPose == Pose.SLEEPING) {
 				this.targetBounceY = bounceIntensity;
 			}
 			lastPose = pose;
@@ -207,41 +212,41 @@ public class BreastPhysics {
 
 	private void tickVehicle(LivingEntity entity, final float bounceIntensity, final float breastWeight) {
 		switch(entity.getVehicle()) {
-			case BoatEntity boat -> {
-				int rowTime = (int) boat.lerpPaddlePhase(0, entity.limbAnimator.getAnimationProgress());
-				int rowTime2 = (int) boat.lerpPaddlePhase(1, entity.limbAnimator.getAnimationProgress());
+			case Boat boat -> {
+				int rowTime = (int) boat.getRowingTime(0, entity.walkAnimation.position());
+				int rowTime2 = (int) boat.getRowingTime(1, entity.walkAnimation.position());
 
-				float rotationL = (float) MathHelper.clampedLerp(-(float)Math.PI / 3F, -0.2617994F, (double) ((MathHelper.sin(-rowTime2) + 1.0F) / 2.0F));
-				float rotationR = (float) MathHelper.clampedLerp(-(float)Math.PI / 4F, (float)Math.PI / 4F, (double) ((MathHelper.sin(-rowTime + 1.0F) + 1.0F) / 2.0F));
+				float rotationL = (float) Mth.clampedLerp(-(float)Math.PI / 3F, -0.2617994F, (double) ((Mth.sin(-rowTime2) + 1.0F) / 2.0F));
+				float rotationR = (float) Mth.clampedLerp(-(float)Math.PI / 4F, (float)Math.PI / 4F, (double) ((Mth.sin(-rowTime + 1.0F) + 1.0F) / 2.0F));
 				if(rotationL < -1 || rotationR < -0.6f) {
 					this.targetBounceY = bounceIntensity / 3.25f;
 				}
 			}
-			case MinecartEntity cart -> {
-				float speed = (float) cart.getVelocity().lengthSquared();
+			case Minecart cart -> {
+				float speed = (float) cart.getDeltaMovement().lengthSqr();
 				if(Math.random() * speed < 0.5f && speed > 0.2f) {
 					this.targetBounceY = (Math.random() > 0.5 ? -bounceIntensity : bounceIntensity) / 6f;
 					this.targetBounceY += breastWeight;
 				}
 			}
-			case AbstractHorseEntity horse -> {
-				float movement = (float) horse.getVelocity().lengthSquared();
-				if(horse.age % clampMovement(movement) == 5 && movement > 0.05f) {
+			case AbstractHorse horse -> {
+				float movement = (float) horse.getDeltaMovement().lengthSqr();
+				if(horse.getAge() % clampMovement(movement) == 5 && movement > 0.05f) {
 					this.targetBounceY = bounceIntensity / 4f;
 					this.targetBounceY += breastWeight;
 				}
 			}
-			case PigEntity pig -> {
-				float movement = (float) pig.getVelocity().lengthSquared();
-				if(pig.age % clampMovement(movement) == 5 && movement > 0.002f) {
-					this.targetBounceY = (bounceIntensity * MathHelper.clamp(movement * 75, 0.1f, 1f)) / 4f;
+			case Pig pig -> {
+				float movement = (float) pig.getDeltaMovement().lengthSqr();
+				if(pig.getAge() % clampMovement(movement) == 5 && movement > 0.002f) {
+					this.targetBounceY = (bounceIntensity * Mth.clamp(movement * 75, 0.1f, 1f)) / 4f;
 					this.targetBounceY += breastWeight;
 				}
 			}
-			case StriderEntity strider -> {
-				double heightOffset = (double)strider.getHeight() - 0.19
-						+ (double)(0.12F * MathHelper.cos(strider.limbAnimator.getAnimationProgress() * 1.5f)
-						* 2F * Math.min(0.25F, strider.limbAnimator.getSpeed()));
+			case Strider strider -> {
+				double heightOffset = (double)strider.getBbHeight() - 0.19
+						+ (double)(0.12F * Mth.cos(strider.walkAnimation.position() * 1.5f)
+						* 2F * Math.min(0.25F, strider.walkAnimation.speed()));
 				this.targetBounceY += ((float) (heightOffset * 3f) - 4.5f) * bounceIntensity;
 			}
 			case null, default -> {}
@@ -249,11 +254,11 @@ public class BreastPhysics {
 	}
 
 	private void tickArmSwing(LivingEntity entity, final float bounceIntensity) {
-		int swingDuration = entity.getHandSwingDuration();
+		int swingDuration = entity.getCurrentSwingDuration();
 		// Require that either the current swing duration is 2 ticks, or the swing duration from the previous tick is,
 		// as any faster and the arm effectively doesn't swing at all; we check the previous tick's swing duration for
 		// reasons explained later on in this block
-		if((swingDuration > 1 || lastSwingDuration > 1) && entity.getPose() != EntityPose.SLEEPING) {
+		if((swingDuration > 1 || lastSwingDuration > 1) && entity.getPose() != Pose.SLEEPING) {
 			float rawAmplifier = 0f;
 			if(swingDuration < 6) {
 				rawAmplifier = 0.15f * (6 - swingDuration);
@@ -261,23 +266,23 @@ public class BreastPhysics {
 				rawAmplifier = -0.055f * (swingDuration - 6);
 			}
 			// Cap our amplifier at the swing durations of Mining Fatigue IV/Haste II
-			float amplifier = MathHelper.clamp(1 + rawAmplifier, 0.6f, 1.3f);
+			float amplifier = Mth.clamp(1 + rawAmplifier, 0.6f, 1.3f);
 
-			Arm swingingArm = entity.preferredHand == Hand.MAIN_HAND ? entity.getMainArm() : entity.getMainArm().getOpposite();
-			int swingTickDelta = entity.handSwingTicks - lastSwingTick;
-			float swingProgress = distanceFromMedian(0, lastSwingDuration, MathHelper.clamp(lastSwingTick, 0, lastSwingDuration));
-			Arm swingingToward = swingProgress > -0.2f ? swingingArm.getOpposite() : swingingArm;
+			HumanoidArm swingingArm = entity.swingingArm == InteractionHand.MAIN_HAND ? entity.getMainArm() : entity.getMainArm().getOpposite();
+			int swingTickDelta = entity.swingTime - lastSwingTick;
+			float swingProgress = distanceFromMedian(0, lastSwingDuration, Mth.clamp(lastSwingTick, 0, lastSwingDuration));
+			HumanoidArm swingingToward = swingProgress > -0.2f ? swingingArm.getOpposite() : swingingArm;
 
 			// consistently apply even with short swing durations, such as with haste
-			int everyNthTick = MathHelper.clamp(swingDuration - 1, 1, 5);
-			if(entity.handSwinging && entity.age % everyNthTick == 0) {
+			int everyNthTick = Mth.clamp(swingDuration - 1, 1, 5);
+			if(entity.swinging && entity.tickCount % everyNthTick == 0) {
 				this.targetBounceY += (Math.random() > 0.5 ? -0.25f : 0.25f) * amplifier * bounceIntensity;
 				// The regular amplifier here makes this look relatively unnatural at high levels of mining fatigue,
 				// so instead we're increasing the potency of negative amplifiers (and decreasing positive amplifiers),
 				// and clamping this at a lower range than normal.
 				// The effective range of these numbers is around the swing durations of Mining Fatigue V to Haste II.
-				var xAmp = MathHelper.clamp(1 + (rawAmplifier * (rawAmplifier < 0 ? 1.625f : 0.8f)), 0.25f, 1.225f);
-				this.targetBounceX = (0.325f * xAmp * bounceIntensity) * (swingingArm == Arm.RIGHT ? -1f : 1f);
+				var xAmp = Mth.clamp(1 + (rawAmplifier * (rawAmplifier < 0 ? 1.625f : 0.8f)), 0.25f, 1.225f);
+				this.targetBounceX = (0.325f * xAmp * bounceIntensity) * (swingingArm == HumanoidArm.RIGHT ? -1f : 1f);
 			}
 
 			if(swingTickDelta < 0 && lastSwingTick != lastSwingDuration - 1) {
@@ -286,15 +291,15 @@ public class BreastPhysics {
 				// Note that we don't check if the player's arm is currently swinging here to account for cases like
 				// haste being used to reset a player's swing; one notable example of this is Wynncraft's spell casting,
 				// which applies haste to the player when a spell is successfully cast.
-				this.targetRotVel += (swingingArm == Arm.RIGHT ? -4f : 4f) * Math.abs(swingProgress) * bounceIntensity;
-			} else if(entity.handSwinging && swingDuration > 1) {
+				this.targetRotVel += (swingingArm == HumanoidArm.RIGHT ? -4f : 4f) * Math.abs(swingProgress) * bounceIntensity;
+			} else if(entity.swinging && swingDuration > 1) {
 				// Otherwise if the swing animation isn't interrupted, attempt to rotate slightly counter to the
 				// direction that the body is currently moving
-				this.targetRotVel += (swingingToward == Arm.RIGHT ? -0.2f : 0.2f) * amplifier * bounceIntensity;
+				this.targetRotVel += (swingingToward == HumanoidArm.RIGHT ? -0.2f : 0.2f) * amplifier * bounceIntensity;
 			}
-			lastSwingTick = entity.handSwingTicks;
+			lastSwingTick = entity.swingTime;
 		}
-		if(!entity.handSwinging) {
+		if(!entity.swinging) {
 			lastSwingTick = 0;
 		}
 		lastSwingDuration = Math.max(swingDuration, 1);
@@ -303,7 +308,7 @@ public class BreastPhysics {
 	private void finishTick() {
 		float percent = entityConfig.getFloppiness();
 		float bounceAmount = 0.45f * (1f - percent) + 0.15f;
-		bounceAmount = MathHelper.clamp(bounceAmount, 0.15f, 0.6f);
+		bounceAmount = Mth.clamp(bounceAmount, 0.15f, 0.6f);
 		float delta = 2.25f - bounceAmount;
 
 		float distanceFromMin = Math.abs(bounceVel + 1.5f) * 0.5f;
@@ -316,17 +321,17 @@ public class BreastPhysics {
 			targetBounceY -= distanceFromMax;
 		}
 
-		targetBounceY = MathHelper.clamp(targetBounceY, -1.5f, 2.5f);
-		targetRotVel = MathHelper.clamp(targetRotVel, -25f, 25f);
+		targetBounceY = Mth.clamp(targetBounceY, -1.5f, 2.5f);
+		targetRotVel = Mth.clamp(targetRotVel, -25f, 25f);
 
-		this.velocity = MathHelper.lerp(bounceAmount, this.velocity, (this.targetBounceY - this.bounceVel) * delta);
+		this.velocity = Mth.lerp(bounceAmount, this.velocity, (this.targetBounceY - this.bounceVel) * delta);
 		this.bounceVel += this.velocity * percent * 1.1625f;
 
 		//X
-		this.velocityX = MathHelper.lerp(bounceAmount, this.velocityX, (this.targetBounceX - this.bounceVelX) * delta);
+		this.velocityX = Mth.lerp(bounceAmount, this.velocityX, (this.targetBounceX - this.bounceVelX) * delta);
 		this.bounceVelX += this.velocityX * percent;
 
-		this.rotVelocity = MathHelper.lerp(bounceAmount, this.rotVelocity, (this.targetRotVel - this.bounceRotVel) * delta);
+		this.rotVelocity = Mth.lerp(bounceAmount, this.rotVelocity, (this.targetRotVel - this.bounceRotVel) * delta);
 		this.bounceRotVel += this.rotVelocity * percent;
 
 		this.wfg_bounceRotation = this.bounceRotVel;

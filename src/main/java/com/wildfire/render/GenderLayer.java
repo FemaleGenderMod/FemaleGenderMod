@@ -18,6 +18,8 @@
 
 package com.wildfire.render;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.wildfire.api.IGenderArmor;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireHelper;
@@ -28,22 +30,21 @@ import com.wildfire.render.WildfireModelRenderer.BreastModelBox;
 import com.wildfire.render.WildfireModelRenderer.OverlayModelBox;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.command.OrderedRenderCommandQueue;
-import net.minecraft.client.render.entity.LivingEntityRenderer;
-import net.minecraft.client.render.entity.feature.FeatureRenderer;
-import net.minecraft.client.render.entity.feature.FeatureRendererContext;
-import net.minecraft.client.render.entity.model.BipedEntityModel;
-import net.minecraft.client.render.entity.state.BipedEntityRenderState;
-import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.ColorHelper;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
+import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.util.ARGB;
+import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 import org.joml.*;
 
 import java.lang.Math;
@@ -51,47 +52,48 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 @Environment(EnvType.CLIENT)
-public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntityModel<S>> extends FeatureRenderer<S, M> {
+public class GenderLayer<S extends HumanoidRenderState, M extends HumanoidModel<S>> extends RenderLayer<S, M> {
 
 	private static final float DEG_TO_RAD = (float) (Math.PI / 180);
 
+	@UnknownNullability("null until #resizeBox() is first called")
 	private BreastModelBox lBreast, rBreast;
+	@UnknownNullability("null until #resizeBox() is first called")
 	private OverlayModelBox lBreastWear, rBreastWear;
 
-	private UVLayout prevLeftBreastUVLayout;
-	private UVLayout prevRightBreastUVLayout;
-	private UVLayout prevLeftBreastOverlayUVLayout;
-	private UVLayout prevRightBreastOverlayUVLayout;
+	private @Nullable UVLayout prevLeftBreastUVLayout, prevRightBreastUVLayout,
+		prevLeftBreastOverlayUVLayout, prevRightBreastOverlayUVLayout;
 
-	private final FeatureRendererContext<S, M> context;
+	private final RenderLayerParent<S, M> context;
 
 	private boolean isUniboob;
-	protected ItemStack armorStack; // although ItemStacks are mutable, this is safe as it is a copy of the real one
-	protected IGenderArmor genderArmor;
+	// although ItemStack instances are mutable, this is safe to keep a reference to as this is a copy of the real stack
+	protected ItemStack armorStack = ItemStack.EMPTY;
+	protected IGenderArmor genderArmor = IGenderArmor.EMPTY;
 	protected boolean isChestplateOccupied, bounceEnabled, breathingAnimation;
 	protected float breastOffsetX, breastOffsetY, breastOffsetZ, lPhysPositionY, lPhysPositionX, rPhysPositionY, rPhysPositionX,
 			lPhysBounceRotation, rPhysBounceRotation, breastSize, zOffset, outwardAngle;
 
-	public GenderLayer(FeatureRendererContext<S, M> render) {
+	public GenderLayer(RenderLayerParent<S, M> render) {
 		super(render);
 		this.context = render;
 	}
 
 	/**
-	 * Convenience method around {@link LivingEntityRendererAccessor#invokeGetRenderLayer}
+	 * Convenience method around {@link LivingEntityRendererAccessor#invokeGetRenderType}
 	 */
-	private @Nullable RenderLayer getRenderLayer(S state) {
-		boolean bodyVisible = !state.invisible;
-		boolean translucent = state.invisible && !state.invisibleToPlayer;
-		boolean glowing = state.hasOutline();
+	private @Nullable RenderType getRenderLayer(S state) {
+		boolean bodyVisible = !state.isInvisible;
+		boolean translucent = state.isInvisible && !state.isInvisibleToPlayer;
+		boolean glowing = state.appearsGlowing();
 
 		var renderer = (LivingEntityRenderer<?, ?, ?>) context;
-		return ((LivingEntityRendererAccessor) renderer).invokeGetRenderLayer(state, bodyVisible, translucent, glowing);
+		return ((LivingEntityRendererAccessor) renderer).invokeGetRenderType(state, bodyVisible, translucent, glowing);
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, OrderedRenderCommandQueue queue, int light, S state, float limbAngle, float limbDistance) {
-		if(MinecraftClient.getInstance().world == null) {
+	public void submit(PoseStack matrixStack, SubmitNodeCollector queue, int light, S state, float limbAngle, float limbDistance) {
+		if(Minecraft.getInstance().level == null) {
 			// TODO rendering in a menu is harder to support as we only tick physics when in a world,
 			//		and entities rendered in the main menu are naturally not in a world
 			return;
@@ -102,10 +104,10 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 
 		try {
 			if(!setupRender(state, entityConfigState)) return;
-			int overlay = LivingEntityRenderer.getOverlay(state, 0);
+			int overlay = LivingEntityRenderer.getOverlayCoords(state, 0);
 
 			//noinspection CodeBlock2Expr
-			renderSides(state, getContextModel(), matrixStack, side -> {
+			renderSides(state, getParentModel(), matrixStack, side -> {
 				renderBreast(state, matrixStack, queue, overlay, side);
 			});
 		} catch(Exception e) {
@@ -122,7 +124,7 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 	protected boolean setupRender(S entityState, GenderRenderState genderState) {
 		if(!ClientConfig.RENDER_BREASTS) return false;
 
-		armorStack = entityState.equippedChestStack;
+		armorStack = entityState.chestEquipment;
 		//Note: When the stack is empty the helper will fall back to an implementation that returns the proper data
 		genderArmor = WildfireHelper.getArmorConfig(armorStack);
 		isChestplateOccupied = genderArmor.coversBreasts() && !genderState.armorPhysicsOverride;
@@ -177,14 +179,14 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		zOffset = 0.0625f - (bSize * 0.0625f); // Calculate zOffset
 		breastSize += 0.5f * Math.abs(bSize - 0.7f) * 2f; // Adjust breastSize based on bSize
 
-		float resistance = MathHelper.clamp(genderArmor.physicsResistance(), 0, 1);
+		float resistance = Mth.clamp(genderArmor.physicsResistance(), 0, 1);
 		breathingAnimation = ((genderState.armorPhysicsOverride || resistance <= 0.5F) && genderState.isBreathing);
 		bounceEnabled = genderState.hasBreastPhysics && (!isChestplateOccupied || resistance < 1); //oh, you found this?
 		return true;
 	}
 
 	protected boolean isLayerVisible(S state) {
-		return !state.invisibleToPlayer || state.hasOutline();
+		return !state.isInvisibleToPlayer || state.appearsGlowing();
 	}
 
 	protected void resizeBox(GenderRenderState state, float breastSize) {
@@ -206,16 +208,16 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 		}
 	}
 
-	protected void setupTransformations(S state, M model, MatrixStack matrixStack, BreastSide side) {
-		if(state.baby) {
+	protected void setupTransformations(S state, M model, PoseStack matrixStack, BreastSide side) {
+		if(state.isBaby) {
 			matrixStack.scale(state.ageScale, state.ageScale, state.ageScale);
 			matrixStack.translate(0f, 0.75f, 0f);
 		}
 
 		ModelPart body = model.body;
-		matrixStack.translate(body.originX * 0.0625f, body.originY * 0.0625f, body.originZ * 0.0625f);
-		if(body.roll != 0.0F || body.yaw != 0.0F || body.pitch != 0.0F) {
-			matrixStack.multiply(new Quaternionf().rotationZYX(body.roll, body.yaw, body.pitch));
+		matrixStack.translate(body.x * 0.0625f, body.y * 0.0625f, body.z * 0.0625f);
+		if(body.zRot != 0.0F || body.yRot != 0.0F || body.xRot != 0.0F) {
+			matrixStack.mulPose(new Quaternionf().rotationZYX(body.zRot, body.yRot, body.xRot));
 		}
 
 		if(bounceEnabled) {
@@ -229,7 +231,7 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 			matrixStack.translate(-0.0625f * 2 * (side.isLeft ? 1 : -1), 0, 0);
 		}
 		if(bounceEnabled) {
-			matrixStack.multiply(new Quaternionf().rotationXYZ(0, (float)((side.isLeft ? lPhysBounceRotation : rPhysBounceRotation) * (Math.PI / 180f)), 0));
+			matrixStack.mulPose(new Quaternionf().rotationXYZ(0, (float)((side.isLeft ? lPhysBounceRotation : rPhysBounceRotation) * (Math.PI / 180f)), 0));
 		}
 		if(!isUniboob) {
 			matrixStack.translate(0.0625f * 2 * (side.isLeft ? 1 : -1), 0, 0);
@@ -253,54 +255,54 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 				.rotateX(-35f * rotation * DEG_TO_RAD);
 
 		if(breathingAnimation) {
-			float f5 = -MathHelper.cos(state.age * 0.09F) * 0.45F + 0.45F;
+			float f5 = -Mth.cos(state.ageInTicks * 0.09F) * 0.45F + 0.45F;
 			rotationTransform.rotateX(f5 * DEG_TO_RAD);
 		}
 
-		matrixStack.multiply(rotationTransform);
+		matrixStack.mulPose(rotationTransform);
 		matrixStack.scale(0.9995f, 1f, 1f); //z-fighting FIXXX
 	}
 
-	private void renderBreast(S state, MatrixStack matrixStack, OrderedRenderCommandQueue queue, int overlay, BreastSide side) {
-		RenderLayer renderLayer = getRenderLayer(state);
+	private void renderBreast(S state, PoseStack matrixStack, SubmitNodeCollector queue, int overlay, BreastSide side) {
+		RenderType renderLayer = getRenderLayer(state);
 		if(renderLayer == null) return; // only render if the player is visible in some capacity
 
-		int alpha = state.invisible ? ColorHelper.channelFromFloat(0.15f) : 255;
-		int color = ColorHelper.getArgb(alpha, 255, 255, 255);
+		int alpha = state.isInvisible ? ARGB.as8BitChannel(0.15f) : 255;
+		int color = ARGB.color(alpha, 255, 255, 255);
 
 		var model = side.isLeft ? lBreast : rBreast;
-		queue.submitCustom(matrixStack, renderLayer, new BreastRenderCommand(model, state, overlay, color));
+		queue.submitCustomGeometry(matrixStack, renderLayer, new BreastRenderCommand(model, state, overlay, color));
 
-		if(state instanceof PlayerEntityRenderState playerState && playerState.jacketVisible) {
+		if(state instanceof AvatarRenderState playerState && playerState.showJacket) {
 			matrixStack.translate(0, 0, -0.015f);
 			matrixStack.scale(1.05f, 1.05f, 1.05f);
 			var jacketModel = side.isLeft ? lBreastWear : rBreastWear;
-			queue.submitCustom(matrixStack, renderLayer, new BreastRenderCommand(jacketModel, state, overlay, color));
+			queue.submitCustomGeometry(matrixStack, renderLayer, new BreastRenderCommand(jacketModel, state, overlay, color));
 		}
 	}
 
-	protected void renderSides(S state, M model, MatrixStack matrixStack, Consumer<BreastSide> renderer) {
-		matrixStack.push();
+	protected void renderSides(S state, M model, PoseStack matrixStack, Consumer<BreastSide> renderer) {
+		matrixStack.pushPose();
 		try {
 			setupTransformations(state, model, matrixStack, BreastSide.LEFT);
 			renderer.accept(BreastSide.LEFT);
 		} finally {
-			matrixStack.pop();
+			matrixStack.popPose();
 		}
 
-		matrixStack.push();
+		matrixStack.pushPose();
 		try {
 			setupTransformations(state, model, matrixStack, BreastSide.RIGHT);
 			renderer.accept(BreastSide.RIGHT);
 		} finally {
-			matrixStack.pop();
+			matrixStack.popPose();
 		}
 	}
 
-	public static void renderBox(WildfireModelRenderer.ModelBox model, MatrixStack.Entry entry, VertexConsumer vertexConsumer,
+	public static void renderBox(WildfireModelRenderer.ModelBox model, PoseStack.Pose entry, VertexConsumer vertexConsumer,
 									int light, int overlay, int color) {
-		Matrix4f matrix4f = entry.getPositionMatrix();
-		Matrix3f matrix3f = entry.getNormalMatrix();
+		Matrix4f matrix4f = entry.pose();
+		Matrix3f matrix3f = entry.normal();
 		for(var quad : model.quads) {
 
 			//Make sure UVs aren't set to zero. If they are, the textures screw up. Don't render the quad at all.
@@ -315,7 +317,7 @@ public class GenderLayer<S extends BipedEntityRenderState, M extends BipedEntity
 				float k = vertex.y() / 16.0F;
 				float l = vertex.z() / 16.0F;
 				Vector4f vector4f = new Vector4f(j, k, l, 1.0F).mul(matrix4f);
-				vertexConsumer.vertex(vector4f.x(), vector4f.y(), vector4f.z(), color, vertex.u(), vertex.v(),
+				vertexConsumer.addVertex(vector4f.x(), vector4f.y(), vector4f.z(), color, vertex.u(), vertex.v(),
 						overlay, light, normalX, normalY, normalZ);
 			}
 		}

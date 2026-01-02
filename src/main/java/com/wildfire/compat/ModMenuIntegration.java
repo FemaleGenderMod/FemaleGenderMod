@@ -21,14 +21,14 @@ package com.wildfire.compat;
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 import com.wildfire.gui.screen.WardrobeBrowserScreen;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ConfirmScreen;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
-import net.minecraft.screen.ScreenTexts;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.layouts.LinearLayout;
+import net.minecraft.client.gui.screens.ConfirmScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
 
 import java.util.Objects;
 
@@ -36,7 +36,7 @@ public class ModMenuIntegration implements ModMenuApi {
 	@Override
 	public ConfigScreenFactory<?> getModConfigScreenFactory() {
 		return screen -> {
-			var client = MinecraftClient.getInstance();
+			var client = Minecraft.getInstance();
 			var player = client.player;
 			if(player == null) {
 				return new NotInWorldScreen(client, screen);
@@ -52,23 +52,23 @@ public class ModMenuIntegration implements ModMenuApi {
 	private static class NotInWorldScreen extends ConfirmScreen {
 		private final Screen parent;
 
-		public NotInWorldScreen(MinecraftClient client, Screen parent) {
+		public NotInWorldScreen(Minecraft client, Screen parent) {
 			super(
 					result -> client.setScreen(parent),
-					Text.translatable("wildfire_gender.not_in_world.title").formatted(Formatting.RED),
-					Text.translatable("wildfire_gender.not_in_world")
+					Component.translatable("wildfire_gender.not_in_world.title").withStyle(ChatFormatting.RED),
+					Component.translatable("wildfire_gender.not_in_world")
 			);
 			this.parent = parent;
 		}
 
 		@Override
-		protected void addButtons(DirectionalLayoutWidget layout) {
-			layout.add(ButtonWidget.builder(ScreenTexts.OK, (button) -> close()).build());
+		protected void addButtons(LinearLayout layout) {
+			layout.addChild(Button.builder(CommonComponents.GUI_OK, (button) -> onClose()).build());
 		}
 
 		@Override
-		public void close() {
-			Objects.requireNonNull(client, "client").setScreen(parent);
+		public void onClose() {
+			Objects.requireNonNull(minecraft, "client").setScreen(parent);
 		}
 	}
 }

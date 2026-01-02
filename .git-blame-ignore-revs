@@ -1,0 +1,17 @@
+# Since version 2.23 (released in August 2019), git-blame has a feature
+# to ignore or bypass certain commits.
+#
+# This file contains a list of commits that are not likely what you
+# are looking for in a blame, such as mass reformatting or renaming.
+# You can set this file as a default ignore file for blame by running
+# the following command.
+#
+# $ git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# Mojang mapping migration
+ac84ce680567ddea85465e9f83f86074779b6bde
+cce81c476bef180ab9c24013db983bbc3f4156f3
+8ec0e3c500f78835cf43ed336a0907139b836089
+
+# Indentation reformatting
+ed4ce002eab894a1b33a2613a4b05ffb05d0f56e

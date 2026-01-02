@@ -16,23 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.mixins.cape;
+@NullMarked
+package com.wildfire.api;
 
-import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import com.wildfire.main.cape.SkinTexturesWildfire;
-import net.minecraft.entity.player.SkinTextures;
-import net.minecraft.util.AssetInfo;
-import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-
-@Mixin(SkinTextures.class)
-abstract class SkinTexturesMixin {
-    @ModifyReturnValue(method = {"cape", "elytra"}, at = @At("RETURN"))
-    public @Nullable AssetInfo.TextureAsset wildfiregender$replaceCapeTexture(@Nullable AssetInfo.TextureAsset original) {
-        if(original == null) {
-            return ((SkinTexturesWildfire) this).wildfiregender$getOverriddenCapeTexture();
-        }
-        return original;
-    }
-}
+import org.jspecify.annotations.NullMarked;

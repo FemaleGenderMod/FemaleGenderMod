@@ -18,102 +18,89 @@
 
 package com.wildfire.gui;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.wildfire.gui.screen.BaseWildfireScreen;
 import com.wildfire.main.WildfireEventHandler;
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.WildfireGenderClient;
 import com.wildfire.main.config.ClientConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.toast.Toast;
-import net.minecraft.client.toast.Toast.Visibility;
-import net.minecraft.client.toast.ToastManager;
-import net.minecraft.text.OrderedText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Colors;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.toasts.Toast;
+import net.minecraft.client.gui.components.toasts.ToastManager;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.CommonColors;
+import net.minecraft.util.FormattedCharSequence;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Environment(EnvType.CLIENT)
 public class WildfireToast implements Toast {
-    private static final Identifier TEXTURE = Identifier.ofVanilla("toast/advancement");
-    private static final Identifier ICON = Identifier.of(WildfireGender.MODID, "textures/bc_ribbon.png");
-    public static final int PROGRESS_BAR_WIDTH = 154;
-    public static final int PROGRESS_BAR_HEIGHT = 1;
-    private final List<OrderedText> text;
-    private Visibility visibility = Visibility.SHOW;
-    private long lastTime;
-    private float lastProgress;
-    private float progress;
-    private final boolean hasProgressBar;
-    private final int displayDuration;
+	private static final Identifier TEXTURE = Identifier.withDefaultNamespace("toast/advancement");
+	private static final Identifier ICON = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/bc_ribbon.png");
+	private final List<FormattedCharSequence> text;
+	private Visibility visibility = Visibility.SHOW;
 
-    public WildfireToast(TextRenderer textRenderer, Text title, @Nullable Text description, boolean hasProgressBar, int i) {
-        this.text = new ArrayList<>(2);
-        this.text.addAll(textRenderer.wrapLines(title.copy().withColor(Colors.LIGHT_PINK), 126));
-        if (description != null) {
-            this.text.addAll(textRenderer.wrapLines(description, 126));
-        }
+	public WildfireToast(Font textRenderer, Component title, @Nullable Component description) {
+		this.text = new ArrayList<>(2);
+		this.text.addAll(textRenderer.split(title.copy().withColor(CommonColors.COSMOS_PINK), 126));
+		if (description != null) {
+			this.text.addAll(textRenderer.split(description, 126));
+		}
+	}
 
-        this.hasProgressBar = hasProgressBar;
-        this.displayDuration = i;
-    }
+	@Override
+	public Visibility getWantedVisibility() {
+		return this.visibility;
+	}
 
-    public WildfireToast(TextRenderer textRenderer, Text title, @Nullable Text description, boolean hasProgressBar) {
-        this(textRenderer, title, description, hasProgressBar, 0);
-    }
+	@Override
+	public void update(ToastManager manager, long time) {
+		if(shouldHide()) {
+			hide();
+			ClientConfig.INSTANCE.set(ClientConfig.SHOW_TOAST, false);
+			CompletableFuture.runAsync(ClientConfig.INSTANCE::save);
+		}
+	}
 
-    @Override
-    public Visibility getVisibility() {
-        return this.visibility;
-    }
+	@Override
+	public int height() {
+		return 7 + this.getTextHeight() + 3;
+	}
 
-    @Override
-    public void update(ToastManager manager, long time) {
-        if(WildfireEventHandler.getConfigKeybind().isPressed()) {
-            this.visibility = Visibility.HIDE;
-            ClientConfig.INSTANCE.set(ClientConfig.SHOW_TOAST, false);
-            ClientConfig.INSTANCE.save();
-        }
-        //this.visibility = (double)time >= 10000.0 * manager.getNotificationDisplayTimeMultiplier() ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
-    }
+	private int getTextHeight() {
+		return Math.max(this.text.size(), 2) * 11;
+	}
 
-    @Override
-    public int getHeight() {
-        return 7 + this.getTextHeight() + 3;
-    }
+	@Override
+	public void render(GuiGraphics context, Font textRenderer, long startTime) {
+		int i = this.height();
+		context.blitSprite(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, 0, this.width(), i);
 
-    private int getTextHeight() {
-        return Math.max(this.text.size(), 2) * 11;
-    }
+		context.blit(RenderPipelines.GUI_TEXTURED, ICON, 6, 6, 0, 0, 20, 20, 20, 20, 20, 20);
+		int j = this.text.size() * 11;
+		int k = 7 + (this.getTextHeight() - j) / 2;
 
-    @Override
-    public void draw(DrawContext context, TextRenderer textRenderer, long startTime) {
-        int i = this.getHeight();
-        context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, 0, this.getWidth(), i);
+		for (int l = 0; l < this.text.size(); l++) {
+			context.drawString(textRenderer, this.text.get(l), 30, k + l * 11, 0xFFFFFFFF, false);
+		}
+	}
 
-        context.drawTexture(RenderPipelines.GUI_TEXTURED, ICON, 6, 6, 0, 0, 20, 20, 20, 20, 20, 20);
-        int j = this.text.size() * 11;
-        int k = 7 + (this.getTextHeight() - j) / 2;
+	private boolean shouldHide() {
+		Minecraft client = Minecraft.getInstance();
+		if(client.screen instanceof BaseWildfireScreen) {
+			return true;
+		}
+		return WildfireEventHandler.getConfigKeybind().isDown();
+	}
 
-        for (int l = 0; l < this.text.size(); l++) {
-            context.drawText(textRenderer, (OrderedText)this.text.get(l), 30, k + l * 11, 0xFFFFFFFF, false);
-        }
-    }
-
-    public void hide() {
-        this.visibility = Visibility.HIDE;
-    }
-
-    public void setProgress(float progress) {
-        this.progress = progress;
-    }
+	public void hide() {
+		this.visibility = Visibility.HIDE;
+	}
 }

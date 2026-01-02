@@ -20,42 +20,43 @@ package com.wildfire.main.config.types;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class ConfigKey<TYPE> {
 
-    protected final String key;
-    protected final TYPE defaultValue;
+	protected final String key;
+	protected final TYPE defaultValue;
 
-    protected ConfigKey(String key, TYPE defaultValue) {
-        this.key = key;
-        this.defaultValue = defaultValue;
-    }
+	protected ConfigKey(String key, TYPE defaultValue) {
+		this.key = key;
+		this.defaultValue = defaultValue;
+	}
 
-    public String getKey() {
-        return key;
-    }
+	public String getKey() {
+		return key;
+	}
 
-    public TYPE getDefault() {
-        return defaultValue;
-    }
+	public TYPE getDefault() {
+		return defaultValue;
+	}
 
-    public final TYPE read(JsonObject obj) {
-        JsonElement element = obj.get(key);
-        if (element != null) {
-            TYPE value = read(element);
-            if (validate(value)) {
-                //If the value is valid, return it otherwise return the default
-                return value;
-            }
-        }
-        return defaultValue;
-    }
+	public final TYPE read(JsonObject obj) {
+		JsonElement element = obj.get(key);
+		if (element != null) {
+			TYPE value = read(element);
+			if (validate(value)) {
+				//If the value is valid, return it otherwise return the default
+				return value;
+			}
+		}
+		return defaultValue;
+	}
 
-    protected abstract TYPE read(JsonElement element);
+	protected abstract TYPE read(JsonElement element);
 
-    public abstract void save(JsonObject object, TYPE value);
+	public abstract void save(JsonObject object, TYPE value);
 
-    public boolean validate(TYPE value) {
-        return value != null;
-    }
+	public boolean validate(@Nullable TYPE value) {
+		return value != null;
+	}
 }

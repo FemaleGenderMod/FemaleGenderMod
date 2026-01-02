@@ -31,17 +31,16 @@ import com.wildfire.main.uvs.UVLayout;
 import com.wildfire.physics.BreastPhysics;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.NbtComponent;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.PlayerLikeEntity;
-import net.minecraft.entity.decoration.ArmorStandEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.entity.Avatar;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
@@ -56,18 +55,13 @@ import java.util.function.Consumer;
  *
  * <p>Unlike players, this has very minimal configuration support.</p>
  *
- * <p>Currently only used for {@link ArmorStandEntity armor stands}, and as a superclass for {@link PlayerConfig player configs}.</p>
+ * <p>Currently only used for {@link ArmorStand armor stands}, and as a superclass for {@link PlayerConfig player configs}.</p>
  */
 public class EntityConfig {
 
 	public static final LoadingCache<UUID, EntityConfig> CACHE = CacheBuilder.newBuilder()
 			.expireAfterAccess(Duration.ofMinutes(5))
-			.build(new CacheLoader<>() {
-				@Override
-				public @NotNull EntityConfig load(@NotNull UUID key) {
-					return new EntityConfig(key);
-				}
-			});
+			.build(CacheLoader.from(EntityConfig::new));
 
 	public final UUID uuid;
 	protected Gender gender = Configuration.GENDER.getDefault();
@@ -114,8 +108,8 @@ public class EntityConfig {
 	 *
 	 * @see BreastDataComponent
 	 */
-	public void readFromStack(@NotNull ItemStack chestplate) {
-		NbtComponent component = chestplate.get(DataComponentTypes.CUSTOM_DATA);
+	public void readFromStack(ItemStack chestplate) {
+		CustomData component = chestplate.get(DataComponents.CUSTOM_DATA);
 		if(chestplate.isEmpty() || component == null) {
 			this.fromComponent = null;
 			this.gender = Gender.MALE;
@@ -147,7 +141,7 @@ public class EntityConfig {
 		// TODO mannequins are not properly supported right now; this method only returns true to indicate that
 		//		our rendering does technically support it, despite the fact that there is no way to properly utilize
 		//		them without using janky workarounds.
-		return entity instanceof PlayerLikeEntity || entity instanceof ArmorStandEntity;
+		return entity instanceof Avatar || entity instanceof ArmorStand;
 	}
 
 	/**
@@ -157,20 +151,20 @@ public class EntityConfig {
 	 *          returned, and may take several seconds to be populated if loaded from the
 	 *          {@link com.wildfire.main.cloud.CloudSync cloud sync server}.
 	 *
-	 * @return The relevant {@link EntityConfig}, or {@link PlayerConfig} if given a {@link PlayerEntity player}
+	 * @return The relevant {@link EntityConfig}, or {@link PlayerConfig} if given a {@link Player player}
 	 */
-	public static @NotNull EntityConfig getEntity(@NotNull LivingEntity entity) {
-		if(entity instanceof PlayerEntity) {
-			return WildfireGender.getOrAddPlayerById(entity.getUuid());
+	public static EntityConfig getEntity(LivingEntity entity) {
+		if(entity instanceof Player) {
+			return WildfireGender.getOrAddPlayerById(entity.getUUID());
 		}
-		return CACHE.getUnchecked(entity.getUuid());
+		return CACHE.getUnchecked(entity.getUUID());
 	}
 
-	public @NotNull Gender getGender() {
+	public Gender getGender() {
 		return gender;
 	}
 
-	public @NotNull Breasts getBreasts() {
+	public Breasts getBreasts() {
 		return breasts;
 	}
 
@@ -207,10 +201,10 @@ public class EntityConfig {
 		return this.voicePitch;
 	}
 
-	public @NotNull BreastPhysics getLeftBreastPhysics() {
+	public BreastPhysics getLeftBreastPhysics() {
 		return lBreastPhysics;
 	}
-	public @NotNull BreastPhysics getRightBreastPhysics() {
+	public BreastPhysics getRightBreastPhysics() {
 		return rBreastPhysics;
 	}
 
@@ -268,7 +262,7 @@ public class EntityConfig {
 	}
 
 	/**
-	 * Only used in the case of {@link ArmorStandEntity armor stands}; returns {@code true} if the player who equipped
+	 * Only used in the case of {@link ArmorStand armor stands}; returns {@code true} if the player who equipped
 	 * the armor stand's chestplate has their jacket layer visible.
 	 */
 	public boolean hasJacketLayer() {
@@ -276,8 +270,8 @@ public class EntityConfig {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void tickBreastPhysics(@NotNull LivingEntity entity) {
-		IGenderArmor armor = WildfireHelper.getArmorConfig(entity.getEquippedStack(EquipmentSlot.CHEST));
+	public void tickBreastPhysics(LivingEntity entity) {
+		IGenderArmor armor = WildfireHelper.getArmorConfig(entity.getItemBySlot(EquipmentSlot.CHEST));
 
 		getLeftBreastPhysics().update(entity, armor);
 		getRightBreastPhysics().update(entity, armor);
@@ -292,9 +286,9 @@ public class EntityConfig {
 		List<String> info = new ArrayList<>();
 
 		info.add("Gender: " + switch(getGender()) {
-			case FEMALE -> Formatting.LIGHT_PURPLE + "Female";
-			case MALE -> Formatting.BLUE + "Male";
-			case OTHER -> Formatting.GREEN + "Other";
+			case FEMALE -> ChatFormatting.LIGHT_PURPLE + "Female";
+			case MALE -> ChatFormatting.BLUE + "Male";
+			case OTHER -> ChatFormatting.GREEN + "Other";
 		});
 		info.add("Breast size: " + getBustSize());
 		info.add("Physics enabled: " + hasBreastPhysics());

@@ -20,12 +20,12 @@ package com.wildfire.main.config.enums;
 
 import com.wildfire.main.WildfireSounds;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.function.ValueLists;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.ByIdMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.IntFunction;
@@ -33,24 +33,24 @@ import java.util.function.IntFunction;
 public enum Gender {
 
 	// NOTE: The order of these should remain unchanged! Changing these WILL modify player configs!
-	FEMALE(Text.translatable("wildfire_gender.label.female").formatted(Formatting.LIGHT_PURPLE), true, WildfireSounds.FEMALE_HURT),
-	MALE(Text.translatable("wildfire_gender.label.male").formatted(Formatting.BLUE), false, null),
-	OTHER(Text.translatable("wildfire_gender.label.other").formatted(Formatting.GREEN), true, WildfireSounds.FEMALE_HURT);
+	FEMALE(Component.translatable("wildfire_gender.label.female").withStyle(ChatFormatting.LIGHT_PURPLE), true, WildfireSounds.FEMALE_HURT),
+	MALE(Component.translatable("wildfire_gender.label.male").withStyle(ChatFormatting.BLUE), false, null),
+	OTHER(Component.translatable("wildfire_gender.label.other").withStyle(ChatFormatting.GREEN), true, WildfireSounds.FEMALE_HURT);
 
-	public static final IntFunction<Gender> BY_ID = ValueLists.createIndexToValueFunction(Gender::ordinal, values(), ValueLists.OutOfBoundsHandling.WRAP);
-	public static final PacketCodec<ByteBuf, Gender> CODEC = PacketCodecs.indexed(BY_ID, Gender::ordinal);
+	public static final IntFunction<Gender> BY_ID = ByIdMap.continuous(Gender::ordinal, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
+	public static final StreamCodec<ByteBuf, Gender> CODEC = ByteBufCodecs.idMapper(BY_ID, Gender::ordinal);
 
-	private final Text name;
+	private final Component name;
 	private final boolean canHaveBreasts;
 	private final @Nullable SoundEvent hurtSound;
 
-	Gender(Text name, boolean canHaveBreasts, @Nullable SoundEvent hurtSound) {
+	Gender(Component name, boolean canHaveBreasts, @Nullable SoundEvent hurtSound) {
 		this.name = name;
 		this.canHaveBreasts = canHaveBreasts;
 		this.hurtSound = hurtSound;
 	}
 
-	public Text getDisplayName() {
+	public Component getDisplayName() {
 		return name;
 	}
 

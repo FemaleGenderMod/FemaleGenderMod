@@ -18,7 +18,7 @@
 
 package com.wildfire.main.cloud;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -34,7 +34,7 @@ record CloudAuth(boolean success, String token, UUID account, Instant expires) {
 	}
 
 	boolean isInvalidForClientPlayer() {
-		var client = MinecraftClient.getInstance();
-		return client.player == null || !account.equals(client.player.getUuid());
+		var client = Minecraft.getInstance();
+		return client.player == null || !account.equals(client.player.getUUID());
 	}
 }

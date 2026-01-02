@@ -19,7 +19,7 @@
 package com.wildfire.api.impl;
 
 import com.wildfire.api.IBreastArmorTexture;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.ApiStatus;
 import org.joml.Vector2ic;
 
 /**
@@ -28,14 +28,15 @@ import org.joml.Vector2ic;
  * @see IBreastArmorTexture
  */
 public record BreastArmorTexture(
-		@NotNull Vector2ic textureSize,
-		@NotNull Vector2ic leftUv,
-		@NotNull Vector2ic rightUv,
-		@NotNull Vector2ic dimensions
+		Vector2ic textureSize,
+		Vector2ic leftUv,
+		Vector2ic rightUv,
+		Vector2ic dimensions
 ) implements IBreastArmorTexture {
 	/**
 	 * @deprecated Use {@link IBreastArmorTexture#DEFAULT} instead
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true)
+	@ApiStatus.ScheduledForRemoval(inVersion = "First release of 26.1")
 	public static final IBreastArmorTexture DEFAULT = IBreastArmorTexture.DEFAULT;
 }

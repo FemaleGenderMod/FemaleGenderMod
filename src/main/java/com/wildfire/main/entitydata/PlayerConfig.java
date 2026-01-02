@@ -30,24 +30,39 @@ import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.config.types.ConfigKey;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 /**
  * A version of {@link EntityConfig} backed by a {@link Configuration} for use with players
  */
 public class PlayerConfig extends EntityConfig {
 
+	/**
+	 * <p>{@code true} if this config should be synced to the connected server on the next attempt</p>
+	 *
+	 * <p>This only has an effect for the client player.</p>
+	 */
 	public boolean needsSync;
+
+	/**
+	 * <p>{@code true} if this config should be synced to the {@link CloudSync cloud sync server} on the next attempt</p>
+	 *
+	 * <p>This only has an effect for the client player.</p>
+	 */
 	public boolean needsCloudSync;
+
+	/**
+	 * The current sync status of this player config
+	 *
+	 * @see #needsSync
+	 * @see SyncStatus
+	 */
 	public SyncStatus syncStatus = SyncStatus.UNKNOWN;
 
 	private final Configuration cfg;
@@ -76,7 +91,7 @@ public class PlayerConfig extends EntityConfig {
 
 	// these shouldn't ever be called on players, but just to be safe, override with a noop.
 	@Override
-	public void readFromStack(@NotNull ItemStack chestplate) {
+	public void readFromStack(ItemStack chestplate) {
 	}
 
 	public Configuration getConfig() {
@@ -211,21 +226,22 @@ public class PlayerConfig extends EntityConfig {
 	 * @deprecated Use {@code plr.save()} instead
 	 */
 	@Deprecated(forRemoval = true)
+	@ApiStatus.ScheduledForRemoval(inVersion = "First release of 26.1")
 	public static void saveGenderInfo(PlayerConfig plr) {
 		plr.save();
 	}
 
 	@Override
 	public boolean hasJacketLayer() {
-		throw new UnsupportedOperationException("PlayerConfig does not support #hasJacketLayer(); use PlayerEntity#isPartVisible instead");
+		throw new UnsupportedOperationException("PlayerConfig does not support #hasJacketLayer(); use Player#isModelPartShown instead");
 	}
 
 	@ApiStatus.Internal
 	public void attemptCloudSync() {
-		var client = MinecraftClient.getInstance();
-		if(client.player == null || !this.uuid.equals(client.player.getUuid())) return;
+		var client = Minecraft.getInstance();
+		if(client.player == null || !this.uuid.equals(client.player.getUUID())) return;
 		if(!needsCloudSync) return;
-		if(client.currentScreen instanceof BaseWildfireScreen) return;
+		if(client.screen instanceof BaseWildfireScreen) return;
 		if(!ClientConfig.INSTANCE.get(ClientConfig.AUTOMATIC_CLOUD_SYNC)) return;
 		if(CloudSync.syncOnCooldown()) return;
 
@@ -249,7 +265,7 @@ public class PlayerConfig extends EntityConfig {
 	 *
 	 * @param json The {@link JsonObject} to merge with the existing config for this player
 	 */
-	public void updateFromJson(@NotNull JsonObject json) {
+	public void updateFromJson(JsonObject json) {
 		json.asMap().forEach(this.cfg::set);
 		loadFromConfig(false);
 		this.syncStatus = SyncStatus.SYNCED;
@@ -265,6 +281,30 @@ public class PlayerConfig extends EntityConfig {
 	}
 
 	public enum SyncStatus {
-		CACHED, SYNCED, UNKNOWN
+		/**
+		 * <p>Indicates that the relevant configuration has had its data loaded from a file on disk.</p>
+		 *
+		 * <p>This is only applicable on a client, as dedicated servers do not read player data from
+		 * configuration files.</p>
+		 */
+		CACHED,
+
+		/**
+		 * <p>Indicates that the relevant configuration has had its data loaded from a sync packet,
+		 * or from a profile retrieved from {@link CloudSync the cloud sync server}.</p>
+		 *
+		 * <p>This is currently only set on the client.</p>
+		 */
+		// TODO this should be set on dedicated servers if/when the player config cache is split
+		//		into separate server-sided & client-sided caches
+		SYNCED,
+
+		/**
+		 * <p>Indicates that this configuration has an unknown sync state.</p>
+		 *
+		 * <p>This is the default sync state for new configuration instances, and on dedicated servers is
+		 * the only sync state.</p>
+		 */
+		UNKNOWN,
 	}
 }

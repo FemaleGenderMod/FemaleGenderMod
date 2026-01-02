@@ -19,46 +19,40 @@
 package com.wildfire.main;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.resource.Resource;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 public class GenderConfigs {
 
-    public static final JsonObject DEFAULT_FEMALE;
-    public static final JsonObject DEFAULT_MALE;
+	private static final Gson GSON = new Gson();
 
-    static {
-        DEFAULT_FEMALE = loadConfig("modeldata/female_default.json");
-        DEFAULT_MALE = loadConfig("modeldata/male_default.json");
-    }
+	public static final JsonObject DEFAULT_FEMALE;
+	public static final JsonObject DEFAULT_MALE;
 
-    private static JsonObject loadConfig(String cfgFile) {
-        JsonObject fObj = new JsonObject();
+	static {
+		DEFAULT_FEMALE = loadConfig("modeldata/female_default.json");
+		DEFAULT_MALE = loadConfig("modeldata/male_default.json");
+	}
 
-        try {
-            ResourceManager manager = MinecraftClient.getInstance().getResourceManager();
-            Identifier id = Identifier.of(WildfireGender.MODID, cfgFile);
-            Resource resource = manager.getResource(id).orElseThrow();
+	private static JsonObject loadConfig(String cfgFile) {
+		try {
+			ResourceManager manager = Minecraft.getInstance().getResourceManager();
+			Identifier id = WildfireGender.id(cfgFile);
+			Resource resource = manager.getResource(id).orElseThrow();
 
-            try (InputStreamReader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8)) {
-                JsonObject obj = new Gson().fromJson(reader, JsonObject.class);
-                for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
-                    fObj.add(entry.getKey(), entry.getValue());
-                }
-            }
-        } catch(IOException e) {
-            WildfireGender.LOGGER.error("Failed to load config file", e);
-        }
-
-        return fObj;
-    }
+			try(var reader = new InputStreamReader(resource.open(), StandardCharsets.UTF_8)) {
+				return GSON.fromJson(reader, JsonObject.class);
+			}
+		} catch(IOException e) {
+			throw new UncheckedIOException(e);
+		}
+	}
 }

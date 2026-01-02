@@ -22,9 +22,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -32,7 +32,7 @@ import java.util.function.Consumer;
 /**
  * Event invoked when an armor item is appending its stats to a tooltip.
  * <br>
- * This is only invoked for the {@link net.minecraft.component.DataComponentTypes#EQUIPPABLE} data component,
+ * This is only invoked for the {@link net.minecraft.core.component.DataComponents#EQUIPPABLE} data component,
  * and only if stats have already been added for the component.
  */
 @FunctionalInterface
@@ -44,5 +44,5 @@ public interface ArmorStatsTooltipEvent {
 		}
 	});
 
-	void appendTooltips(ItemStack item, Consumer<Text> tooltip, @Nullable PlayerEntity player);
+	void appendTooltips(ItemStack item, Consumer<Component> tooltip, @Nullable Player player);
 }

@@ -26,8 +26,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import org.joml.Vector3fc;
 
-import java.util.Map;
-
 @Environment(EnvType.CLIENT)
 public final class WildfireModelRenderer {
 	private WildfireModelRenderer() {
@@ -82,30 +80,31 @@ public final class WildfireModelRenderer {
 								 PositionTextureVertex vertex3, PositionTextureVertex vertex4, PositionTextureVertex vertex5,
 								 PositionTextureVertex vertex6, PositionTextureVertex vertex7) {
 			PositionTextureVertex[][] faceVertices = {
-					{vertex4, vertex, vertex1, vertex5}, 	// EAST
+					{vertex4, vertex, vertex1, vertex5},	// EAST
 					{vertex7, vertex3, vertex6, vertex2},	// WEST
-					{vertex4, vertex3, vertex7, vertex}, 	// DOWN
+					{vertex4, vertex3, vertex7, vertex},	// DOWN
 					{vertex1, vertex2, vertex6, vertex5},	// UP
-					{vertex, vertex7, vertex2, vertex1}, 	// NORTH
-					{vertex3, vertex4, vertex5, vertex6}	 // SOUTH
+					{vertex, vertex7, vertex2, vertex1},	// NORTH
+					{vertex3, vertex4, vertex5, vertex6}	// SOUTH
 			};
 
-            int i = 0;
-            for (Map.Entry<UVDirection, UVQuad> entry : dynamicUvLayouts.getAllSides().entrySet()) {
-                UVDirection direction = entry.getKey();
-                UVQuad quad = entry.getValue();
+			int i = 0;
+			for(var entry : dynamicUvLayouts.getAllSides().entrySet()) {
+				UVDirection direction = entry.getKey();
+				UVQuad quad = entry.getValue();
+				if(quad == null) continue;
 
-                    this.quads[i] = new TexturedQuad(
-                            quad.x1(), quad.y1(), quad.x2(), quad.y2(),
-                            tW, tH,
-                            direction,
-                            faceVertices[i][0],
-                            faceVertices[i][1],
-                            faceVertices[i][2],
-                            faceVertices[i][3]
-                    );
-                    i++;
-            }
+				this.quads[i] = new TexturedQuad(
+						quad.x1(), quad.y1(), quad.x2(), quad.y2(),
+						tW, tH,
+						direction,
+						faceVertices[i][0],
+						faceVertices[i][1],
+						faceVertices[i][2],
+						faceVertices[i][3]
+				);
+				i++;
+			}
 		}
 	}
 

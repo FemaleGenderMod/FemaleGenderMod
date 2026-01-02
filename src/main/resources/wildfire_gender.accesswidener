@@ -1,6 +1,7 @@
 accessWidener v2 named
 
-accessible method net/minecraft/entity/LivingEntity getHandSwingDuration ()I
-accessible class net/minecraft/client/render/entity/equipment/EquipmentRenderer$TrimSpriteKey
-accessible method net/minecraft/client/render/entity/equipment/EquipmentRenderer$TrimSpriteKey <init> (Lnet/minecraft/item/equipment/trim/ArmorTrim;Lnet/minecraft/client/render/entity/equipment/EquipmentModel$LayerType;Lnet/minecraft/registry/RegistryKey;)V
-accessible method net/minecraft/client/render/entity/equipment/EquipmentRenderer getDyeColor (Lnet/minecraft/client/render/entity/equipment/EquipmentModel$Layer;I)I
+accessible method net/minecraft/world/entity/LivingEntity getCurrentSwingDuration ()I
+accessible class net/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer$TrimSpriteKey
+accessible method net/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer$TrimSpriteKey <init> (Lnet/minecraft/world/item/equipment/trim/ArmorTrim;Lnet/minecraft/client/resources/model/EquipmentClientInfo$LayerType;Lnet/minecraft/resources/ResourceKey;)V
+accessible method net/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer getColorForLayer (Lnet/minecraft/client/resources/model/EquipmentClientInfo$Layer;I)I
+accessible method net/minecraft/client/gui/screens/inventory/InventoryScreen extractRenderState (Lnet/minecraft/world/entity/LivingEntity;)Lnet/minecraft/client/renderer/entity/state/EntityRenderState;

@@ -16,15 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.mixins.accessors;
+@NullMarked
+package com.wildfire.main.contributors;
 
-import net.minecraft.client.render.OutlineVertexConsumerProvider;
-import net.minecraft.client.render.command.RenderDispatcher;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
-
-@Mixin(RenderDispatcher.class)
-public interface RenderDispatcherAccessor {
-	@Accessor("outlineVertexConsumers")
-	OutlineVertexConsumerProvider getOutlineVertexConsumerProvider();
-}
+import org.jspecify.annotations.NullMarked;

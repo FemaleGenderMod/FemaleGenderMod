@@ -23,7 +23,8 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public enum BreastSide {
-	LEFT(true), RIGHT(false);
+	LEFT(true),
+	RIGHT(false);
 
 	public final boolean isLeft;
 

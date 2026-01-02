@@ -33,12 +33,11 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.hud.debug.DebugHudEntries;
-import net.minecraft.resource.ResourceType;
-import net.minecraft.text.Text;
 import net.minecraft.util.Util;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.debug.DebugScreenEntries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.packs.PackType;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -50,7 +49,7 @@ import java.util.concurrent.Executor;
 
 @Environment(EnvType.CLIENT)
 public class WildfireGenderClient implements ClientModInitializer {
-	private static final Executor LOAD_EXECUTOR = Util.getIoWorkerExecutor().named("wildfire_gender$loadPlayerData");
+	private static final Executor LOAD_EXECUTOR = Util.ioPool().forName("wildfire_gender$loadPlayerData");
 
 	@Override
 	public void onInitializeClient() {
@@ -61,12 +60,12 @@ public class WildfireGenderClient implements ClientModInitializer {
 		WildfireSounds.register();
 		WildfireSync.registerClient();
 		WildfireEventHandler.registerClientEvents();
-		ResourceLoader.get(ResourceType.CLIENT_RESOURCES).registerReloader(GenderArmorResourceManager.ID, GenderArmorResourceManager.INSTANCE);
-		DebugHudEntries.register(GenderDebugHudEntry.SELF, new GenderDebugHudEntry(true));
-		DebugHudEntries.register(GenderDebugHudEntry.OTHER, new GenderDebugHudEntry(false));
+		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloader(GenderArmorResourceManager.ID, GenderArmorResourceManager.INSTANCE);
+		DebugScreenEntries.register(GenderDebugHudEntry.SELF, new GenderDebugHudEntry(true));
+		DebugScreenEntries.register(GenderDebugHudEntry.OTHER, new GenderDebugHudEntry(false));
 		// only register this in dev env, as this likely isn't going to be very useful anywhere else.
 		if(FabricLoader.getInstance().isDevelopmentEnvironment()) {
-			DebugHudEntries.register(PhysicsDebugHudEntry.ID, new PhysicsDebugHudEntry());
+			DebugScreenEntries.register(PhysicsDebugHudEntry.ID, new PhysicsDebugHudEntry());
 		}
 		WildfireCommand.init();
 	}
@@ -100,7 +99,7 @@ public class WildfireGenderClient implements ClientModInitializer {
 		return loadGenderInfo(cache, markForSync, bypassQueue);
 	}
 
-	public static CompletableFuture<@NotNull PlayerConfig> loadGenderInfo(PlayerConfig player, boolean markForSync, boolean bypassQueue) {
+	public static CompletableFuture<PlayerConfig> loadGenderInfo(PlayerConfig player, boolean markForSync, boolean bypassQueue) {
 		return CompletableFuture.supplyAsync(() -> {
 			var uuid = player.uuid;
 			if(player.hasLocalConfig()) {
@@ -127,9 +126,9 @@ public class WildfireGenderClient implements ClientModInitializer {
 		}, LOAD_EXECUTOR);
 	}
 
-	public static @Nullable Text getNametag(UUID uuid) {
-		var clientPlayer = MinecraftClient.getInstance().player;
-		if(ClientConfig.INSTANCE.get(ClientConfig.HIDE_OWN_CONTRIBUTOR_TAG) && clientPlayer != null && uuid.equals(clientPlayer.getUuid())) {
+	public static @Nullable Component getNametag(UUID uuid) {
+		var clientPlayer = Minecraft.getInstance().player;
+		if(ClientConfig.INSTANCE.get(ClientConfig.HIDE_OWN_CONTRIBUTOR_TAG) && clientPlayer != null && uuid.equals(clientPlayer.getUUID())) {
 			return null;
 		}
 

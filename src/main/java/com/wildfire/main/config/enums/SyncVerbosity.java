@@ -18,26 +18,26 @@
 
 package com.wildfire.main.config.enums;
 
-import net.minecraft.command.argument.EnumArgumentType;
-import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.function.ValueLists;
+import net.minecraft.commands.arguments.StringRepresentableArgument;
+import net.minecraft.util.ByIdMap;
+import net.minecraft.util.StringRepresentable;
 
 import java.util.function.IntFunction;
 
-public enum SyncVerbosity implements StringIdentifiable {
+public enum SyncVerbosity implements StringRepresentable {
 	DEFAULT,
 	SHOW_FETCHES;
 
-	public static final IntFunction<SyncVerbosity> BY_ID = ValueLists.createIndexToValueFunction(SyncVerbosity::ordinal, values(), ValueLists.OutOfBoundsHandling.CLAMP);
+	public static final IntFunction<SyncVerbosity> BY_ID = ByIdMap.continuous(SyncVerbosity::ordinal, values(), ByIdMap.OutOfBoundsStrategy.CLAMP);
 
 	@Override
-	public String asString() {
+	public String getSerializedName() {
 		return toString();
 	}
 
-	public static class SyncVerbosityArgumentType extends EnumArgumentType<SyncVerbosity> {
+	public static class SyncVerbosityArgumentType extends StringRepresentableArgument<SyncVerbosity> {
 		public SyncVerbosityArgumentType() {
-			super(StringIdentifiable.createCodec(SyncVerbosity::values), SyncVerbosity::values);
+			super(StringRepresentable.fromEnum(SyncVerbosity::values), SyncVerbosity::values);
 		}
 	}
 }

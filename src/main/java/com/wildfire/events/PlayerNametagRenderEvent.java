@@ -18,14 +18,13 @@
 
 package com.wildfire.events;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.network.chat.Component;
 
 import java.util.function.Consumer;
 
@@ -41,5 +40,5 @@ public interface PlayerNametagRenderEvent {
 		}
 	});
 
-	void onRenderNameTag(PlayerEntityRenderState state, MatrixStack matrixStack, Consumer<Text> renderHelper);
+	void onRenderNameTag(AvatarRenderState state, PoseStack matrixStack, Consumer<Component> renderHelper);
 }

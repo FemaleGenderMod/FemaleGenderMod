@@ -1,6 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.11-SNAPSHOT'
-	id 'maven-publish'
+	id "fabric-loom" version "${loom_version}"
 }
 
 version = "fabric-${project.mod_version}+${project.minecraft_version}"
@@ -13,12 +12,18 @@ base {
 repositories {
 	maven { url = "https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1" }
 	maven { url = "https://maven.terraformersmc.com/" }
+	maven { url = "https://maven.parchmentmc.org/" }
 }
 
 dependencies {
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.fabricmc:yarn:${project.minecraft_version}+build.${project.yarn_build}:v2"
+	mappings loom.layered() {
+		officialMojangMappings()
+		if(!project.parchment_version.isEmpty()) {
+			parchment("org.parchmentmc.data:parchment-${project.minecraft_version}:${project.parchment_version}@zip")
+		}
+	}
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	modImplementation fabricApi.module("fabric-networking-api-v1", project.fabric_version)
@@ -26,12 +31,16 @@ dependencies {
 	modImplementation fabricApi.module("fabric-lifecycle-events-v1", project.fabric_version)
 	modImplementation fabricApi.module("fabric-command-api-v2", project.fabric_version)
 	modImplementation fabricApi.module("fabric-rendering-v1", project.fabric_version)
-	modImplementation fabricApi.module("fabric-resource-loader-v0", project.fabric_version)
+	modImplementation fabricApi.module("fabric-resource-loader-v1", project.fabric_version)
 	modRuntimeOnly fabricApi.module("fabric-registry-sync-v0", project.fabric_version)
 
 	// Allow logging into an actual Minecraft account in a dev env
 	// See https://github.com/DJtheRedstoner/DevAuth
 	modLocalRuntime "me.djtheredstoner:DevAuth-fabric:1.2.1"
+	// TODO mojang removed their dependency on Apache HTTP, which breaks DevAuth; for the time being, just re-import it
+	//      as a dev env dependency.
+	localRuntime "org.apache.httpcomponents:httpclient:4.5.14"
+	localRuntime "org.apache.httpcomponents:httpcore:4.4.16"
 
 	// If you want to load Mod Menu in a development environment, change this to modImplementation
 	// and uncomment the associated Fabric API module.
@@ -42,9 +51,12 @@ dependencies {
 processResources {
 	inputs.property "version", project.mod_version
 	inputs.property "minecraft_version", project.minecraft_version
+	inputs.property "minecraft_dependency", project.minecraft_dependency
 
 	filesMatching("fabric.mod.json") {
-		expand "version": project.mod_version, "minecraft_version": project.minecraft_version
+		expand "version": project.mod_version,
+				"minecraft_version": project.minecraft_version,
+				"minecraft_dependency": project.minecraft_dependency
 	}
 }
 
@@ -59,28 +71,17 @@ java {
 }
 
 loom {
+	decompilers {
+		named("vineflower") {
+			options.put("mark-corresponding-synthetics", "1")
+		}
+	}
+
 	accessWidenerPath = file("src/main/resources/wildfire_gender.accesswidener")
 }
 
 jar {
 	from("LICENSE") {
-		rename { "${it}_${project.archivesBaseName}"}
-	}
-}
-
-// configure the maven publication
-publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			from components.java
-		}
-	}
-
-	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-	repositories {
-		// Add repositories to publish to here.
-		// Notice: This block does NOT have the same function as the block in the top level.
-		// The repositories here will be used for publishing your artifact, not for
-		// retrieving dependencies.
+		rename { "${it}_${project.property("archives_base_name")}" }
 	}
 }

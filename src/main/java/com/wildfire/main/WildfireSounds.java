@@ -18,19 +18,19 @@
 
 package com.wildfire.main;
 
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.sounds.SoundEvent;
 
 public final class WildfireSounds {
 	private WildfireSounds() {
 		throw new UnsupportedOperationException();
 	}
 
-	public static final SoundEvent FEMALE_HURT = SoundEvent.of(Identifier.of(WildfireGender.MODID, "female_hurt"));
+	public static final SoundEvent FEMALE_HURT = SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(WildfireGender.MODID, "female_hurt"));
 
 	static void register() {
-		Registry.register(Registries.SOUND_EVENT, FEMALE_HURT.id(), FEMALE_HURT);
+		Registry.register(BuiltInRegistries.SOUND_EVENT, FEMALE_HURT.location(), FEMALE_HURT);
 	}
 }

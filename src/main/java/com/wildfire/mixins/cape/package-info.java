@@ -16,25 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+@NullMarked
 package com.wildfire.mixins.cape;
 
-import com.wildfire.main.cape.SkinTexturesWildfire;
-import net.minecraft.entity.player.SkinTextures;
-import net.minecraft.util.AssetInfo;
-import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
-
-@SuppressWarnings("unused")
-@Mixin(SkinTextures.class)
-abstract class SkinTexturesWildfireImplMixin implements SkinTexturesWildfire {
-    private @Unique @Nullable AssetInfo.TextureAsset wildfiregender$overriddenCapeTexture = null;
-
-    public void wildfiregender$overrideCapeTexture(@Nullable AssetInfo.TextureAsset texture) {
-        this.wildfiregender$overriddenCapeTexture = texture;
-    }
-
-    public @Nullable AssetInfo.TextureAsset wildfiregender$getOverriddenCapeTexture() {
-        return wildfiregender$overriddenCapeTexture;
-    }
-}
+import org.jspecify.annotations.NullMarked;

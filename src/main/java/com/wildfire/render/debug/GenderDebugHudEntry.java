@@ -23,24 +23,24 @@ import com.wildfire.main.WildfireGender;
 import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.physics.BreastPhysics;
 import com.wildfire.resources.GenderArmorResourceManager;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.hud.debug.DebugHudEntry;
-import net.minecraft.client.gui.hud.debug.DebugHudLines;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Nullables;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.ChatFormatting;
+import net.minecraft.Optionull;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.debug.DebugScreenDisplayer;
+import net.minecraft.client.gui.components.debug.DebugScreenEntry;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.chunk.LevelChunk;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-public class GenderDebugHudEntry implements DebugHudEntry {
+public class GenderDebugHudEntry implements DebugScreenEntry {
 	private final Identifier id;
 	private final boolean clientPlayer;
 
@@ -48,11 +48,11 @@ public class GenderDebugHudEntry implements DebugHudEntry {
 	public static final Identifier OTHER = WildfireGender.id("target_gender_info");
 
 	private static final String PREFIX =
-			Formatting.GRAY + "" + Formatting.UNDERLINE + "["
-					+ Formatting.LIGHT_PURPLE + Formatting.UNDERLINE + "F"
-					+ Formatting.WHITE + Formatting.UNDERLINE + "GM"
-					+ Formatting.GRAY + Formatting.UNDERLINE + "]" +
-					Formatting.RESET + Formatting.UNDERLINE;
+			ChatFormatting.GRAY + "" + ChatFormatting.UNDERLINE + "["
+					+ ChatFormatting.LIGHT_PURPLE + ChatFormatting.UNDERLINE + "F"
+					+ ChatFormatting.WHITE + ChatFormatting.UNDERLINE + "GM"
+					+ ChatFormatting.GRAY + ChatFormatting.UNDERLINE + "]" +
+					ChatFormatting.RESET + ChatFormatting.UNDERLINE;
 
 	public GenderDebugHudEntry(boolean clientPlayer) {
 		this.clientPlayer = clientPlayer;
@@ -60,9 +60,9 @@ public class GenderDebugHudEntry implements DebugHudEntry {
 	}
 
 	@Override
-	public void render(DebugHudLines lines, @Nullable World world, @Nullable WorldChunk clientChunk, @Nullable WorldChunk chunk) {
-		var client = MinecraftClient.getInstance();
-		var target = clientPlayer ? client.player : client.targetedEntity;
+	public void display(DebugScreenDisplayer lines, @Nullable Level world, @Nullable LevelChunk clientChunk, @Nullable LevelChunk chunk) {
+		var client = Minecraft.getInstance();
+		var target = clientPlayer ? client.player : client.crosshairPickEntity;
 		if(!(target instanceof LivingEntity living) || !EntityConfig.isSupportedEntity(living)) {
 			return;
 		}
@@ -71,24 +71,26 @@ public class GenderDebugHudEntry implements DebugHudEntry {
 		List<String> info = new ArrayList<>();
 
 		info.add(PREFIX + " Gender Data");
-		info.add("UUID: " + target.getUuid());
+		info.add("UUID: " + target.getUUID());
 		info.addAll(config.getDebugInfo());
 		addEquippedChestplate(info, config, living);
 
-		lines.addLinesToSection(id, info);
+		lines.addToGroup(id, info);
 	}
 
 	private void addEquippedChestplate(List<String> lines, EntityConfig config, LivingEntity entity) {
-		var equippedChestplate = entity.getEquippedStack(EquipmentSlot.CHEST);
-		var equippable = equippedChestplate.get(DataComponentTypes.EQUIPPABLE);
-		var asset = Nullables.map(equippable, (it) -> it.assetId().orElse(null));
+		var equippedChestplate = entity.getItemBySlot(EquipmentSlot.CHEST);
+		var equippable = equippedChestplate.get(DataComponents.EQUIPPABLE);
+		// null is perfectly valid to return here
+		//noinspection DataFlowIssue
+		var asset = Optionull.map(equippable, (it) -> it.assetId().orElse(null));
 		if(asset == null) return;
 
 		lines.add("");
 		lines.add(PREFIX + " Equipped Chestplate");
 
-		var id = asset.getValue();
-		var armorConfig = Nullables.mapOrElse(GenderArmorResourceManager.get(id), Function.identity(), IGenderArmor.DEFAULT);
+		var id = asset.identifier();
+		var armorConfig = Optionull.mapOrDefault(GenderArmorResourceManager.get(id), Function.identity(), IGenderArmor.DEFAULT);
 		lines.add("Material: " + id);
 		if(!armorConfig.coversBreasts()) {
 			lines.add("Covers breasts: false");
