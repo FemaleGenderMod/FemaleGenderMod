@@ -36,6 +36,7 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
 import net.minecraft.client.renderer.entity.state.ArmorStandRenderState;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -170,7 +171,7 @@ public class GenderArmorLayer<S extends HumanoidRenderState, M extends HumanoidM
     @Override
     protected void setupTransformations(S state, M model, PoseStack matrixStack, BreastSide side) {
         super.setupTransformations(state, model, matrixStack, side);
-        if (genderRenderState.hasJacketLayer) {
+        if(genderRenderState.hasJacketLayer) {
             matrixStack.translate(0, 0, -0.015f);
             matrixStack.scale(1.05f, 1.05f, 1.05f);
         }
@@ -179,41 +180,39 @@ public class GenderArmorLayer<S extends HumanoidRenderState, M extends HumanoidM
     }
 
     // TODO eventually expose some way for mods to override this, maybe through a default impl in IGenderArmor or similar
-    protected void renderBreastArmor(Identifier texture, PoseStack matrixStack, SubmitNodeCollector queue,
+    protected void renderBreastArmor(Identifier texture, PoseStack poseStack, SubmitNodeCollector collector,
                                      S state, BreastSide side, int color, boolean glint) {
         if(!textureExists(texture)) {
             return;
         }
 
         var model = side.isLeft ? lBoobArmor : rBoobArmor;
-        var layer = RenderTypes.armorCutoutNoCull(texture);
-        queue.submitCustomGeometry(matrixStack, layer, new BreastRenderCommand(model, state, OverlayTexture.NO_OVERLAY, ARGB.opaque(color)));
+        RenderType type = RenderTypes.armorCutoutNoCull(texture);
+        collector.submitModel(new BreastModel(model), state, poseStack, type, state.lightCoords, OverlayTexture.NO_OVERLAY, ARGB.opaque(color), null, state.outlineColor, null);
 
         if(glint) {
-            renderGlint(matrixStack, queue, state, model);
+            renderGlint(poseStack, collector, state, model);
         }
     }
 
-    protected void renderArmorTrim(ResourceKey<EquipmentAsset> armorModel, PoseStack matrixStack, SubmitNodeCollector queue,
+    protected void renderArmorTrim(ResourceKey<EquipmentAsset> armorModel, PoseStack poseStack, SubmitNodeCollector collector,
                                    S state, ArmorTrim trim, BreastSide side, boolean glint) {
         var model = side.isLeft ? lTrim : rTrim;
 
-        // this sucks, but it sucks less than simply copy/pasting the entire relevant block of code, and is
-        // (at least theoretically) more compatible with other mods, assuming they simply mixin to TrimSpriteKey
-        // to modify the armor trim sprite location.
         var key = new EquipmentLayerRenderer.TrimSpriteKey(trim, EquipmentClientInfo.LayerType.HUMANOID, armorModel);
         TextureAtlasSprite sprite = ((EquipmentLayerRendererAccessor) equipmentRenderer).getTrimSpriteLookup().apply(key);
 
-        var layer = Sheets.armorTrimsSheet(trim.pattern().value().decal());
-        queue.submitCustomGeometry(matrixStack, layer, BreastRenderCommand.trim(model, state, sprite));
+        RenderType type = Sheets.armorTrimsSheet(trim.pattern().value().decal());
+        collector.submitModel(new BreastModel(model), state, poseStack, type, state.lightCoords, OverlayTexture.NO_OVERLAY, -1, sprite, 0, null);
 
         if(glint) {
-            renderGlint(matrixStack, queue, state, model);
+            renderGlint(poseStack, collector, state, model);
         }
     }
 
-    protected void renderGlint(PoseStack matrixStack, SubmitNodeCollector renderQueue, S state, BreastModelBox box) {
-        var glintLayer = RenderTypes.armorEntityGlint();
-        renderQueue.submitCustomGeometry(matrixStack, glintLayer, new BreastRenderCommand(box, state, OverlayTexture.NO_OVERLAY, -1));
+    protected void renderGlint(PoseStack poseStack, SubmitNodeCollector collector, S state, BreastModelBox model) {
+        RenderType type = RenderTypes.armorEntityGlint();
+//        collector.wildfire_gender$submitBreastModel(box, matrixStack, glintLayer, null, state, OverlayTexture.NO_OVERLAY, -1, 0);
+        collector.submitModel(new BreastModel(model), state, poseStack, type, state.lightCoords, OverlayTexture.NO_OVERLAY, -1, null, 0, null);
     }
 }
