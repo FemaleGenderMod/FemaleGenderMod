@@ -51,6 +51,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.item.equipment.EquipmentAsset;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
+import org.apache.commons.lang3.mutable.MutableBoolean;
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.UnknownNullability;
 
 @Environment(EnvType.CLIENT)
@@ -85,8 +87,7 @@ public class GenderArmorLayer<S extends HumanoidRenderState, M extends HumanoidM
                 new UVQuad(24, 21, 28, 26)   // NORTH
         );
 
-        // apply a very slight delta to fix rare layering issues with the normal armor layer
-        // TODO look into how difficult it'd be to replicate Model render priority here
+        // TODO figure out why this still z-fights even with ordering
         lTrim = new BreastModelBox(64, 32, -4F, 0.0F, 0F, 4, 5, 4, 0.001F, left);
         rTrim = new BreastModelBox(64, 32, 0, 0.0F, 0F, 4, 5, 4, 0.001F, right);
     }
@@ -121,19 +122,21 @@ public class GenderArmorLayer<S extends HumanoidRenderState, M extends HumanoidM
             if(state instanceof ArmorStandRenderState && !genderArmor.armorStandsCopySettings()) return;
 
             int color = DyedItemColor.getOrDefault(chestplate, 0);
-            boolean glint = chestplate.hasFoil();
 
             renderSides(state, getParentModel(), matrixStack, side -> {
+                var order = new MutableInt(1);
+
                 // TODO is there still a need to allow for overriding the armor texture identifier?
                 layers.forEach(layer -> {
+                    var glint = new MutableBoolean(chestplate.hasFoil());
                     int layerColor = EquipmentLayerRenderer.getColorForLayer(layer, color);
                     var texture = layer.getTextureLocation(EquipmentClientInfo.LayerType.HUMANOID);
-                    renderBreastArmor(texture, matrixStack, queue, state, side, layerColor, glint);
+                    renderBreastArmor(texture, matrixStack, queue, state, side, layerColor, glint, order);
                 });
 
                 var trim = armorStack.get(DataComponents.TRIM);
                 if(trim != null) {
-                    renderArmorTrim(asset, matrixStack, queue, state, trim, side, glint);
+                    renderArmorTrim(asset, matrixStack, queue, state, trim, side, chestplate.hasFoil(), order);
                 }
             });
         } catch(Exception e) {
@@ -181,38 +184,71 @@ public class GenderArmorLayer<S extends HumanoidRenderState, M extends HumanoidM
 
     // TODO eventually expose some way for mods to override this, maybe through a default impl in IGenderArmor or similar
     protected void renderBreastArmor(Identifier texture, PoseStack poseStack, SubmitNodeCollector collector,
-                                     S state, BreastSide side, int color, boolean glint) {
+                                     S state, BreastSide side, int color, MutableBoolean glint, MutableInt order) {
         if(!textureExists(texture)) {
             return;
         }
 
-        var model = side.isLeft ? lBoobArmor : rBoobArmor;
+        var model = new BreastModel(side.isLeft ? lBoobArmor : rBoobArmor);
         RenderType type = RenderTypes.armorCutoutNoCull(texture);
-        collector.submitModel(new BreastModel(model), state, poseStack, type, state.lightCoords, OverlayTexture.NO_OVERLAY, ARGB.opaque(color), null, state.outlineColor, null);
+        collector.order(order.getAndIncrement()).submitModel(
+            model,
+            state,
+            poseStack,
+            type,
+            state.lightCoords,
+            OverlayTexture.NO_OVERLAY,
+            ARGB.opaque(color),
+            null,
+            state.outlineColor,
+            null
+        );
 
-        if(glint) {
-            renderGlint(poseStack, collector, state, model);
+        if(glint.isTrue()) {
+            collector.order(order.intValue()).submitModel(
+                model,
+                state,
+                poseStack,
+                RenderTypes.armorEntityGlint(),
+                state.lightCoords,
+                OverlayTexture.NO_OVERLAY,
+                -1,
+                null,
+                0,
+                null
+            );
+            glint.setFalse();
         }
     }
 
     protected void renderArmorTrim(ResourceKey<EquipmentAsset> armorModel, PoseStack poseStack, SubmitNodeCollector collector,
-                                   S state, ArmorTrim trim, BreastSide side, boolean glint) {
-        var model = side.isLeft ? lTrim : rTrim;
+                                   S state, ArmorTrim trim, BreastSide side, boolean glint, MutableInt order) {
+        var model = new BreastModel(side.isLeft ? lTrim : rTrim);
 
         var key = new EquipmentLayerRenderer.TrimSpriteKey(trim, EquipmentClientInfo.LayerType.HUMANOID, armorModel);
         TextureAtlasSprite sprite = ((EquipmentLayerRendererAccessor) equipmentRenderer).getTrimSpriteLookup().apply(key);
 
         RenderType type = Sheets.armorTrimsSheet(trim.pattern().value().decal());
-        collector.submitModel(new BreastModel(model), state, poseStack, type, state.lightCoords, OverlayTexture.NO_OVERLAY, -1, sprite, 0, null);
+        collector.order(order.getAndIncrement()).submitModel(
+            model,
+            state,
+            poseStack,
+            type,
+            state.lightCoords,
+            OverlayTexture.NO_OVERLAY,
+            -1,
+            sprite,
+            0,
+            null
+        );
 
         if(glint) {
             renderGlint(poseStack, collector, state, model);
         }
     }
 
-    protected void renderGlint(PoseStack poseStack, SubmitNodeCollector collector, S state, BreastModelBox model) {
+    protected void renderGlint(PoseStack poseStack, SubmitNodeCollector collector, S state, BreastModel model) {
         RenderType type = RenderTypes.armorEntityGlint();
-//        collector.wildfire_gender$submitBreastModel(box, matrixStack, glintLayer, null, state, OverlayTexture.NO_OVERLAY, -1, 0);
-        collector.submitModel(new BreastModel(model), state, poseStack, type, state.lightCoords, OverlayTexture.NO_OVERLAY, -1, null, 0, null);
+        collector.submitModel(model, state, poseStack, type, state.lightCoords, OverlayTexture.NO_OVERLAY, -1, null, 0, null);
     }
 }
