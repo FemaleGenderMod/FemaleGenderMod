@@ -118,6 +118,7 @@ public class GenderLayer<S extends HumanoidRenderState, M extends HumanoidModel<
 
         armorStack = entityState.chestEquipment;
         //Note: When the stack is empty the helper will fall back to an implementation that returns the proper data
+        // TODO should this be moved into the render state?
         genderArmor = WildfireHelper.getArmorConfig(armorStack);
         isChestplateOccupied = genderArmor.coversBreasts() && !genderState.armorPhysicsOverride;
         if(genderArmor.alwaysHidesBreasts() || !genderState.showBreastsInArmor && isChestplateOccupied) {

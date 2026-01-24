@@ -16,16 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.api.impl;
+package com.wildfire.main.uvs;
 
-import com.wildfire.api.IBreastArmorTexture;
-import com.wildfire.main.uvs.UVMap;
-import org.joml.Vector2ic;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-/**
- * Default record implementation of {@link IBreastArmorTexture} used for resource pack entries
- *
- * @see IBreastArmorTexture
- */
-public record BreastArmorTexture(Vector2ic textureSize, UVMap uvs) implements IBreastArmorTexture {
+public record UVMap(UVLayout left, UVLayout right) {
+    public static final Codec<UVMap> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        UVLayout.CODEC.fieldOf("left").forGetter(UVMap::left),
+        UVLayout.CODEC.fieldOf("right").forGetter(UVMap::right)
+    ).apply(instance, UVMap::new));
 }

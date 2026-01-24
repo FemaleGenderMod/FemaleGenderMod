@@ -18,7 +18,9 @@
 
 package com.wildfire.render;
 
+import com.wildfire.api.IGenderArmor;
 import com.wildfire.main.WildfireGenderClient;
+import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.entitydata.Breasts;
 import com.wildfire.main.entitydata.EntityConfig;
@@ -34,6 +36,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectUtil;
 import net.minecraft.world.entity.Avatar;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelPart;
@@ -77,8 +80,7 @@ public class GenderRenderState {
     public final UVLayout rightBreastUVLayout;
     public final UVLayout leftBreastOverlayUVLayout;
     public final UVLayout rightBreastOverlayUVLayout;
-    public final UVLayout leftBreastArmorUVLayout;
-    public final UVLayout rightBreastArmorUVLayout;
+    public final IGenderArmor armor;
 
     public final boolean isBreathing;
     public final @Nullable Component nametag;
@@ -114,8 +116,7 @@ public class GenderRenderState {
         this.rightBreastUVLayout = entityConfig.getRightBreastUVLayout().copy();
         this.leftBreastOverlayUVLayout = entityConfig.getLeftBreastOverlayUVLayout().copy();
         this.rightBreastOverlayUVLayout = entityConfig.getRightBreastOverlayUVLayout().copy();
-        this.leftBreastArmorUVLayout = entityConfig.getLeftBreastArmorUVLayout().copy();
-        this.rightBreastArmorUVLayout = entityConfig.getRightBreastArmorUVLayout().copy();
+        this.armor = WildfireHelper.getArmorConfig(entity.getItemBySlot(EquipmentSlot.CHEST));
 
         this.isBreathing = !entity.isUnderWater() || MobEffectUtil.hasWaterBreathing(entity) ||
             entity.level().getBlockState(entity.blockPosition()).is(Blocks.BUBBLE_COLUMN);
