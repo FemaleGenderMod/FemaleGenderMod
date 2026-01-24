@@ -29,6 +29,7 @@ import net.minecraft.util.StringRepresentable;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
+import java.util.Locale;
 import java.util.function.IntFunction;
 
 public enum UVDirection implements StringRepresentable {
@@ -97,6 +98,6 @@ public enum UVDirection implements StringRepresentable {
 
     @Override
     public String getSerializedName() {
-        return name();
+        return name().toLowerCase(Locale.ROOT);
     }
 }
