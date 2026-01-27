@@ -15,9 +15,9 @@ The full schema with default values is as follows:
   "render_on_armor_stands": null, // true if resistance == 1
   "texture": {
     "texture_size": [64, 32],
-    "dimensions": [4, 5],
-    "left_uv": [16, 17],
-    "right_uv": [-1, -1] // defaults to left_uv added with the x value of dimensions
+    "uvs": {
+        // default values omitted due to its size; see below for full default value
+    }
   }
 }
 ```
@@ -85,7 +85,9 @@ Defaults to `[64, 32]` if unset.
 >[!TIP]
 > It's strongly recommended to be at least somewhat familiar with the mod's UV editor beforehand!
 
-An object containing the armor's UV values; for example, with the default UV layout:
+An object containing the UV mapping for the armor when equipped.
+
+The default mapping for vanilla-compatible armor types is as follows:
 
 ```json5
 {
