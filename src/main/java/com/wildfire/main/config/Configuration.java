@@ -83,7 +83,7 @@ public class Configuration extends AbstractConfiguration {
                     new UVQuad( 0,  0,  0,  0),  // EAST (not used)
                     new UVQuad(17, 37, 20, 42),  // WEST
                     new UVQuad(20, 34, 24, 37),  // DOWN
-                    new UVQuad(20, 42, 24, 45),  // UP
+                    new UVQuad(20, 41, 24, 44),  // UP
                     new UVQuad(20, 37, 24, 42)   // NORTH
             ));
 
@@ -92,7 +92,7 @@ public class Configuration extends AbstractConfiguration {
                     new UVQuad(28, 37, 31, 42),  // EAST
                     new UVQuad( 0,  0,  0,  0),  // WEST (not used)
                     new UVQuad(24, 34, 28, 37),  // DOWN
-                    new UVQuad(24, 42, 28, 45),  // UP
+                    new UVQuad(24, 41, 28, 44),  // UP
                     new UVQuad(24, 37, 28, 42)   // NORTH
             ));
 
