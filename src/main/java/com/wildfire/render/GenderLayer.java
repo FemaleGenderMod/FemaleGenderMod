@@ -38,7 +38,6 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
@@ -81,12 +80,14 @@ public class GenderLayer<S extends HumanoidRenderState, M extends HumanoidModel<
      * Convenience method around {@link LivingEntityRendererAccessor#invokeGetRenderType}
      */
     private @Nullable RenderType getRenderLayer(S state) {
-        boolean bodyVisible = !state.isInvisible;
-        boolean translucent = state.isInvisible && !state.isInvisibleToPlayer;
+        var renderer = (LivingEntityRenderer<?, ?, ?>) context;
+        var accessor = (LivingEntityRendererAccessor) renderer;
+
+        boolean bodyVisible = accessor.invokeIsBodyVisible(state);
+        boolean translucent = !bodyVisible && !state.isInvisibleToPlayer;
         boolean glowing = state.appearsGlowing();
 
-        var renderer = (LivingEntityRenderer<?, ?, ?>) context;
-        return ((LivingEntityRendererAccessor) renderer).invokeGetRenderType(state, bodyVisible, translucent, glowing);
+        return accessor.invokeGetRenderType(state, bodyVisible, translucent, glowing);
     }
 
     @Override
@@ -264,13 +265,13 @@ public class GenderLayer<S extends HumanoidRenderState, M extends HumanoidModel<
         int color = ARGB.color(alpha, 255, 255, 255);
 
         var model = side.isLeft ? lBreast : rBreast;
-        collector.submitModel(new BreastModel(model), state, poseStack, type, state.lightCoords, OverlayTexture.NO_OVERLAY, ARGB.opaque(color), null, state.outlineColor, null);
+        collector.order(1).submitModel(new BreastModel(model), state, poseStack, type, state.lightCoords, overlay, color, null, state.outlineColor, null);
 
         if(state instanceof AvatarRenderState playerState && playerState.showJacket) {
             poseStack.translate(0, 0, -0.015f);
             poseStack.scale(1.05f, 1.05f, 1.05f);
             var jacketModel = side.isLeft ? lBreastWear : rBreastWear;
-            collector.submitModel(new BreastModel(jacketModel), state, poseStack, type, state.lightCoords, OverlayTexture.NO_OVERLAY, ARGB.opaque(color), null, state.outlineColor, null);
+            collector.order(2).submitModel(new BreastModel(jacketModel), state, poseStack, type, state.lightCoords, overlay, color, null, state.outlineColor, null);
         }
     }
 
