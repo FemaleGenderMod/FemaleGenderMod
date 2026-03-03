@@ -167,6 +167,8 @@
 	"wildfire_gender.contributor.role.neoforge_maintainer.short": "Maintainer (NeoForge)",
 	"wildfire_gender.contributor.role.developer": "Female Gender Mod Contributor",
 	"wildfire_gender.contributor.role.developer.short": "Programmer",
+	"wildfire_gender.contributor.role.ci_maintainer": "Female Gender Mod Contributor",
+	"wildfire_gender.contributor.role.ci_maintainer.short": "CI/CD Maintainer",
 	"wildfire_gender.contributor.role.translator": "Female Gender Mod Translator",
 	"wildfire_gender.contributor.role.translator.short": "Mod Translator",
 	"wildfire_gender.contributor.role.mascot": "Female Gender Mod Mascot",
