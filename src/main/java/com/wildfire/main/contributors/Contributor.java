@@ -70,32 +70,31 @@ public record Contributor(
 	}
 
 	public enum Role {
-		// New entries should be added at the bottom of this enum, as otherwise existing bitmasks will
-		// reference the wrong entries
-		MOD_CREATOR(ChatFormatting.LIGHT_PURPLE.getColor()),
-		// TODO should this have a special color as well? this is currently set to an light blue/purple-ish color
-		FABRIC_MAINTAINER(0xA78FFF),
-		NEOFORGE_MAINTAINER(0xA78FFF),
-		DEVELOPER,
-		CI_MAINTAINER(0x50C878),
-		TRANSLATOR(0x66CCFF),
-		MASCOT,
-		VOICE_ACTOR_FEMALE,
-		GENERIC,
+		MOD_CREATOR(0, ChatFormatting.LIGHT_PURPLE.getColor()),
+		FABRIC_MAINTAINER(1, 0xA78FFF),
+		NEOFORGE_MAINTAINER(2, 0xA78FFF),
+		CI_MAINTAINER(8, 0x50C878),
+		DEVELOPER(3),
+		TRANSLATOR(4, 0x66CCFF),
+		MASCOT(5),
+		VOICE_ACTOR_FEMALE(6),
+		GENERIC(7),
 		;
 
+		private final int bit;
 		private final @Nullable Integer color;
 
-		Role(@Nullable Integer color) {
+		Role(int bit, @Nullable Integer color) {
+			this.bit = 1 << bit;
 			this.color = color;
 		}
 
-		Role() {
-			this(null);
+		Role(int bit) {
+			this(bit, null);
 		}
 
 		public int bit() {
-			return 1 << ordinal();
+			return bit;
 		}
 
 		public boolean isIn(int bitmask) {
