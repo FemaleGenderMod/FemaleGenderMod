@@ -45,7 +45,7 @@ public class TriStateConfigKey extends ConfigKey<TriState> {
 			if(primitive.isString()) {
 				try {
 					return TriState.valueOf(primitive.getAsString());
-				} catch(IllegalArgumentException ignored) {
+				} catch(IllegalArgumentException _) {
 				}
 			}
 		}

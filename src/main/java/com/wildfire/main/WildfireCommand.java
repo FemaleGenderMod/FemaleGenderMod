@@ -136,7 +136,7 @@ public class WildfireCommand {
 		T value = defaultValue;
 		try {
 			value = ctx.getArgument(name, clazz);
-		} catch(IllegalArgumentException ignored) {}
+		} catch(IllegalArgumentException _) {}
 		return value;
 	}
 

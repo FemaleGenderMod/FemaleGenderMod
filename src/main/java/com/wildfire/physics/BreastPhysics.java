@@ -49,7 +49,7 @@ public class BreastPhysics {
 	//Y-Axis
 	private float bounceVel = 0, targetBounceY = 0, velocity = 0, positionY, prePositionY;
 	//Rotation
-	private float bounceRotVel = 0, targetRotVel = 0, rotVelocity = 0, wfg_bounceRotation, wfg_preBounceRotation;
+	private float bounceRotVel = 0, targetRotVel = 0, rotVelocity = 0, bounceRotation, preBounceRotation;
 
 	private float breastSize = 0, preBreastSize = 0;
 
@@ -66,19 +66,20 @@ public class BreastPhysics {
 	}
 
 	private static boolean vehicleSuppressesRotation(Entity vehicle) {
-		return (
-				// while you aren't able to normally ride chickens in vanilla, it is still possible through
-				// means like /ride, and as chickens attempt to force the rider's body yaw to the same yaw
-				// as the chicken (which is likely intended only for baby zombies), this results in unintended
-				// behavior with what we're doing
-				vehicle instanceof Chicken
-				// unsaddled horses (and llamas, which also extend AbstractDonkeyEntity?) also break rotation
-				// physics, despite acting similarly to other entities where the rider's body yaw is allowed to
-				// (somewhat) freely move around
-				|| vehicle instanceof AbstractHorse horseLike && !horseLike.isSaddled()
-				// camels also suffer from largely the same issue as unsaddled horses when sitting or standing up
-				|| vehicle instanceof Camel camel && camel.refuseToMove()
-		);
+		return switch(vehicle) {
+			// while you aren't able to normally ride chickens in vanilla, it is still possible through
+			// means like /ride, and as chickens attempt to force the rider's body yaw to the same yaw
+			// as the chicken (which is likely intended only for baby zombies), this results in unintended
+			// behavior with what we're doing
+			case Chicken _ -> true;
+			// unsaddled horses (and llamas, which also extend AbstractDonkeyEntity?) also break rotation
+			// physics, despite acting similarly to other entities where the rider's body yaw is allowed to
+			// (somewhat) freely move around
+			case AbstractHorse horse when !horse.isSaddled() -> true;
+			// camels also suffer from largely the same issue as unsaddled horses when sitting or standing up
+			case Camel camel when camel.refuseToMove() -> true;
+			default -> false;
+		};
 	}
 
 	private static boolean shouldUseVehicleYaw(LivingEntity rider, Entity vehicle) {
@@ -119,7 +120,7 @@ public class BreastPhysics {
 
 		this.prePositionY = this.positionY;
 		this.prePositionX = this.positionX;
-		this.wfg_preBounceRotation = this.wfg_bounceRotation;
+		this.preBounceRotation = this.bounceRotation;
 		this.preBreastSize = this.breastSize;
 
 		if(this.prePos == null) {
@@ -334,7 +335,7 @@ public class BreastPhysics {
 		this.rotVelocity = Mth.lerp(bounceAmount, this.rotVelocity, (this.targetRotVel - this.bounceRotVel) * delta);
 		this.bounceRotVel += this.rotVelocity * percent;
 
-		this.wfg_bounceRotation = this.bounceRotVel;
+		this.bounceRotation = this.bounceRotVel;
 		this.positionX = this.bounceVelX;
 		this.positionY = this.bounceVel;
 
@@ -360,10 +361,10 @@ public class BreastPhysics {
 	}
 
 	public float getBounceRotation() {
-		return this.wfg_bounceRotation;
+		return this.bounceRotation;
 	}
 	public float getPreBounceRotation() {
-		return this.wfg_preBounceRotation;
+		return this.preBounceRotation;
 	}
 
 	public float getBreastSize() {

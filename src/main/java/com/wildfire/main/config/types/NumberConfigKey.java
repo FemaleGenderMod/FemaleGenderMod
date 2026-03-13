@@ -49,7 +49,7 @@ public abstract class NumberConfigKey<TYPE extends Number & Comparable<TYPE>> ex
 			if (primitive.isNumber() || primitive.isString()) {
 				try {
 					return fromPrimitive(primitive);
-				} catch (NumberFormatException ignored) {
+				} catch (NumberFormatException _) {
 				}
 			}
 		}
