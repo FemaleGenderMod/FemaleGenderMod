@@ -54,7 +54,7 @@ public class ModMenuIntegration implements ModMenuApi {
 
 		public NotInWorldScreen(Minecraft client, Screen parent) {
 			super(
-					result -> client.setScreen(parent),
+					_ -> client.setScreen(parent),
 					Component.translatable("wildfire_gender.not_in_world.title").withStyle(ChatFormatting.RED),
 					Component.translatable("wildfire_gender.not_in_world")
 			);

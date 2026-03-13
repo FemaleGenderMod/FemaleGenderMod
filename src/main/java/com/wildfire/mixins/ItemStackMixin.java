@@ -54,7 +54,7 @@ abstract class ItemStackMixin {
 			EquipmentSlotGroup slot,
 			TriConsumer<Holder<Attribute>, AttributeModifier, ItemAttributeModifiers.Display> attributeModifierConsumer,
 			Operation<Void> original,
-			@Local MutableBoolean missingAttribute,
+			@Local(name = "first") MutableBoolean missingAttribute,
 			@Local(argsOnly = true) @Nullable Player player,
 			@Local(argsOnly = true) Consumer<Component> textConsumer
 	) {

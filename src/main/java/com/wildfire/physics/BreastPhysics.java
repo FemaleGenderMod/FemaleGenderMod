@@ -180,7 +180,7 @@ public class BreastPhysics {
 		// Randomize which side the breast will angle toward when the player jumps/has upward velocity applied to them,
 		// or stops falling
 		if((lastVerticalMoveVelocity <= 0 && vertVelocity > 0) || (lastVerticalMoveVelocity < 0 && vertVelocity == 0)) {
-			randomB = entity.level().random.nextBoolean() ? -1 : 1;
+			randomB = entity.level().getRandom().nextBoolean() ? -1 : 1;
 		}
 		lastVerticalMoveVelocity = vertVelocity;
 

@@ -26,7 +26,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
@@ -46,13 +46,13 @@ public final class SyncedPlayerList {
 		ClientTickEvents.END_CLIENT_TICK.register(SyncedPlayerList::onTick);
 	}
 
-	public static void drawSyncedPlayers(GuiGraphics context, Font font) {
+	public static void drawSyncedPlayers(GuiGraphicsExtractor context, Font font) {
 		if(syncedPlayers.isEmpty()) {
 			return;
 		}
 
 		var header = Component.translatable("wildfire_gender.wardrobe.players_using_mod").withStyle(ChatFormatting.AQUA);
-		context.drawString(font, header, 5, 5, 0xFFFFFFFF, true);
+		context.text(font, header, 5, 5, 0xFFFFFFFF, true);
 
 		int yPos = 18;
 		for(var entry : syncedPlayers) {
@@ -60,7 +60,7 @@ public final class SyncedPlayerList {
 					.append(Component.literal(entry.name()).withColor(entry.color()))
 					.append(" - ")
 					.append(entry.gender().getDisplayName());
-			context.drawString(font, text, 10, yPos, 0xFFFFFFFF, false);
+			context.text(font, text, 10, yPos, 0xFFFFFFFF, false);
 			yPos += 10;
 		}
 	}

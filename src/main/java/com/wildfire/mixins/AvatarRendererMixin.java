@@ -33,7 +33,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
-import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.world.entity.Avatar;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -59,20 +59,20 @@ abstract class AvatarRendererMixin extends LivingEntityRenderer<Avatar, AvatarRe
 
 	@SuppressWarnings("CodeBlock2Expr")
 	@Inject(
-		method = "submitNameTag(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V",
+		method = "submitNameDisplay(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V",
 		at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;pushPose()V", shift = At.Shift.AFTER)
 	)
-	public void wildfiregender$renderNametag(AvatarRenderState state, PoseStack matrixStack, SubmitNodeCollector queue, CameraRenderState cameraState, CallbackInfo ci) {
-		PlayerNametagRenderEvent.EVENT.invoker().onRenderNameTag(state, matrixStack, (text) -> {
-			queue.submitNameTag(
-					matrixStack,
-					state.nameTagAttachment,
-					state.showExtraEars ? -10 : 0,
-					text,
-					!state.isDiscrete,
-					state.lightCoords,
-					state.distanceToCameraSq,
-					cameraState
+	public void wildfiregender$renderNametag(AvatarRenderState state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera, CallbackInfo ci) {
+		PlayerNametagRenderEvent.EVENT.invoker().onRenderNameTag(state, poseStack, (text) -> {
+			collector.submitNameTag(
+				poseStack,
+				state.nameTagAttachment,
+				state.showExtraEars ? -10 : 0,
+				text,
+				!state.isDiscrete,
+				state.lightCoords,
+				state.distanceToCameraSq,
+				camera
 			);
 		});
 	}

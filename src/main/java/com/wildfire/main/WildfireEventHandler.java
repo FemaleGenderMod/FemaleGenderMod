@@ -38,9 +38,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRendererRegistrationCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.LivingEntityRenderLayerRegistrationCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
@@ -48,11 +48,10 @@ import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
-import net.minecraft.util.Util;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.toasts.ToastManager;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.renderer.entity.ArmorStandRenderer;
@@ -67,6 +66,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.Util;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.decoration.ArmorStand;
@@ -74,6 +74,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Objects;
@@ -84,8 +85,8 @@ public final class WildfireEventHandler {
 		throw new UnsupportedOperationException();
 	}
 
-	private static final KeyMapping CONFIG_KEYBIND;
-	private static final KeyMapping TOGGLE_KEYBIND;
+	@UnknownNullability("null on dedicated servers")
+	private static final KeyMapping CONFIG_KEYBIND, TOGGLE_KEYBIND;
 	private static int timer = 0;
 
 	public static KeyMapping getConfigKeybind() {
@@ -99,12 +100,12 @@ public final class WildfireEventHandler {
 			var category = Util.make(() -> KeyMapping.Category.register(WildfireGender.id("generic")));
 			CONFIG_KEYBIND = Util.make(() -> {
 				KeyMapping keybind = new KeyMapping("key.wildfire_gender.gender_menu", GLFW.GLFW_KEY_H, category);
-				KeyBindingHelper.registerKeyBinding(keybind);
+				KeyMappingHelper.registerKeyMapping(keybind);
 				return keybind;
 			});
 			TOGGLE_KEYBIND = Util.make(() -> {
 				KeyMapping keybind = new KeyMapping("key.wildfire_gender.toggle", GLFW.GLFW_KEY_UNKNOWN, category);
-				KeyBindingHelper.registerKeyBinding(keybind);
+				KeyMappingHelper.registerKeyMapping(keybind);
 				return keybind;
 			});
 		} else {
@@ -132,7 +133,7 @@ public final class WildfireEventHandler {
 		ClientTickEvents.END_CLIENT_TICK.register(WildfireEventHandler::onClientTick);
 		ClientPlayConnectionEvents.DISCONNECT.register(WildfireEventHandler::clientDisconnect);
 		ClientPlayConnectionEvents.JOIN.register(WildfireEventHandler::clientJoin);
-		LivingEntityFeatureRendererRegistrationCallback.EVENT.register(WildfireEventHandler::registerRenderLayers);
+		LivingEntityRenderLayerRegistrationCallback.EVENT.register(WildfireEventHandler::registerRenderLayers);
 		HudElementRegistry.attachElementAfter(
 				VanillaHudElements.MISC_OVERLAYS,
 				Identifier.fromNamespaceAndPath(WildfireGender.MODID, "player_list"),
@@ -188,14 +189,14 @@ public final class WildfireEventHandler {
 	}
 
 	@Environment(EnvType.CLIENT)
-	private static void renderHud(GuiGraphics context, DeltaTracker tickCounter) {
-		var textRenderer = Objects.requireNonNull(Minecraft.getInstance().font, "textRenderer");
+	private static void renderHud(GuiGraphicsExtractor context, DeltaTracker tickCounter) {
+		var font = Minecraft.getInstance().font;
 		if(Minecraft.getInstance().screen instanceof WardrobeBrowserScreen) {
 			return;
 		}
 
 		if(ClientConfig.INSTANCE.get(ClientConfig.ALWAYS_SHOW_LIST).isVisible()) {
-			SyncedPlayerList.drawSyncedPlayers(context, textRenderer);
+			SyncedPlayerList.drawSyncedPlayers(context, font);
 		}
 	}
 
@@ -204,7 +205,7 @@ public final class WildfireEventHandler {
 	 */
 	@Environment(EnvType.CLIENT)
 	private static void registerRenderLayers(EntityType<? extends LivingEntity> entityType, LivingEntityRenderer<?, ?, ?> entityRenderer,
-	                                         LivingEntityFeatureRendererRegistrationCallback.RegistrationHelper registrationHelper,
+	                                         LivingEntityRenderLayerRegistrationCallback.RegistrationHelper registrationHelper,
 	                                         EntityRendererProvider.Context context) {
 		if(entityRenderer instanceof AvatarRenderer<?> playerRenderer) {
 			registrationHelper.register(new GenderLayer<>(playerRenderer));

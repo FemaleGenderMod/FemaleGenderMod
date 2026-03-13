@@ -32,8 +32,8 @@ import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -60,7 +60,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
+import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.argument;
 
 @Environment(EnvType.CLIENT)
 public class WildfireCommand {
@@ -77,7 +77,7 @@ public class WildfireCommand {
 	private static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext context) {
 		Minecraft client = Minecraft.getInstance();
 
-		var debug = ClientCommandManager.literal("debug")
+		var debug = ClientCommands.literal("debug")
 				.executes((ctx) -> {
 					sendHelp(ctx, Component.literal("Debug Commands:"),
 							"invalidatecache", "Clears the player & entity caches",
@@ -91,41 +91,41 @@ public class WildfireCommand {
 							"armorstand", "Spawns an armor stand with armor copying your breast settings pre-equipped");
 					return 1;
 				})
-				.then(ClientCommandManager.literal("invalidatecache")
+				.then(ClientCommands.literal("invalidatecache")
 						.executes(WildfireCommand::invalidateCache))
-				.then(ClientCommandManager.literal("target")
+				.then(ClientCommands.literal("target")
 						.executes(WildfireCommand::getEntityLookingAt))
-				.then(ClientCommandManager.literal("firsttime")
+				.then(ClientCommands.literal("firsttime")
 						.executes(ctx -> {
 							client.execute(() -> {
 								client.schedule(() -> client.setScreen(new WildfireFirstTimeSetupScreen(null, client.player.getUUID())));
 							});
 							return Command.SINGLE_SUCCESS;
 						}))
-				.then(ClientCommandManager.literal("cache")
+				.then(ClientCommands.literal("cache")
 						.then(argument("allPlayers", BoolArgumentType.bool())
 								.executes(WildfireCommand::getUsers)
 								.then(argument("showEntities", BoolArgumentType.bool())
 										.executes(WildfireCommand::getUsers)))
 						.executes(WildfireCommand::getUsers))
-				.then(ClientCommandManager.literal("syncverbosity")
+				.then(ClientCommands.literal("syncverbosity")
 						.then(argument("level", new SyncVerbosity.SyncVerbosityArgumentType())
 								.executes(WildfireCommand::setLogLevel)));
 
 		if(Minecraft.getInstance().isLocalServer()) {
 			debug
-					.then(ClientCommandManager.literal("trim")
-							.then(ClientCommandManager.argument("glint", BoolArgumentType.bool())
+					.then(ClientCommands.literal("trim")
+							.then(ClientCommands.argument("glint", BoolArgumentType.bool())
 									.executes(WildfireCommand::equipTrimmedChestplate))
 							.executes(WildfireCommand::equipTrimmedChestplate))
-					.then(ClientCommandManager.literal("armorstand").executes(WildfireCommand::spawnArmorStand));
+					.then(ClientCommands.literal("armorstand").executes(WildfireCommand::spawnArmorStand));
 		}
 
-		var root = dispatcher.register(ClientCommandManager.literal("femalegender")
+		var root = dispatcher.register(ClientCommands.literal("femalegender")
 				.executes(WildfireCommand::openConfig)
 				.then(debug));
 
-		dispatcher.register(ClientCommandManager.literal("fgm")
+		dispatcher.register(ClientCommands.literal("fgm")
 				.executes(WildfireCommand::openConfig)
 				.redirect(root));
 	}
@@ -202,7 +202,7 @@ public class WildfireCommand {
 		boolean allPlayers = getOrDefault(ctx, "allPlayers", false, Boolean.class);
 		boolean showEntities = getOrDefault(ctx, "showEntities", false, Boolean.class);
 
-		var players = dump(WildfireGender.CACHE, ctx.getSource().getWorld(), !allPlayers);
+		var players = dump(WildfireGender.CACHE, ctx.getSource().getLevel(), !allPlayers);
 		if(!players.isEmpty()) {
 			send(ctx, "Synced Players (" + players.size() + "):");
 			for(var line : players) {
@@ -211,7 +211,7 @@ public class WildfireCommand {
 		}
 
 		if(showEntities) {
-			var entities = dump(EntityConfig.CACHE, ctx.getSource().getWorld(), false);
+			var entities = dump(EntityConfig.CACHE, ctx.getSource().getLevel(), false);
 			if(!entities.isEmpty()) {
 				send(ctx, "Entities (" + players.size() + "):");
 				for(var line : entities) {
