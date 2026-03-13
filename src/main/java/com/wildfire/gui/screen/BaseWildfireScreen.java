@@ -25,7 +25,7 @@ import com.wildfire.main.WildfireGender;
 import com.wildfire.main.entitydata.PlayerConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
@@ -63,14 +63,14 @@ public abstract class BaseWildfireScreen extends Screen {
 		return WildfireGender.getPlayerById(this.playerUUID);
 	}
 
-	protected void renderPlayerInFrame(GuiGraphics ctx, int xP, int yP, int mouseX, int mouseY) {
+	protected void renderPlayerInFrame(GuiGraphicsExtractor graphics, int xP, int yP, int mouseX, int mouseY) {
 		var player = minecraft.player;
 		if(player == null) return;
 		// This sucks. In order to position the player properly, we need to trick the player renderer into
 		// thinking the area the player should be rendered is much taller than it actually is.
-		ctx.enableScissor(xP - 38, yP - 79, xP + 38, yP + 9);
-		GuiUtils.drawEntityOnScreen(ctx, xP - 38, yP - 79, xP + 38, yP + 69, 70, mouseX, mouseY + 35, player);
-		ctx.disableScissor();
+		graphics.enableScissor(xP - 38, yP - 79, xP + 38, yP + 9);
+		GuiUtils.drawEntityOnScreen(graphics, xP - 38, yP - 79, xP + 38, yP + 69, 70, mouseX, mouseY + 35, player);
+		graphics.disableScissor();
 	}
 
 	@Override

@@ -23,7 +23,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
@@ -48,9 +48,9 @@ public class WildfireButton extends Button {
 		setMessage(messageSupplier.get());
 	}
 
-	protected void drawInner(GuiGraphics ctx, int mouseX, int mouseY, float partialTicks) {
+	protected void drawInner(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
 		if(renderer != null) {
-			renderer.render(this, ctx, mouseX, mouseY, partialTicks);
+			renderer.render(this, graphics, mouseX, mouseY, partialTicks);
 			return;
 		}
 		Minecraft minecraft = Minecraft.getInstance();
@@ -58,19 +58,19 @@ public class WildfireButton extends Button {
 		int textColor = active ? 0xFFFFFF : 0x666666;
 		int i = this.getX() + 2;
 		int j = this.getX() + this.getWidth() - 2;
-		GuiUtils.drawScrollableTextWithoutShadow(GuiUtils.Justify.CENTER, ctx, font, this.getMessage(), i, this.getY(), j, this.getY() + this.getHeight(), textColor);
+		GuiUtils.drawScrollableTextWithoutShadow(GuiUtils.Justify.CENTER, graphics, font, this.getMessage(), i, this.getY(), j, this.getY() + this.getHeight(), textColor);
 	}
 
 	@Override
-	protected void renderContents(GuiGraphics ctx, int mouseX, int mouseY, float partialTicks) {
+	protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
 		int clr = 0x444444 + (84 << 24);
 		if(this.isHoveredOrFocused()) clr = 0x666666 + (84 << 24);
 		if(!active) clr = 0x222222 + (84 << 24);
-		if(!transparent) ctx.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), clr);
+		if(!transparent) graphics.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), clr);
 
-		drawInner(ctx, mouseX, mouseY, partialTicks);
+		drawInner(graphics, mouseX, mouseY, partialTicks);
 		if(isHovered()) {
-			ctx.requestCursor(active ? CursorTypes.POINTING_HAND : CursorTypes.NOT_ALLOWED);
+			graphics.requestCursor(active ? CursorTypes.POINTING_HAND : CursorTypes.NOT_ALLOWED);
 		}
 	}
 
@@ -157,6 +157,6 @@ public class WildfireButton extends Button {
 
 	@FunctionalInterface
 	public interface ButtonRenderer {
-		void render(WildfireButton button, GuiGraphics ctx, int mouseX, int mouseY, float partialTicks);
+		void render(WildfireButton button, GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks);
 	}
 }

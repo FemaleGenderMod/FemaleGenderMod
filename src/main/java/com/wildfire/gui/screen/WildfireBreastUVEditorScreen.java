@@ -27,7 +27,7 @@ import com.wildfire.main.uvs.UVLayout;
 import com.wildfire.main.uvs.UVQuad;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -183,18 +183,18 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 	}
 
 	@Override
-	public void renderBackground(GuiGraphics ctx, int mouseX, int mouseY, float delta) {
+	public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
 		//super.renderBackground(ctx, mouseX, mouseY, delta);
-		this.renderTransparentBackground(ctx);
+		extractTransparentBackground(graphics);
 		//ctx.drawTexture(RenderPipelines.GUI_TEXTURED, BACKGROUND, (this.width - 190) / 2, (this.height - 107) / 2, 0, 0, 190, 107, 512, 512);
 		int w = this.width - (this.width - sidebarWidth) - 10;
 
-		ctx.fill(this.width - sidebarWidth, 0, this.width, this.height, 0xCC000000);
-		ctx.fill(this.width - sidebarWidth + 5, 30, this.width - w / 2 - 5, 93, 0x66000000);
-		ctx.fill(this.width - w / 2, 30, this.width - 5, 128, 0x66000000);
+		graphics.fill(this.width - sidebarWidth, 0, this.width, this.height, 0xCC000000);
+		graphics.fill(this.width - sidebarWidth + 5, 30, this.width - w / 2 - 5, 93, 0x66000000);
+		graphics.fill(this.width - w / 2, 30, this.width - 5, 128, 0x66000000);
 
-		ctx.fill(uvWindowPos.x() - 2, uvWindowPos.y() - 2, uvWindowPos.x() + textureDrawWidth + 2, uvWindowPos.y() + textureDrawWidth + 2, 0xCC000000);
-		ctx.fill(uvWindowPos.x(), uvWindowPos.y(), uvWindowPos.x() + textureDrawWidth, uvWindowPos.y() + textureDrawWidth, 0xFFFFFFFF);
+		graphics.fill(uvWindowPos.x() - 2, uvWindowPos.y() - 2, uvWindowPos.x() + textureDrawWidth + 2, uvWindowPos.y() + textureDrawWidth + 2, 0xCC000000);
+		graphics.fill(uvWindowPos.x(), uvWindowPos.y(), uvWindowPos.x() + textureDrawWidth, uvWindowPos.y() + textureDrawWidth, 0xFFFFFFFF);
 	}
 
 
@@ -213,14 +213,14 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
 	// TODO this should be broken up into smaller methods
 	@Override
-	public void render(GuiGraphics ctx, int mouseX, int mouseY, float delta) {
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
 		if(minecraft.level == null || minecraft.player == null) return;
 		var player = getPlayer();
 
 		if(player != null && selectedUVs != null) {
 
 			//noinspection SuspiciousNameCombination
-			ctx.blit(RenderPipelines.GUI_TEXTURED, minecraft.player.getSkin().body().id(),
+			graphics.blit(RenderPipelines.GUI_TEXTURED, minecraft.player.getSkin().body().id(),
 					uvWindowPos.x(), uvWindowPos.y(),
 					0, 0, textureDrawWidth, textureDrawWidth, textureDrawWidth, textureDrawWidth);
 
@@ -233,35 +233,35 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 			};
 
 			for(UVLayout eachBreast : ALL_UVS) {
-				drawFaceBorders(ctx, eachBreast, mouseX, mouseY, true);
+				drawFaceBorders(graphics, eachBreast, mouseX, mouseY, true);
 			}
 
-			drawFaceBorders(ctx, selectedUVs, mouseX, mouseY, false);
+			drawFaceBorders(graphics, selectedUVs, mouseX, mouseY, false);
 		}
 
-		GuiUtils.drawCenteredText(ctx, font, Component.translatable("wildfire_gender.uv_editor.selection.layer_body"),  winElementPos.x() + 42, winElementPos.y() + 2, 0xFFFFFFFF);
-		GuiUtils.drawCenteredText(ctx, font, Component.translatable("wildfire_gender.uv_editor.selection.layer_jacket"),  winElementPos.x() + 42, winElementPos.y() + 32, 0xFFFFFFFF);
+		GuiUtils.drawCenteredText(graphics, font, Component.translatable("wildfire_gender.uv_editor.selection.layer_body"),  winElementPos.x() + 42, winElementPos.y() + 2, 0xFFFFFFFF);
+		GuiUtils.drawCenteredText(graphics, font, Component.translatable("wildfire_gender.uv_editor.selection.layer_jacket"),  winElementPos.x() + 42, winElementPos.y() + 32, 0xFFFFFFFF);
 
 		int positionBoxX = this.width - sidebarWidth / 4;
 
 		//Coordinate selector
 		if(selectedDirection == null) {
-			GuiUtils.drawCenteredTextWrapped(ctx, font, Component.translatable("wildfire_gender.uv_editor.no_face_selected"), positionBoxX, 60, 70, 0xFF888888);
+			GuiUtils.drawCenteredTextWrapped(graphics, font, Component.translatable("wildfire_gender.uv_editor.no_face_selected"), positionBoxX, 60, 70, 0xFF888888);
 		} else {
 
-			GuiUtils.drawCenteredText(ctx, font, Component.empty().append(selectedDirection.getDirectionText(selectedBreastIndex)).withStyle(ChatFormatting.GOLD), positionBoxX, 37, 0xFFFFFFFF);
+			GuiUtils.drawCenteredText(graphics, font, Component.empty().append(selectedDirection.getDirectionText(selectedBreastIndex)).withStyle(ChatFormatting.GOLD), positionBoxX, 37, 0xFFFFFFFF);
 
-			ctx.drawString(font, Component.translatable("wildfire_gender.uv_editor.xpos"), positionBoxX - 35, 55, 0xFFFFFFFF, false);
-			ctx.drawString(font, Component.translatable("wildfire_gender.uv_editor.ypos"), positionBoxX - 35, 55 + 14, 0xFFFFFFFF, false);
-			ctx.drawString(font, Component.translatable("wildfire_gender.uv_editor.width"), positionBoxX - 35, 55 + (14*2), 0xFFFFFFFF, false);
-			ctx.drawString(font, Component.translatable("wildfire_gender.uv_editor.height"), positionBoxX - 35, 55 + (14*3), 0xFFFFFFFF, false);
+			graphics.text(font, Component.translatable("wildfire_gender.uv_editor.xpos"), positionBoxX - 35, 55, 0xFFFFFFFF, false);
+			graphics.text(font, Component.translatable("wildfire_gender.uv_editor.ypos"), positionBoxX - 35, 55 + 14, 0xFFFFFFFF, false);
+			graphics.text(font, Component.translatable("wildfire_gender.uv_editor.width"), positionBoxX - 35, 55 + (14*2), 0xFFFFFFFF, false);
+			graphics.text(font, Component.translatable("wildfire_gender.uv_editor.height"), positionBoxX - 35, 55 + (14*3), 0xFFFFFFFF, false);
 
-			ctx.pose().pushMatrix();
-			ctx.pose().translate(positionBoxX, 115);
-			ctx.pose().scale(0.75f);
-			GuiUtils.drawCenteredTextWrapped(ctx, font, Component.translatable("wildfire_gender.uv_editor.increment_tip.line1").withStyle(ChatFormatting.AQUA), 0, -6, 120, 0xFF888888);
-			GuiUtils.drawCenteredTextWrapped(ctx, font, Component.translatable("wildfire_gender.uv_editor.increment_tip.line2").withStyle(ChatFormatting.BLUE), 0, 6, 120, 0xFF888888);
-			ctx.pose().popMatrix();
+			graphics.pose().pushMatrix();
+			graphics.pose().translate(positionBoxX, 115);
+			graphics.pose().scale(0.75f);
+			GuiUtils.drawCenteredTextWrapped(graphics, font, Component.translatable("wildfire_gender.uv_editor.increment_tip.line1").withStyle(ChatFormatting.AQUA), 0, -6, 120, 0xFF888888);
+			GuiUtils.drawCenteredTextWrapped(graphics, font, Component.translatable("wildfire_gender.uv_editor.increment_tip.line2").withStyle(ChatFormatting.BLUE), 0, 6, 120, 0xFF888888);
+			graphics.pose().popMatrix();
 		}
 
 		int modelScale = 120;
@@ -271,13 +271,13 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 			modelScale = 200;
 		}
 
-		InventoryScreen.renderEntityInInventoryFollowsMouse(ctx, this.width / 2 - modelScale, this.height / 2 - modelScale, this.width / 2 + modelScale, this.height / 2 + modelScale, modelScale, 0.0625f, mouseX, mouseY, minecraft.player);
-		GuiUtils.drawCenteredText(ctx, font, TITLE, this.width / 2, 20, 0xFFFFFFFF);
+		InventoryScreen.extractEntityInInventoryFollowsMouse(graphics, this.width / 2 - modelScale, this.height / 2 - modelScale, this.width / 2 + modelScale, this.height / 2 + modelScale, modelScale, 0.0625f, mouseX, mouseY, minecraft.player);
+		GuiUtils.drawCenteredText(graphics, font, TITLE, this.width / 2, 20, 0xFFFFFFFF);
 
-		super.render(ctx, mouseX, mouseY, delta);
+		super.extractRenderState(graphics, mouseX, mouseY, delta);
 	}
 
-	private void drawFaceBorders(GuiGraphics ctx, UVLayout uvList, int mouseX, int mouseY, boolean faded) {
+	private void drawFaceBorders(GuiGraphicsExtractor graphics, UVLayout uvList, int mouseX, int mouseY, boolean faded) {
 
 		//selected faces
 
@@ -300,27 +300,27 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 					List<FormattedCharSequence> array = new ArrayList<>();
 					array.add(Component.empty().append(direction.getDirectionText(selectedBreastIndex)).append(" (").append(faceName).append(")").withStyle(ChatFormatting.GOLD).getVisualOrderText());
 					array.add(Component.empty().append("[" + quad.x1() + ", " + quad.y1() + ", " + quad.x2() + ", " + quad.y2() + "]").withStyle(ChatFormatting.AQUA).getVisualOrderText());
-					ctx.setTooltipForNextFrame(array, mouseX, mouseY);
+					graphics.setTooltipForNextFrame(array, mouseX, mouseY);
 				}
 
 				int borderThickness = 1;
-				ctx.fill(rectX1, rectY1, rectX2, rectY1 + borderThickness, borderColor);
-				ctx.fill(rectX1, rectY2 - borderThickness, rectX2, rectY2, borderColor);
-				ctx.fill(rectX1, rectY1, rectX1 + borderThickness, rectY2, borderColor);
-				ctx.fill(rectX2 - borderThickness, rectY1, rectX2, rectY2, borderColor);
+				graphics.fill(rectX1, rectY1, rectX2, rectY1 + borderThickness, borderColor);
+				graphics.fill(rectX1, rectY2 - borderThickness, rectX2, rectY2, borderColor);
+				graphics.fill(rectX1, rectY1, rectX1 + borderThickness, rectY2, borderColor);
+				graphics.fill(rectX2 - borderThickness, rectY1, rectX2, rectY2, borderColor);
 
 				int centerX = (rectX1 + rectX2) / 2;
 				int centerY = (rectY1 + rectY2) / 2;
 				int textWidth = font.width(faceName);
 				int textHeight = font.lineHeight;
 
-				ctx.pose().pushMatrix();
-				ctx.pose().translate(centerX, centerY);
-				ctx.pose().scale(0.6f);
+				graphics.pose().pushMatrix();
+				graphics.pose().translate(centerX, centerY);
+				graphics.pose().scale(0.6f);
 
-				ctx.drawString(font, faceName, -textWidth / 2, -textHeight / 2, 0xFFFFFFFF, true);
+				graphics.text(font, faceName, -textWidth / 2, -textHeight / 2, 0xFFFFFFFF, true);
 
-				ctx.pose().popMatrix();
+				graphics.pose().popMatrix();
 
 			}
 		}

@@ -27,7 +27,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -140,19 +140,19 @@ public class WildfireSlider extends AbstractWidget {
 	}
 
 	@Override
-	protected void renderWidget(GuiGraphics ctx, int mouseX, int mouseY, float delta) {
+	protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
 		if (!this.visible) {
 			return;
 		}
 		int xP = getX() + 2;
-		ctx.fill(xP - 2, getY(), getX() + this.width, getY() + this.height, 0x222222 + (128 << 24));
+		graphics.fill(xP - 2, getY(), getX() + this.width, getY() + this.height, 0x222222 + (128 << 24));
 		int xPos = getX() + 2 + (int) (this.value * (float)(this.width - 3));
 
-		ctx.fill(getX() + 1, getY() + 1, xPos - 1, getY() + this.height - 1, active?(0x222266 + (180 << 24)):(0x111133 + (180 << 24)));
+		graphics.fill(getX() + 1, getY() + 1, xPos - 1, getY() + this.height - 1, active?(0x222266 + (180 << 24)):(0x111133 + (180 << 24)));
 
 		if(active) {
 			int xPos2 = this.getX() + 3 + (int) (this.value * (float) (this.width - 4));
-			ctx.fill(xPos2 - 2, getY() + 1, xPos2, getY() + this.height - 1, 0xFFFFFF + (120 << 24));
+			graphics.fill(xPos2 - 2, getY() + 1, xPos2, getY() + this.height - 1, 0xFFFFFF + (120 << 24));
 		}
 		Font font = Minecraft.getInstance().font;
 		int i = this.getX() + 2;
@@ -162,13 +162,13 @@ public class WildfireSlider extends AbstractWidget {
 		if(!active) {
 			textColor = 0x666666;
 		}
-		GuiUtils.drawScrollableTextWithoutShadow(GuiUtils.Justify.CENTER, ctx, font, this.getMessage(), i, this.getY(), j, this.getY() + this.getHeight(), textColor);
+		GuiUtils.drawScrollableTextWithoutShadow(GuiUtils.Justify.CENTER, graphics, font, this.getMessage(), i, this.getY(), j, this.getY() + this.getHeight(), textColor);
 
 		if(isHovered() || dragging) {
 			if(!active) {
-				ctx.requestCursor(CursorTypes.NOT_ALLOWED);
+				graphics.requestCursor(CursorTypes.NOT_ALLOWED);
 			} else {
-				ctx.requestCursor(dragging ? CursorTypes.RESIZE_EW : CursorTypes.POINTING_HAND);
+				graphics.requestCursor(dragging ? CursorTypes.RESIZE_EW : CursorTypes.POINTING_HAND);
 			}
 		}
 	}

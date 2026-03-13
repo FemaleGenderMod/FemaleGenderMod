@@ -146,7 +146,7 @@ public class FakeGUIPlayer {
 		}
 
 		@Override
-		protected ResolvableProfile getProfile() {
+		public ResolvableProfile getProfile() {
 			return copySkinFrom;
 		}
 	}
