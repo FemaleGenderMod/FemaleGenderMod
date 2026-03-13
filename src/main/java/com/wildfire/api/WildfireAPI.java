@@ -57,25 +57,6 @@ public final class WildfireAPI {
 	), VEC2I_LEGACY_CODEC);
 
 	/**
-	 * Add custom physics resistance attributes to a chestplate
-	 *
-	 * @deprecated Registering armor physics values through the API is deprecated; define these through resource pack
-	 *			 data files instead.
-	 *
-	 * @implNote Implementations added through this method are presently ignored if a resource pack defines armor data
-	 *		   at {@code NAMESPACE:wildfire_gender_data/ASSET_ID.json}, and are only used as a default implementation.
-	 *
-	 * @param  item  the item that you are linking this {@link IGenderArmor} to
-	 * @param  genderArmor the class implementing the {@link IGenderArmor} to apply to the item
-	 * @see	IGenderArmor
-	 */
-	@Deprecated(since = "4.3.5", forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "First release of 26.1")
-	public static void addGenderArmor(Item item, IGenderArmor genderArmor) {
-		GENDER_ARMORS.put(item, genderArmor);
-	}
-
-	/**
 	 * Get the cached config for a {@link Player}
 	 *
 	 * @apiNote This method will not load a player's config if they aren't already cached, and will only return
@@ -99,45 +80,4 @@ public final class WildfireAPI {
 		if(cfg == null) return Configuration.GENDER.getDefault();
 		return cfg.getGender();
 	}
-
-	/**
-	 * <p>Load data for the provided player UUID</p>
-	 *
-	 * <p>This attempts to load a local config file for the provided UUID, before falling back to making a
-	 * request to the {@link com.wildfire.main.cloud.CloudSync cloud sync} server for it
-	 * (if cloud syncing is enabled).</p>
-	 *
-	 * <p>Use of this method is <b>heavily</b> discouraged, as the mod will already perform this load process when
-	 * first accessing a player's config; the exact return type of this method may also change between versions.</p>
-	 *
-	 * @deprecated This method will likely be removed in the future; if you depend on this for any reason,
-	 *			 please open an issue explaining your use case.
-	 *
-	 * @param  uuid  the uuid of the target {@link Player}
-	 * @param  markForSync {@code true} if player data should be synced to the server upon being loaded; this only has an effect on the client player.
-	 */
-	@Deprecated(since = "4.3.3", forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "First release of 26.1")
-	@Environment(EnvType.CLIENT)
-	public static CompletableFuture<@Nullable PlayerConfig> loadGenderInfo(UUID uuid, boolean markForSync) {
-		return WildfireGenderClient.loadGenderInfo(uuid, markForSync, false);
-	}
-
-	/**
-	 * Get every registered {@link IGenderArmor custom armor configuration}
-	 *
-	 * @deprecated Registering armor physics values through the API is deprecated; define these through resource pack
-	 *			 data files instead.
-	 *
-	 * @implNote This does not include armors registered through resource packs;
-	 *		   see {@link com.wildfire.resources.GenderArmorResourceManager} for that.
-	 *
-	 * @see #addGenderArmor
-	 */
-	@Deprecated(since = "4.3.5", forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "First release of 26.1")
-	public static Map<Item, IGenderArmor> getGenderArmors() {
-		return GENDER_ARMORS;
-	}
-
 }
