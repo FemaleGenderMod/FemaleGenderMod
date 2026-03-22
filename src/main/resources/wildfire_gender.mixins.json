@@ -18,10 +18,7 @@
 		"accessors.FeatureRenderDispatcherAccessor",
 		"accessors.GameRendererAccessor",
 		"accessors.LivingEntityRendererAccessor",
-		"accessors.YggdrasilMinecraftSessionServiceAccessor",
-		"cape.PlayerInfoMixin",
-		"cape.PlayerSkinMixin",
-		"cape.PlayerSkinWildfireImplMixin"
+		"accessors.YggdrasilMinecraftSessionServiceAccessor"
 	],
 	"injectors": {
 		"defaultRequire": 1

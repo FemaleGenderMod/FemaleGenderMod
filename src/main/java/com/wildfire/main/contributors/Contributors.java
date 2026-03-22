@@ -52,11 +52,11 @@ public final class Contributors {
 		addContributor("23b6feed-2dfe-4f2e-9429-863fd4adb946", "WildfireFGM", Contributor.Role.MOD_CREATOR);
 		addContributor("70336328-0de7-430e-8cba-2779e2a05ab5", "celeste", Contributor.Role.FABRIC_MAINTAINER);
 		addContributor("64e57307-72e5-4f43-be9c-181e8e35cc9b", "pupnewfster", Contributor.Role.NEOFORGE_MAINTAINER);
-		addContributor("9a60e979-c890-4b43-a4c0-32d8a9f6b6b9", "SavLeftUs", Contributor.Role.VOICE_ACTOR_FEMALE);
-		addContributor("618a8390-51b1-43b2-a53a-ab72c1bbd8bd", "Kichura", Contributor.Role.DEVELOPER);
 		addContributor("ad8ee68c-0aa1-47f9-b29f-f92fa1ef66dc", "DiaDemiEmi", Contributor.Role.DEVELOPER);
 		addContributor("3f36f7e9-7459-43fe-87ce-4e8a5d47da80", "IzzyBizzy45", Contributor.Role.DEVELOPER);
 		addContributor("ad3cb52d-524b-41b4-b9d6-b91ec440811d", "RacoonDog", Contributor.Role.DEVELOPER);
+		addContributor("618a8390-51b1-43b2-a53a-ab72c1bbd8bd", "Kichura", Contributor.Role.CI_MAINTAINER);
+		addContributor("9a60e979-c890-4b43-a4c0-32d8a9f6b6b9", "SavLeftUs", Contributor.Role.VOICE_ACTOR_FEMALE);
 		addContributor("525b0455-15e9-49b7-b61d-f291e8ee6c5b", "Powerless001", Contributor.Role.GENERIC);
 
 		addContributor("33feda66-c706-4725-8983-f62e5e6cbee7", "Bluelight", Contributor.Role.TRANSLATOR);
