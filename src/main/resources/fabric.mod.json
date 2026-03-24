@@ -45,13 +45,13 @@
 		"fabricloader": ">=0.15.0",
 		"fabric-networking-api-v1": "*",
 		"fabric-command-api-v2": "*",
-		"fabric-key-binding-api-v1": "*",
+		"fabric-key-mapping-api-v1": "*",
 		"fabric-lifecycle-events-v1": "*",
 		"fabric-rendering-v1": "*",
 		"fabric-resource-loader-v1": "*",
 		"fabric-registry-sync-v0": "*",
 		"minecraft": "${minecraft_dependency}",
-		"java": ">=21"
+		"java": ">=25"
 	},
 	"conflicts": {
 		"skinlayers": "*",

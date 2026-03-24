@@ -60,8 +60,7 @@ abstract class TextureManagerMixin implements MissingTextureLogger {
 		wildfire_gender$missingTextures.clear();
 	}
 
-	// targets the CompletableFuture.supplyAsync() lambda in #scheduleLoad
-	@Inject(method = "method_65881", at = @At("HEAD"))
+	@Inject(method = "lambda$scheduleLoad$0", at = @At("HEAD"))
 	private static void wildfire_gender$removeOnReload(ResourceManager resourceManager, Identifier textureId, ReloadableTexture reloadableTexture, CallbackInfoReturnable<TextureContents> cir) {
 		wildfire_gender$missingTextures.remove(textureId);
 	}

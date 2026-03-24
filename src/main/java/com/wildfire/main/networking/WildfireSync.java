@@ -43,18 +43,18 @@ public final class WildfireSync {
 	public static void register() {
 		// note that each packet has to be registered on both sides for receiving and sending, regardless
 		// of if the current side is actually supposed to be doing either action for a given packet.
-		PayloadTypeRegistry.playC2S().register(ClientboundSyncPacket.ID, ClientboundSyncPacket.CODEC);
-		PayloadTypeRegistry.playS2C().register(ClientboundSyncPacket.ID, ClientboundSyncPacket.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(ClientboundSyncPacket.ID, ClientboundSyncPacket.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(ClientboundSyncPacket.ID, ClientboundSyncPacket.CODEC);
 
-		PayloadTypeRegistry.playC2S().register(ServerboundSyncPacket.ID, ServerboundSyncPacket.CODEC);
-		PayloadTypeRegistry.playS2C().register(ServerboundSyncPacket.ID, ServerboundSyncPacket.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(ServerboundSyncPacket.ID, ServerboundSyncPacket.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(ServerboundSyncPacket.ID, ServerboundSyncPacket.CODEC);
 
-		PayloadTypeRegistry.playC2S().register(SyncHelloPacket.Clientbound.ID, SyncHelloPacket.Clientbound.CODEC);
-		PayloadTypeRegistry.playS2C().register(SyncHelloPacket.Clientbound.ID, SyncHelloPacket.Clientbound.CODEC);
-		PayloadTypeRegistry.playC2S().register(SyncHelloPacket.Serverbound.ID, SyncHelloPacket.Serverbound.CODEC);
-		PayloadTypeRegistry.playS2C().register(SyncHelloPacket.Serverbound.ID, SyncHelloPacket.Serverbound.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(SyncHelloPacket.Clientbound.ID, SyncHelloPacket.Clientbound.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(SyncHelloPacket.Clientbound.ID, SyncHelloPacket.Clientbound.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(SyncHelloPacket.Serverbound.ID, SyncHelloPacket.Serverbound.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(SyncHelloPacket.Serverbound.ID, SyncHelloPacket.Serverbound.CODEC);
 
-		ServerPlayConnectionEvents.INIT.register((handler, server) -> {
+		ServerPlayConnectionEvents.INIT.register((handler, _) -> {
 			ServerPlayNetworking.registerReceiver(handler, ServerboundSyncPacket.ID, ServerboundSyncPacket::handle);
 			ServerPlayNetworking.registerReceiver(handler, SyncHelloPacket.Serverbound.ID, SyncHelloPacket.Serverbound::handle);
 		});

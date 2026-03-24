@@ -1,5 +1,5 @@
 plugins {
-	id "fabric-loom" version "${loom_version}"
+	id "net.fabricmc.fabric-loom" version "${loom_version}"
 }
 
 version = "fabric-${project.mod_version}+${project.minecraft_version}"
@@ -18,34 +18,24 @@ repositories {
 dependencies {
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings loom.layered() {
-		officialMojangMappings()
-		if(!project.parchment_version.isEmpty()) {
-			parchment("org.parchmentmc.data:parchment-${project.minecraft_version}:${project.parchment_version}@zip")
-		}
-	}
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	modImplementation fabricApi.module("fabric-networking-api-v1", project.fabric_version)
-	modImplementation fabricApi.module("fabric-key-binding-api-v1", project.fabric_version)
-	modImplementation fabricApi.module("fabric-lifecycle-events-v1", project.fabric_version)
-	modImplementation fabricApi.module("fabric-command-api-v2", project.fabric_version)
-	modImplementation fabricApi.module("fabric-rendering-v1", project.fabric_version)
-	modImplementation fabricApi.module("fabric-resource-loader-v1", project.fabric_version)
-	modRuntimeOnly fabricApi.module("fabric-registry-sync-v0", project.fabric_version)
+	implementation fabricApi.module("fabric-networking-api-v1", project.fabric_version)
+	implementation fabricApi.module("fabric-key-mapping-api-v1", project.fabric_version)
+	implementation fabricApi.module("fabric-lifecycle-events-v1", project.fabric_version)
+	implementation fabricApi.module("fabric-command-api-v2", project.fabric_version)
+	implementation fabricApi.module("fabric-rendering-v1", project.fabric_version)
+	implementation fabricApi.module("fabric-resource-loader-v1", project.fabric_version)
+	runtimeOnly fabricApi.module("fabric-registry-sync-v0", project.fabric_version)
 
 	// Allow logging into an actual Minecraft account in a dev env
 	// See https://github.com/DJtheRedstoner/DevAuth
-	modLocalRuntime "me.djtheredstoner:DevAuth-fabric:1.2.1"
-	// TODO mojang removed their dependency on Apache HTTP, which breaks DevAuth; for the time being, just re-import it
-	//      as a dev env dependency.
-	localRuntime "org.apache.httpcomponents:httpclient:4.5.14"
-	localRuntime "org.apache.httpcomponents:httpcore:4.4.16"
+	localRuntime "me.djtheredstoner:DevAuth-fabric:1.2.2"
 
-	// If you want to load Mod Menu in a development environment, change this to modImplementation
+	// If you want to load Mod Menu in a development environment, change this to implementation
 	// and uncomment the associated Fabric API module.
-	modCompileOnly("com.terraformersmc:modmenu:${project.modmenu_version}")
-	//modRuntimeOnly(fabricApi.module("fabric-screen-api-v1", project.fabric_version))
+	compileOnly("com.terraformersmc:modmenu:${project.modmenu_version}")
+	//runtimeOnly(fabricApi.module("fabric-screen-api-v1", project.fabric_version))
 }
 
 processResources {
@@ -61,13 +51,12 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-	// Minecraft 1.20.5 (24w14a) upwards uses Java 21.
-	it.options.release = 21
+	it.options.release = 25
 }
 
 java {
-	sourceCompatibility = JavaVersion.VERSION_21
-	targetCompatibility = JavaVersion.VERSION_21
+	sourceCompatibility = JavaVersion.VERSION_25
+	targetCompatibility = JavaVersion.VERSION_25
 }
 
 loom {

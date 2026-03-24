@@ -60,7 +60,7 @@ public class WildfireGenderClient implements ClientModInitializer {
 		WildfireSounds.register();
 		WildfireSync.registerClient();
 		WildfireEventHandler.registerClientEvents();
-		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloader(GenderArmorResourceManager.ID, GenderArmorResourceManager.INSTANCE);
+		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(GenderArmorResourceManager.ID, GenderArmorResourceManager.INSTANCE);
 		DebugScreenEntries.register(GenderDebugHudEntry.SELF, new GenderDebugHudEntry(true));
 		DebugScreenEntries.register(GenderDebugHudEntry.OTHER, new GenderDebugHudEntry(false));
 		// only register this in dev env, as this likely isn't going to be very useful anywhere else.

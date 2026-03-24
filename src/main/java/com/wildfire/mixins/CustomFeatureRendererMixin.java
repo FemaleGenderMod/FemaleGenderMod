@@ -40,7 +40,7 @@ import java.util.Map;
 @Mixin(CustomFeatureRenderer.class)
 class CustomFeatureRendererMixin {
 	@WrapOperation(
-			method = "render",
+			method = "renderSolid",
 			at = @At(
 					value = "INVOKE",
 					target = "Lnet/minecraft/client/renderer/SubmitNodeCollector$CustomGeometryRenderer;render(Lcom/mojang/blaze3d/vertex/PoseStack$Pose;Lcom/mojang/blaze3d/vertex/VertexConsumer;)V"
@@ -51,7 +51,7 @@ class CustomFeatureRendererMixin {
 			PoseStack.Pose entry,
 			VertexConsumer vertexConsumer,
 			Operation<Void> original,
-			@Local Map.Entry<RenderType, List<SubmitNodeStorage.CustomGeometrySubmit>> mapEntry
+			@Local(name = "entry") Map.Entry<RenderType, List<SubmitNodeStorage.CustomGeometrySubmit>> mapEntry
 	) {
 		original.call(instance, entry, vertexConsumer);
 

@@ -18,10 +18,11 @@
 
 package com.wildfire.gui.screen;
 
-import com.wildfire.gui.GuiUtils;
-import com.wildfire.main.WildfireGender;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+
+/*import com.wildfire.gui.GuiUtils;
+import com.wildfire.main.WildfireGender;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -29,12 +30,12 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
-import java.util.UUID;
+import java.util.UUID;*/
 
 @Environment(EnvType.CLIENT)
-public class WildfireCloudDetailsScreen extends BaseWildfireScreen {
+public class WildfireCloudDetailsScreen /*extends BaseWildfireScreen*/ {
 
-	//TODO: PROPER TRANSLATIONS
+	/*//TODO: PROPER TRANSLATIONS
 
 	private static final Component TITLE = Component.translatable("wildfire_gender.cloud_details.title");
 
@@ -100,5 +101,5 @@ public class WildfireCloudDetailsScreen extends BaseWildfireScreen {
 	@Override
 	public void onClose() {
 		super.onClose();
-	}
+	}*/
 }

@@ -30,7 +30,7 @@ import com.wildfire.main.entitydata.PlayerConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -127,7 +127,7 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 					// note that we wait for this to ensure that we don't have any inconsistencies with the synced
 					// data once we open the main menu
 					WildfireGenderClient.loadGenderInfo(clientUUID, false, true).join();
-				} catch(CompletionException ignored) {
+				} catch(CompletionException _) {
 					// loadGenderInfo should log any errors for us
 					return;
 				} catch(Exception e) {
@@ -145,9 +145,9 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 	}
 
 	@Override
-	public void renderBackground(GuiGraphics ctx, int mouseX, int mouseY, float delta) {
-		this.renderTransparentBackground(ctx);
-		ctx.blit(RenderPipelines.GUI_TEXTURED, BACKGROUND, (this.width - 274) / 2, (this.height - 200) / 2, 0, 0, 274, 200, 512, 512);
+	public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+		extractTransparentBackground(graphics);
+		graphics.blit(RenderPipelines.GUI_TEXTURED, BACKGROUND, (this.width - 274) / 2, (this.height - 200) / 2, 0, 0, 274, 200, 512, 512);
 	}
 
 	@Override
@@ -156,31 +156,30 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 	}
 
 	@Override
-	public void render(GuiGraphics ctx, int mouseX, int mouseY, float delta) {
-		if(minecraft.level == null) return;
-		super.render(ctx, mouseX, mouseY, delta);
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+		super.extractRenderState(graphics, mouseX, mouseY, delta);
 
-		var mStack = ctx.pose();
+		var mStack = graphics.pose();
 
 		int x = this.width / 2;
 		int y = this.height / 2;
 
-		GuiUtils.drawCenteredText(ctx, font, TITLE, x, y - 24, ARGB.opaque(4210752));
+		GuiUtils.drawCenteredText(graphics, font, TITLE, x, y - 24, ARGB.opaque(4210752));
 
-		GuiUtils.drawCenteredTextWrapped(ctx, font, Component.literal("Keira Emberlyn:").withStyle(ChatFormatting.LIGHT_PURPLE), x + 32, y - 10, (int) ((256-65)), ARGB.opaque(0xFFFFFF));
+		GuiUtils.drawCenteredTextWrapped(graphics, font, Component.literal("Keira Emberlyn:").withStyle(ChatFormatting.LIGHT_PURPLE), x + 32, y - 10, (int) ((256-65)), ARGB.opaque(0xFFFFFF));
 
 		//TODO: Vertical scroll bar for longer text?
-		GuiUtils.drawCenteredTextWrapped(ctx, font, DESCRIPTION, x + 32, y + 2, (int) ((256-65)), ARGB.opaque(0xFFFFFF));
+		GuiUtils.drawCenteredTextWrapped(graphics, font, DESCRIPTION, x + 32, y + 2, (int) ((256-65)), ARGB.opaque(0xFFFFFF));
 
 		mStack.pushMatrix();
 		mStack.translate(x, y + 47);
 		mStack.scale(new Vector2f(0.8f, 0.8f));
 		mStack.translate(-x, (-y) - 47);
-		GuiUtils.drawCenteredTextWrapped(ctx, font, NOTICE, x, y + 68, (int) ((256-10) * 1.2f), ARGB.opaque(4210752));
+		GuiUtils.drawCenteredTextWrapped(graphics, font, NOTICE, x, y + 68, (int) ((256-10) * 1.2f), ARGB.opaque(4210752));
 		mStack.popMatrix();
 
 		var fakeKeira = this.fakeKeira.get().getEntity();
-		GuiUtils.drawEntityOnScreen(ctx, x - 132, y - 13, x - 75, y + 60, 50, mouseX, mouseY, 0, 0.4f, fakeKeira);
+		GuiUtils.drawEntityOnScreen(graphics, x - 132, y - 13, x - 75, y + 60, 50, mouseX, mouseY, 0, 0.4f, fakeKeira);
 	}
 
 	@Override

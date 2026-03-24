@@ -27,6 +27,5 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Environment(EnvType.CLIENT)
 @Mixin(YggdrasilMinecraftSessionService.class)
 public interface YggdrasilMinecraftSessionServiceAccessor {
-	// authlib isn't obfuscated, so no need to remap.
-	@Accessor(remap = false) String getBaseUrl();
+	@Accessor String getBaseUrl();
 }

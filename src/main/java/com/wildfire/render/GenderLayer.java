@@ -30,7 +30,6 @@ import com.wildfire.render.WildfireModelRenderer.BreastModelBox;
 import com.wildfire.render.WildfireModelRenderer.OverlayModelBox;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -93,12 +92,6 @@ public class GenderLayer<S extends HumanoidRenderState, M extends HumanoidModel<
 
 	@Override
 	public void submit(PoseStack matrixStack, SubmitNodeCollector queue, int light, S state, float limbAngle, float limbDistance) {
-		if(Minecraft.getInstance().level == null) {
-			// TODO rendering in a menu is harder to support as we only tick physics when in a world,
-			//		and entities rendered in the main menu are naturally not in a world
-			return;
-		}
-
 		var entityConfigState = GenderRenderState.get(state);
 		if(entityConfigState == null) return;
 

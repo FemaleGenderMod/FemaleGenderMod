@@ -35,17 +35,4 @@ public record GenderArmor(
 		boolean armorStandsCopySettings,
 		IBreastArmorTexture texture
 ) implements IGenderArmor {
-	/**
-	 * @deprecated Use {@link IGenderArmor#DEFAULT} instead
-	 */
-	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "First release of 26.1")
-	public static final IGenderArmor DEFAULT = IGenderArmor.DEFAULT;
-
-	/**
-	 * @deprecated Use {@link IGenderArmor#EMPTY} instead
-	 */
-	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "First release of 26.1")
-	public static final IGenderArmor EMPTY = IGenderArmor.EMPTY;
 }

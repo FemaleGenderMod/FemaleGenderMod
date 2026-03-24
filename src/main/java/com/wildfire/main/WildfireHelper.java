@@ -23,7 +23,6 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.wildfire.api.IGenderArmor;
-import com.wildfire.api.WildfireAPI;
 import com.wildfire.main.config.types.FloatConfigKey;
 import com.wildfire.resources.GenderArmorResourceManager;
 import net.fabricmc.api.EnvType;
@@ -78,17 +77,14 @@ public final class WildfireHelper {
 		return Math.round(num * factor) / factor;
 	}
 
-	@SuppressWarnings("removal")
 	@Environment(EnvType.CLIENT)
 	public static IGenderArmor getArmorConfig(ItemStack stack) {
 		if(stack.isEmpty()) {
 			return IGenderArmor.EMPTY;
 		}
 
-		return GenderArmorResourceManager.get(stack).orElseGet(() -> {
-			var fallback = stack.has(DataComponents.EQUIPPABLE) ? IGenderArmor.DEFAULT : IGenderArmor.EMPTY;
-			return WildfireAPI.getGenderArmors().getOrDefault(stack.getItem(), fallback);
-		});
+		return GenderArmorResourceManager.get(stack)
+			.orElseGet(() -> stack.has(DataComponents.EQUIPPABLE) ? IGenderArmor.DEFAULT : IGenderArmor.EMPTY);
 	}
 
 	public static Codec<Float> boundedFloat(float minInclusive, float maxInclusive) {

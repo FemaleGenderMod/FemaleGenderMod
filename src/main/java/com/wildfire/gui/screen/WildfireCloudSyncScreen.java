@@ -29,7 +29,7 @@ import com.wildfire.main.config.ClientConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
@@ -155,23 +155,23 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
 	}
 
 	@Override
-	public void renderBackground(GuiGraphics ctx, int mouseX, int mouseY, float delta) {
-		this.renderTransparentBackground(ctx);
-		ctx.blit(RenderPipelines.GUI_TEXTURED, BACKGROUND, (this.width - 172) / 2, (this.height - 124) / 2, 0, 0, 172, 144, 256, 256);
+	public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+		extractTransparentBackground(graphics);
+		graphics.blit(RenderPipelines.GUI_TEXTURED, BACKGROUND, (this.width - 172) / 2, (this.height - 124) / 2, 0, 0, 172, 144, 256, 256);
 	}
 
 	@Override
-	public void render(GuiGraphics ctx, int mouseX, int mouseY, float delta) {
-		if(minecraft == null || minecraft.level == null) return;
-		super.render(ctx, mouseX, mouseY, delta);
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+		if(minecraft.level == null) return;
+		super.extractRenderState(graphics, mouseX, mouseY, delta);
 
 		int x = this.width / 2;
 		int y = this.height / 2;
 		y -= 47;
 
-		GuiUtils.drawScrollableTextWithoutShadow(GuiUtils.Justify.LEFT, ctx, font, getTitle(),
+		GuiUtils.drawScrollableTextWithoutShadow(GuiUtils.Justify.LEFT, graphics, font, getTitle(),
 				x - 79, y - 12, x - 79 + 141, y - 11 + 10, 4473924);
-		GuiUtils.drawScrollableTextWithoutShadow(GuiUtils.Justify.LEFT, ctx, font, Component.translatable("wildfire_gender.cloud.status_log"),
+		GuiUtils.drawScrollableTextWithoutShadow(GuiUtils.Justify.LEFT, graphics, font, Component.translatable("wildfire_gender.cloud.status_log"),
 				x - 79, y + 47, x - 79 + 95, y + 48 + 10, 4473924);
 
 		for(int i = SyncLog.SYNC_LOG.size() - 1; i >= 0; i--) {
@@ -180,7 +180,7 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
 
 			if(reverseIndex < 6) {
 				int ey = y + 110 - (reverseIndex * 10);
-				GuiUtils.drawScrollableTextWithoutShadow(GuiUtils.Justify.LEFT, ctx, font, entry.text(),
+				GuiUtils.drawScrollableTextWithoutShadow(GuiUtils.Justify.LEFT, graphics, font, entry.text(),
 						x - 78, ey, x - 78 + 156, ey + 10, entry.color());
 			}
 		}

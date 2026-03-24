@@ -30,7 +30,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetTooltipHolder;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
@@ -149,8 +149,8 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 	}
 
 	@Override
-	public void renderBackground(GuiGraphics ctx, int mouseX, int mouseY, float delta) {
-		this.renderTransparentBackground(ctx);
+	public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+		extractTransparentBackground(graphics);
 
 		PlayerConfig plr = getPlayer();
 		if(plr == null) return;
@@ -160,31 +160,31 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 			case Gender.OTHER -> BACKGROUND_OTHER;
 		};
 
-		ctx.blit(RenderPipelines.GUI_TEXTURED, backgroundTexture, (this.width - 272) / 2, (this.height - 138) / 2, 0, 0, 268, 124, 512, 512);
+		graphics.blit(RenderPipelines.GUI_TEXTURED, backgroundTexture, (this.width - 272) / 2, (this.height - 138) / 2, 0, 0, 268, 124, 512, 512);
 
-		renderPlayerInFrame(ctx, this.width / 2 - 90, this.height / 2 + 18, mouseX, mouseY);
+		renderPlayerInFrame(graphics, this.width / 2 - 90, this.height / 2 + 18, mouseX, mouseY);
 	}
 
 	@Override
-	public void render(GuiGraphics ctx, int mouseX, int mouseY, float delta) {
-		super.render(ctx, mouseX, mouseY, delta);
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+		super.extractRenderState(graphics, mouseX, mouseY, delta);
 		int x = this.width / 2;
 		int y = this.height / 2;
-		ctx.drawString(font, getTitle(), x - font.width(getTitle()) / 2, y - 82, 0xFFFFFF, false);
+		graphics.text(font, getTitle(), x - font.width(getTitle()) / 2, y - 82, 0xFFFFFF, false);
 
-		drawCreatorContributorText(ctx, mouseX, mouseY, y + 65 + (isBreastCancerAwarenessMonth ? 30 : 0));
+		drawCreatorContributorText(graphics, mouseX, mouseY, y + 65 + (isBreastCancerAwarenessMonth ? 30 : 0));
 
 		if(isBreastCancerAwarenessMonth) {
 			int bcaY = y - 45;
-			ctx.fill(x - 159, bcaY + 106, x + 159, bcaY + 136, 0x55000000);
-			ctx.drawString(font, Component.translatable("wildfire_gender.cancer_awareness.title").withStyle(ChatFormatting.BOLD, ChatFormatting.ITALIC), this.width / 2 - 148, bcaY + 117, 0xFFFFFFFF);
-			ctx.blit(RenderPipelines.GUI_TEXTURED, TXTR_RIBBON, x + 130, bcaY + 109, 0, 0, 26, 26, 20, 20, 20, 20);
+			graphics.fill(x - 159, bcaY + 106, x + 159, bcaY + 136, 0x55000000);
+			graphics.text(font, Component.translatable("wildfire_gender.cancer_awareness.title").withStyle(ChatFormatting.BOLD, ChatFormatting.ITALIC), this.width / 2 - 148, bcaY + 117, 0xFFFFFFFF);
+			graphics.blit(RenderPipelines.GUI_TEXTURED, TXTR_RIBBON, x + 130, bcaY + 109, 0, 0, 26, 26, 20, 20, 20, 20);
 		}
 
-		SyncedPlayerList.drawSyncedPlayers(ctx, font);
+		SyncedPlayerList.drawSyncedPlayers(graphics, font);
 	}
 
-	private void drawCreatorContributorText(GuiGraphics ctx, int mouseX, int mouseY, int creatorY) {
+	private void drawCreatorContributorText(GuiGraphicsExtractor graphics, int mouseX, int mouseY, int creatorY) {
 		final var client = Objects.requireNonNull(this.minecraft);
 		if(client.player == null || client.level == null) return;
 		Map<UUID, PlayerInfo> entries = client.player.connection.getOnlinePlayers()
@@ -213,7 +213,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 		}
 
 		int textWidth = font.width(text);
-		GuiUtils.drawCenteredTextWrapped(ctx, this.font, text, this.width / 2, creatorY, 300, ARGB.opaque(0xFF00FF));
+		GuiUtils.drawCenteredTextWrapped(graphics, this.font, text, this.width / 2, creatorY, 300, ARGB.opaque(0xFF00FF));
 
 		// Render a tooltip with the relevant player names when hovered over
 		int lines = (int) Math.ceil(textWidth / 300.0);
@@ -225,7 +225,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 					.toList();
 
 			contribTooltip.set(Tooltip.create(ComponentUtils.formatList(contributorNames, Component.literal("\n"))));
-			contribTooltip.refreshTooltipForNextRenderPass(ctx, mouseX, mouseY, true, true, ScreenRectangle.empty());
+			contribTooltip.refreshTooltipForNextRenderPass(graphics, mouseX, mouseY, true, true, ScreenRectangle.empty());
 		}
 	}
 }

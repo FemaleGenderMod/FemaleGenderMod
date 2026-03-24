@@ -26,7 +26,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.toasts.Toast;
 import net.minecraft.client.gui.components.toasts.ToastManager;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -79,16 +79,16 @@ public class WildfireToast implements Toast {
 	}
 
 	@Override
-	public void render(GuiGraphics context, Font textRenderer, long startTime) {
+	public void extractRenderState(GuiGraphicsExtractor graphics, Font font, long fullyVisibleForMs) {
 		int i = this.height();
-		context.blitSprite(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, 0, this.width(), i);
+		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, 0, this.width(), i);
 
-		context.blit(RenderPipelines.GUI_TEXTURED, ICON, 6, 6, 0, 0, 20, 20, 20, 20, 20, 20);
+		graphics.blit(RenderPipelines.GUI_TEXTURED, ICON, 6, 6, 0, 0, 20, 20, 20, 20, 20, 20);
 		int j = this.text.size() * 11;
 		int k = 7 + (this.getTextHeight() - j) / 2;
 
-		for (int l = 0; l < this.text.size(); l++) {
-			context.drawString(textRenderer, this.text.get(l), 30, k + l * 11, 0xFFFFFFFF, false);
+		for(int l = 0; l < this.text.size(); l++) {
+			graphics.text(font, this.text.get(l), 30, k + l * 11, 0xFFFFFFFF, false);
 		}
 	}
 

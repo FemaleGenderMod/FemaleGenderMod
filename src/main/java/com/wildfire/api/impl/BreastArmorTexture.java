@@ -33,10 +33,4 @@ public record BreastArmorTexture(
 		Vector2ic rightUv,
 		Vector2ic dimensions
 ) implements IBreastArmorTexture {
-	/**
-	 * @deprecated Use {@link IBreastArmorTexture#DEFAULT} instead
-	 */
-	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "First release of 26.1")
-	public static final IBreastArmorTexture DEFAULT = IBreastArmorTexture.DEFAULT;
 }
