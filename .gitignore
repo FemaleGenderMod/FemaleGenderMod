@@ -1,28 +1,25 @@
-# gradle
+# Gradle
 
 .gradle/
 build/
 out/
 classes/
+.kotlin/
 
-# eclipse
+# Eclipse
 
 *.launch
 
-# idea
+# Idea
 
 .idea/
-!.idea/copyright/
+!.idea/copyright/*
+!.idea/scopes/*
 *.iml
 *.ipr
 *.iws
 
-#Minecraft
-run/
-runV2/
-dependencies/
-
-# vscode
+# VSCode
 
 .settings/
 .vscode/
@@ -32,11 +29,8 @@ bin/
 
 # macOS
 
-.DS_Store
-.AppleDouble
-.LSOverride
+DS_Store
 
-# other
+# Misc
 
-.sdkmanrc
-.factorypath
+run/
