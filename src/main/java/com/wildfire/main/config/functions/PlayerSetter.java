@@ -22,5 +22,5 @@ import com.wildfire.main.entitydata.PlayerConfig;
 
 @FunctionalInterface
 public interface PlayerSetter<T> {
-	Object set(PlayerConfig player, T value);
+    Object set(PlayerConfig player, T value);
 }

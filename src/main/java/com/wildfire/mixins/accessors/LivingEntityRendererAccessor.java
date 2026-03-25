@@ -30,6 +30,6 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(LivingEntityRenderer.class)
 @Environment(EnvType.CLIENT)
 public interface LivingEntityRendererAccessor {
-	@Invoker
-	@Nullable RenderType invokeGetRenderType(LivingEntityRenderState state, boolean showBody, boolean translucent, boolean showOutline);
+    @Invoker
+    @Nullable RenderType invokeGetRenderType(LivingEntityRenderState state, boolean showBody, boolean translucent, boolean showOutline);
 }

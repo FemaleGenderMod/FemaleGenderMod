@@ -29,34 +29,34 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class SyncLog {
-	public static final List<Entry> SYNC_LOG = new ArrayList<>();
+    public static final List<Entry> SYNC_LOG = new ArrayList<>();
 
-	public static int verbosity() {
-		return ClientConfig.INSTANCE.get(ClientConfig.SYNC_VERBOSITY).ordinal();
-	}
+    public static int verbosity() {
+        return ClientConfig.INSTANCE.get(ClientConfig.SYNC_VERBOSITY).ordinal();
+    }
 
-	public static void add(Component text, SyncVerbosity verbosity) {
-		if(verbosity() < verbosity.ordinal()) {
-			return;
-		}
-		add(text);
-	}
+    public static void add(Component text, SyncVerbosity verbosity) {
+        if(verbosity() < verbosity.ordinal()) {
+            return;
+        }
+        add(text);
+    }
 
-	public static void add(Component text) {
-		SYNC_LOG.add(new Entry(text, Instant.now()));
-		if(SYNC_LOG.size() > 6) {
-			SYNC_LOG.removeFirst();
-		}
-	}
+    public static void add(Component text) {
+        SYNC_LOG.add(new Entry(text, Instant.now()));
+        if(SYNC_LOG.size() > 6) {
+            SYNC_LOG.removeFirst();
+        }
+    }
 
-	public record Entry(Component text, Instant timestamp) {
-		public static final int NEW_COLOR = 0x00FF00;
-		public static final int OLD_COLOR = 0x34A100;
+    public record Entry(Component text, Instant timestamp) {
+        public static final int NEW_COLOR = 0x00FF00;
+        public static final int OLD_COLOR = 0x34A100;
 
-		public int color() {
-			long secondsPassed = Instant.now().getEpochSecond() - timestamp.getEpochSecond();
-			float delta = Mth.clamp(secondsPassed / 60f, 0f, 1f);
-			return ARGB.linearLerp(delta, NEW_COLOR, OLD_COLOR);
-		}
-	}
+        public int color() {
+            long secondsPassed = Instant.now().getEpochSecond() - timestamp.getEpochSecond();
+            float delta = Mth.clamp(secondsPassed / 60f, 0f, 1f);
+            return ARGB.linearLerp(delta, NEW_COLOR, OLD_COLOR);
+        }
+    }
 }

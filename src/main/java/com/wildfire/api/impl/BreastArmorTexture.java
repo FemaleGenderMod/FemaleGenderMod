@@ -28,9 +28,9 @@ import org.joml.Vector2ic;
  * @see IBreastArmorTexture
  */
 public record BreastArmorTexture(
-		Vector2ic textureSize,
-		Vector2ic leftUv,
-		Vector2ic rightUv,
-		Vector2ic dimensions
+        Vector2ic textureSize,
+        Vector2ic leftUv,
+        Vector2ic rightUv,
+        Vector2ic dimensions
 ) implements IBreastArmorTexture {
 }

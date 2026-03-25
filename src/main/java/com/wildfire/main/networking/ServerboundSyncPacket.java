@@ -36,31 +36,31 @@ import java.util.UUID;
 
 public final class ServerboundSyncPacket extends AbstractSyncPacket implements CustomPacketPayload {
 
-	public static final Type<ServerboundSyncPacket> ID = new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(WildfireGender.MODID, "send_gender_info"));
-	public static final StreamCodec<ByteBuf, ServerboundSyncPacket> CODEC = codec(ServerboundSyncPacket::new);
+    public static final Type<ServerboundSyncPacket> ID = new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(WildfireGender.MODID, "send_gender_info"));
+    public static final StreamCodec<ByteBuf, ServerboundSyncPacket> CODEC = codec(ServerboundSyncPacket::new);
 
-	public ServerboundSyncPacket(PlayerConfig plr) {
-		super(plr);
-	}
+    public ServerboundSyncPacket(PlayerConfig plr) {
+        super(plr);
+    }
 
-	private ServerboundSyncPacket(UUID uuid, Gender gender, float bustSize, boolean hurtSounds, float voicePitch, BreastPhysics physics, Breasts breasts, UVLayouts uvLayouts) {
-		super(uuid, gender, bustSize, hurtSounds, voicePitch, physics, breasts, uvLayouts);
-	}
+    private ServerboundSyncPacket(UUID uuid, Gender gender, float bustSize, boolean hurtSounds, float voicePitch, BreastPhysics physics, Breasts breasts, UVLayouts uvLayouts) {
+        super(uuid, gender, bustSize, hurtSounds, voicePitch, physics, breasts, uvLayouts);
+    }
 
-	@Override
-	public Type<? extends CustomPacketPayload> type() {
-		return ID;
-	}
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return ID;
+    }
 
-	@Environment(EnvType.CLIENT)
-	public static boolean canSend() {
-		return ClientPlayNetworking.canSend(ID);
-	}
+    @Environment(EnvType.CLIENT)
+    public static boolean canSend() {
+        return ClientPlayNetworking.canSend(ID);
+    }
 
-	public void handle(ServerPlayNetworking.Context context) {
-		ServerPlayer player = context.player();
-		PlayerConfig plr = WildfireGender.getOrAddPlayerById(player.getUUID());
-		updatePlayerFromPacket(plr);
-		WildfireSync.sendToAllClients(player, plr);
-	}
+    public void handle(ServerPlayNetworking.Context context) {
+        ServerPlayer player = context.player();
+        PlayerConfig plr = WildfireGender.getOrAddPlayerById(player.getUUID());
+        updatePlayerFromPacket(plr);
+        WildfireSync.sendToAllClients(player, plr);
+    }
 }

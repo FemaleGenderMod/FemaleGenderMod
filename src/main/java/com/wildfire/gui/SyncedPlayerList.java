@@ -35,73 +35,73 @@ import java.util.List;
 import java.util.Objects;
 
 public final class SyncedPlayerList {
-	private SyncedPlayerList() {
-		throw new UnsupportedOperationException();
-	}
+    private SyncedPlayerList() {
+        throw new UnsupportedOperationException();
+    }
 
-	private static int ticks = 0;
-	private static volatile List<SyncedPlayer> syncedPlayers = Collections.emptyList();
+    private static int ticks = 0;
+    private static volatile List<SyncedPlayer> syncedPlayers = Collections.emptyList();
 
-	static {
-		ClientTickEvents.END_CLIENT_TICK.register(SyncedPlayerList::onTick);
-	}
+    static {
+        ClientTickEvents.END_CLIENT_TICK.register(SyncedPlayerList::onTick);
+    }
 
-	public static void drawSyncedPlayers(GuiGraphicsExtractor context, Font font) {
-		if(syncedPlayers.isEmpty()) {
-			return;
-		}
+    public static void drawSyncedPlayers(GuiGraphicsExtractor context, Font font) {
+        if(syncedPlayers.isEmpty()) {
+            return;
+        }
 
-		var header = Component.translatable("wildfire_gender.wardrobe.players_using_mod").withStyle(ChatFormatting.AQUA);
-		context.text(font, header, 5, 5, 0xFFFFFFFF, true);
+        var header = Component.translatable("wildfire_gender.wardrobe.players_using_mod").withStyle(ChatFormatting.AQUA);
+        context.text(font, header, 5, 5, 0xFFFFFFFF, true);
 
-		int yPos = 18;
-		for(var entry : syncedPlayers) {
-			var text = Component.empty()
-					.append(Component.literal(entry.name()).withColor(entry.color()))
-					.append(" - ")
-					.append(entry.gender().getDisplayName());
-			context.text(font, text, 10, yPos, 0xFFFFFFFF, false);
-			yPos += 10;
-		}
-	}
+        int yPos = 18;
+        for(var entry : syncedPlayers) {
+            var text = Component.empty()
+                    .append(Component.literal(entry.name()).withColor(entry.color()))
+                    .append(" - ")
+                    .append(entry.gender().getDisplayName());
+            context.text(font, text, 10, yPos, 0xFFFFFFFF, false);
+            yPos += 10;
+        }
+    }
 
-	// TODO this design is largely redundant now, as this was designed at a point where it was assumed
-	//		that HUD rendering would also receive the same render split treatment as entities did, which
-	//		appears to now be incorrect
-	private static void onTick(Minecraft client) {
-		if(ticks++ % 5 != 0) {
-			return;
-		}
+    // TODO this design is largely redundant now, as this was designed at a point where it was assumed
+    //		that HUD rendering would also receive the same render split treatment as entities did, which
+    //		appears to now be incorrect
+    private static void onTick(Minecraft client) {
+        if(ticks++ % 5 != 0) {
+            return;
+        }
 
-		var clientPlayer = Minecraft.getInstance().player;
-		if(clientPlayer == null) {
-			syncedPlayers = Collections.emptyList();
-			return;
-		}
+        var clientPlayer = Minecraft.getInstance().player;
+        if(clientPlayer == null) {
+            syncedPlayers = Collections.emptyList();
+            return;
+        }
 
-		var list = new ArrayList<SyncedPlayer>();
+        var list = new ArrayList<SyncedPlayer>();
 
-		for(var entry : clientPlayer.connection.getListedOnlinePlayers()) {
-			if(Objects.equals(entry.getProfile().id(), clientPlayer.getUUID())) {
-				continue;
-			}
+        for(var entry : clientPlayer.connection.getListedOnlinePlayers()) {
+            if(Objects.equals(entry.getProfile().id(), clientPlayer.getUUID())) {
+                continue;
+            }
 
-			var config = WildfireGender.getPlayerById(entry.getProfile().id());
-			if(config == null || config.syncStatus == PlayerConfig.SyncStatus.UNKNOWN) {
-				continue;
-			}
+            var config = WildfireGender.getPlayerById(entry.getProfile().id());
+            if(config == null || config.syncStatus == PlayerConfig.SyncStatus.UNKNOWN) {
+                continue;
+            }
 
-			var color = Contributors.getColor(entry.getProfile().id());
-			list.add(new SyncedPlayer(entry.getProfile().name(), color == null ? 0xFFFFFF : color, config.getGender()));
+            var color = Contributors.getColor(entry.getProfile().id());
+            list.add(new SyncedPlayer(entry.getProfile().name(), color == null ? 0xFFFFFF : color, config.getGender()));
 
-			if(list.size() >= 40) {
-				break;
-			}
-		}
+            if(list.size() >= 40) {
+                break;
+            }
+        }
 
-		syncedPlayers = list;
-	}
+        syncedPlayers = list;
+    }
 
-	private record SyncedPlayer(String name, int color, Gender gender) {
-	}
+    private record SyncedPlayer(String name, int color, Gender gender) {
+    }
 }

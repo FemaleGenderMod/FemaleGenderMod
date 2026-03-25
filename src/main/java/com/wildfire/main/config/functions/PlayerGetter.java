@@ -22,5 +22,5 @@ import com.wildfire.main.entitydata.PlayerConfig;
 
 @FunctionalInterface
 public interface PlayerGetter<T> {
-	T get(PlayerConfig player);
+    T get(PlayerConfig player);
 }

@@ -32,27 +32,27 @@ import java.nio.charset.StandardCharsets;
 
 public class GenderConfigs {
 
-	private static final Gson GSON = new Gson();
+    private static final Gson GSON = new Gson();
 
-	public static final JsonObject DEFAULT_FEMALE;
-	public static final JsonObject DEFAULT_MALE;
+    public static final JsonObject DEFAULT_FEMALE;
+    public static final JsonObject DEFAULT_MALE;
 
-	static {
-		DEFAULT_FEMALE = loadConfig("modeldata/female_default.json");
-		DEFAULT_MALE = loadConfig("modeldata/male_default.json");
-	}
+    static {
+        DEFAULT_FEMALE = loadConfig("modeldata/female_default.json");
+        DEFAULT_MALE = loadConfig("modeldata/male_default.json");
+    }
 
-	private static JsonObject loadConfig(String cfgFile) {
-		try {
-			ResourceManager manager = Minecraft.getInstance().getResourceManager();
-			Identifier id = WildfireGender.id(cfgFile);
-			Resource resource = manager.getResource(id).orElseThrow();
+    private static JsonObject loadConfig(String cfgFile) {
+        try {
+            ResourceManager manager = Minecraft.getInstance().getResourceManager();
+            Identifier id = WildfireGender.id(cfgFile);
+            Resource resource = manager.getResource(id).orElseThrow();
 
-			try(var reader = new InputStreamReader(resource.open(), StandardCharsets.UTF_8)) {
-				return GSON.fromJson(reader, JsonObject.class);
-			}
-		} catch(IOException e) {
-			throw new UncheckedIOException(e);
-		}
-	}
+            try(var reader = new InputStreamReader(resource.open(), StandardCharsets.UTF_8)) {
+                return GSON.fromJson(reader, JsonObject.class);
+            }
+        } catch(IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
 }

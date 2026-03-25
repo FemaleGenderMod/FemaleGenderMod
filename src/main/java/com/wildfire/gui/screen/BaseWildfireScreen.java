@@ -37,49 +37,49 @@ import java.util.function.Consumer;
 @Environment(EnvType.CLIENT)
 public abstract class BaseWildfireScreen extends Screen {
 
-	protected final UUID playerUUID;
-	protected final @Nullable Screen parent;
+    protected final UUID playerUUID;
+    protected final @Nullable Screen parent;
 
-	protected BaseWildfireScreen(Component title, @Nullable Screen parent, UUID uuid) {
-		super(title);
-		this.parent = parent;
-		this.playerUUID = uuid;
-	}
+    protected BaseWildfireScreen(Component title, @Nullable Screen parent, UUID uuid) {
+        super(title);
+        this.parent = parent;
+        this.playerUUID = uuid;
+    }
 
-	protected WildfireButton addButton(Consumer<WildfireButton.Builder> builder) {
-		var buttonBuilder = new WildfireButton.Builder();
-		builder.accept(buttonBuilder);
-		return addRenderableWidget(buttonBuilder.build());
-	}
+    protected WildfireButton addButton(Consumer<WildfireButton.Builder> builder) {
+        var buttonBuilder = new WildfireButton.Builder();
+        builder.accept(buttonBuilder);
+        return addRenderableWidget(buttonBuilder.build());
+    }
 
-	protected WildfireSlider addSlider(Consumer<WildfireSlider.Builder> builder) {
-		var sliderBuilder = new WildfireSlider.Builder();
-		sliderBuilder.save(_ -> Objects.requireNonNull(getPlayer(), "getPlayer()").save());
-		builder.accept(sliderBuilder);
-		return addRenderableWidget(sliderBuilder.build());
-	}
+    protected WildfireSlider addSlider(Consumer<WildfireSlider.Builder> builder) {
+        var sliderBuilder = new WildfireSlider.Builder();
+        sliderBuilder.save(_ -> Objects.requireNonNull(getPlayer(), "getPlayer()").save());
+        builder.accept(sliderBuilder);
+        return addRenderableWidget(sliderBuilder.build());
+    }
 
-	public @Nullable PlayerConfig getPlayer() {
-		return WildfireGender.getPlayerById(this.playerUUID);
-	}
+    public @Nullable PlayerConfig getPlayer() {
+        return WildfireGender.getPlayerById(this.playerUUID);
+    }
 
-	protected void renderPlayerInFrame(GuiGraphicsExtractor graphics, int xP, int yP, int mouseX, int mouseY) {
-		var player = minecraft.player;
-		if(player == null) return;
-		// This sucks. In order to position the player properly, we need to trick the player renderer into
-		// thinking the area the player should be rendered is much taller than it actually is.
-		graphics.enableScissor(xP - 38, yP - 79, xP + 38, yP + 9);
-		GuiUtils.drawEntityOnScreen(graphics, xP - 38, yP - 79, xP + 38, yP + 69, 70, mouseX, mouseY + 35, player);
-		graphics.disableScissor();
-	}
+    protected void renderPlayerInFrame(GuiGraphicsExtractor graphics, int xP, int yP, int mouseX, int mouseY) {
+        var player = minecraft.player;
+        if(player == null) return;
+        // This sucks. In order to position the player properly, we need to trick the player renderer into
+        // thinking the area the player should be rendered is much taller than it actually is.
+        graphics.enableScissor(xP - 38, yP - 79, xP + 38, yP + 9);
+        GuiUtils.drawEntityOnScreen(graphics, xP - 38, yP - 79, xP + 38, yP + 69, 70, mouseX, mouseY + 35, player);
+        graphics.disableScissor();
+    }
 
-	@Override
-	public boolean isPauseScreen() {
-		return false;
-	}
+    @Override
+    public boolean isPauseScreen() {
+        return false;
+    }
 
-	@Override
-	public void onClose() {
-		minecraft.setScreen(parent);
-	}
+    @Override
+    public void onClose() {
+        minecraft.setScreen(parent);
+    }
 }

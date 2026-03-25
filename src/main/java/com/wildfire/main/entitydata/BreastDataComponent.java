@@ -42,67 +42,67 @@ import org.joml.Vector3f;
  */
 public record BreastDataComponent(float breastSize, float cleavage, Vector3f offsets, boolean jacket, @Nullable CustomData nbtComponent) {
 
-	private static final String KEY = "WildfireGender";
-	private static final Codec<BreastDataComponent> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			WildfireHelper.boundedFloat(Configuration.BUST_SIZE)
-					.optionalFieldOf("BreastSize", 0f)
-					.forGetter(BreastDataComponent::breastSize),
-			WildfireHelper.boundedFloat(Configuration.BREASTS_CLEAVAGE)
-					.optionalFieldOf("Cleavage", Configuration.BREASTS_CLEAVAGE.getDefault())
-					.forGetter(BreastDataComponent::cleavage),
-			Codec.BOOL
-					.optionalFieldOf("Jacket", true)
-					.forGetter(BreastDataComponent::jacket),
-			WildfireHelper.boundedFloat(Configuration.BREASTS_OFFSET_X)
-					.optionalFieldOf("XOffset", 0f)
-					.forGetter(component -> component.offsets.x),
-			WildfireHelper.boundedFloat(Configuration.BREASTS_OFFSET_Y)
-					.optionalFieldOf("YOffset", 0f)
-					.forGetter(component -> component.offsets.y),
-			WildfireHelper.boundedFloat(Configuration.BREASTS_OFFSET_Z)
-					.optionalFieldOf("ZOffset", 0f)
-					.forGetter(component -> component.offsets.y)
-		).apply(instance, (breastSize, cleavage, jacket, x, y, z) -> new BreastDataComponent(breastSize, cleavage, new Vector3f(x, y, z), jacket, null))
-	);
+    private static final String KEY = "WildfireGender";
+    private static final Codec<BreastDataComponent> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            WildfireHelper.boundedFloat(Configuration.BUST_SIZE)
+                    .optionalFieldOf("BreastSize", 0f)
+                    .forGetter(BreastDataComponent::breastSize),
+            WildfireHelper.boundedFloat(Configuration.BREASTS_CLEAVAGE)
+                    .optionalFieldOf("Cleavage", Configuration.BREASTS_CLEAVAGE.getDefault())
+                    .forGetter(BreastDataComponent::cleavage),
+            Codec.BOOL
+                    .optionalFieldOf("Jacket", true)
+                    .forGetter(BreastDataComponent::jacket),
+            WildfireHelper.boundedFloat(Configuration.BREASTS_OFFSET_X)
+                    .optionalFieldOf("XOffset", 0f)
+                    .forGetter(component -> component.offsets.x),
+            WildfireHelper.boundedFloat(Configuration.BREASTS_OFFSET_Y)
+                    .optionalFieldOf("YOffset", 0f)
+                    .forGetter(component -> component.offsets.y),
+            WildfireHelper.boundedFloat(Configuration.BREASTS_OFFSET_Z)
+                    .optionalFieldOf("ZOffset", 0f)
+                    .forGetter(component -> component.offsets.y)
+        ).apply(instance, (breastSize, cleavage, jacket, x, y, z) -> new BreastDataComponent(breastSize, cleavage, new Vector3f(x, y, z), jacket, null))
+    );
 
-	public static @Nullable BreastDataComponent fromPlayer(@NotNull Player player, @NotNull PlayerConfig config) {
-		if(!config.getGender().canHaveBreasts() || !config.showBreastsInArmor()) {
-			return null;
-		}
+    public static @Nullable BreastDataComponent fromPlayer(@NotNull Player player, @NotNull PlayerConfig config) {
+        if(!config.getGender().canHaveBreasts() || !config.showBreastsInArmor()) {
+            return null;
+        }
 
-		return new BreastDataComponent(config.getBustSize(), config.getBreasts().getCleavage(), config.getBreasts().getOffsets(),
-				player.isModelPartShown(PlayerModelPart.JACKET), null);
-	}
+        return new BreastDataComponent(config.getBustSize(), config.getBreasts().getCleavage(), config.getBreasts().getOffsets(),
+                player.isModelPartShown(PlayerModelPart.JACKET), null);
+    }
 
-	public static @Nullable BreastDataComponent fromComponent(@Nullable CustomData component) {
-		if(component == null) {
-			return null;
-		}
+    public static @Nullable BreastDataComponent fromComponent(@Nullable CustomData component) {
+        if(component == null) {
+            return null;
+        }
 
-		return CODEC.decode(NbtOps.INSTANCE, component.copyTag().getCompoundOrEmpty(KEY))
-				.result()
-				.map(Pair::getFirst)
-				.map(breastDataComponent -> breastDataComponent.withComponent(component))
-				.orElse(null);
-	}
+        return CODEC.decode(NbtOps.INSTANCE, component.copyTag().getCompoundOrEmpty(KEY))
+                .result()
+                .map(Pair::getFirst)
+                .map(breastDataComponent -> breastDataComponent.withComponent(component))
+                .orElse(null);
+    }
 
-	public void write(ItemStack stack) {
-		if(stack.isEmpty()) {
-			throw new IllegalArgumentException("The provided ItemStack must not be empty");
-		}
+    public void write(ItemStack stack) {
+        if(stack.isEmpty()) {
+            throw new IllegalArgumentException("The provided ItemStack must not be empty");
+        }
 
-		CustomData.update(DataComponents.CUSTOM_DATA, stack, nbt -> nbt.store(KEY, CODEC, this));
-	}
+        CustomData.update(DataComponents.CUSTOM_DATA, stack, nbt -> nbt.store(KEY, CODEC, this));
+    }
 
-	public static void removeFromStack(ItemStack stack) {
-		if(stack.isEmpty()) return;
-		CustomData component = stack.get(DataComponents.CUSTOM_DATA);
-		if(component != null && component.copyTag().contains(KEY)) {
-			CustomData.update(DataComponents.CUSTOM_DATA, stack, nbt -> nbt.remove(KEY));
-		}
-	}
+    public static void removeFromStack(ItemStack stack) {
+        if(stack.isEmpty()) return;
+        CustomData component = stack.get(DataComponents.CUSTOM_DATA);
+        if(component != null && component.copyTag().contains(KEY)) {
+            CustomData.update(DataComponents.CUSTOM_DATA, stack, nbt -> nbt.remove(KEY));
+        }
+    }
 
-	private BreastDataComponent withComponent(CustomData component) {
-		return new BreastDataComponent(breastSize, cleavage, offsets, jacket, component);
-	}
+    private BreastDataComponent withComponent(CustomData component) {
+        return new BreastDataComponent(breastSize, cleavage, offsets, jacket, component);
+    }
 }

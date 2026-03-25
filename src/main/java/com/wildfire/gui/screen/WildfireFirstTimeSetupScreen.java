@@ -50,140 +50,140 @@ import java.util.function.Supplier;
 @Environment(EnvType.CLIENT)
 public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 
-	private static final Component TITLE = Component.translatable("wildfire_gender.first_time_setup.title").withStyle(ChatFormatting.UNDERLINE);
-	private static final Component DESCRIPTION = Component.translatable("wildfire_gender.first_time_setup.description");
-	private static final Component NOTICE = Component.translatable("wildfire_gender.first_time_setup.notice");
+    private static final Component TITLE = Component.translatable("wildfire_gender.first_time_setup.title").withStyle(ChatFormatting.UNDERLINE);
+    private static final Component DESCRIPTION = Component.translatable("wildfire_gender.first_time_setup.description");
+    private static final Component NOTICE = Component.translatable("wildfire_gender.first_time_setup.notice");
 
-	private static final Component ENABLE_CLOUD_SYNCING = Component.translatable("wildfire_gender.first_time_setup.enable").withStyle(ChatFormatting.GREEN);
-	private static final Component DISABLE_CLOUD_SYNCING = Component.translatable("wildfire_gender.first_time_setup.disable").withStyle(ChatFormatting.RED);
+    private static final Component ENABLE_CLOUD_SYNCING = Component.translatable("wildfire_gender.first_time_setup.enable").withStyle(ChatFormatting.GREEN);
+    private static final Component DISABLE_CLOUD_SYNCING = Component.translatable("wildfire_gender.first_time_setup.disable").withStyle(ChatFormatting.RED);
 
-	private static final Identifier BACKGROUND = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/first_time_bg.png");
+    private static final Identifier BACKGROUND = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/first_time_bg.png");
 
-	private static final UUID keiraUUID = UUID.fromString("372271ab-28f2-44bd-b585-95f43e010c22");
+    private static final UUID keiraUUID = UUID.fromString("372271ab-28f2-44bd-b585-95f43e010c22");
 
-	private final Supplier<FakeGUIPlayer> fakeKeira = Suppliers.memoize(() -> new FakeGUIPlayer("KeiaraFGM", keiraUUID, GenderConfigs.DEFAULT_FEMALE));
+    private final Supplier<FakeGUIPlayer> fakeKeira = Suppliers.memoize(() -> new FakeGUIPlayer("KeiaraFGM", keiraUUID, GenderConfigs.DEFAULT_FEMALE));
 
-	public WildfireFirstTimeSetupScreen(@Nullable Screen parent, UUID uuid) {
-		super(Component.translatable("wildfire_gender.cloud_settings"), parent, uuid);
-	}
+    public WildfireFirstTimeSetupScreen(@Nullable Screen parent, UUID uuid) {
+        super(Component.translatable("wildfire_gender.cloud_settings"), parent, uuid);
+    }
 
-	@Override
-	public void init() {
-		int x = this.width / 2;
-		int y = this.height / 2;
+    @Override
+    public void init() {
+        int x = this.width / 2;
+        int y = this.height / 2;
 
-		final var config = ClientConfig.INSTANCE;
-		final var ref = new Object() {
-			@UnknownNullability
-			WildfireButton no;
-		};
+        final var config = ClientConfig.INSTANCE;
+        final var ref = new Object() {
+            @UnknownNullability
+            WildfireButton no;
+        };
 
-		addButton(builder -> builder
-				.message(() -> ENABLE_CLOUD_SYNCING)
-				.position(x + 3, y + 74)
-				.size(128, 20)
-				.onPress(button -> {
-					config.set(ClientConfig.CLOUD_SYNC_ENABLED, true);
-					config.set(ClientConfig.AUTOMATIC_CLOUD_SYNC, true);
-					config.set(ClientConfig.FIRST_TIME_LOAD, false);
+        addButton(builder -> builder
+                .message(() -> ENABLE_CLOUD_SYNCING)
+                .position(x + 3, y + 74)
+                .size(128, 20)
+                .onPress(button -> {
+                    config.set(ClientConfig.CLOUD_SYNC_ENABLED, true);
+                    config.set(ClientConfig.AUTOMATIC_CLOUD_SYNC, true);
+                    config.set(ClientConfig.FIRST_TIME_LOAD, false);
 
-					button.active = false;
-					button.setMessage(Component.literal("..."));
-					ref.no.setActive(false);
+                    button.active = false;
+                    button.setMessage(Component.literal("..."));
+                    ref.no.setActive(false);
 
-					final var nextScreen = new WardrobeBrowserScreen(null, playerUUID);
-					doInitialSync().thenRun(() -> minecraft.execute(() -> minecraft.setScreen(nextScreen)));
-				})
-				.tooltip(Tooltip.create(Component.empty()
-						.append(Component.translatable("wildfire_gender.first_time_setup.enable.tooltip.line1"))
-						.append("\n\n")
-						.append(Component.translatable("wildfire_gender.first_time_setup.enable.tooltip.line2")))));
+                    final var nextScreen = new WardrobeBrowserScreen(null, playerUUID);
+                    doInitialSync().thenRun(() -> minecraft.execute(() -> minecraft.setScreen(nextScreen)));
+                })
+                .tooltip(Tooltip.create(Component.empty()
+                        .append(Component.translatable("wildfire_gender.first_time_setup.enable.tooltip.line1"))
+                        .append("\n\n")
+                        .append(Component.translatable("wildfire_gender.first_time_setup.enable.tooltip.line2")))));
 
-		ref.no = addButton(builder -> builder
-				.message(() -> DISABLE_CLOUD_SYNCING)
-				.position(x - 131, y + 74)
-				.size(128, 20)
-				.onPress(button -> {
-					config.set(ClientConfig.CLOUD_SYNC_ENABLED, false);
-					config.set(ClientConfig.AUTOMATIC_CLOUD_SYNC, false);
-					config.set(ClientConfig.FIRST_TIME_LOAD, false);
+        ref.no = addButton(builder -> builder
+                .message(() -> DISABLE_CLOUD_SYNCING)
+                .position(x - 131, y + 74)
+                .size(128, 20)
+                .onPress(button -> {
+                    config.set(ClientConfig.CLOUD_SYNC_ENABLED, false);
+                    config.set(ClientConfig.AUTOMATIC_CLOUD_SYNC, false);
+                    config.set(ClientConfig.FIRST_TIME_LOAD, false);
 
-					minecraft.setScreen(new WardrobeBrowserScreen(null, playerUUID));
-				}));
-	}
+                    minecraft.setScreen(new WardrobeBrowserScreen(null, playerUUID));
+                }));
+    }
 
-	private CompletableFuture<Void> doInitialSync() {
-		var client = Objects.requireNonNull(this.minecraft);
-		assert client.player != null;
-		var clientUUID = client.player.getUUID();
+    private CompletableFuture<Void> doInitialSync() {
+        var client = Objects.requireNonNull(this.minecraft);
+        assert client.player != null;
+        var clientUUID = client.player.getUUID();
 
-		WildfireGender.CACHE.asMap().values()
-			.removeIf(config -> config.syncStatus == PlayerConfig.SyncStatus.UNKNOWN);
+        WildfireGender.CACHE.asMap().values()
+            .removeIf(config -> config.syncStatus == PlayerConfig.SyncStatus.UNKNOWN);
 
-		return CompletableFuture.runAsync(() -> {
-			var clientConfig = WildfireGender.getOrAddPlayerById(clientUUID);
-			if(!clientConfig.hasLocalConfig()) {
-				try {
-					// note that we wait for this to ensure that we don't have any inconsistencies with the synced
-					// data once we open the main menu
-					WildfireGenderClient.loadGenderInfo(clientUUID, false, true).join();
-				} catch(CompletionException _) {
-					// loadGenderInfo should log any errors for us
-					return;
-				} catch(Exception e) {
-					WildfireGender.LOGGER.error("Failed to perform initial sync from the cloud", e);
-					return;
-				}
-				clientConfig.save();
-				// don't immediately re-sync the data we just got back to the cloud
-				clientConfig.needsCloudSync = false;
-			} else {
-				// simply assume that the config is already loaded, so no need to wait.
-				clientConfig.needsCloudSync = true;
-			}
-		});
-	}
+        return CompletableFuture.runAsync(() -> {
+            var clientConfig = WildfireGender.getOrAddPlayerById(clientUUID);
+            if(!clientConfig.hasLocalConfig()) {
+                try {
+                    // note that we wait for this to ensure that we don't have any inconsistencies with the synced
+                    // data once we open the main menu
+                    WildfireGenderClient.loadGenderInfo(clientUUID, false, true).join();
+                } catch(CompletionException _) {
+                    // loadGenderInfo should log any errors for us
+                    return;
+                } catch(Exception e) {
+                    WildfireGender.LOGGER.error("Failed to perform initial sync from the cloud", e);
+                    return;
+                }
+                clientConfig.save();
+                // don't immediately re-sync the data we just got back to the cloud
+                clientConfig.needsCloudSync = false;
+            } else {
+                // simply assume that the config is already loaded, so no need to wait.
+                clientConfig.needsCloudSync = true;
+            }
+        });
+    }
 
-	@Override
-	public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
-		extractTransparentBackground(graphics);
-		graphics.blit(RenderPipelines.GUI_TEXTURED, BACKGROUND, (this.width - 274) / 2, (this.height - 200) / 2, 0, 0, 274, 200, 512, 512);
-	}
+    @Override
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+        extractTransparentBackground(graphics);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, BACKGROUND, (this.width - 274) / 2, (this.height - 200) / 2, 0, 0, 274, 200, 512, 512);
+    }
 
-	@Override
-	public void tick() {
-		this.fakeKeira.get().tick();
-	}
+    @Override
+    public void tick() {
+        this.fakeKeira.get().tick();
+    }
 
-	@Override
-	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
-		super.extractRenderState(graphics, mouseX, mouseY, delta);
+    @Override
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+        super.extractRenderState(graphics, mouseX, mouseY, delta);
 
-		var mStack = graphics.pose();
+        var mStack = graphics.pose();
 
-		int x = this.width / 2;
-		int y = this.height / 2;
+        int x = this.width / 2;
+        int y = this.height / 2;
 
-		GuiUtils.drawCenteredText(graphics, font, TITLE, x, y - 24, ARGB.opaque(4210752));
+        GuiUtils.drawCenteredText(graphics, font, TITLE, x, y - 24, ARGB.opaque(4210752));
 
-		GuiUtils.drawCenteredTextWrapped(graphics, font, Component.literal("Keira Emberlyn:").withStyle(ChatFormatting.LIGHT_PURPLE), x + 32, y - 10, (int) ((256-65)), ARGB.opaque(0xFFFFFF));
+        GuiUtils.drawCenteredTextWrapped(graphics, font, Component.literal("Keira Emberlyn:").withStyle(ChatFormatting.LIGHT_PURPLE), x + 32, y - 10, (int) ((256-65)), ARGB.opaque(0xFFFFFF));
 
-		//TODO: Vertical scroll bar for longer text?
-		GuiUtils.drawCenteredTextWrapped(graphics, font, DESCRIPTION, x + 32, y + 2, (int) ((256-65)), ARGB.opaque(0xFFFFFF));
+        //TODO: Vertical scroll bar for longer text?
+        GuiUtils.drawCenteredTextWrapped(graphics, font, DESCRIPTION, x + 32, y + 2, (int) ((256-65)), ARGB.opaque(0xFFFFFF));
 
-		mStack.pushMatrix();
-		mStack.translate(x, y + 47);
-		mStack.scale(new Vector2f(0.8f, 0.8f));
-		mStack.translate(-x, (-y) - 47);
-		GuiUtils.drawCenteredTextWrapped(graphics, font, NOTICE, x, y + 68, (int) ((256-10) * 1.2f), ARGB.opaque(4210752));
-		mStack.popMatrix();
+        mStack.pushMatrix();
+        mStack.translate(x, y + 47);
+        mStack.scale(new Vector2f(0.8f, 0.8f));
+        mStack.translate(-x, (-y) - 47);
+        GuiUtils.drawCenteredTextWrapped(graphics, font, NOTICE, x, y + 68, (int) ((256-10) * 1.2f), ARGB.opaque(4210752));
+        mStack.popMatrix();
 
-		var fakeKeira = this.fakeKeira.get().getEntity();
-		GuiUtils.drawEntityOnScreen(graphics, x - 132, y - 13, x - 75, y + 60, 50, mouseX, mouseY, 0, 0.4f, fakeKeira);
-	}
+        var fakeKeira = this.fakeKeira.get().getEntity();
+        GuiUtils.drawEntityOnScreen(graphics, x - 132, y - 13, x - 75, y + 60, 50, mouseX, mouseY, 0, 0.4f, fakeKeira);
+    }
 
-	@Override
-	public void removed() {
-		ClientConfig.INSTANCE.save();
-	}
+    @Override
+    public void removed() {
+        ClientConfig.INSTANCE.save();
+    }
 }

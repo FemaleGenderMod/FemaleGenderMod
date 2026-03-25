@@ -36,35 +36,35 @@ import java.util.UUID;
 
 public final class ClientboundSyncPacket extends AbstractSyncPacket implements CustomPacketPayload {
 
-	public static final Type<ClientboundSyncPacket> ID = new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(WildfireGender.MODID, "sync"));
-	public static final StreamCodec<ByteBuf, ClientboundSyncPacket> CODEC = codec(ClientboundSyncPacket::new);
+    public static final Type<ClientboundSyncPacket> ID = new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(WildfireGender.MODID, "sync"));
+    public static final StreamCodec<ByteBuf, ClientboundSyncPacket> CODEC = codec(ClientboundSyncPacket::new);
 
-	public ClientboundSyncPacket(PlayerConfig plr) {
-		super(plr);
-	}
+    public ClientboundSyncPacket(PlayerConfig plr) {
+        super(plr);
+    }
 
-	private ClientboundSyncPacket(UUID uuid, Gender gender, float bustSize, boolean hurtSounds, float voicePitch, BreastPhysics physics, Breasts breasts, UVLayouts uvLayouts) {
-		super(uuid, gender, bustSize, hurtSounds, voicePitch, physics,  breasts, uvLayouts);
-	}
+    private ClientboundSyncPacket(UUID uuid, Gender gender, float bustSize, boolean hurtSounds, float voicePitch, BreastPhysics physics, Breasts breasts, UVLayouts uvLayouts) {
+        super(uuid, gender, bustSize, hurtSounds, voicePitch, physics,  breasts, uvLayouts);
+    }
 
-	@Override
-	public Type<? extends CustomPacketPayload> type() {
-		return ID;
-	}
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return ID;
+    }
 
-	public static boolean canSend(ServerPlayer player) {
-		return ServerPlayNetworking.canSend(player, ID);
-	}
+    public static boolean canSend(ServerPlayer player) {
+        return ServerPlayNetworking.canSend(player, ID);
+    }
 
-	@Environment(EnvType.CLIENT)
-	public void handle(ClientPlayNetworking.Context context) {
-		if(context.player().getUUID().equals(uuid)) {
-			WildfireGender.LOGGER.warn("Ignoring sync packet referring to the client player");
-			return;
-		}
+    @Environment(EnvType.CLIENT)
+    public void handle(ClientPlayNetworking.Context context) {
+        if(context.player().getUUID().equals(uuid)) {
+            WildfireGender.LOGGER.warn("Ignoring sync packet referring to the client player");
+            return;
+        }
 
-		PlayerConfig plr = WildfireGender.getOrAddPlayerById(uuid);
-		updatePlayerFromPacket(plr);
-		plr.syncStatus = PlayerConfig.SyncStatus.SYNCED;
-	}
+        PlayerConfig plr = WildfireGender.getOrAddPlayerById(uuid);
+        updatePlayerFromPacket(plr);
+        plr.syncStatus = PlayerConfig.SyncStatus.SYNCED;
+    }
 }

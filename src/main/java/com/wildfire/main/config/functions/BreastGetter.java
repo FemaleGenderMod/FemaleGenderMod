@@ -23,10 +23,10 @@ import com.wildfire.main.entitydata.PlayerConfig;
 
 @FunctionalInterface
 public interface BreastGetter<T> extends PlayerGetter<T> {
-	T get(Breasts player);
+    T get(Breasts player);
 
-	@Override
-	default T get(PlayerConfig player) {
-		return get(player.getBreasts());
-	}
+    @Override
+    default T get(PlayerConfig player) {
+        return get(player.getBreasts());
+    }
 }

@@ -33,55 +33,55 @@ import java.time.Duration;
 import java.util.UUID;
 
 public class WildfireGender implements ModInitializer {
-	public static final String MODID = "wildfire_gender";
-	public static final Logger LOGGER = LogUtils.getLogger();
-	public static final LoadingCache<UUID, PlayerConfig> CACHE;
+    public static final String MODID = "wildfire_gender";
+    public static final Logger LOGGER = LogUtils.getLogger();
+    public static final LoadingCache<UUID, PlayerConfig> CACHE;
 
-	static {
-		var builder = CacheBuilder.newBuilder();
-		// Only automatically expire cache entries on the client; a server may go a decent while without accessing
-		// the player cache, and we can't easily re-cache a player's settings on a server, while a client
-		// will typically either receive settings from the server in a sync, or simply re-fetch from
-		// a local config file or from the cloud.
-		// Note that servers will manually invalidate cache entries upon a player disconnecting
-		// (see WildfireEventHandler#playerDisconnected).
-		if(WildfireHelper.onClient()) {
-			// TODO this design is super janky, and has some potential edge case issues around LAN worlds;
-			//		notably, connected players could potentially have their configs expire, although this is currently
-			//		prevented through further jank with how SyncedPlayerList is implemented (which should also
-			//		be addressed along with this)
-			// best solution to this issue is likely going to be simply splitting the client & server caches into
-			// their own dedicated (Loading)Cache instances at some point in the future.
-			// might also be nice to take the opportunity to also properly split the configs into a server/client
-			// pattern (like entities are right now), although that's probably not going to be very fun to do
-			builder.expireAfterAccess(Duration.ofMinutes(15));
-		}
-		CACHE = builder.build(CacheLoader.from(key -> {
-			var config = new PlayerConfig(key);
-			// only attempt to load player data on the client
-			if(WildfireHelper.onClient()) {
-				// markForSync being true will only ever do anything for the client player
-				WildfireGenderClient.loadGenderInfo(config, true, false);
-			}
-			return config;
-		}));
-	}
+    static {
+        var builder = CacheBuilder.newBuilder();
+        // Only automatically expire cache entries on the client; a server may go a decent while without accessing
+        // the player cache, and we can't easily re-cache a player's settings on a server, while a client
+        // will typically either receive settings from the server in a sync, or simply re-fetch from
+        // a local config file or from the cloud.
+        // Note that servers will manually invalidate cache entries upon a player disconnecting
+        // (see WildfireEventHandler#playerDisconnected).
+        if(WildfireHelper.onClient()) {
+            // TODO this design is super janky, and has some potential edge case issues around LAN worlds;
+            //		notably, connected players could potentially have their configs expire, although this is currently
+            //		prevented through further jank with how SyncedPlayerList is implemented (which should also
+            //		be addressed along with this)
+            // best solution to this issue is likely going to be simply splitting the client & server caches into
+            // their own dedicated (Loading)Cache instances at some point in the future.
+            // might also be nice to take the opportunity to also properly split the configs into a server/client
+            // pattern (like entities are right now), although that's probably not going to be very fun to do
+            builder.expireAfterAccess(Duration.ofMinutes(15));
+        }
+        CACHE = builder.build(CacheLoader.from(key -> {
+            var config = new PlayerConfig(key);
+            // only attempt to load player data on the client
+            if(WildfireHelper.onClient()) {
+                // markForSync being true will only ever do anything for the client player
+                WildfireGenderClient.loadGenderInfo(config, true, false);
+            }
+            return config;
+        }));
+    }
 
-	@Override
-	public void onInitialize() {
-		WildfireSync.register();
-		WildfireEventHandler.registerCommonEvents();
-	}
+    @Override
+    public void onInitialize() {
+        WildfireSync.register();
+        WildfireEventHandler.registerCommonEvents();
+    }
 
-	public static @Nullable PlayerConfig getPlayerById(UUID id) {
-		return CACHE.getIfPresent(id);
-	}
+    public static @Nullable PlayerConfig getPlayerById(UUID id) {
+        return CACHE.getIfPresent(id);
+    }
 
-	public static PlayerConfig getOrAddPlayerById(UUID id) {
-		return CACHE.getUnchecked(id);
-	}
+    public static PlayerConfig getOrAddPlayerById(UUID id) {
+        return CACHE.getUnchecked(id);
+    }
 
-	public static Identifier id(String path) {
-		return Identifier.fromNamespaceAndPath(MODID, path);
-	}
+    public static Identifier id(String path) {
+        return Identifier.fromNamespaceAndPath(MODID, path);
+    }
 }

@@ -24,33 +24,33 @@ import net.minecraft.util.Mth;
 
 public class FloatConfigKey extends NumberConfigKey<Float> {
 
-	public FloatConfigKey(String key, Float defaultValue) {
-		super(key, defaultValue);
-	}
+    public FloatConfigKey(String key, Float defaultValue) {
+        super(key, defaultValue);
+    }
 
-	public FloatConfigKey(String key, float defaultValue, float minInclusive, float maxInclusive) {
-		super(key, defaultValue, minInclusive, maxInclusive);
-	}
+    public FloatConfigKey(String key, float defaultValue, float minInclusive, float maxInclusive) {
+        super(key, defaultValue, minInclusive, maxInclusive);
+    }
 
-	@Override
-	protected Float read(JsonElement element) {
-		// note that we clamp float values instead of allowing them to be reset to their default to
-		// be a bit more user-friendly if the min/max value for this key is modified, and the player's
-		// previous config value would now be outside the allowed range for this key.
-		return Mth.clamp(super.read(element), getMinInclusive(), getMaxInclusive());
-	}
+    @Override
+    protected Float read(JsonElement element) {
+        // note that we clamp float values instead of allowing them to be reset to their default to
+        // be a bit more user-friendly if the min/max value for this key is modified, and the player's
+        // previous config value would now be outside the allowed range for this key.
+        return Mth.clamp(super.read(element), getMinInclusive(), getMaxInclusive());
+    }
 
-	@Override
-	protected Float fromPrimitive(JsonPrimitive primitive) {
-		return primitive.getAsFloat();
-	}
+    @Override
+    protected Float fromPrimitive(JsonPrimitive primitive) {
+        return primitive.getAsFloat();
+    }
 
-	public float getMinInclusive() {
-		//Note: Float.MIN_VALUE is smallest possible positive float
-		return minInclusive == null ? -Float.MAX_VALUE : minInclusive;
-	}
+    public float getMinInclusive() {
+        //Note: Float.MIN_VALUE is smallest possible positive float
+        return minInclusive == null ? -Float.MAX_VALUE : minInclusive;
+    }
 
-	public float getMaxInclusive() {
-		return maxInclusive == null ? Float.MAX_VALUE : maxInclusive;
-	}
+    public float getMaxInclusive() {
+        return maxInclusive == null ? Float.MAX_VALUE : maxInclusive;
+    }
 }

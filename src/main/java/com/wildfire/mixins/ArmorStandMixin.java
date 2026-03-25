@@ -33,55 +33,55 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(ArmorStand.class)
 abstract class ArmorStandMixin extends LivingEntity {
-	private ArmorStandMixin(EntityType<? extends LivingEntity> entityType, Level world) {
-		super(entityType, world);
-	}
+    private ArmorStandMixin(EntityType<? extends LivingEntity> entityType, Level world) {
+        super(entityType, world);
+    }
 
-	@ModifyArg(
-		method = "swapItem",
-		at = @At(
-			value = "INVOKE",
-			target = "Lnet/minecraft/world/entity/decoration/ArmorStand;setItemSlot(Lnet/minecraft/world/entity/EquipmentSlot;Lnet/minecraft/world/item/ItemStack;)V"
-		),
-		index = 1
-	)
-	public ItemStack wildfiregender$attachBreastData(ItemStack stack, @Local(argsOnly = true) EquipmentSlot slot, @Local(argsOnly = true) Player player) {
-		if(level().isClientSide() || slot != EquipmentSlot.CHEST || stack.isEmpty()) {
-			return stack;
-		}
+    @ModifyArg(
+        method = "swapItem",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/world/entity/decoration/ArmorStand;setItemSlot(Lnet/minecraft/world/entity/EquipmentSlot;Lnet/minecraft/world/item/ItemStack;)V"
+        ),
+        index = 1
+    )
+    public ItemStack wildfiregender$attachBreastData(ItemStack stack, @Local(argsOnly = true) EquipmentSlot slot, @Local(argsOnly = true) Player player) {
+        if(level().isClientSide() || slot != EquipmentSlot.CHEST || stack.isEmpty()) {
+            return stack;
+        }
 
-		ArmorStandInteractEvents.EQUIP.invoker().onEquip(player, stack);
+        ArmorStandInteractEvents.EQUIP.invoker().onEquip(player, stack);
 
-		return stack;
-	}
+        return stack;
+    }
 
-	@ModifyArg(
-		method = "swapItem",
-		at = @At(
-			value = "INVOKE",
-			target = "Lnet/minecraft/world/entity/player/Player;setItemInHand(Lnet/minecraft/world/InteractionHand;Lnet/minecraft/world/item/ItemStack;)V"
-		),
-		index = 1
-	)
-	public ItemStack wildfiregender$removeBreastDataOnReplace(ItemStack stack, @Local(argsOnly = true) Player player) {
-		if(!player.level().isClientSide()) {
-			ArmorStandInteractEvents.REMOVE.invoker().onRemove(stack);
-		}
-		return stack;
-	}
+    @ModifyArg(
+        method = "swapItem",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/world/entity/player/Player;setItemInHand(Lnet/minecraft/world/InteractionHand;Lnet/minecraft/world/item/ItemStack;)V"
+        ),
+        index = 1
+    )
+    public ItemStack wildfiregender$removeBreastDataOnReplace(ItemStack stack, @Local(argsOnly = true) Player player) {
+        if(!player.level().isClientSide()) {
+            ArmorStandInteractEvents.REMOVE.invoker().onRemove(stack);
+        }
+        return stack;
+    }
 
-	@ModifyArg(
-		method = "brokenByAnything",
-		at = @At(
-			value = "INVOKE",
-			target = "Lnet/minecraft/world/level/block/Block;popResource(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/item/ItemStack;)V"
-		),
-		index = 2
-	)
-	public ItemStack wildfiregender$removeBreastDataOnBreak(ItemStack stack) {
-		if(!level().isClientSide()) {
-			ArmorStandInteractEvents.REMOVE.invoker().onRemove(stack);
-		}
-		return stack;
-	}
+    @ModifyArg(
+        method = "brokenByAnything",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/world/level/block/Block;popResource(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/item/ItemStack;)V"
+        ),
+        index = 2
+    )
+    public ItemStack wildfiregender$removeBreastDataOnBreak(ItemStack stack) {
+        if(!level().isClientSide()) {
+            ArmorStandInteractEvents.REMOVE.invoker().onRemove(stack);
+        }
+        return stack;
+    }
 }

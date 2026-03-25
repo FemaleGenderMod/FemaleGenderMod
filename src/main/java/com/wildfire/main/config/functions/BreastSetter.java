@@ -23,10 +23,10 @@ import com.wildfire.main.entitydata.PlayerConfig;
 
 @FunctionalInterface
 public interface BreastSetter<T> extends PlayerSetter<T> {
-	Object set(Breasts player, T value);
+    Object set(Breasts player, T value);
 
-	@Override
-	default Object set(PlayerConfig player, T value) {
-		return set(player.getBreasts(), value);
-	}
+    @Override
+    default Object set(PlayerConfig player, T value) {
+        return set(player.getBreasts(), value);
+    }
 }

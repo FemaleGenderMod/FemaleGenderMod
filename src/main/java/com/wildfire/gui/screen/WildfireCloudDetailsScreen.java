@@ -35,28 +35,28 @@ import java.util.UUID;*/
 @Environment(EnvType.CLIENT)
 public class WildfireCloudDetailsScreen /*extends BaseWildfireScreen*/ {
 
-	/*//TODO: PROPER TRANSLATIONS
+    /*//TODO: PROPER TRANSLATIONS
 
-	private static final Component TITLE = Component.translatable("wildfire_gender.cloud_details.title");
+    private static final Component TITLE = Component.translatable("wildfire_gender.cloud_details.title");
 
-	private static final Component PAGE_1 = Component.translatable("wildfire_gender.cloud_details.title").withStyle(ChatFormatting.UNDERLINE);
+    private static final Component PAGE_1 = Component.translatable("wildfire_gender.cloud_details.title").withStyle(ChatFormatting.UNDERLINE);
 
-	private static final Component NEXT_PAGE = Component.translatable("wildfire_gender.details.next_page");
-	private static final Component PREV_PAGE = Component.translatable("wildfire_gender.details.prev_page");
-	private static final Identifier BACKGROUND = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/details_page.png");
+    private static final Component NEXT_PAGE = Component.translatable("wildfire_gender.details.next_page");
+    private static final Component PREV_PAGE = Component.translatable("wildfire_gender.details.prev_page");
+    private static final Identifier BACKGROUND = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/details_page.png");
 
-	private int currentPage = 0;
+    private int currentPage = 0;
 
-	public WildfireCloudDetailsScreen(Screen parent, UUID uuid) {
-		super(Component.translatable("wildfire_gender.cloud_settings"), parent, uuid);
-	}
+    public WildfireCloudDetailsScreen(Screen parent, UUID uuid) {
+        super(Component.translatable("wildfire_gender.cloud_settings"), parent, uuid);
+    }
 
-	@Override
-	public void init() {
-		int x = this.width / 2;
-		int y = this.height / 2;
+    @Override
+    public void init() {
+        int x = this.width / 2;
+        int y = this.height / 2;
 
-		currentPage = 0;
+        currentPage = 0;
 
 //		this.addDrawableChild(new WildfireButton(x + 46, y + 74, 76, 20,
 //				NEXT_PAGE,
@@ -74,32 +74,32 @@ public class WildfireCloudDetailsScreen /*extends BaseWildfireScreen*/ {
 //						currentPage--;
 //					}
 //				}));
-	}
+    }
 
 
-	@Override
-	public void renderBackground(GuiGraphics ctx, int mouseX, int mouseY, float delta) {
-		this.renderTransparentBackground(ctx);
-		ctx.blit(RenderPipelines.GUI_TEXTURED, BACKGROUND, (this.width - 256) / 2, (this.height - 200) / 2, 0, 0, 256, 200, 256, 256);
-	}
+    @Override
+    public void renderBackground(GuiGraphics ctx, int mouseX, int mouseY, float delta) {
+        this.renderTransparentBackground(ctx);
+        ctx.blit(RenderPipelines.GUI_TEXTURED, BACKGROUND, (this.width - 256) / 2, (this.height - 200) / 2, 0, 0, 256, 200, 256, 256);
+    }
 
-	@Override
-	public void render(GuiGraphics ctx, int mouseX, int mouseY, float delta) {
-		if (minecraft == null || minecraft.level == null) return;
-		super.render(ctx, mouseX, mouseY, delta);
+    @Override
+    public void render(GuiGraphics ctx, int mouseX, int mouseY, float delta) {
+        if (minecraft == null || minecraft.level == null) return;
+        super.render(ctx, mouseX, mouseY, delta);
 
-		int x = this.width / 2;
-		int y = this.height / 2;
+        int x = this.width / 2;
+        int y = this.height / 2;
 
-		GuiUtils.drawCenteredText(ctx, font, TITLE, x, y - 94, 4473924);
+        GuiUtils.drawCenteredText(ctx, font, TITLE, x, y - 94, 4473924);
 
-		if (currentPage == 0) {
-			GuiUtils.drawCenteredTextWrapped(ctx, font, Component.translatable("wildfire_gender.cloud_details.page1"), x, y - 75, 256 - 10, 0x00FF00);
-		}
-	}
+        if (currentPage == 0) {
+            GuiUtils.drawCenteredTextWrapped(ctx, font, Component.translatable("wildfire_gender.cloud_details.page1"), x, y - 75, 256 - 10, 0x00FF00);
+        }
+    }
 
-	@Override
-	public void onClose() {
-		super.onClose();
-	}*/
+    @Override
+    public void onClose() {
+        super.onClose();
+    }*/
 }

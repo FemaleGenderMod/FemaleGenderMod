@@ -40,114 +40,114 @@ import java.util.function.Supplier;
 
 public class FakeGUIPlayer {
 
-	private final String name;
-	private final UUID uuid;
-	private final Supplier<GUIMannequin> entity;
-	private final @Nullable String description;
+    private final String name;
+    private final UUID uuid;
+    private final Supplier<GUIMannequin> entity;
+    private final @Nullable String description;
 
-	public FakeGUIPlayer(String name, UUID uuid, @Nullable String description, @Nullable JsonObject defaultGenderSettings) {
-		this.name = name;
-		this.uuid = uuid;
-		this.entity = createPlayerSupplier(uuid, defaultGenderSettings);
-		this.description = description;
-	}
+    public FakeGUIPlayer(String name, UUID uuid, @Nullable String description, @Nullable JsonObject defaultGenderSettings) {
+        this.name = name;
+        this.uuid = uuid;
+        this.entity = createPlayerSupplier(uuid, defaultGenderSettings);
+        this.description = description;
+    }
 
-	public FakeGUIPlayer(String name, UUID uuid, @Nullable JsonObject defaultGenderSettings) {
-		this(name, uuid, null, defaultGenderSettings);
-	}
+    public FakeGUIPlayer(String name, UUID uuid, @Nullable JsonObject defaultGenderSettings) {
+        this(name, uuid, null, defaultGenderSettings);
+    }
 
-	public ClientMannequin getEntity() {
-		return entity.get();
-	}
+    public ClientMannequin getEntity() {
+        return entity.get();
+    }
 
-	public UUID getUUID() {
-		return uuid;
-	}
+    public UUID getUUID() {
+        return uuid;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public @Nullable Contributor.Role getRole() {
-		return Contributors.getRole(uuid);
-	}
+    public @Nullable Contributor.Role getRole() {
+        return Contributors.getRole(uuid);
+    }
 
-	public Contributor.Role getRoleOrGeneric() {
-		var role = getRole();
-		return role == null ? Contributor.Role.GENERIC : role;
-	}
+    public Contributor.Role getRoleOrGeneric() {
+        var role = getRole();
+        return role == null ? Contributor.Role.GENERIC : role;
+    }
 
-	public @Nullable String getDescription() {
-		return description;
-	}
+    public @Nullable String getDescription() {
+        return description;
+    }
 
-	public void tick() {
-		entity.get().applyLoadedSkin();
-		entity.get().tickCount++; // This allows for playing the breathing animation
-		EntityConfig.getEntity(getEntity()).tickBreastPhysics(getEntity());
-	}
+    public void tick() {
+        entity.get().applyLoadedSkin();
+        entity.get().tickCount++; // This allows for playing the breathing animation
+        EntityConfig.getEntity(getEntity()).tickBreastPhysics(getEntity());
+    }
 
-	private static Supplier<GUIMannequin> createPlayerSupplier(final UUID uuid, final @Nullable JsonObject defaultGenderData) {
-		return Suppliers.memoize(() -> {
-			var client = Minecraft.getInstance();
-			assert client.level != null;
+    private static Supplier<GUIMannequin> createPlayerSupplier(final UUID uuid, final @Nullable JsonObject defaultGenderData) {
+        return Suppliers.memoize(() -> {
+            var client = Minecraft.getInstance();
+            assert client.level != null;
 
-			var entity = new GUIMannequin(client.level, client.playerSkinRenderCache(), ResolvableProfile.createUnresolved(uuid));
+            var entity = new GUIMannequin(client.level, client.playerSkinRenderCache(), ResolvableProfile.createUnresolved(uuid));
 
-			PlayerConfig config;
-			try {
-				// while we don't have proper support for mannequins right now, we can most certainly fake it
-				config = (PlayerConfig) EntityConfig.CACHE.get(entity.getUUID(), () -> new PlayerConfig(entity.getUUID()));
-			} catch(ExecutionException | ClassCastException _) {
-				return entity;
-			}
+            PlayerConfig config;
+            try {
+                // while we don't have proper support for mannequins right now, we can most certainly fake it
+                config = (PlayerConfig) EntityConfig.CACHE.get(entity.getUUID(), () -> new PlayerConfig(entity.getUUID()));
+            } catch(ExecutionException | ClassCastException _) {
+                return entity;
+            }
 
-			config.forceSimplifiedPhysics = true;
+            config.forceSimplifiedPhysics = true;
 
-			var cached = WildfireGender.getPlayerById(uuid);
-			if(cached == null) {
-				CloudSync.getProfile(uuid, true).thenAccept(json -> {
-					if(json != null) {
-						config.updateFromJson(json);
-					} else if(defaultGenderData != null) {
-						config.updateFromJson(defaultGenderData);
-					}
-				});
-			} else {
-				config.updateFromJson(cached.toJson());
-			}
+            var cached = WildfireGender.getPlayerById(uuid);
+            if(cached == null) {
+                CloudSync.getProfile(uuid, true).thenAccept(json -> {
+                    if(json != null) {
+                        config.updateFromJson(json);
+                    } else if(defaultGenderData != null) {
+                        config.updateFromJson(defaultGenderData);
+                    }
+                });
+            } else {
+                config.updateFromJson(cached.toJson());
+            }
 
-			return entity;
-		});
-	}
+            return entity;
+        });
+    }
 
-	private static class GUIMannequin extends ClientMannequin {
-		private final ResolvableProfile copySkinFrom;
+    private static class GUIMannequin extends ClientMannequin {
+        private final ResolvableProfile copySkinFrom;
 
-		public GUIMannequin(Level world, PlayerSkinRenderCache skinCache, ResolvableProfile copySkinFrom) {
-			super(world, skinCache);
-			this.copySkinFrom = copySkinFrom;
-			// this is being done as opposed to using data tracker to force a refresh to avoid interfering
-			// with other mods that might be injecting into the data tracker update methods to know
-			// when real entities in the world are updated
-			((ClientMannequinAccessor) this).invokeUpdateSkin();
-		}
+        public GUIMannequin(Level world, PlayerSkinRenderCache skinCache, ResolvableProfile copySkinFrom) {
+            super(world, skinCache);
+            this.copySkinFrom = copySkinFrom;
+            // this is being done as opposed to using data tracker to force a refresh to avoid interfering
+            // with other mods that might be injecting into the data tracker update methods to know
+            // when real entities in the world are updated
+            ((ClientMannequinAccessor) this).invokeUpdateSkin();
+        }
 
-		public void applyLoadedSkin() {
-			var accessor = (ClientMannequinAccessor) this;
-			var skinLookup = accessor.getSkinLookup();
-			if(skinLookup != null && skinLookup.isDone()) {
-				try {
-					skinLookup.get().ifPresent(accessor::invokeSetSkin);
-					accessor.setSkinLookup(null);
-				} catch(Exception _) {
-				}
-			}
-		}
+        public void applyLoadedSkin() {
+            var accessor = (ClientMannequinAccessor) this;
+            var skinLookup = accessor.getSkinLookup();
+            if(skinLookup != null && skinLookup.isDone()) {
+                try {
+                    skinLookup.get().ifPresent(accessor::invokeSetSkin);
+                    accessor.setSkinLookup(null);
+                } catch(Exception _) {
+                }
+            }
+        }
 
-		@Override
-		public ResolvableProfile getProfile() {
-			return copySkinFrom;
-		}
-	}
+        @Override
+        public ResolvableProfile getProfile() {
+            return copySkinFrom;
+        }
+    }
 }

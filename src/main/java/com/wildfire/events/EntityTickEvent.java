@@ -33,11 +33,11 @@ import net.minecraft.world.entity.LivingEntity;
 @FunctionalInterface
 @Environment(EnvType.CLIENT)
 public interface EntityTickEvent {
-	Event<EntityTickEvent> EVENT = EventFactory.createArrayBacked(EntityTickEvent.class, listeners -> entity -> {
-		for(var listener : listeners) {
-			listener.onTick(entity);
-		}
-	});
+    Event<EntityTickEvent> EVENT = EventFactory.createArrayBacked(EntityTickEvent.class, listeners -> entity -> {
+        for(var listener : listeners) {
+            listener.onTick(entity);
+        }
+    });
 
-	void onTick(LivingEntity entity);
+    void onTick(LivingEntity entity);
 }

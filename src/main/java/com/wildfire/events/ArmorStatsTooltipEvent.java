@@ -38,11 +38,11 @@ import java.util.function.Consumer;
 @FunctionalInterface
 @Environment(EnvType.CLIENT)
 public interface ArmorStatsTooltipEvent {
-	Event<ArmorStatsTooltipEvent> EVENT = EventFactory.createArrayBacked(ArmorStatsTooltipEvent.class, listeners -> (item, tooltip, player) -> {
-		for(var listener : listeners) {
-			listener.appendTooltips(item, tooltip, player);
-		}
-	});
+    Event<ArmorStatsTooltipEvent> EVENT = EventFactory.createArrayBacked(ArmorStatsTooltipEvent.class, listeners -> (item, tooltip, player) -> {
+        for(var listener : listeners) {
+            listener.appendTooltips(item, tooltip, player);
+        }
+    });
 
-	void appendTooltips(ItemStack item, Consumer<Component> tooltip, @Nullable Player player);
+    void appendTooltips(ItemStack item, Consumer<Component> tooltip, @Nullable Player player);
 }

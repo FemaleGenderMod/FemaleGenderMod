@@ -35,26 +35,26 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(LivingEntity.class)
 @Environment(EnvType.CLIENT)
 abstract class LivingEntityMixin extends Entity {
-	private LivingEntityMixin(EntityType<?> type, Level world) {
-		super(type, world);
-	}
+    private LivingEntityMixin(EntityType<?> type, Level world) {
+        super(type, world);
+    }
 
-	// TODO would it be worth adding an extra @Inject to #animateDamage(float) to account for servers (namely hypixel)
-	//		using DamageTiltS2CPacket instead of the standard entity damage packet?
-	@Inject(
-		method = "handleDamageEvent",
-		at = @At(
-			value = "INVOKE",
-			target = "Lnet/minecraft/world/entity/LivingEntity;playSound(Lnet/minecraft/sounds/SoundEvent;FF)V"
-		)
-	)
-	public void wildfiregender$playGenderHurtSound(DamageSource damageSource, CallbackInfo ci) {
-		EntityHurtSoundEvent.EVENT.invoker().onHurt((LivingEntity)(Object)this, damageSource);
-	}
+    // TODO would it be worth adding an extra @Inject to #animateDamage(float) to account for servers (namely hypixel)
+    //		using DamageTiltS2CPacket instead of the standard entity damage packet?
+    @Inject(
+        method = "handleDamageEvent",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/world/entity/LivingEntity;playSound(Lnet/minecraft/sounds/SoundEvent;FF)V"
+        )
+    )
+    public void wildfiregender$playGenderHurtSound(DamageSource damageSource, CallbackInfo ci) {
+        EntityHurtSoundEvent.EVENT.invoker().onHurt((LivingEntity)(Object)this, damageSource);
+    }
 
-	@Inject(method = "tick", at = @At("TAIL"))
-	public void wildfiregender$onTick(CallbackInfo ci) {
-		if(!level().isClientSide()) return; // ignore ticks from the singleplayer integrated server
-		EntityTickEvent.EVENT.invoker().onTick((LivingEntity)(Object)this);
-	}
+    @Inject(method = "tick", at = @At("TAIL"))
+    public void wildfiregender$onTick(CallbackInfo ci) {
+        if(!level().isClientSide()) return; // ignore ticks from the singleplayer integrated server
+        EntityTickEvent.EVENT.invoker().onTick((LivingEntity)(Object)this);
+    }
 }

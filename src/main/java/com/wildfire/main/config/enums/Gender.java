@@ -32,41 +32,41 @@ import java.util.function.IntFunction;
 
 public enum Gender {
 
-	// NOTE: The order of these should remain unchanged! Changing these WILL modify player configs!
-	FEMALE(Component.translatable("wildfire_gender.label.female").withStyle(ChatFormatting.LIGHT_PURPLE), true, WildfireSounds.FEMALE_HURT),
-	MALE(Component.translatable("wildfire_gender.label.male").withStyle(ChatFormatting.BLUE), false, null),
-	OTHER(Component.translatable("wildfire_gender.label.other").withStyle(ChatFormatting.GREEN), true, WildfireSounds.FEMALE_HURT);
+    // NOTE: The order of these should remain unchanged! Changing these WILL modify player configs!
+    FEMALE(Component.translatable("wildfire_gender.label.female").withStyle(ChatFormatting.LIGHT_PURPLE), true, WildfireSounds.FEMALE_HURT),
+    MALE(Component.translatable("wildfire_gender.label.male").withStyle(ChatFormatting.BLUE), false, null),
+    OTHER(Component.translatable("wildfire_gender.label.other").withStyle(ChatFormatting.GREEN), true, WildfireSounds.FEMALE_HURT);
 
-	public static final IntFunction<Gender> BY_ID = ByIdMap.continuous(Gender::ordinal, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
-	public static final StreamCodec<ByteBuf, Gender> CODEC = ByteBufCodecs.idMapper(BY_ID, Gender::ordinal);
+    public static final IntFunction<Gender> BY_ID = ByIdMap.continuous(Gender::ordinal, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
+    public static final StreamCodec<ByteBuf, Gender> CODEC = ByteBufCodecs.idMapper(BY_ID, Gender::ordinal);
 
-	private final Component name;
-	private final boolean canHaveBreasts;
-	private final @Nullable SoundEvent hurtSound;
+    private final Component name;
+    private final boolean canHaveBreasts;
+    private final @Nullable SoundEvent hurtSound;
 
-	Gender(Component name, boolean canHaveBreasts, @Nullable SoundEvent hurtSound) {
-		this.name = name;
-		this.canHaveBreasts = canHaveBreasts;
-		this.hurtSound = hurtSound;
-	}
+    Gender(Component name, boolean canHaveBreasts, @Nullable SoundEvent hurtSound) {
+        this.name = name;
+        this.canHaveBreasts = canHaveBreasts;
+        this.hurtSound = hurtSound;
+    }
 
-	public Component getDisplayName() {
-		return name;
-	}
+    public Component getDisplayName() {
+        return name;
+    }
 
-	public @Nullable SoundEvent getHurtSound() {
-		return hurtSound;
-	}
+    public @Nullable SoundEvent getHurtSound() {
+        return hurtSound;
+    }
 
-	public boolean canHaveBreasts() {
-		return canHaveBreasts;
-	}
+    public boolean canHaveBreasts() {
+        return canHaveBreasts;
+    }
 
-	public Gender next() {
-		return switch(this) {
-			case MALE -> FEMALE;
-			case FEMALE -> OTHER;
-			case OTHER -> MALE;
-		};
-	}
+    public Gender next() {
+        return switch(this) {
+            case MALE -> FEMALE;
+            case FEMALE -> OTHER;
+            case OTHER -> MALE;
+        };
+    }
 }

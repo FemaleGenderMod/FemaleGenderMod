@@ -39,61 +39,61 @@ import java.util.function.Function;
  * @since 5.0.0-Beta.2
  */
 public sealed interface SyncHelloPacket extends CustomPacketPayload {
-	/*static*/ int VERSION = 1;
+    /*static*/ int VERSION = 1;
 
-	int version();
+    int version();
 
-	static <T extends SyncHelloPacket> StreamCodec<ByteBuf, T> codec(Function<Integer, T> constructor) {
-		return StreamCodec.composite(
-				ByteBufCodecs.VAR_INT, SyncHelloPacket::version,
-				constructor
-		);
-	}
+    static <T extends SyncHelloPacket> StreamCodec<ByteBuf, T> codec(Function<Integer, T> constructor) {
+        return StreamCodec.composite(
+                ByteBufCodecs.VAR_INT, SyncHelloPacket::version,
+                constructor
+        );
+    }
 
-	// TODO either split these apart into multiple classes to match the sync packets,
-	//      or merge the sync packet classes to work similarly to this?
-	record Clientbound(int version) implements SyncHelloPacket {
-		public Clientbound() {
-			this(VERSION);
-		}
+    // TODO either split these apart into multiple classes to match the sync packets,
+    //      or merge the sync packet classes to work similarly to this?
+    record Clientbound(int version) implements SyncHelloPacket {
+        public Clientbound() {
+            this(VERSION);
+        }
 
-		public static final Type<Clientbound> ID = new CustomPacketPayload.Type<>(WildfireGender.id("clientbound/hello"));
-		public static final StreamCodec<ByteBuf, Clientbound> CODEC = codec(Clientbound::new);
+        public static final Type<Clientbound> ID = new CustomPacketPayload.Type<>(WildfireGender.id("clientbound/hello"));
+        public static final StreamCodec<ByteBuf, Clientbound> CODEC = codec(Clientbound::new);
 
-		@Override
-		public Type<? extends CustomPacketPayload> type() {
-			return ID;
-		}
+        @Override
+        public Type<? extends CustomPacketPayload> type() {
+            return ID;
+        }
 
-		@SuppressWarnings("unused")
-		@Environment(EnvType.CLIENT)
-		public void handle(ClientPlayNetworking.Context context) {
-			WildfireSync.LOGGER.info("Received hello response from server with protocol version {}", version);
-			if(version != VERSION) {
-				WildfireSync.LOGGER.warn("Sync version mismatch; network errors will likely occur! (our sync version is {})", VERSION);
-			}
-		}
-	}
+        @SuppressWarnings("unused")
+        @Environment(EnvType.CLIENT)
+        public void handle(ClientPlayNetworking.Context context) {
+            WildfireSync.LOGGER.info("Received hello response from server with protocol version {}", version);
+            if(version != VERSION) {
+                WildfireSync.LOGGER.warn("Sync version mismatch; network errors will likely occur! (our sync version is {})", VERSION);
+            }
+        }
+    }
 
-	record Serverbound(int version) implements SyncHelloPacket {
-		public Serverbound() {
-			this(VERSION);
-		}
+    record Serverbound(int version) implements SyncHelloPacket {
+        public Serverbound() {
+            this(VERSION);
+        }
 
-		public static final Type<Serverbound> ID = new CustomPacketPayload.Type<>(WildfireGender.id("serverbound/hello"));
-		public static final StreamCodec<ByteBuf, Serverbound> CODEC = codec(Serverbound::new);
+        public static final Type<Serverbound> ID = new CustomPacketPayload.Type<>(WildfireGender.id("serverbound/hello"));
+        public static final StreamCodec<ByteBuf, Serverbound> CODEC = codec(Serverbound::new);
 
-		@Override
-		public Type<? extends CustomPacketPayload> type() {
-			return ID;
-		}
+        @Override
+        public Type<? extends CustomPacketPayload> type() {
+            return ID;
+        }
 
-		public void handle(ServerPlayNetworking.Context context) {
-			WildfireSync.LOGGER.info("Received hello from player {} using sync protocol version {}", context.player().getUUID(), version);
-			// note that while the only action the client performs upon receiving this response is printing some messages
-			// to the game logs, this should still be treated as a required response to any client that sends it
-			// if the server supports it.
-			context.responseSender().sendPacket(new Clientbound());
-		}
-	}
+        public void handle(ServerPlayNetworking.Context context) {
+            WildfireSync.LOGGER.info("Received hello from player {} using sync protocol version {}", context.player().getUUID(), version);
+            // note that while the only action the client performs upon receiving this response is printing some messages
+            // to the game logs, this should still be treated as a required response to any client that sends it
+            // if the server supports it.
+            context.responseSender().sendPacket(new Clientbound());
+        }
+    }
 }

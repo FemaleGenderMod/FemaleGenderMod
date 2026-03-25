@@ -25,23 +25,23 @@ import com.google.gson.JsonPrimitive;
 import java.util.function.IntFunction;
 
 public class EnumConfigKey<TYPE extends Enum<TYPE>> extends ConfigKey<TYPE> {
-	private final IntFunction<TYPE> ordinal;
+    private final IntFunction<TYPE> ordinal;
 
-	public EnumConfigKey(String key, TYPE defaultValue, IntFunction<TYPE> ordinalMapper) {
-		super(key, defaultValue);
-		this.ordinal = ordinalMapper;
-	}
+    public EnumConfigKey(String key, TYPE defaultValue, IntFunction<TYPE> ordinalMapper) {
+        super(key, defaultValue);
+        this.ordinal = ordinalMapper;
+    }
 
-	@Override
-	protected TYPE read(JsonElement element) {
-		if(element instanceof JsonPrimitive prim && prim.isNumber()) {
-			return ordinal.apply(prim.getAsInt());
-		}
-		return defaultValue;
-	}
+    @Override
+    protected TYPE read(JsonElement element) {
+        if(element instanceof JsonPrimitive prim && prim.isNumber()) {
+            return ordinal.apply(prim.getAsInt());
+        }
+        return defaultValue;
+    }
 
-	@Override
-	public void save(JsonObject object, TYPE value) {
-		object.addProperty(key, value.ordinal());
-	}
+    @Override
+    public void save(JsonObject object, TYPE value) {
+        object.addProperty(key, value.ordinal());
+    }
 }

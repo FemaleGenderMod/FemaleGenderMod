@@ -25,48 +25,48 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class NumberConfigKey<TYPE extends Number & Comparable<TYPE>> extends ConfigKey<TYPE> {
 
-	@Nullable
-	protected final TYPE minInclusive;
-	@Nullable
-	protected final TYPE maxInclusive;
+    @Nullable
+    protected final TYPE minInclusive;
+    @Nullable
+    protected final TYPE maxInclusive;
 
-	protected NumberConfigKey(String key, TYPE defaultValue) {
-		this(key, defaultValue, null, null);
-	}
+    protected NumberConfigKey(String key, TYPE defaultValue) {
+        this(key, defaultValue, null, null);
+    }
 
-	protected NumberConfigKey(String key, TYPE defaultValue, @Nullable TYPE minInclusive, @Nullable TYPE maxInclusive) {
-		super(key, defaultValue);
-		this.minInclusive = minInclusive;
-		this.maxInclusive = maxInclusive;
-	}
+    protected NumberConfigKey(String key, TYPE defaultValue, @Nullable TYPE minInclusive, @Nullable TYPE maxInclusive) {
+        super(key, defaultValue);
+        this.minInclusive = minInclusive;
+        this.maxInclusive = maxInclusive;
+    }
 
-	protected abstract TYPE fromPrimitive(JsonPrimitive primitive);
+    protected abstract TYPE fromPrimitive(JsonPrimitive primitive);
 
-	@Override
-	protected TYPE read(JsonElement element) {
-		if (element.isJsonPrimitive()) {
-			JsonPrimitive primitive = element.getAsJsonPrimitive();
-			if (primitive.isNumber() || primitive.isString()) {
-				try {
-					return fromPrimitive(primitive);
-				} catch (NumberFormatException _) {
-				}
-			}
-		}
-		return defaultValue;
-	}
+    @Override
+    protected TYPE read(JsonElement element) {
+        if (element.isJsonPrimitive()) {
+            JsonPrimitive primitive = element.getAsJsonPrimitive();
+            if (primitive.isNumber() || primitive.isString()) {
+                try {
+                    return fromPrimitive(primitive);
+                } catch (NumberFormatException _) {
+                }
+            }
+        }
+        return defaultValue;
+    }
 
-	@Override
-	public void save(JsonObject object, TYPE value) {
-		object.addProperty(key, value);
-	}
+    @Override
+    public void save(JsonObject object, TYPE value) {
+        object.addProperty(key, value);
+    }
 
-	@Override
-	public boolean validate(TYPE value) {
-		if (super.validate(value)) {
-			return (minInclusive == null || minInclusive.compareTo(value) <= 0) &&
-				   (maxInclusive == null || maxInclusive.compareTo(value) >= 0);
-		}
-		return false;
-	}
+    @Override
+    public boolean validate(TYPE value) {
+        if (super.validate(value)) {
+            return (minInclusive == null || minInclusive.compareTo(value) <= 0) &&
+                   (maxInclusive == null || maxInclusive.compareTo(value) >= 0);
+        }
+        return false;
+    }
 }

@@ -46,25 +46,25 @@ import java.util.function.Consumer;
 @Mixin(ItemStack.class)
 @Environment(EnvType.CLIENT)
 abstract class ItemStackMixin {
-	@Shadow public abstract Item getItem();
+    @Shadow public abstract Item getItem();
 
-	@WrapOperation(method = "addAttributeTooltips", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;forEachModifier(Lnet/minecraft/world/entity/EquipmentSlotGroup;Lorg/apache/commons/lang3/function/TriConsumer;)V"))
-	public void wildfiregender$appendPhysicsStats(
-			ItemStack instance,
-			EquipmentSlotGroup slot,
-			TriConsumer<Holder<Attribute>, AttributeModifier, ItemAttributeModifiers.Display> attributeModifierConsumer,
-			Operation<Void> original,
-			@Local(name = "first") MutableBoolean missingAttribute,
-			@Local(argsOnly = true) @Nullable Player player,
-			@Local(argsOnly = true) Consumer<Component> textConsumer
-	) {
-		original.call(instance, slot, attributeModifierConsumer);
-		if(slot == EquipmentSlotGroup.CHEST && missingAttribute.isFalse()) {
-			var item = (ItemStack)(Object)this;
-			if(item.get(DataComponents.EQUIPPABLE) == null) {
-				return;
-			}
-			ArmorStatsTooltipEvent.EVENT.invoker().appendTooltips(item, textConsumer, player);
-		}
-	}
+    @WrapOperation(method = "addAttributeTooltips", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;forEachModifier(Lnet/minecraft/world/entity/EquipmentSlotGroup;Lorg/apache/commons/lang3/function/TriConsumer;)V"))
+    public void wildfiregender$appendPhysicsStats(
+            ItemStack instance,
+            EquipmentSlotGroup slot,
+            TriConsumer<Holder<Attribute>, AttributeModifier, ItemAttributeModifiers.Display> attributeModifierConsumer,
+            Operation<Void> original,
+            @Local(name = "first") MutableBoolean missingAttribute,
+            @Local(argsOnly = true) @Nullable Player player,
+            @Local(argsOnly = true) Consumer<Component> textConsumer
+    ) {
+        original.call(instance, slot, attributeModifierConsumer);
+        if(slot == EquipmentSlotGroup.CHEST && missingAttribute.isFalse()) {
+            var item = (ItemStack)(Object)this;
+            if(item.get(DataComponents.EQUIPPABLE) == null) {
+                return;
+            }
+            ArmorStatsTooltipEvent.EVENT.invoker().appendTooltips(item, textConsumer, player);
+        }
+    }
 }

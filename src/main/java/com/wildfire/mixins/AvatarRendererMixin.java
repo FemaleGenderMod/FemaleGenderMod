@@ -43,37 +43,37 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(AvatarRenderer.class)
 @Environment(EnvType.CLIENT)
 abstract class AvatarRendererMixin extends LivingEntityRenderer<Avatar, AvatarRenderState, HumanoidModel<AvatarRenderState>> {
-	private AvatarRendererMixin(EntityRendererProvider.Context ctx, HumanoidModel<AvatarRenderState> model, float shadowRadius) {
-		super(ctx, model, shadowRadius);
-	}
+    private AvatarRendererMixin(EntityRendererProvider.Context ctx, HumanoidModel<AvatarRenderState> model, float shadowRadius) {
+        super(ctx, model, shadowRadius);
+    }
 
-	@ModifyReturnValue(method = "shouldShowName(Lnet/minecraft/world/entity/Avatar;D)Z", at = @At("RETURN"))
-	public boolean wildfiregender$forceLabel(boolean original, @Local(argsOnly = true) Avatar player) {
-		if(FabricLoader.getInstance().isDevelopmentEnvironment()) {
-			if(player instanceof LocalPlayer && ClientConfig.INSTANCE.get(ClientConfig.DISPLAY_OWN_NAMETAG)) {
-				return true;
-			}
-		}
-		return original;
-	}
+    @ModifyReturnValue(method = "shouldShowName(Lnet/minecraft/world/entity/Avatar;D)Z", at = @At("RETURN"))
+    public boolean wildfiregender$forceLabel(boolean original, @Local(argsOnly = true) Avatar player) {
+        if(FabricLoader.getInstance().isDevelopmentEnvironment()) {
+            if(player instanceof LocalPlayer && ClientConfig.INSTANCE.get(ClientConfig.DISPLAY_OWN_NAMETAG)) {
+                return true;
+            }
+        }
+        return original;
+    }
 
-	@SuppressWarnings("CodeBlock2Expr")
-	@Inject(
-		method = "submitNameDisplay(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V",
-		at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;pushPose()V", shift = At.Shift.AFTER)
-	)
-	public void wildfiregender$renderNametag(AvatarRenderState state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera, CallbackInfo ci) {
-		PlayerNametagRenderEvent.EVENT.invoker().onRenderNameTag(state, poseStack, (text) -> {
-			collector.submitNameTag(
-				poseStack,
-				state.nameTagAttachment,
-				state.showExtraEars ? -10 : 0,
-				text,
-				!state.isDiscrete,
-				state.lightCoords,
-				state.distanceToCameraSq,
-				camera
-			);
-		});
-	}
+    @SuppressWarnings("CodeBlock2Expr")
+    @Inject(
+        method = "submitNameDisplay(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V",
+        at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;pushPose()V", shift = At.Shift.AFTER)
+    )
+    public void wildfiregender$renderNametag(AvatarRenderState state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera, CallbackInfo ci) {
+        PlayerNametagRenderEvent.EVENT.invoker().onRenderNameTag(state, poseStack, (text) -> {
+            collector.submitNameTag(
+                poseStack,
+                state.nameTagAttachment,
+                state.showExtraEars ? -10 : 0,
+                text,
+                !state.isDiscrete,
+                state.lightCoords,
+                state.distanceToCameraSq,
+                camera
+            );
+        });
+    }
 }
