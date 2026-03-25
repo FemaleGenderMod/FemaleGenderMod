@@ -39,31 +39,31 @@ import java.util.Map;
 
 @Mixin(CustomFeatureRenderer.class)
 class CustomFeatureRendererMixin {
-	@WrapOperation(
-			method = "renderSolid",
-			at = @At(
-					value = "INVOKE",
-					target = "Lnet/minecraft/client/renderer/SubmitNodeCollector$CustomGeometryRenderer;render(Lcom/mojang/blaze3d/vertex/PoseStack$Pose;Lcom/mojang/blaze3d/vertex/VertexConsumer;)V"
-			)
-	)
-	public void wildfiregender$dodgyRenderingHackToRenderBreastLayerWithOutline(
-			SubmitNodeCollector.CustomGeometryRenderer instance,
-			PoseStack.Pose entry,
-			VertexConsumer vertexConsumer,
-			Operation<Void> original,
-			@Local(name = "entry") Map.Entry<RenderType, List<SubmitNodeStorage.CustomGeometrySubmit>> mapEntry
-	) {
-		original.call(instance, entry, vertexConsumer);
+    @WrapOperation(
+            method = "renderSolid",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/renderer/SubmitNodeCollector$CustomGeometryRenderer;render(Lcom/mojang/blaze3d/vertex/PoseStack$Pose;Lcom/mojang/blaze3d/vertex/VertexConsumer;)V"
+            )
+    )
+    public void wildfiregender$dodgyRenderingHackToRenderBreastLayerWithOutline(
+            SubmitNodeCollector.CustomGeometryRenderer instance,
+            PoseStack.Pose entry,
+            VertexConsumer vertexConsumer,
+            Operation<Void> original,
+            @Local(name = "entry") Map.Entry<RenderType, List<SubmitNodeStorage.CustomGeometrySubmit>> mapEntry
+    ) {
+        original.call(instance, entry, vertexConsumer);
 
-		// effectively a copy of what mojang does for Model rendering, but applied to our custom vertex rendering
-		// wherever applicable.
-		if(instance instanceof BreastRenderCommand breastRenderCommand && breastRenderCommand.outline() != 0) {
-			var layer = mapEntry.getKey();
-			if(layer.outline().isPresent()) {
-				var featureDispatcher = ((GameRendererAccessor) Minecraft.getInstance().gameRenderer).getRenderDispatcher();
-				var outlineVertexProvider = ((FeatureRenderDispatcherAccessor) featureDispatcher).getOutlineBufferSource();
-				original.call(instance, entry, outlineVertexProvider.getBuffer(layer));
-			}
-		}
-	}
+        // effectively a copy of what mojang does for Model rendering, but applied to our custom vertex rendering
+        // wherever applicable.
+        if(instance instanceof BreastRenderCommand breastRenderCommand && breastRenderCommand.outline() != 0) {
+            var layer = mapEntry.getKey();
+            if(layer.outline().isPresent()) {
+                var featureDispatcher = ((GameRendererAccessor) Minecraft.getInstance().gameRenderer).getRenderDispatcher();
+                var outlineVertexProvider = ((FeatureRenderDispatcherAccessor) featureDispatcher).getOutlineBufferSource();
+                original.call(instance, entry, outlineVertexProvider.getBuffer(layer));
+            }
+        }
+    }
 }

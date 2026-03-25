@@ -28,11 +28,11 @@ import org.jetbrains.annotations.ApiStatus;
  * @see IGenderArmor
  */
 public record GenderArmor(
-		float physicsResistance,
-		float tightness,
-		boolean coversBreasts,
-		boolean alwaysHidesBreasts,
-		boolean armorStandsCopySettings,
-		IBreastArmorTexture texture
+        float physicsResistance,
+        float tightness,
+        boolean coversBreasts,
+        boolean alwaysHidesBreasts,
+        boolean armorStandsCopySettings,
+        IBreastArmorTexture texture
 ) implements IGenderArmor {
 }

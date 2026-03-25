@@ -33,42 +33,42 @@ import net.minecraft.network.chat.Component;
 import java.util.Objects;
 
 public class ModMenuIntegration implements ModMenuApi {
-	@Override
-	public ConfigScreenFactory<?> getModConfigScreenFactory() {
-		return screen -> {
-			var client = Minecraft.getInstance();
-			var player = client.player;
-			if(player == null) {
-				return new NotInWorldScreen(client, screen);
-			}
-			return WardrobeBrowserScreen.create(player, screen);
-		};
-	}
+    @Override
+    public ConfigScreenFactory<?> getModConfigScreenFactory() {
+        return screen -> {
+            var client = Minecraft.getInstance();
+            var player = client.player;
+            if(player == null) {
+                return new NotInWorldScreen(client, screen);
+            }
+            return WardrobeBrowserScreen.create(player, screen);
+        };
+    }
 
-	// TODO it'd be nice to support opening the proper mod ui outside a world (like what show me your skin does),
-	//      but doing so requires implementing a fake player entity, which in turn requires bodge implementations
-	//      of basic classes like the registry.
-	//      so, for now, just make a screen that says this isn't supported.
-	private static class NotInWorldScreen extends ConfirmScreen {
-		private final Screen parent;
+    // TODO it'd be nice to support opening the proper mod ui outside a world (like what show me your skin does),
+    //      but doing so requires implementing a fake player entity, which in turn requires bodge implementations
+    //      of basic classes like the registry.
+    //      so, for now, just make a screen that says this isn't supported.
+    private static class NotInWorldScreen extends ConfirmScreen {
+        private final Screen parent;
 
-		public NotInWorldScreen(Minecraft client, Screen parent) {
-			super(
-					_ -> client.setScreen(parent),
-					Component.translatable("wildfire_gender.not_in_world.title").withStyle(ChatFormatting.RED),
-					Component.translatable("wildfire_gender.not_in_world")
-			);
-			this.parent = parent;
-		}
+        public NotInWorldScreen(Minecraft client, Screen parent) {
+            super(
+                    _ -> client.setScreen(parent),
+                    Component.translatable("wildfire_gender.not_in_world.title").withStyle(ChatFormatting.RED),
+                    Component.translatable("wildfire_gender.not_in_world")
+            );
+            this.parent = parent;
+        }
 
-		@Override
-		protected void addButtons(LinearLayout layout) {
-			layout.addChild(Button.builder(CommonComponents.GUI_OK, (button) -> onClose()).build());
-		}
+        @Override
+        protected void addButtons(LinearLayout layout) {
+            layout.addChild(Button.builder(CommonComponents.GUI_OK, (button) -> onClose()).build());
+        }
 
-		@Override
-		public void onClose() {
-			Objects.requireNonNull(minecraft, "client").setScreen(parent);
-		}
-	}
+        @Override
+        public void onClose() {
+            Objects.requireNonNull(minecraft, "client").setScreen(parent);
+        }
+    }
 }

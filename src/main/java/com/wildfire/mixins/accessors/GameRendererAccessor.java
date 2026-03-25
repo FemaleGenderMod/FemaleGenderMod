@@ -25,6 +25,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(GameRenderer.class)
 public interface GameRendererAccessor {
-	@Accessor("featureRenderDispatcher")
-	FeatureRenderDispatcher getRenderDispatcher();
+    @Accessor("featureRenderDispatcher")
+    FeatureRenderDispatcher getRenderDispatcher();
 }

@@ -40,27 +40,27 @@ import java.util.Optional;
 
 @Environment(EnvType.CLIENT)
 public final class GenderArmorResourceManager extends SimpleJsonResourceReloadListener<IGenderArmor> {
-	private GenderArmorResourceManager() {
-		super(IGenderArmor.CODEC, FileToIdConverter.json("wildfire_gender_data"));
-	}
+    private GenderArmorResourceManager() {
+        super(IGenderArmor.CODEC, FileToIdConverter.json("wildfire_gender_data"));
+    }
 
-	public static final Identifier ID = WildfireGender.id("armor_data");
-	public static final GenderArmorResourceManager INSTANCE = new GenderArmorResourceManager();
-	private @Unmodifiable Map<Identifier, IGenderArmor> configs = Map.of();
+    public static final Identifier ID = WildfireGender.id("armor_data");
+    public static final GenderArmorResourceManager INSTANCE = new GenderArmorResourceManager();
+    private @Unmodifiable Map<Identifier, IGenderArmor> configs = Map.of();
 
-	public static @Nullable IGenderArmor get(Identifier model) {
-		return INSTANCE.configs.get(model);
-	}
+    public static @Nullable IGenderArmor get(Identifier model) {
+        return INSTANCE.configs.get(model);
+    }
 
-	public static Optional<IGenderArmor> get(ItemStack item) {
-		return Optional.ofNullable(item.get(DataComponents.EQUIPPABLE))
-				.flatMap(Equippable::assetId)
-				.map(ResourceKey::identifier)
-				.map(GenderArmorResourceManager::get);
-	}
+    public static Optional<IGenderArmor> get(ItemStack item) {
+        return Optional.ofNullable(item.get(DataComponents.EQUIPPABLE))
+                .flatMap(Equippable::assetId)
+                .map(ResourceKey::identifier)
+                .map(GenderArmorResourceManager::get);
+    }
 
-	@Override
-	protected void apply(Map<Identifier, IGenderArmor> prepared, ResourceManager manager, ProfilerFiller profiler) {
-		this.configs = Collections.unmodifiableMap(prepared);
-	}
+    @Override
+    protected void apply(Map<Identifier, IGenderArmor> prepared, ResourceManager manager, ProfilerFiller profiler) {
+        this.configs = Collections.unmodifiableMap(prepared);
+    }
 }

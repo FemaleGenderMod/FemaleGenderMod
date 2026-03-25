@@ -32,26 +32,26 @@ import java.util.function.UnaryOperator;
 
 @Environment(EnvType.CLIENT)
 public record BreastRenderCommand(
-		WildfireModelRenderer.ModelBox model,
-		int light,
-		int overlay,
-		int color,
-		int outline,
-		@Nullable UnaryOperator<VertexConsumer> consumerOperator
+        WildfireModelRenderer.ModelBox model,
+        int light,
+        int overlay,
+        int color,
+        int outline,
+        @Nullable UnaryOperator<VertexConsumer> consumerOperator
 ) implements SubmitNodeCollector.CustomGeometryRenderer {
-	public BreastRenderCommand(WildfireModelRenderer.ModelBox model, LivingEntityRenderState state, int overlay, int color) {
-		this(model, state.lightCoords, overlay, color, state.outlineColor, null);
-	}
+    public BreastRenderCommand(WildfireModelRenderer.ModelBox model, LivingEntityRenderState state, int overlay, int color) {
+        this(model, state.lightCoords, overlay, color, state.outlineColor, null);
+    }
 
-	public static BreastRenderCommand trim(WildfireModelRenderer.ModelBox model, LivingEntityRenderState state, TextureAtlasSprite trimSprite) {
-		return new BreastRenderCommand(model, state.lightCoords, OverlayTexture.NO_OVERLAY, -1, 0, trimSprite::wrap);
-	}
+    public static BreastRenderCommand trim(WildfireModelRenderer.ModelBox model, LivingEntityRenderState state, TextureAtlasSprite trimSprite) {
+        return new BreastRenderCommand(model, state.lightCoords, OverlayTexture.NO_OVERLAY, -1, 0, trimSprite::wrap);
+    }
 
-	@Override
-	public void render(PoseStack.Pose matricesEntry, VertexConsumer vertexConsumer) {
-		if(consumerOperator != null) {
-			vertexConsumer = consumerOperator.apply(vertexConsumer);
-		}
-		GenderLayer.renderBox(model, matricesEntry, vertexConsumer, light, overlay, color);
-	}
+    @Override
+    public void render(PoseStack.Pose matricesEntry, VertexConsumer vertexConsumer) {
+        if(consumerOperator != null) {
+            vertexConsumer = consumerOperator.apply(vertexConsumer);
+        }
+        GenderLayer.renderBox(model, matricesEntry, vertexConsumer, light, overlay, color);
+    }
 }

@@ -49,89 +49,89 @@ import java.util.concurrent.Executor;
 
 @Environment(EnvType.CLIENT)
 public class WildfireGenderClient implements ClientModInitializer {
-	private static final Executor LOAD_EXECUTOR = Util.ioPool().forName("wildfire_gender$loadPlayerData");
+    private static final Executor LOAD_EXECUTOR = Util.ioPool().forName("wildfire_gender$loadPlayerData");
 
-	@Override
-	public void onInitializeClient() {
-		tryMigrate("WildfireGender", Configuration.CONFIG_DIR);
-		tryMigrate("wildfire_gender.json", "female_gender_mod.json");
+    @Override
+    public void onInitializeClient() {
+        tryMigrate("WildfireGender", Configuration.CONFIG_DIR);
+        tryMigrate("wildfire_gender.json", "female_gender_mod.json");
 
-		ClientConfig.INSTANCE.load();
-		WildfireSounds.register();
-		WildfireSync.registerClient();
-		WildfireEventHandler.registerClientEvents();
-		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(GenderArmorResourceManager.ID, GenderArmorResourceManager.INSTANCE);
-		DebugScreenEntries.register(GenderDebugHudEntry.SELF, new GenderDebugHudEntry(true));
-		DebugScreenEntries.register(GenderDebugHudEntry.OTHER, new GenderDebugHudEntry(false));
-		// only register this in dev env, as this likely isn't going to be very useful anywhere else.
-		if(FabricLoader.getInstance().isDevelopmentEnvironment()) {
-			DebugScreenEntries.register(PhysicsDebugHudEntry.ID, new PhysicsDebugHudEntry());
-		}
-		WildfireCommand.init();
-	}
+        ClientConfig.INSTANCE.load();
+        WildfireSounds.register();
+        WildfireSync.registerClient();
+        WildfireEventHandler.registerClientEvents();
+        ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(GenderArmorResourceManager.ID, GenderArmorResourceManager.INSTANCE);
+        DebugScreenEntries.register(GenderDebugHudEntry.SELF, new GenderDebugHudEntry(true));
+        DebugScreenEntries.register(GenderDebugHudEntry.OTHER, new GenderDebugHudEntry(false));
+        // only register this in dev env, as this likely isn't going to be very useful anywhere else.
+        if(FabricLoader.getInstance().isDevelopmentEnvironment()) {
+            DebugScreenEntries.register(PhysicsDebugHudEntry.ID, new PhysicsDebugHudEntry());
+        }
+        WildfireCommand.init();
+    }
 
-	private static void tryMigrate(String oldPath, String newPath) {
-		Path oldFile = FabricLoader.getInstance().getConfigDir().resolve(oldPath);
-		Path newFile = FabricLoader.getInstance().getConfigDir().resolve(newPath);
+    private static void tryMigrate(String oldPath, String newPath) {
+        Path oldFile = FabricLoader.getInstance().getConfigDir().resolve(oldPath);
+        Path newFile = FabricLoader.getInstance().getConfigDir().resolve(newPath);
 
-		if(Files.notExists(oldFile)) {
-			WildfireGender.LOGGER.debug("{} doesn't exist, nothing to migrate", oldPath);
-			return;
-		}
-		if(Files.exists(oldFile) && Files.exists(newFile)) {
-			WildfireGender.LOGGER.warn("Cannot migrate {} to {} as both exist", oldPath, oldPath);
-			return;
-		}
+        if(Files.notExists(oldFile)) {
+            WildfireGender.LOGGER.debug("{} doesn't exist, nothing to migrate", oldPath);
+            return;
+        }
+        if(Files.exists(oldFile) && Files.exists(newFile)) {
+            WildfireGender.LOGGER.warn("Cannot migrate {} to {} as both exist", oldPath, oldPath);
+            return;
+        }
 
-		try {
-			Files.move(oldFile, newFile);
-			WildfireGender.LOGGER.info("Migrated {} to '{}'", oldPath, newFile);
-		} catch (IOException e) {
-			WildfireGender.LOGGER.error("Failed to move {} to {}", oldPath, newFile, e);
-		}
-	}
+        try {
+            Files.move(oldFile, newFile);
+            WildfireGender.LOGGER.info("Migrated {} to '{}'", oldPath, newFile);
+        } catch (IOException e) {
+            WildfireGender.LOGGER.error("Failed to move {} to {}", oldPath, newFile, e);
+        }
+    }
 
-	public static CompletableFuture<@Nullable PlayerConfig> loadGenderInfo(UUID uuid, boolean markForSync, boolean bypassQueue) {
-		var cache = WildfireGender.getPlayerById(uuid);
-		if(cache == null) {
-			return CompletableFuture.completedFuture(null);
-		}
-		return loadGenderInfo(cache, markForSync, bypassQueue);
-	}
+    public static CompletableFuture<@Nullable PlayerConfig> loadGenderInfo(UUID uuid, boolean markForSync, boolean bypassQueue) {
+        var cache = WildfireGender.getPlayerById(uuid);
+        if(cache == null) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return loadGenderInfo(cache, markForSync, bypassQueue);
+    }
 
-	public static CompletableFuture<PlayerConfig> loadGenderInfo(PlayerConfig player, boolean markForSync, boolean bypassQueue) {
-		return CompletableFuture.supplyAsync(() -> {
-			var uuid = player.uuid;
-			if(player.hasLocalConfig()) {
-				player.loadFromDisk(markForSync);
-			} else if(player.syncStatus == PlayerConfig.SyncStatus.UNKNOWN) {
-				JsonObject data;
-				try {
-					var future = bypassQueue ? CloudSync.getProfile(uuid) : CloudSync.queueFetch(uuid);
-					data = future.join();
-				} catch(Exception e) {
-					WildfireGender.LOGGER.error("Failed to fetch profile from sync server", e);
-					throw e;
-				}
-				// make sure the server we're connected to hasn't provided player data while we were fetching data from
-				// the sync server
-				if(data != null && player.syncStatus == PlayerConfig.SyncStatus.UNKNOWN) {
-					player.updateFromJson(data);
-					if(markForSync) {
-						player.needsSync = true;
-					}
-				}
-			}
-			return player;
-		}, LOAD_EXECUTOR);
-	}
+    public static CompletableFuture<PlayerConfig> loadGenderInfo(PlayerConfig player, boolean markForSync, boolean bypassQueue) {
+        return CompletableFuture.supplyAsync(() -> {
+            var uuid = player.uuid;
+            if(player.hasLocalConfig()) {
+                player.loadFromDisk(markForSync);
+            } else if(player.syncStatus == PlayerConfig.SyncStatus.UNKNOWN) {
+                JsonObject data;
+                try {
+                    var future = bypassQueue ? CloudSync.getProfile(uuid) : CloudSync.queueFetch(uuid);
+                    data = future.join();
+                } catch(Exception e) {
+                    WildfireGender.LOGGER.error("Failed to fetch profile from sync server", e);
+                    throw e;
+                }
+                // make sure the server we're connected to hasn't provided player data while we were fetching data from
+                // the sync server
+                if(data != null && player.syncStatus == PlayerConfig.SyncStatus.UNKNOWN) {
+                    player.updateFromJson(data);
+                    if(markForSync) {
+                        player.needsSync = true;
+                    }
+                }
+            }
+            return player;
+        }, LOAD_EXECUTOR);
+    }
 
-	public static @Nullable Component getNametag(UUID uuid) {
-		var clientPlayer = Minecraft.getInstance().player;
-		if(ClientConfig.INSTANCE.get(ClientConfig.HIDE_OWN_CONTRIBUTOR_TAG) && clientPlayer != null && uuid.equals(clientPlayer.getUUID())) {
-			return null;
-		}
+    public static @Nullable Component getNametag(UUID uuid) {
+        var clientPlayer = Minecraft.getInstance().player;
+        if(ClientConfig.INSTANCE.get(ClientConfig.HIDE_OWN_CONTRIBUTOR_TAG) && clientPlayer != null && uuid.equals(clientPlayer.getUUID())) {
+            return null;
+        }
 
-		return Contributors.getNametag(uuid);
-	}
+        return Contributors.getNametag(uuid);
+    }
 }

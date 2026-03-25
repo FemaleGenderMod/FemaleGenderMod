@@ -34,129 +34,129 @@ import java.util.function.Supplier;
 @Environment(EnvType.CLIENT)
 public class WildfireButton extends Button {
 
-	private final @Nullable ButtonRenderer renderer;
-	private final Supplier<Component> messageSupplier;
-	public boolean transparent = false;
+    private final @Nullable ButtonRenderer renderer;
+    private final Supplier<Component> messageSupplier;
+    public boolean transparent = false;
 
-	private WildfireButton(int x, int y, int w, int h, Supplier<Component> text, Button.OnPress onPress, CreateNarration narrationSupplier, @Nullable ButtonRenderer renderer) {
-		super(x, y, w, h, text.get(), onPress, narrationSupplier);
-		messageSupplier = text;
-		this.renderer = renderer;
-	}
+    private WildfireButton(int x, int y, int w, int h, Supplier<Component> text, Button.OnPress onPress, CreateNarration narrationSupplier, @Nullable ButtonRenderer renderer) {
+        super(x, y, w, h, text.get(), onPress, narrationSupplier);
+        messageSupplier = text;
+        this.renderer = renderer;
+    }
 
-	public void updateMessage() {
-		setMessage(messageSupplier.get());
-	}
+    public void updateMessage() {
+        setMessage(messageSupplier.get());
+    }
 
-	protected void drawInner(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-		if(renderer != null) {
-			renderer.render(this, graphics, mouseX, mouseY, partialTicks);
-			return;
-		}
-		Minecraft minecraft = Minecraft.getInstance();
-		Font font = minecraft.font;
-		int textColor = active ? 0xFFFFFF : 0x666666;
-		int i = this.getX() + 2;
-		int j = this.getX() + this.getWidth() - 2;
-		GuiUtils.drawScrollableTextWithoutShadow(GuiUtils.Justify.CENTER, graphics, font, this.getMessage(), i, this.getY(), j, this.getY() + this.getHeight(), textColor);
-	}
+    protected void drawInner(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+        if(renderer != null) {
+            renderer.render(this, graphics, mouseX, mouseY, partialTicks);
+            return;
+        }
+        Minecraft minecraft = Minecraft.getInstance();
+        Font font = minecraft.font;
+        int textColor = active ? 0xFFFFFF : 0x666666;
+        int i = this.getX() + 2;
+        int j = this.getX() + this.getWidth() - 2;
+        GuiUtils.drawScrollableTextWithoutShadow(GuiUtils.Justify.CENTER, graphics, font, this.getMessage(), i, this.getY(), j, this.getY() + this.getHeight(), textColor);
+    }
 
-	@Override
-	protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-		int clr = 0x444444 + (84 << 24);
-		if(this.isHoveredOrFocused()) clr = 0x666666 + (84 << 24);
-		if(!active) clr = 0x222222 + (84 << 24);
-		if(!transparent) graphics.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), clr);
+    @Override
+    protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+        int clr = 0x444444 + (84 << 24);
+        if(this.isHoveredOrFocused()) clr = 0x666666 + (84 << 24);
+        if(!active) clr = 0x222222 + (84 << 24);
+        if(!transparent) graphics.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), clr);
 
-		drawInner(graphics, mouseX, mouseY, partialTicks);
-		if(isHovered()) {
-			graphics.requestCursor(active ? CursorTypes.POINTING_HAND : CursorTypes.NOT_ALLOWED);
-		}
-	}
+        drawInner(graphics, mouseX, mouseY, partialTicks);
+        if(isHovered()) {
+            graphics.requestCursor(active ? CursorTypes.POINTING_HAND : CursorTypes.NOT_ALLOWED);
+        }
+    }
 
-	public WildfireButton setTransparent(boolean b) {
-		this.transparent = b;
-		return this;
-	}
+    public WildfireButton setTransparent(boolean b) {
+        this.transparent = b;
+        return this;
+    }
 
-	public WildfireButton setActive(boolean b) {
-		this.active = b;
-		return this;
-	}
+    public WildfireButton setActive(boolean b) {
+        this.active = b;
+        return this;
+    }
 
-	@SuppressWarnings({"NotNullFieldNotInitialized", "UnusedReturnValue"})
-	public static final class Builder {
-		private Supplier<Component> messageSupplier;
-		private int x, y, width, height;
-		private PressAction onPress;
-		private CreateNarration narrationSupplier = DEFAULT_NARRATION;
-		private @Nullable Tooltip tooltip = null;
-		private @Nullable ButtonRenderer renderer = null;
-		private boolean active = true;
+    @SuppressWarnings({"NotNullFieldNotInitialized", "UnusedReturnValue"})
+    public static final class Builder {
+        private Supplier<Component> messageSupplier;
+        private int x, y, width, height;
+        private PressAction onPress;
+        private CreateNarration narrationSupplier = DEFAULT_NARRATION;
+        private @Nullable Tooltip tooltip = null;
+        private @Nullable ButtonRenderer renderer = null;
+        private boolean active = true;
 
-		public Builder message(Supplier<Component> messageSupplier) {
-			this.messageSupplier = messageSupplier;
-			return this;
-		}
+        public Builder message(Supplier<Component> messageSupplier) {
+            this.messageSupplier = messageSupplier;
+            return this;
+        }
 
-		public Builder position(int x, int y) {
-			this.x = x;
-			this.y = y;
-			return this;
-		}
+        public Builder position(int x, int y) {
+            this.x = x;
+            this.y = y;
+            return this;
+        }
 
-		public Builder size(int width, int height) {
-			this.width = width;
-			this.height = height;
-			return this;
-		}
+        public Builder size(int width, int height) {
+            this.width = width;
+            this.height = height;
+            return this;
+        }
 
-		public Builder onPress(PressAction onPress) {
-			this.onPress = onPress;
-			return this;
-		}
+        public Builder onPress(PressAction onPress) {
+            this.onPress = onPress;
+            return this;
+        }
 
-		public Builder narration(CreateNarration narrationSupplier) {
-			this.narrationSupplier = narrationSupplier;
-			return this;
-		}
+        public Builder narration(CreateNarration narrationSupplier) {
+            this.narrationSupplier = narrationSupplier;
+            return this;
+        }
 
-		public Builder tooltip(@Nullable Tooltip tooltip) {
-			this.tooltip = tooltip;
-			return this;
-		}
+        public Builder tooltip(@Nullable Tooltip tooltip) {
+            this.tooltip = tooltip;
+            return this;
+        }
 
-		public Builder active(boolean active) {
-			this.active = active;
-			return this;
-		}
+        public Builder active(boolean active) {
+            this.active = active;
+            return this;
+        }
 
-		public Builder renderer(@Nullable ButtonRenderer renderer) {
-			this.renderer = renderer;
-			return this;
-		}
+        public Builder renderer(@Nullable ButtonRenderer renderer) {
+            this.renderer = renderer;
+            return this;
+        }
 
-		public WildfireButton build() {
-			var built = new WildfireButton(x, y, width, height, messageSupplier, onPress, narrationSupplier, renderer);
-			built.setActive(active);
-			if(tooltip != null) {
-				built.setTooltip(tooltip);
-			}
-			return built;
-		}
-	}
+        public WildfireButton build() {
+            var built = new WildfireButton(x, y, width, height, messageSupplier, onPress, narrationSupplier, renderer);
+            built.setActive(active);
+            if(tooltip != null) {
+                built.setTooltip(tooltip);
+            }
+            return built;
+        }
+    }
 
-	@FunctionalInterface
-	public interface PressAction extends Button.OnPress {
-		default void onPress(Button button) {
-			onPress((WildfireButton) button);
-		}
+    @FunctionalInterface
+    public interface PressAction extends Button.OnPress {
+        default void onPress(Button button) {
+            onPress((WildfireButton) button);
+        }
 
-		void onPress(WildfireButton button);
-	}
+        void onPress(WildfireButton button);
+    }
 
-	@FunctionalInterface
-	public interface ButtonRenderer {
-		void render(WildfireButton button, GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks);
-	}
+    @FunctionalInterface
+    public interface ButtonRenderer {
+        void render(WildfireButton button, GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks);
+    }
 }

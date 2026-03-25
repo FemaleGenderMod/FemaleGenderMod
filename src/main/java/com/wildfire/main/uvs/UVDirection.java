@@ -30,66 +30,66 @@ import org.joml.Vector3fc;
 import java.util.function.IntFunction;
 
 public enum UVDirection {
-	EAST("east", "", "E", 0xFFFF0000, new Vec3i(1, 0, 0)),
-	WEST("west", "", "W", 0xFF00FF00, new Vec3i(-1, 0, 0)),
-	DOWN("down", "wildfire_gender.uv_editor.faces.bottom", "D", 0xFF0000FF, new Vec3i(0, -1, 0)),
-	UP("up", "wildfire_gender.uv_editor.faces.top", "U", 0xFF00FFFF, new Vec3i(0, 1, 0)),
-	NORTH("north", "wildfire_gender.uv_editor.faces.front", "N", 0xFFFF00FF, new Vec3i(0, 0, -1));
+    EAST("east", "", "E", 0xFFFF0000, new Vec3i(1, 0, 0)),
+    WEST("west", "", "W", 0xFF00FF00, new Vec3i(-1, 0, 0)),
+    DOWN("down", "wildfire_gender.uv_editor.faces.bottom", "D", 0xFF0000FF, new Vec3i(0, -1, 0)),
+    UP("up", "wildfire_gender.uv_editor.faces.top", "U", 0xFF00FFFF, new Vec3i(0, 1, 0)),
+    NORTH("north", "wildfire_gender.uv_editor.faces.front", "N", 0xFFFF00FF, new Vec3i(0, 0, -1));
 
-	private final String unlocalizedName;
-	private final String shortName;
-	private final String saveName;
-	private final int baseColor;
-	private final Vector3fc floatVector;
+    private final String unlocalizedName;
+    private final String shortName;
+    private final String saveName;
+    private final int baseColor;
+    private final Vector3fc floatVector;
 
-	public static final IntFunction<UVDirection> BY_ID = ByIdMap.continuous(UVDirection::ordinal, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
-	public static final StreamCodec<ByteBuf, UVDirection> PACKET_CODEC = ByteBufCodecs.idMapper(BY_ID, UVDirection::ordinal);
+    public static final IntFunction<UVDirection> BY_ID = ByIdMap.continuous(UVDirection::ordinal, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
+    public static final StreamCodec<ByteBuf, UVDirection> PACKET_CODEC = ByteBufCodecs.idMapper(BY_ID, UVDirection::ordinal);
 
-	UVDirection(String saveName, String unlocalizedName, String shortName, int baseColor, Vec3i vector) {
-		this.unlocalizedName = unlocalizedName;
-		this.saveName = saveName;
-		this.shortName = shortName;
-		this.baseColor = baseColor;
-		this.floatVector = new Vector3f((float)vector.getX(), (float)vector.getY(), (float)vector.getZ());
-	}
+    UVDirection(String saveName, String unlocalizedName, String shortName, int baseColor, Vec3i vector) {
+        this.unlocalizedName = unlocalizedName;
+        this.saveName = saveName;
+        this.shortName = shortName;
+        this.baseColor = baseColor;
+        this.floatVector = new Vector3f((float)vector.getX(), (float)vector.getY(), (float)vector.getZ());
+    }
 
-	public int getFaceColor(boolean faded) {
-		if (!faded) return baseColor;
+    public int getFaceColor(boolean faded) {
+        if (!faded) return baseColor;
 
-		int alpha = 0x33;
-		int rgb = baseColor & 0x00FFFFFF;
-		return (alpha << 24) | rgb;
-	}
+        int alpha = 0x33;
+        int rgb = baseColor & 0x00FFFFFF;
+        return (alpha << 24) | rgb;
+    }
 
-	public Vector3f getUnitVector() {
-		return new Vector3f(this.floatVector);
-	}
+    public Vector3f getUnitVector() {
+        return new Vector3f(this.floatVector);
+    }
 
-	public Component getDirectionText(BreastTypes type) {
+    public Component getDirectionText(BreastTypes type) {
 
-		if (this == EAST || this == WEST) {
-			String key = (type == BreastTypes.LEFT || type == BreastTypes.LEFT_OVERLAY)
-					? "wildfire_gender.uv_editor.faces.inner"
-					: "wildfire_gender.uv_editor.faces.outer";
-			return Component.translatable(key);
-		}
+        if (this == EAST || this == WEST) {
+            String key = (type == BreastTypes.LEFT || type == BreastTypes.LEFT_OVERLAY)
+                    ? "wildfire_gender.uv_editor.faces.inner"
+                    : "wildfire_gender.uv_editor.faces.outer";
+            return Component.translatable(key);
+        }
 
-		if (unlocalizedName != null && !unlocalizedName.isEmpty()) {
-			return Component.translatable(unlocalizedName);
-		}
+        if (unlocalizedName != null && !unlocalizedName.isEmpty()) {
+            return Component.translatable(unlocalizedName);
+        }
 
-		return Component.literal(saveName);
-	}
+        return Component.literal(saveName);
+    }
 
-	public String getSaveName() {
-		return saveName;
-	}
+    public String getSaveName() {
+        return saveName;
+    }
 
-	public String getShortName() {
-		return shortName;
-	}
+    public String getShortName() {
+        return shortName;
+    }
 
-	public String getUnlocalizedName() {
-		return unlocalizedName;
-	}
+    public String getUnlocalizedName() {
+        return unlocalizedName;
+    }
 }

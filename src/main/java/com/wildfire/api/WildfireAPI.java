@@ -44,40 +44,40 @@ import java.util.stream.IntStream;
 @SuppressWarnings("unused")
 public final class WildfireAPI {
 
-	private static final Map<Item, IGenderArmor> GENDER_ARMORS = new HashMap<>();
+    private static final Map<Item, IGenderArmor> GENDER_ARMORS = new HashMap<>();
 
-	private static final Codec<Vector2ic> VEC2I_LEGACY_CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			Codec.INT.fieldOf("x").forGetter(Vector2ic::x),
-			Codec.INT.fieldOf("y").forGetter(Vector2ic::y)
-	).apply(instance, Vector2i::new));
+    private static final Codec<Vector2ic> VEC2I_LEGACY_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.INT.fieldOf("x").forGetter(Vector2ic::x),
+            Codec.INT.fieldOf("y").forGetter(Vector2ic::y)
+    ).apply(instance, Vector2i::new));
 
-	/* package-private */ static final Codec<Vector2ic> VECTOR_2I_CODEC = Codec.withAlternative(Codec.INT_STREAM.comapFlatMap(
-			stream -> Util.fixedSize(stream, 2).map(Vector2i::new),
-			vec2i -> IntStream.of(vec2i.x(), vec2i.y())
-	), VEC2I_LEGACY_CODEC);
+    /* package-private */ static final Codec<Vector2ic> VECTOR_2I_CODEC = Codec.withAlternative(Codec.INT_STREAM.comapFlatMap(
+            stream -> Util.fixedSize(stream, 2).map(Vector2i::new),
+            vec2i -> IntStream.of(vec2i.x(), vec2i.y())
+    ), VEC2I_LEGACY_CODEC);
 
-	/**
-	 * Get the cached config for a {@link Player}
-	 *
-	 * @apiNote This method will not load a player's config if they aren't already cached, and will only return
-	 *		  the config of players the mod has already loaded.
-	 *
-	 * @param  uuid  the uuid of the target {@link Player}
-	 * @see	PlayerConfig
-	 */
-	public static @Nullable PlayerConfig getPlayerById(UUID uuid) {
-		return WildfireGender.getPlayerById(uuid);
-	}
+    /**
+     * Get the cached config for a {@link Player}
+     *
+     * @apiNote This method will not load a player's config if they aren't already cached, and will only return
+     *		  the config of players the mod has already loaded.
+     *
+     * @param  uuid  the uuid of the target {@link Player}
+     * @see	PlayerConfig
+     */
+    public static @Nullable PlayerConfig getPlayerById(UUID uuid) {
+        return WildfireGender.getPlayerById(uuid);
+    }
 
-	/**
-	 * Get the player's {@link Gender}
-	 *
-	 * @param  uuid  the uuid of the target {@link Player}.
-	 * @see	Gender
-	 */
-	public static Gender getPlayerGender(UUID uuid) {
-		PlayerConfig cfg = WildfireGender.getPlayerById(uuid);
-		if(cfg == null) return Configuration.GENDER.getDefault();
-		return cfg.getGender();
-	}
+    /**
+     * Get the player's {@link Gender}
+     *
+     * @param  uuid  the uuid of the target {@link Player}.
+     * @see	Gender
+     */
+    public static Gender getPlayerGender(UUID uuid) {
+        PlayerConfig cfg = WildfireGender.getPlayerById(uuid);
+        if(cfg == null) return Configuration.GENDER.getDefault();
+        return cfg.getGender();
+    }
 }

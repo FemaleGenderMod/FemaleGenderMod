@@ -64,244 +64,244 @@ import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.argument;
 
 @Environment(EnvType.CLIENT)
 public class WildfireCommand {
-	private static final Component COMMAND_PREFIX = Component.empty()
-			.append(Component.literal("[").withStyle(ChatFormatting.GRAY))
-			.append(Component.literal("F").withStyle(ChatFormatting.LIGHT_PURPLE))
-			.append(Component.literal("GM").withStyle(ChatFormatting.WHITE))
-			.append(Component.literal("] ").withStyle(ChatFormatting.GRAY));
+    private static final Component COMMAND_PREFIX = Component.empty()
+            .append(Component.literal("[").withStyle(ChatFormatting.GRAY))
+            .append(Component.literal("F").withStyle(ChatFormatting.LIGHT_PURPLE))
+            .append(Component.literal("GM").withStyle(ChatFormatting.WHITE))
+            .append(Component.literal("] ").withStyle(ChatFormatting.GRAY));
 
-	static void init() {
-		ClientCommandRegistrationCallback.EVENT.register(WildfireCommand::register);
-	}
+    static void init() {
+        ClientCommandRegistrationCallback.EVENT.register(WildfireCommand::register);
+    }
 
-	private static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext context) {
-		Minecraft client = Minecraft.getInstance();
+    private static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext context) {
+        Minecraft client = Minecraft.getInstance();
 
-		var debug = ClientCommands.literal("debug")
-				.executes((ctx) -> {
-					sendHelp(ctx, Component.literal("Debug Commands:"),
-							"invalidatecache", "Clears the player & entity caches",
-							"target", "Show debug info for entity you are looking at",
-							"cache [allPlayers] [showEntities]", "Display cached entities/players",
-							"firsttime", "Display the first time setup screen",
-							"syncverbosity [level]", "Change how verbose the sync log is");
-					ctx.getSource().sendFeedback(Component.empty());
-					sendHelp(ctx, Component.literal("Singleplayer Commands:"),
-							"trim [glint]", "Equips a chestplate with a trim pre-applied onto yourself",
-							"armorstand", "Spawns an armor stand with armor copying your breast settings pre-equipped");
-					return 1;
-				})
-				.then(ClientCommands.literal("invalidatecache")
-						.executes(WildfireCommand::invalidateCache))
-				.then(ClientCommands.literal("target")
-						.executes(WildfireCommand::getEntityLookingAt))
-				.then(ClientCommands.literal("firsttime")
-						.executes(ctx -> {
-							client.execute(() -> {
-								client.schedule(() -> client.setScreen(new WildfireFirstTimeSetupScreen(null, client.player.getUUID())));
-							});
-							return Command.SINGLE_SUCCESS;
-						}))
-				.then(ClientCommands.literal("cache")
-						.then(argument("allPlayers", BoolArgumentType.bool())
-								.executes(WildfireCommand::getUsers)
-								.then(argument("showEntities", BoolArgumentType.bool())
-										.executes(WildfireCommand::getUsers)))
-						.executes(WildfireCommand::getUsers))
-				.then(ClientCommands.literal("syncverbosity")
-						.then(argument("level", new SyncVerbosity.SyncVerbosityArgumentType())
-								.executes(WildfireCommand::setLogLevel)));
+        var debug = ClientCommands.literal("debug")
+                .executes((ctx) -> {
+                    sendHelp(ctx, Component.literal("Debug Commands:"),
+                            "invalidatecache", "Clears the player & entity caches",
+                            "target", "Show debug info for entity you are looking at",
+                            "cache [allPlayers] [showEntities]", "Display cached entities/players",
+                            "firsttime", "Display the first time setup screen",
+                            "syncverbosity [level]", "Change how verbose the sync log is");
+                    ctx.getSource().sendFeedback(Component.empty());
+                    sendHelp(ctx, Component.literal("Singleplayer Commands:"),
+                            "trim [glint]", "Equips a chestplate with a trim pre-applied onto yourself",
+                            "armorstand", "Spawns an armor stand with armor copying your breast settings pre-equipped");
+                    return 1;
+                })
+                .then(ClientCommands.literal("invalidatecache")
+                        .executes(WildfireCommand::invalidateCache))
+                .then(ClientCommands.literal("target")
+                        .executes(WildfireCommand::getEntityLookingAt))
+                .then(ClientCommands.literal("firsttime")
+                        .executes(ctx -> {
+                            client.execute(() -> {
+                                client.schedule(() -> client.setScreen(new WildfireFirstTimeSetupScreen(null, client.player.getUUID())));
+                            });
+                            return Command.SINGLE_SUCCESS;
+                        }))
+                .then(ClientCommands.literal("cache")
+                        .then(argument("allPlayers", BoolArgumentType.bool())
+                                .executes(WildfireCommand::getUsers)
+                                .then(argument("showEntities", BoolArgumentType.bool())
+                                        .executes(WildfireCommand::getUsers)))
+                        .executes(WildfireCommand::getUsers))
+                .then(ClientCommands.literal("syncverbosity")
+                        .then(argument("level", new SyncVerbosity.SyncVerbosityArgumentType())
+                                .executes(WildfireCommand::setLogLevel)));
 
-		if(Minecraft.getInstance().isLocalServer()) {
-			debug
-					.then(ClientCommands.literal("trim")
-							.then(ClientCommands.argument("glint", BoolArgumentType.bool())
-									.executes(WildfireCommand::equipTrimmedChestplate))
-							.executes(WildfireCommand::equipTrimmedChestplate))
-					.then(ClientCommands.literal("armorstand").executes(WildfireCommand::spawnArmorStand));
-		}
+        if(Minecraft.getInstance().isLocalServer()) {
+            debug
+                    .then(ClientCommands.literal("trim")
+                            .then(ClientCommands.argument("glint", BoolArgumentType.bool())
+                                    .executes(WildfireCommand::equipTrimmedChestplate))
+                            .executes(WildfireCommand::equipTrimmedChestplate))
+                    .then(ClientCommands.literal("armorstand").executes(WildfireCommand::spawnArmorStand));
+        }
 
-		var root = dispatcher.register(ClientCommands.literal("femalegender")
-				.executes(WildfireCommand::openConfig)
-				.then(debug));
+        var root = dispatcher.register(ClientCommands.literal("femalegender")
+                .executes(WildfireCommand::openConfig)
+                .then(debug));
 
-		dispatcher.register(ClientCommands.literal("fgm")
-				.executes(WildfireCommand::openConfig)
-				.redirect(root));
-	}
+        dispatcher.register(ClientCommands.literal("fgm")
+                .executes(WildfireCommand::openConfig)
+                .redirect(root));
+    }
 
-	@SuppressWarnings("SameParameterValue")
-	@UnknownNullability("nullability depends on the relevant ArgumentType & defaultValue")
-	private static <T> T getOrDefault(CommandContext<FabricClientCommandSource> ctx, String name, @UnknownNullability T defaultValue, Class<T> clazz) {
-		T value = defaultValue;
-		try {
-			value = ctx.getArgument(name, clazz);
-		} catch(IllegalArgumentException _) {}
-		return value;
-	}
+    @SuppressWarnings("SameParameterValue")
+    @UnknownNullability("nullability depends on the relevant ArgumentType & defaultValue")
+    private static <T> T getOrDefault(CommandContext<FabricClientCommandSource> ctx, String name, @UnknownNullability T defaultValue, Class<T> clazz) {
+        T value = defaultValue;
+        try {
+            value = ctx.getArgument(name, clazz);
+        } catch(IllegalArgumentException _) {}
+        return value;
+    }
 
-	public static void send(CommandContext<FabricClientCommandSource> ctx, String text) {
-		ctx.getSource().sendFeedback(Component.empty().append(COMMAND_PREFIX).append(text));
-	}
+    public static void send(CommandContext<FabricClientCommandSource> ctx, String text) {
+        ctx.getSource().sendFeedback(Component.empty().append(COMMAND_PREFIX).append(text));
+    }
 
-	public static void send(CommandContext<FabricClientCommandSource> ctx, Component text) {
-		ctx.getSource().sendFeedback(Component.empty().append(COMMAND_PREFIX).append(text));
-	}
+    public static void send(CommandContext<FabricClientCommandSource> ctx, Component text) {
+        ctx.getSource().sendFeedback(Component.empty().append(COMMAND_PREFIX).append(text));
+    }
 
-	public static void sendHelp(CommandContext<FabricClientCommandSource> ctx, Component header, String... nameToDescription) {
-		assert nameToDescription.length % 2 == 0;
-		List<Component> lines = new ArrayList<>();
-		lines.add(Component.empty().append(COMMAND_PREFIX).append(header).withStyle(ChatFormatting.UNDERLINE));
+    public static void sendHelp(CommandContext<FabricClientCommandSource> ctx, Component header, String... nameToDescription) {
+        assert nameToDescription.length % 2 == 0;
+        List<Component> lines = new ArrayList<>();
+        lines.add(Component.empty().append(COMMAND_PREFIX).append(header).withStyle(ChatFormatting.UNDERLINE));
 
-		for(int i = 0; i < nameToDescription.length / 2; i++) {
-			var name = nameToDescription[i * 2];
-			var description = nameToDescription[(i * 2) + 1];
-			lines.add(Component.empty().append(COMMAND_PREFIX)
-				.append(Component.literal(name).withStyle(ChatFormatting.AQUA))
-				.append(Component.literal(" - ").withStyle(ChatFormatting.GRAY))
-				.append(Component.literal(description)));
-		}
+        for(int i = 0; i < nameToDescription.length / 2; i++) {
+            var name = nameToDescription[i * 2];
+            var description = nameToDescription[(i * 2) + 1];
+            lines.add(Component.empty().append(COMMAND_PREFIX)
+                .append(Component.literal(name).withStyle(ChatFormatting.AQUA))
+                .append(Component.literal(" - ").withStyle(ChatFormatting.GRAY))
+                .append(Component.literal(description)));
+        }
 
-		ctx.getSource().sendFeedback(ComponentUtils.formatList(lines, Component.literal("\n")));
-	}
+        ctx.getSource().sendFeedback(ComponentUtils.formatList(lines, Component.literal("\n")));
+    }
 
-	private static int openConfig(CommandContext<FabricClientCommandSource> ctx) {
-		final var client = ctx.getSource().getClient();
-		final var player = ctx.getSource().getPlayer();
-		// the .schedule() is necessary as otherwise the chat screen will simply immediately close the opened screen
-		client.schedule(() -> WardrobeBrowserScreen.open(client, player));
-		return 1;
-	}
+    private static int openConfig(CommandContext<FabricClientCommandSource> ctx) {
+        final var client = ctx.getSource().getClient();
+        final var player = ctx.getSource().getPlayer();
+        // the .schedule() is necessary as otherwise the chat screen will simply immediately close the opened screen
+        client.schedule(() -> WardrobeBrowserScreen.open(client, player));
+        return 1;
+    }
 
-	private static int getEntityLookingAt(CommandContext<FabricClientCommandSource> ctx) {
-		var target = ctx.getSource().getClient().crosshairPickEntity;
+    private static int getEntityLookingAt(CommandContext<FabricClientCommandSource> ctx) {
+        var target = ctx.getSource().getClient().crosshairPickEntity;
 
-		if(target != null) {
-			send(ctx, "Looking at: " + target.getName().getString());
-			send(ctx, "UUID: " + target.getStringUUID());
-			send(ctx, "Type: " + target.getType());
-			send(ctx, "Class: " + target.getClass());
-			send(ctx, "Renderer: " + Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(target));
-		} else {
-			send(ctx, "No entity in sight.");
-		}
-		return 1;
-	}
+        if(target != null) {
+            send(ctx, "Looking at: " + target.getName().getString());
+            send(ctx, "UUID: " + target.getStringUUID());
+            send(ctx, "Type: " + target.getType());
+            send(ctx, "Class: " + target.getClass());
+            send(ctx, "Renderer: " + Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(target));
+        } else {
+            send(ctx, "No entity in sight.");
+        }
+        return 1;
+    }
 
-	public static int setLogLevel(CommandContext<FabricClientCommandSource> ctx) {
-		SyncVerbosity level = ctx.getArgument("level", SyncVerbosity.class);
+    public static int setLogLevel(CommandContext<FabricClientCommandSource> ctx) {
+        SyncVerbosity level = ctx.getArgument("level", SyncVerbosity.class);
 
-		ClientConfig.INSTANCE.set(ClientConfig.SYNC_VERBOSITY, level);
-		ClientConfig.INSTANCE.save();
+        ClientConfig.INSTANCE.set(ClientConfig.SYNC_VERBOSITY, level);
+        ClientConfig.INSTANCE.save();
 
-		send(ctx, "Log level set to: " + level);
-		return 1;
-	}
+        send(ctx, "Log level set to: " + level);
+        return 1;
+    }
 
-	private static int getUsers(CommandContext<FabricClientCommandSource> ctx) {
-		boolean allPlayers = getOrDefault(ctx, "allPlayers", false, Boolean.class);
-		boolean showEntities = getOrDefault(ctx, "showEntities", false, Boolean.class);
+    private static int getUsers(CommandContext<FabricClientCommandSource> ctx) {
+        boolean allPlayers = getOrDefault(ctx, "allPlayers", false, Boolean.class);
+        boolean showEntities = getOrDefault(ctx, "showEntities", false, Boolean.class);
 
-		var players = dump(WildfireGender.CACHE, ctx.getSource().getLevel(), !allPlayers);
-		if(!players.isEmpty()) {
-			send(ctx, "Synced Players (" + players.size() + "):");
-			for(var line : players) {
-				send(ctx, line);
-			}
-		}
+        var players = dump(WildfireGender.CACHE, ctx.getSource().getLevel(), !allPlayers);
+        if(!players.isEmpty()) {
+            send(ctx, "Synced Players (" + players.size() + "):");
+            for(var line : players) {
+                send(ctx, line);
+            }
+        }
 
-		if(showEntities) {
-			var entities = dump(EntityConfig.CACHE, ctx.getSource().getLevel(), false);
-			if(!entities.isEmpty()) {
-				send(ctx, "Entities (" + players.size() + "):");
-				for(var line : entities) {
-					send(ctx, line);
-				}
-			}
-		}
+        if(showEntities) {
+            var entities = dump(EntityConfig.CACHE, ctx.getSource().getLevel(), false);
+            if(!entities.isEmpty()) {
+                send(ctx, "Entities (" + players.size() + "):");
+                for(var line : entities) {
+                    send(ctx, line);
+                }
+            }
+        }
 
-		return 1;
-	}
+        return 1;
+    }
 
-	private static List<Component> dump(Cache<UUID, ? extends EntityConfig> cache, Level world, boolean ignoreEmptyConfig) {
-		List<Component> lines = new ArrayList<>();
-		for(var entry : cache.asMap().entrySet()) {
-			var uuid = entry.getKey();
-			var config = entry.getValue();
-			if(config == null) {
-				continue;
-			}
-			if(config instanceof PlayerConfig playerConfig && playerConfig.getSyncStatus() == PlayerConfig.SyncStatus.UNKNOWN && ignoreEmptyConfig) {
-				continue;
-			}
-			var entity = world.getEntity(uuid);
-			if(entity == null) continue;
+    private static List<Component> dump(Cache<UUID, ? extends EntityConfig> cache, Level world, boolean ignoreEmptyConfig) {
+        List<Component> lines = new ArrayList<>();
+        for(var entry : cache.asMap().entrySet()) {
+            var uuid = entry.getKey();
+            var config = entry.getValue();
+            if(config == null) {
+                continue;
+            }
+            if(config instanceof PlayerConfig playerConfig && playerConfig.getSyncStatus() == PlayerConfig.SyncStatus.UNKNOWN && ignoreEmptyConfig) {
+                continue;
+            }
+            var entity = world.getEntity(uuid);
+            if(entity == null) continue;
 
-			var info = ComponentUtils.formatList(config.getDebugInfo(), Component.literal("\n"), Component::literal);
+            var info = ComponentUtils.formatList(config.getDebugInfo(), Component.literal("\n"), Component::literal);
 
-			lines.add(Component.empty()
-					.append(entity.getDisplayName())
-					.append(" - ")
-					.append(config.getGender().getDisplayName())
-					.withStyle(style -> style.withHoverEvent(new HoverEvent.ShowText(info))));
-		}
-		return lines;
-	}
+            lines.add(Component.empty()
+                    .append(entity.getDisplayName())
+                    .append(" - ")
+                    .append(config.getGender().getDisplayName())
+                    .withStyle(style -> style.withHoverEvent(new HoverEvent.ShowText(info))));
+        }
+        return lines;
+    }
 
-	private static int invalidateCache(CommandContext<FabricClientCommandSource> ctx) {
-		WildfireGender.CACHE.invalidateAll();
-		EntityConfig.CACHE.invalidateAll();
+    private static int invalidateCache(CommandContext<FabricClientCommandSource> ctx) {
+        WildfireGender.CACHE.invalidateAll();
+        EntityConfig.CACHE.invalidateAll();
 
-		send(ctx, "Cache has been invalidated!");
-		return 1;
-	}
+        send(ctx, "Cache has been invalidated!");
+        return 1;
+    }
 
-	/**
-	 * Takes a client-sided {@link CommandContext} and returns the {@link ServerPlayer} for the invoking player
-	 * when in singleplayer, or throws an error.
-	 */
-	private static ServerPlayer getIntegratedServerPlayer(CommandContext<FabricClientCommandSource> ctx) {
-		var integratedServer = Objects.requireNonNull(Minecraft.getInstance().getSingleplayerServer());
-		var playerManager = Objects.requireNonNull(integratedServer.getPlayerList());
-		return Objects.requireNonNull(playerManager.getPlayer(ctx.getSource().getPlayer().getUUID()));
-	}
+    /**
+     * Takes a client-sided {@link CommandContext} and returns the {@link ServerPlayer} for the invoking player
+     * when in singleplayer, or throws an error.
+     */
+    private static ServerPlayer getIntegratedServerPlayer(CommandContext<FabricClientCommandSource> ctx) {
+        var integratedServer = Objects.requireNonNull(Minecraft.getInstance().getSingleplayerServer());
+        var playerManager = Objects.requireNonNull(integratedServer.getPlayerList());
+        return Objects.requireNonNull(playerManager.getPlayer(ctx.getSource().getPlayer().getUUID()));
+    }
 
-	private static int equipTrimmedChestplate(CommandContext<FabricClientCommandSource> ctx) {
-		Boolean glint = getOrDefault(ctx, "glint", null, Boolean.class);
-		var player = getIntegratedServerPlayer(ctx);
-		if(!player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) return 0;
-		var item = new ItemStack(Items.IRON_CHESTPLATE);
-		var material = player.registryAccess().lookupOrThrow(Registries.TRIM_MATERIAL).getOrThrow(TrimMaterials.AMETHYST);
-		var pattern = player.registryAccess().lookupOrThrow(Registries.TRIM_PATTERN).getOrThrow(TrimPatterns.COAST);
-		item.set(DataComponents.TRIM, new ArmorTrim(material, pattern));
-		if(glint != null) {
-			item.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, glint);
-		}
-		player.setItemSlot(EquipmentSlot.CHEST, item);
-		return 1;
-	}
+    private static int equipTrimmedChestplate(CommandContext<FabricClientCommandSource> ctx) {
+        Boolean glint = getOrDefault(ctx, "glint", null, Boolean.class);
+        var player = getIntegratedServerPlayer(ctx);
+        if(!player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) return 0;
+        var item = new ItemStack(Items.IRON_CHESTPLATE);
+        var material = player.registryAccess().lookupOrThrow(Registries.TRIM_MATERIAL).getOrThrow(TrimMaterials.AMETHYST);
+        var pattern = player.registryAccess().lookupOrThrow(Registries.TRIM_PATTERN).getOrThrow(TrimPatterns.COAST);
+        item.set(DataComponents.TRIM, new ArmorTrim(material, pattern));
+        if(glint != null) {
+            item.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, glint);
+        }
+        player.setItemSlot(EquipmentSlot.CHEST, item);
+        return 1;
+    }
 
-	private static int spawnArmorStand(CommandContext<FabricClientCommandSource> ctx) {
-		var player = getIntegratedServerPlayer(ctx);
-		if(!player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) return 0;
-		var world = player.level();
+    private static int spawnArmorStand(CommandContext<FabricClientCommandSource> ctx) {
+        var player = getIntegratedServerPlayer(ctx);
+        if(!player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) return 0;
+        var world = player.level();
 
-		var item = new ItemStack(Items.IRON_CHESTPLATE);
-		var config = WildfireGender.getOrAddPlayerById(player.getUUID());
-		var component = BreastDataComponent.fromPlayer(player, config);
-		if(component == null) {
-			ctx.getSource().sendError(Component.literal("Returned breast data component was null; do you have Hide in Armor on?"));
-			return 0;
-		}
-		component.write(item);
+        var item = new ItemStack(Items.IRON_CHESTPLATE);
+        var config = WildfireGender.getOrAddPlayerById(player.getUUID());
+        var component = BreastDataComponent.fromPlayer(player, config);
+        if(component == null) {
+            ctx.getSource().sendError(Component.literal("Returned breast data component was null; do you have Hide in Armor on?"));
+            return 0;
+        }
+        component.write(item);
 
-		var stand = new ArmorStand(world, player.getBlockX(), player.getBlockY(), player.getBlockZ());
-		stand.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
-		stand.setItemSlot(EquipmentSlot.CHEST, item);
-		stand.setItemSlot(EquipmentSlot.LEGS, new ItemStack(Items.IRON_LEGGINGS));
-		stand.setItemSlot(EquipmentSlot.FEET, new ItemStack(Items.IRON_BOOTS));
-		world.addFreshEntity(stand);
+        var stand = new ArmorStand(world, player.getBlockX(), player.getBlockY(), player.getBlockZ());
+        stand.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
+        stand.setItemSlot(EquipmentSlot.CHEST, item);
+        stand.setItemSlot(EquipmentSlot.LEGS, new ItemStack(Items.IRON_LEGGINGS));
+        stand.setItemSlot(EquipmentSlot.FEET, new ItemStack(Items.IRON_BOOTS));
+        world.addFreshEntity(stand);
 
-		return 1;
-	}
+        return 1;
+    }
 }

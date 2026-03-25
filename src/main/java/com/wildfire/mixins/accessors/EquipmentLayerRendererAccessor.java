@@ -30,6 +30,6 @@ import java.util.function.Function;
 @Mixin(EquipmentLayerRenderer.class)
 @Environment(EnvType.CLIENT)
 public interface EquipmentLayerRendererAccessor {
-	@Accessor
-	Function<EquipmentLayerRenderer.TrimSpriteKey, TextureAtlasSprite> getTrimSpriteLookup();
+    @Accessor
+    Function<EquipmentLayerRenderer.TrimSpriteKey, TextureAtlasSprite> getTrimSpriteLookup();
 }

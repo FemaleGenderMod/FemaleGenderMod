@@ -42,65 +42,65 @@ import java.util.concurrent.CompletableFuture;
 
 @Environment(EnvType.CLIENT)
 public class WildfireToast implements Toast {
-	private static final Identifier TEXTURE = Identifier.withDefaultNamespace("toast/advancement");
-	private static final Identifier ICON = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/bc_ribbon.png");
-	private final List<FormattedCharSequence> text;
-	private Visibility visibility = Visibility.SHOW;
+    private static final Identifier TEXTURE = Identifier.withDefaultNamespace("toast/advancement");
+    private static final Identifier ICON = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/bc_ribbon.png");
+    private final List<FormattedCharSequence> text;
+    private Visibility visibility = Visibility.SHOW;
 
-	public WildfireToast(Font textRenderer, Component title, @Nullable Component description) {
-		this.text = new ArrayList<>(2);
-		this.text.addAll(textRenderer.split(title.copy().withColor(CommonColors.COSMOS_PINK), 126));
-		if (description != null) {
-			this.text.addAll(textRenderer.split(description, 126));
-		}
-	}
+    public WildfireToast(Font textRenderer, Component title, @Nullable Component description) {
+        this.text = new ArrayList<>(2);
+        this.text.addAll(textRenderer.split(title.copy().withColor(CommonColors.COSMOS_PINK), 126));
+        if (description != null) {
+            this.text.addAll(textRenderer.split(description, 126));
+        }
+    }
 
-	@Override
-	public Visibility getWantedVisibility() {
-		return this.visibility;
-	}
+    @Override
+    public Visibility getWantedVisibility() {
+        return this.visibility;
+    }
 
-	@Override
-	public void update(ToastManager manager, long time) {
-		if(shouldHide()) {
-			hide();
-			ClientConfig.INSTANCE.set(ClientConfig.SHOW_TOAST, false);
-			CompletableFuture.runAsync(ClientConfig.INSTANCE::save);
-		}
-	}
+    @Override
+    public void update(ToastManager manager, long time) {
+        if(shouldHide()) {
+            hide();
+            ClientConfig.INSTANCE.set(ClientConfig.SHOW_TOAST, false);
+            CompletableFuture.runAsync(ClientConfig.INSTANCE::save);
+        }
+    }
 
-	@Override
-	public int height() {
-		return 7 + this.getTextHeight() + 3;
-	}
+    @Override
+    public int height() {
+        return 7 + this.getTextHeight() + 3;
+    }
 
-	private int getTextHeight() {
-		return Math.max(this.text.size(), 2) * 11;
-	}
+    private int getTextHeight() {
+        return Math.max(this.text.size(), 2) * 11;
+    }
 
-	@Override
-	public void extractRenderState(GuiGraphicsExtractor graphics, Font font, long fullyVisibleForMs) {
-		int i = this.height();
-		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, 0, this.width(), i);
+    @Override
+    public void extractRenderState(GuiGraphicsExtractor graphics, Font font, long fullyVisibleForMs) {
+        int i = this.height();
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, 0, this.width(), i);
 
-		graphics.blit(RenderPipelines.GUI_TEXTURED, ICON, 6, 6, 0, 0, 20, 20, 20, 20, 20, 20);
-		int j = this.text.size() * 11;
-		int k = 7 + (this.getTextHeight() - j) / 2;
+        graphics.blit(RenderPipelines.GUI_TEXTURED, ICON, 6, 6, 0, 0, 20, 20, 20, 20, 20, 20);
+        int j = this.text.size() * 11;
+        int k = 7 + (this.getTextHeight() - j) / 2;
 
-		for(int l = 0; l < this.text.size(); l++) {
-			graphics.text(font, this.text.get(l), 30, k + l * 11, 0xFFFFFFFF, false);
-		}
-	}
+        for(int l = 0; l < this.text.size(); l++) {
+            graphics.text(font, this.text.get(l), 30, k + l * 11, 0xFFFFFFFF, false);
+        }
+    }
 
-	private boolean shouldHide() {
-		Minecraft client = Minecraft.getInstance();
-		if(client.screen instanceof BaseWildfireScreen) {
-			return true;
-		}
-		return WildfireEventHandler.getConfigKeybind().isDown();
-	}
+    private boolean shouldHide() {
+        Minecraft client = Minecraft.getInstance();
+        if(client.screen instanceof BaseWildfireScreen) {
+            return true;
+        }
+        return WildfireEventHandler.getConfigKeybind().isDown();
+    }
 
-	public void hide() {
-		this.visibility = Visibility.HIDE;
-	}
+    public void hide() {
+        this.visibility = Visibility.HIDE;
+    }
 }

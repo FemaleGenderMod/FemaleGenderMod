@@ -37,36 +37,36 @@ import java.util.Set;
 
 @Mixin(TextureManager.class)
 abstract class TextureManagerMixin implements MissingTextureLogger {
-	private static final @Unique Set<Identifier> wildfire_gender$missingTextures = ObjectSets.synchronize(new ObjectOpenHashSet<>());
+    private static final @Unique Set<Identifier> wildfire_gender$missingTextures = ObjectSets.synchronize(new ObjectOpenHashSet<>());
 
-	@Inject(
-			method = "loadContentsSafe",
-			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/texture/TextureContents;createMissing()Lnet/minecraft/client/renderer/texture/TextureContents;")
-	)
-	private void wildfire_gender$logMissingTexture(Identifier id, ReloadableTexture texture, CallbackInfoReturnable<TextureContents> cir) {
-		wildfire_gender$missingTextures.add(id);
-	}
+    @Inject(
+            method = "loadContentsSafe",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/texture/TextureContents;createMissing()Lnet/minecraft/client/renderer/texture/TextureContents;")
+    )
+    private void wildfire_gender$logMissingTexture(Identifier id, ReloadableTexture texture, CallbackInfoReturnable<TextureContents> cir) {
+        wildfire_gender$missingTextures.add(id);
+    }
 
-	@Inject(
-			method = "loadContents",
-			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/texture/TextureContents;createMissing()Lnet/minecraft/client/renderer/texture/TextureContents;")
-	)
-	private static void wildfire_gender$logMissingTexture(ResourceManager resourceManager, Identifier id, ReloadableTexture texture, CallbackInfoReturnable<TextureContents> cir) {
-		wildfire_gender$missingTextures.add(id);
-	}
+    @Inject(
+            method = "loadContents",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/texture/TextureContents;createMissing()Lnet/minecraft/client/renderer/texture/TextureContents;")
+    )
+    private static void wildfire_gender$logMissingTexture(ResourceManager resourceManager, Identifier id, ReloadableTexture texture, CallbackInfoReturnable<TextureContents> cir) {
+        wildfire_gender$missingTextures.add(id);
+    }
 
-	@Inject(method = "close", at = @At("TAIL"))
-	private void wildfire_gender$clearMissingTextures(CallbackInfo ci) {
-		wildfire_gender$missingTextures.clear();
-	}
+    @Inject(method = "close", at = @At("TAIL"))
+    private void wildfire_gender$clearMissingTextures(CallbackInfo ci) {
+        wildfire_gender$missingTextures.clear();
+    }
 
-	@Inject(method = "lambda$scheduleLoad$0", at = @At("HEAD"))
-	private static void wildfire_gender$removeOnReload(ResourceManager resourceManager, Identifier textureId, ReloadableTexture reloadableTexture, CallbackInfoReturnable<TextureContents> cir) {
-		wildfire_gender$missingTextures.remove(textureId);
-	}
+    @Inject(method = "lambda$scheduleLoad$0", at = @At("HEAD"))
+    private static void wildfire_gender$removeOnReload(ResourceManager resourceManager, Identifier textureId, ReloadableTexture reloadableTexture, CallbackInfoReturnable<TextureContents> cir) {
+        wildfire_gender$missingTextures.remove(textureId);
+    }
 
-	@Override
-	public Set<Identifier> wildfire_gender$missingTextures() {
-		return wildfire_gender$missingTextures;
-	}
+    @Override
+    public Set<Identifier> wildfire_gender$missingTextures() {
+        return wildfire_gender$missingTextures;
+    }
 }

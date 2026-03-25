@@ -25,19 +25,19 @@ import net.minecraft.util.StringRepresentable;
 import java.util.function.IntFunction;
 
 public enum SyncVerbosity implements StringRepresentable {
-	DEFAULT,
-	SHOW_FETCHES;
+    DEFAULT,
+    SHOW_FETCHES;
 
-	public static final IntFunction<SyncVerbosity> BY_ID = ByIdMap.continuous(SyncVerbosity::ordinal, values(), ByIdMap.OutOfBoundsStrategy.CLAMP);
+    public static final IntFunction<SyncVerbosity> BY_ID = ByIdMap.continuous(SyncVerbosity::ordinal, values(), ByIdMap.OutOfBoundsStrategy.CLAMP);
 
-	@Override
-	public String getSerializedName() {
-		return toString();
-	}
+    @Override
+    public String getSerializedName() {
+        return toString();
+    }
 
-	public static class SyncVerbosityArgumentType extends StringRepresentableArgument<SyncVerbosity> {
-		public SyncVerbosityArgumentType() {
-			super(StringRepresentable.fromEnum(SyncVerbosity::values), SyncVerbosity::values);
-		}
-	}
+    public static class SyncVerbosityArgumentType extends StringRepresentableArgument<SyncVerbosity> {
+        public SyncVerbosityArgumentType() {
+            super(StringRepresentable.fromEnum(SyncVerbosity::values), SyncVerbosity::values);
+        }
+    }
 }

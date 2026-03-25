@@ -24,23 +24,23 @@ import com.google.gson.JsonPrimitive;
 
 public class StringConfigKey extends ConfigKey<String> {
 
-	public StringConfigKey(String key, String defaultValue) {
-		super(key, defaultValue);
-	}
+    public StringConfigKey(String key, String defaultValue) {
+        super(key, defaultValue);
+    }
 
-	@Override
-	protected String read(JsonElement element) {
-		if (element.isJsonPrimitive()) {
-			JsonPrimitive primitive = element.getAsJsonPrimitive();
-			if (primitive.isString()) {
-				return primitive.getAsString();
-			}
-		}
-		return defaultValue;
-	}
+    @Override
+    protected String read(JsonElement element) {
+        if (element.isJsonPrimitive()) {
+            JsonPrimitive primitive = element.getAsJsonPrimitive();
+            if (primitive.isString()) {
+                return primitive.getAsString();
+            }
+        }
+        return defaultValue;
+    }
 
-	@Override
-	public void save(JsonObject object, String value) {
-		object.addProperty(key, value);
-	}
+    @Override
+    public void save(JsonObject object, String value) {
+        object.addProperty(key, value);
+    }
 }

@@ -33,33 +33,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PhysicsDebugHudEntry implements DebugScreenEntry {
-	public static final Identifier ID = WildfireGender.id("physics");
+    public static final Identifier ID = WildfireGender.id("physics");
 
-	@Override
-	public void display(DebugScreenDisplayer lines, @Nullable Level world, @Nullable LevelChunk clientChunk, @Nullable LevelChunk chunk) {
-		var player = Minecraft.getInstance().player;
-		if(player == null) return;
-		var config = WildfireGender.getPlayerById(player.getUUID());
-		if(config == null) return;
+    @Override
+    public void display(DebugScreenDisplayer lines, @Nullable Level world, @Nullable LevelChunk clientChunk, @Nullable LevelChunk chunk) {
+        var player = Minecraft.getInstance().player;
+        if(player == null) return;
+        var config = WildfireGender.getPlayerById(player.getUUID());
+        if(config == null) return;
 
-		List<String> info = new ArrayList<>();
-		if(config.getBreasts().isUniboob()) {
-			info.add(ChatFormatting.UNDERLINE + "Breast Physics");
-			add(info, config.getLeftBreastPhysics());
-		} else {
-			info.add(ChatFormatting.UNDERLINE + "Left Breast Physics");
-			add(info, config.getLeftBreastPhysics());
-			info.add("");
-			info.add(ChatFormatting.UNDERLINE + "Right Breast Physics");
-			add(info, config.getRightBreastPhysics());
-		}
+        List<String> info = new ArrayList<>();
+        if(config.getBreasts().isUniboob()) {
+            info.add(ChatFormatting.UNDERLINE + "Breast Physics");
+            add(info, config.getLeftBreastPhysics());
+        } else {
+            info.add(ChatFormatting.UNDERLINE + "Left Breast Physics");
+            add(info, config.getLeftBreastPhysics());
+            info.add("");
+            info.add(ChatFormatting.UNDERLINE + "Right Breast Physics");
+            add(info, config.getRightBreastPhysics());
+        }
 
-		lines.addToGroup(ID, info);
-	}
+        lines.addToGroup(ID, info);
+    }
 
-	private void add(List<String> lines, BreastPhysics physics) {
-		lines.add("Breast size: " + physics.getBreastSize());
-		lines.add("Position: (" + physics.getPositionX() + ", " + physics.getPositionY() + ")");
-		lines.add("Rotation: " + physics.getBounceRotation());
-	}
+    private void add(List<String> lines, BreastPhysics physics) {
+        lines.add("Breast size: " + physics.getBreastSize());
+        lines.add("Position: (" + physics.getPositionX() + ", " + physics.getPositionY() + ")");
+        lines.add("Rotation: " + physics.getBounceRotation());
+    }
 }

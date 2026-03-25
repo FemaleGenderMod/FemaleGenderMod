@@ -30,8 +30,8 @@ import java.util.concurrent.CompletableFuture;
 
 @Mixin(ClientMannequin.class)
 public interface ClientMannequinAccessor {
-	@Accessor @Nullable CompletableFuture<Optional<PlayerSkin>> getSkinLookup();
-	@Accessor void setSkinLookup(@Nullable CompletableFuture<Optional<PlayerSkin>> value);
-	@Invoker void invokeUpdateSkin();
-	@Invoker void invokeSetSkin(PlayerSkin skin);
+    @Accessor @Nullable CompletableFuture<Optional<PlayerSkin>> getSkinLookup();
+    @Accessor void setSkinLookup(@Nullable CompletableFuture<Optional<PlayerSkin>> value);
+    @Invoker void invokeUpdateSkin();
+    @Invoker void invokeSetSkin(PlayerSkin skin);
 }

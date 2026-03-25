@@ -23,8 +23,8 @@ import net.minecraft.resources.Identifier;
 import java.util.Set;
 
 public interface MissingTextureLogger {
-	/**
-	 * Provides a {@link Set} containing texture {@link Identifier}s that have failed to load
-	 */
-	Set<Identifier> wildfire_gender$missingTextures();
+    /**
+     * Provides a {@link Set} containing texture {@link Identifier}s that have failed to load
+     */
+    Set<Identifier> wildfire_gender$missingTextures();
 }

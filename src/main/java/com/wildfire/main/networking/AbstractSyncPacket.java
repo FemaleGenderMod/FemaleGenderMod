@@ -35,118 +35,118 @@ import java.util.UUID;
 
 abstract class AbstractSyncPacket {
 
-	// remember to update SyncHelloPacket.VERSION when modifying this codec if the changes result in a change
-	// to the underlying packet structure
-	protected static <T extends AbstractSyncPacket> StreamCodec<ByteBuf, T> codec(SyncPacketConstructor<T> constructor) {
-		return StreamCodec.composite(
-				UUIDUtil.STREAM_CODEC, p -> p.uuid,
-				Gender.CODEC, p -> p.gender,
-				ByteBufCodecs.FLOAT, p -> p.bustSize,
-				ByteBufCodecs.BOOL, p -> p.hurtSounds,
-				ByteBufCodecs.FLOAT, p -> p.voicePitch,
-				BreastPhysics.CODEC, p -> p.physics,
-				Breasts.CODEC, p -> p.breasts,
-				UV_LAYOUTS_CODEC, p -> p.uvLayouts,
-				constructor
-		);
-	}
+    // remember to update SyncHelloPacket.VERSION when modifying this codec if the changes result in a change
+    // to the underlying packet structure
+    protected static <T extends AbstractSyncPacket> StreamCodec<ByteBuf, T> codec(SyncPacketConstructor<T> constructor) {
+        return StreamCodec.composite(
+                UUIDUtil.STREAM_CODEC, p -> p.uuid,
+                Gender.CODEC, p -> p.gender,
+                ByteBufCodecs.FLOAT, p -> p.bustSize,
+                ByteBufCodecs.BOOL, p -> p.hurtSounds,
+                ByteBufCodecs.FLOAT, p -> p.voicePitch,
+                BreastPhysics.CODEC, p -> p.physics,
+                Breasts.CODEC, p -> p.breasts,
+                UV_LAYOUTS_CODEC, p -> p.uvLayouts,
+                constructor
+        );
+    }
 
-	protected final UUID uuid;
-	protected final Gender gender;
-	protected final float bustSize;
-	protected final boolean hurtSounds;
-	protected final float voicePitch;
-	protected final BreastPhysics physics;
-	protected final Breasts breasts;
-	protected final UVLayouts uvLayouts;
+    protected final UUID uuid;
+    protected final Gender gender;
+    protected final float bustSize;
+    protected final boolean hurtSounds;
+    protected final float voicePitch;
+    protected final BreastPhysics physics;
+    protected final Breasts breasts;
+    protected final UVLayouts uvLayouts;
 
-	protected AbstractSyncPacket(UUID uuid, Gender gender, float bustSize, boolean hurtSounds, float voicePitch, BreastPhysics physics, Breasts breasts, UVLayouts uvLayouts) {
-		this.uuid = uuid;
-		this.gender = gender;
-		this.bustSize = bustSize;
-		this.hurtSounds = hurtSounds;
-		this.voicePitch = voicePitch;
-		this.physics = physics;
-		this.breasts = breasts;
-		this.uvLayouts = uvLayouts;
-	}
+    protected AbstractSyncPacket(UUID uuid, Gender gender, float bustSize, boolean hurtSounds, float voicePitch, BreastPhysics physics, Breasts breasts, UVLayouts uvLayouts) {
+        this.uuid = uuid;
+        this.gender = gender;
+        this.bustSize = bustSize;
+        this.hurtSounds = hurtSounds;
+        this.voicePitch = voicePitch;
+        this.physics = physics;
+        this.breasts = breasts;
+        this.uvLayouts = uvLayouts;
+    }
 
-	protected AbstractSyncPacket(PlayerConfig plr) {
-		this(plr.uuid, plr.getGender(), plr.getBustSize(), plr.hasHurtSounds(), plr.getVoicePitch(), new BreastPhysics(plr), plr.getBreasts(), UVLayouts.from(plr));
-	}
+    protected AbstractSyncPacket(PlayerConfig plr) {
+        this(plr.uuid, plr.getGender(), plr.getBustSize(), plr.hasHurtSounds(), plr.getVoicePitch(), new BreastPhysics(plr), plr.getBreasts(), UVLayouts.from(plr));
+    }
 
-	// TODO add support for mannequins?
-	protected void updatePlayerFromPacket(PlayerConfig plr) {
-		plr.updateGender(gender);
-		plr.updateBustSize(bustSize);
-		plr.updateHurtSounds(hurtSounds);
-		plr.updateVoicePitch(voicePitch);
-		physics.applyTo(plr);
-		plr.getBreasts().copyFrom(breasts);
-		uvLayouts.applyTo(plr);
-	}
+    // TODO add support for mannequins?
+    protected void updatePlayerFromPacket(PlayerConfig plr) {
+        plr.updateGender(gender);
+        plr.updateBustSize(bustSize);
+        plr.updateHurtSounds(hurtSounds);
+        plr.updateVoicePitch(voicePitch);
+        physics.applyTo(plr);
+        plr.getBreasts().copyFrom(breasts);
+        uvLayouts.applyTo(plr);
+    }
 
-	protected record BreastPhysics(boolean physics, boolean showInArmor, float bounceMultiplier, float floppyMultiplier) {
+    protected record BreastPhysics(boolean physics, boolean showInArmor, float bounceMultiplier, float floppyMultiplier) {
 
-		public static final StreamCodec<ByteBuf, BreastPhysics> CODEC = StreamCodec.composite(
-				ByteBufCodecs.BOOL, BreastPhysics::physics,
-				ByteBufCodecs.BOOL, BreastPhysics::showInArmor,
-				ByteBufCodecs.FLOAT, BreastPhysics::bounceMultiplier,
-				ByteBufCodecs.FLOAT, BreastPhysics::floppyMultiplier,
-				BreastPhysics::new
-		);
+        public static final StreamCodec<ByteBuf, BreastPhysics> CODEC = StreamCodec.composite(
+                ByteBufCodecs.BOOL, BreastPhysics::physics,
+                ByteBufCodecs.BOOL, BreastPhysics::showInArmor,
+                ByteBufCodecs.FLOAT, BreastPhysics::bounceMultiplier,
+                ByteBufCodecs.FLOAT, BreastPhysics::floppyMultiplier,
+                BreastPhysics::new
+        );
 
-		private BreastPhysics(PlayerConfig plr) {
-			this(plr.hasBreastPhysics(), plr.showBreastsInArmor(), plr.getBounceMultiplier(), plr.getFloppiness());
-		}
+        private BreastPhysics(PlayerConfig plr) {
+            this(plr.hasBreastPhysics(), plr.showBreastsInArmor(), plr.getBounceMultiplier(), plr.getFloppiness());
+        }
 
-		private void applyTo(PlayerConfig plr) {
-			plr.updateBreastPhysics(physics);
-			plr.updateShowBreastsInArmor(showInArmor);
-			plr.updateBounceMultiplier(bounceMultiplier);
-			plr.updateFloppiness(floppyMultiplier);
-		}
-	}
+        private void applyTo(PlayerConfig plr) {
+            plr.updateBreastPhysics(physics);
+            plr.updateShowBreastsInArmor(showInArmor);
+            plr.updateBounceMultiplier(bounceMultiplier);
+            plr.updateFloppiness(floppyMultiplier);
+        }
+    }
 
-	@FunctionalInterface
-	protected interface SyncPacketConstructor<T extends AbstractSyncPacket> extends Function8<UUID, Gender, Float, Boolean, Float, BreastPhysics, Breasts, UVLayouts, T> {
-	}
+    @FunctionalInterface
+    protected interface SyncPacketConstructor<T extends AbstractSyncPacket> extends Function8<UUID, Gender, Float, Boolean, Float, BreastPhysics, Breasts, UVLayouts, T> {
+    }
 
-	public record UVLayouts(Layer skin, Layer overlay) {
-		public static UVLayouts from(PlayerConfig plr) {
-			return new UVLayouts(
-					/*skin = */ new Layer(plr.getLeftBreastUVLayout().copy(), plr.getRightBreastUVLayout().copy()),
-					/*overlay = */ new Layer(plr.getLeftBreastOverlayUVLayout().copy(), plr.getRightBreastOverlayUVLayout().copy())
-			);
-		}
+    public record UVLayouts(Layer skin, Layer overlay) {
+        public static UVLayouts from(PlayerConfig plr) {
+            return new UVLayouts(
+                    /*skin = */ new Layer(plr.getLeftBreastUVLayout().copy(), plr.getRightBreastUVLayout().copy()),
+                    /*overlay = */ new Layer(plr.getLeftBreastOverlayUVLayout().copy(), plr.getRightBreastOverlayUVLayout().copy())
+            );
+        }
 
-		private void applyTo(PlayerConfig plr) {
-			plr.updateLeftBreastUVLayout(skin.left);
-			plr.updateRightBreastUVLayout(skin.right);
-			plr.updateLeftBreastOverlayUVLayout(overlay.left);
-			plr.updateRightBreastOverlayUVLayout(overlay.right);
-		}
+        private void applyTo(PlayerConfig plr) {
+            plr.updateLeftBreastUVLayout(skin.left);
+            plr.updateRightBreastUVLayout(skin.right);
+            plr.updateLeftBreastOverlayUVLayout(overlay.left);
+            plr.updateRightBreastOverlayUVLayout(overlay.right);
+        }
 
-		public record Layer(UVLayout left, UVLayout right) {
-		}
-	}
+        public record Layer(UVLayout left, UVLayout right) {
+        }
+    }
 
-	static final StreamCodec<ByteBuf, UVLayout> UV_CODEC = ByteBufCodecs.map(
-			size -> new EnumMap<>(UVDirection.class),
-			UVDirection.PACKET_CODEC,
-			UVQuad.PACKET_CODEC,
-			UVDirection.values().length
-	).map(UVLayout::new, UVLayout::getQuads);
+    static final StreamCodec<ByteBuf, UVLayout> UV_CODEC = ByteBufCodecs.map(
+            size -> new EnumMap<>(UVDirection.class),
+            UVDirection.PACKET_CODEC,
+            UVQuad.PACKET_CODEC,
+            UVDirection.values().length
+    ).map(UVLayout::new, UVLayout::getQuads);
 
-	static final StreamCodec<ByteBuf, UVLayouts.Layer> UV_LAYER_CODEC = StreamCodec.composite(
-			UV_CODEC, UVLayouts.Layer::left,
-			UV_CODEC, UVLayouts.Layer::right,
-			UVLayouts.Layer::new
-	);
+    static final StreamCodec<ByteBuf, UVLayouts.Layer> UV_LAYER_CODEC = StreamCodec.composite(
+            UV_CODEC, UVLayouts.Layer::left,
+            UV_CODEC, UVLayouts.Layer::right,
+            UVLayouts.Layer::new
+    );
 
-	static final StreamCodec<ByteBuf, UVLayouts> UV_LAYOUTS_CODEC = StreamCodec.composite(
-			UV_LAYER_CODEC, UVLayouts::skin,
-			UV_LAYER_CODEC, UVLayouts::overlay,
-			UVLayouts::new
-	);
+    static final StreamCodec<ByteBuf, UVLayouts> UV_LAYOUTS_CODEC = StreamCodec.composite(
+            UV_LAYER_CODEC, UVLayouts::skin,
+            UV_LAYER_CODEC, UVLayouts::overlay,
+            UVLayouts::new
+    );
 }

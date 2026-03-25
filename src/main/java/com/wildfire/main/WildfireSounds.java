@@ -24,13 +24,13 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 
 public final class WildfireSounds {
-	private WildfireSounds() {
-		throw new UnsupportedOperationException();
-	}
+    private WildfireSounds() {
+        throw new UnsupportedOperationException();
+    }
 
-	public static final SoundEvent FEMALE_HURT = SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(WildfireGender.MODID, "female_hurt"));
+    public static final SoundEvent FEMALE_HURT = SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(WildfireGender.MODID, "female_hurt"));
 
-	static void register() {
-		Registry.register(BuiltInRegistries.SOUND_EVENT, FEMALE_HURT.location(), FEMALE_HURT);
-	}
+    static void register() {
+        Registry.register(BuiltInRegistries.SOUND_EVENT, FEMALE_HURT.location(), FEMALE_HURT);
+    }
 }

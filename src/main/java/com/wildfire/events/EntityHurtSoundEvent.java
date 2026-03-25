@@ -31,11 +31,11 @@ import net.minecraft.world.entity.LivingEntity;
 @FunctionalInterface
 @Environment(EnvType.CLIENT)
 public interface EntityHurtSoundEvent {
-	Event<EntityHurtSoundEvent> EVENT = EventFactory.createArrayBacked(EntityHurtSoundEvent.class, listeners -> (entity, source) -> {
-		for(var listener : listeners) {
-			listener.onHurt(entity, source);
-		}
-	});
+    Event<EntityHurtSoundEvent> EVENT = EventFactory.createArrayBacked(EntityHurtSoundEvent.class, listeners -> (entity, source) -> {
+        for(var listener : listeners) {
+            listener.onHurt(entity, source);
+        }
+    });
 
-	void onHurt(LivingEntity entity, DamageSource source);
+    void onHurt(LivingEntity entity, DamageSource source);
 }
