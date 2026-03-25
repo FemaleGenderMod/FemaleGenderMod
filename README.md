@@ -26,7 +26,7 @@ H - Open Customization Settings
 The Female Gender Mod is licensed under the GNU LGPLv3, a free and open-source license. For more information,
 please see the [license file](./LICENSE).
 
-## Frequently Asked Question
+## Frequently Asked Questions
 
 <details>
 <summary>1) Can you include a male bulge?</summary>
