@@ -1,0 +1,186 @@
+{
+    "key.category.wildfire_gender.generic": "女性ジェンダーMod",
+    "key.wildfire_gender.gender_menu": "女性ジェンダーメニュー",
+    "key.wildfire_gender.toggle": "バスト表示の切り替え",
+    "toast.wildfire_gender.get_started": "%sを押して始めましょう！",
+
+    "wildfire_gender.armor.tooltip": "+%s バストサポート",
+
+    "wildfire_gender.uv_editor": "バストテクスチャエディター",
+    "wildfire_gender.uv_editor.reset_defaults_all": "すべてデフォルトUVにリセット",
+    "wildfire_gender.uv_editor.reset_defaults": "デフォルトUVにリセット",
+    "wildfire_gender.uv_editor.no_face_selected": "左側のテクスチャ面を選択して編集してください。",
+    "wildfire_gender.uv_editor.selection.left_breast": "左",
+    "wildfire_gender.uv_editor.selection.right_breast": "右",
+    "wildfire_gender.uv_editor.selection.left_breast_overlay": "左",
+    "wildfire_gender.uv_editor.selection.right_breast_overlay": "右",
+
+    "wildfire_gender.uv_editor.selection.layer_body": "ボディレイヤー",
+    "wildfire_gender.uv_editor.selection.layer_jacket": "ジャケットレイヤー",
+
+    "wildfire_gender.uv_editor.xpos": "X座標",
+    "wildfire_gender.uv_editor.ypos": "Y座標",
+    "wildfire_gender.uv_editor.width": "幅",
+    "wildfire_gender.uv_editor.height": "高さ",
+    "wildfire_gender.uv_editor.increment_tip.line1": "SHIFTを押しながら +10",
+    "wildfire_gender.uv_editor.increment_tip.line2": "SHIFT+CTRLで +20",
+    "wildfire_gender.uv_editor.add": "追加",
+    "wildfire_gender.uv_editor.remove": "削除",
+
+    "wildfire_gender.uv_editor.faces.inner": "内側の面",
+    "wildfire_gender.uv_editor.faces.outer": "外側の面",
+    "wildfire_gender.uv_editor.faces.top": "上面",
+    "wildfire_gender.uv_editor.faces.bottom": "下面",
+    "wildfire_gender.uv_editor.faces.front": "前面",
+
+    "wildfire_gender.credits.title": "Modクレジット",
+    "wildfire_gender.credits.description": "このModを実現してくれた素晴らしい方々の一覧です！",
+    "wildfire_gender.credits.general": "一般",
+    "wildfire_gender.credits.translators": "翻訳者",
+
+    "wildfire_gender.player_list.title": "女性ジェンダーMod",
+    "wildfire_gender.player_list.settings_button": "設定",
+    "wildfire_gender.player_list.sync_status": "同期ステータス",
+    "wildfire_gender.player_list.state.loading": "データ読み込み中...",
+    "wildfire_gender.player_list.state.synced": "同期済みプレイヤー",
+    "wildfire_gender.player_list.bounce_multiplier": "バウンス倍率: %sx",
+    "wildfire_gender.player_list.breast_momentum": "バストの慣性: %s%%",
+    "wildfire_gender.player_list.female_sounds": "女性ボイス: %s",
+    "wildfire_gender.wardrobe.players_using_mod": "同期済みプレイヤー:",
+
+    "wildfire_gender.always_show_list": "同期済みプレイヤーを表示: %s",
+    "wildfire_gender.always_show_list.mod_ui_only": "このメニューのみ",
+    "wildfire_gender.always_show_list.mod_ui_only.tooltip": "同期済みプレイヤーリストはこのメニュー内でのみ表示されます",
+    "wildfire_gender.always_show_list.tab_list_open": "プレイヤーリスト",
+    "wildfire_gender.always_show_list.tab_list_open.tooltip": "同期済みプレイヤーリストはこのメニュー内、または%sを押したときに表示されます",
+    "wildfire_gender.always_show_list.always": "常に表示",
+    "wildfire_gender.always_show_list.always.tooltip": "同期済みプレイヤーリストは常に表示されます",
+
+    "wildfire_gender.wardrobe.title": "女性ジェンダーMod",
+    "wildfire_gender.breast_customization.tab_customization": "カスタマイズ",
+    "wildfire_gender.breast_customization.tab_physics": "バスト物理演算",
+    "wildfire_gender.breast_customization.tab_miscellaneous": "その他",
+
+    "wildfire_gender.breast_customization.presets.add_new": "新しく追加...",
+    "wildfire_gender.breast_customization.presets.delete": "削除",
+
+    "wildfire_gender.wardrobe.slider.breast_size": "バストサイズ: %s%%",
+    "wildfire_gender.wardrobe.slider.separation": "間隔: %s",
+    "wildfire_gender.wardrobe.slider.height": "高さ: %s",
+    "wildfire_gender.wardrobe.slider.depth": "深さ: %s",
+    "wildfire_gender.wardrobe.slider.rotation": "回転: %s°",
+    "wildfire_gender.slider.voice_pitch": "音程: %s%%",
+
+    "wildfire_gender.appearance_settings.title": "キャラクターの個人設定",
+    "wildfire_gender.char_settings.title": "キャラクター設定 OLD",
+    "wildfire_gender.char_settings.physics": "バスト物理演算: %s",
+    "wildfire_gender.char_settings.jump": "ジャンプ",
+    "wildfire_gender.char_settings.jumping": "ジャンプ停止",
+
+    "wildfire_gender.char_settings.override_armor_physics": "防具物理演算: %s",
+    "wildfire_gender.tooltip.override_armor_physics.line1": "有効にすると、装備している防具によるバスト物理演算の軽減・抑制がなくなります。主に防具を非表示にするリソースパックでの使用を想定しています。",
+    "wildfire_gender.tooltip.override_armor_physics.line2": "この設定は自分自身および他のプレイヤーの見た目に影響しますが、他のプレイヤーからの見え方には影響しません。",
+
+    "wildfire_gender.char_settings.hide_in_armor": "防具着用時に非表示: %s",
+    "wildfire_gender.char_settings.show_armor_stat": "防具ツールチップを表示: %s",
+    "wildfire_gender.char_settings.hurt_sounds": "女性ダメージボイス: %s",
+    "wildfire_gender.tooltip.hurt_sounds": "ジェンダーが「女性」または「その他」に設定されている場合、ダメージを受けた際に女性のダメージボイスが再生されます",
+
+    "wildfire_gender.breast_customization.dual_physics": "デュアル物理演算: %s",
+
+    "wildfire_gender.label.gender": "ジェンダー",
+    "wildfire_gender.label.female": "女性",
+    "wildfire_gender.label.male": "男性",
+    "wildfire_gender.label.other": "その他",
+
+    "wildfire_gender.label.enabled": "有効",
+    "wildfire_gender.label.disabled": "無効",
+    "wildfire_gender.label.on": "オン",
+    "wildfire_gender.label.off": "オフ",
+    "wildfire_gender.label.yes": "はい",
+    "wildfire_gender.label.no": "いいえ",
+    "wildfire_gender.label.with_creator": "このModの制作者がいるサーバーでプレイしています！",
+    "wildfire_gender.label.with_contributor": "このModの貢献者がいるサーバーでプレイしています！",
+    "wildfire_gender.label.with_both": "このModの制作者と貢献者がいるサーバーでプレイしています！",
+
+    "wildfire_gender.slider.bounce": "強度: %s%%",
+    "wildfire_gender.slider.floppy": "慣性: %s%%",
+
+    "wildfire_gender.cancer_awareness.title": "乳がん啓発月間です！",
+
+    "wildfire_gender.first_time_setup.title": "女性ジェンダーModへようこそ！",
+    "wildfire_gender.first_time_setup.description": "ジェンダー設定のクラウドサーバー同期を有効にしますか？この機能により、サーバーにModがインストールされていない場合でも、他のプレイヤーがあなたのカスタマイズされたジェンダーの外見を確認できます。",
+    "wildfire_gender.first_time_setup.notice": "この設定はModメニューからいつでも変更できます。",
+    "wildfire_gender.first_time_setup.enable": "クラウド同期を有効にする",
+    "wildfire_gender.first_time_setup.disable": "クラウド同期を無効にする",
+    "wildfire_gender.first_time_setup.enable.tooltip.line1": "クラウド同期を有効にすると、現在Modをインストールしていない場合でも、設定が保存され他のプレイヤーに提供されます。",
+    "wildfire_gender.first_time_setup.enable.tooltip.line2": "クラウド同期プロフィールは、無効化した後でもクラウド同期設定メニューからいつでも削除できます。",
+
+    "wildfire_gender.cloud_settings": "クラウド同期サーバー設定",
+    "wildfire_gender.cloud.tooltip": "クラウド同期",
+    "wildfire_gender.cloud.unavailable.invalid_account": "有効なMinecraftアカウントにログインしていないため、クラウド同期は利用できません",
+    "wildfire_gender.cloud.unavailable.offline_server": "接続中のサーバーがオフラインモードのため、クラウド同期は利用できません",
+    "wildfire_gender.cloud.status": "クラウド同期: %s",
+    "wildfire_gender.cloud.automatic": "自動同期: %s",
+    "wildfire_gender.cloud.automatic.tooltip.line1": "有効にすると、変更を加えるたびに設定が自動的にクラウドへ同期されます。",
+    "wildfire_gender.cloud.automatic.tooltip.line2": "無効にしていても、下のボタンから手動で同期できます。",
+
+    "wildfire_gender.cloud.sync": "今すぐ同期",
+    "wildfire_gender.cloud.syncing": "同期中...",
+    "wildfire_gender.cloud.syncing.success": "同期完了",
+    "wildfire_gender.cloud.syncing.fail": "同期失敗",
+
+    "wildfire_gender.cloud.delete": "削除",
+    "wildfire_gender.cloud.deleted": "削除済み",
+    "wildfire_gender.cloud.delete_failed": "削除失敗",
+
+    "wildfire_gender.cloud.status_log": "ステータスログ",
+
+    "wildfire_gender.sync_log.authenticating_mojang": "Mojangで認証中...",
+    "wildfire_gender.sync_log.authenticating_sync": "クラウド同期で認証中...",
+    "wildfire_gender.sync_log.authentication_failed": "認証に失敗しました。",
+    "wildfire_gender.sync_log.reauthenticating": "再認証中...",
+
+    "wildfire_gender.sync_log.failed_to_sync_data": "データの同期に失敗しました。",
+    "wildfire_gender.sync_log.attempting_sync": "プロフィールを同期中...",
+    "wildfire_gender.sync_log.sync_success": "同期に成功しました。",
+    "wildfire_gender.sync_log.sync_too_frequently": "同期の頻度制限に達しました。",
+
+    "wildfire_gender.sync_log.data_deleted": "クラウド同期プロフィールを削除しました。",
+    "wildfire_gender.sync_log.data_deletion_failed": "クラウド同期プロフィールの削除に失敗しました。",
+    "wildfire_gender.sync_log.no_data_to_delete": "クラウド同期プロフィールが見つかりません。",
+
+    "wildfire_gender.sync_log.get_single_profile": "プロフィールを取得中...",
+    "wildfire_gender.sync_log.get_multiple_profiles": "複数のプロフィールを一括取得中...",
+
+    "wildfire_gender.details.next_page": "次のページ",
+    "wildfire_gender.details.prev_page": "前のページ",
+    "wildfire_gender.details.go_back": "戻る",
+
+    "wildfire_gender.cloud_details.title": "クラウド同期サーバー情報",
+
+    "wildfire_gender.contributor.role.mod_creator": "女性ジェンダーMod制作者",
+    "wildfire_gender.contributor.role.mod_creator.short": "Mod制作者",
+    "wildfire_gender.contributor.role.fabric_maintainer": "女性ジェンダーModメンテナー",
+    "wildfire_gender.contributor.role.fabric_maintainer.short": "メンテナー (Fabric)",
+    "wildfire_gender.contributor.role.neoforge_maintainer": "女性ジェンダーModメンテナー",
+    "wildfire_gender.contributor.role.neoforge_maintainer.short": "メンテナー (NeoForge)",
+    "wildfire_gender.contributor.role.developer": "女性ジェンダーMod貢献者",
+    "wildfire_gender.contributor.role.developer.short": "プログラマー",
+    "wildfire_gender.contributor.role.ci_maintainer": "女性ジェンダーMod貢献者",
+    "wildfire_gender.contributor.role.ci_maintainer.short": "CI/CDメンテナー",
+    "wildfire_gender.contributor.role.translator": "女性ジェンダーMod翻訳者",
+    "wildfire_gender.contributor.role.translator.short": "Mod翻訳者",
+    "wildfire_gender.contributor.role.mascot": "女性ジェンダーModマスコット",
+    "wildfire_gender.contributor.role.mascot.short": "Modマスコット",
+    "wildfire_gender.contributor.role.voice_actor_female": "ケイラ・エンバーリン ボイス女優",
+    "wildfire_gender.contributor.role.voice_actor_female.short": "ボイス女優",
+    "wildfire_gender.contributor.role.generic": "女性ジェンダーMod貢献者",
+    "wildfire_gender.contributor.role.generic.short": "貢献者",
+
+    "wildfire_gender.misc.holiday_themes": "ホリデーテーマ: %s",
+    "wildfire_gender.tooltip.holiday_themes.line1": "有効にすると、各ホリデーシーズンに合わせてサンタ帽などのホリデーテーマのアイテムが自動的に表示されます。",
+
+    "wildfire_gender.not_in_world.title": "メインメニューでは利用できません",
+    "wildfire_gender.not_in_world": "ジェンダー設定を変更するには、ワールドに入る必要があります。"
+}
