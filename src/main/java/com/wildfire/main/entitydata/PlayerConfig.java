@@ -1,161 +1,125 @@
-/*
- * Wildfire's Female Gender Mod is a female gender mod created for Minecraft.
- * Copyright (C) 2023-present WildfireRomeo
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package com.wildfire.main.entitydata;
 
 import com.google.gson.JsonObject;
-import com.wildfire.gui.screen.BaseWildfireScreen;
+import com.wildfire.main.Gender;
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.WildfireLocalization;
-import com.wildfire.main.cloud.CloudSync;
-import com.wildfire.main.cloud.SyncLog;
-import com.wildfire.main.config.ClientConfig;
+import com.wildfire.main.config.ConfigKey;
 import com.wildfire.main.config.Configuration;
-import com.wildfire.main.config.enums.Gender;
-import com.wildfire.main.config.types.ConfigKey;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
-/**
- * A version of {@link EntityConfig} backed by a {@link Configuration} for use with players
- */
 public class PlayerConfig extends EntityConfig {
-
-    /**
-     * <p>{@code true} if this config should be synced to the connected server on the next attempt</p>
-     *
-     * <p>This only has an effect for the client player.</p>
-     */
     public boolean needsSync;
-
-    /**
-     * <p>{@code true} if this config should be synced to the {@link CloudSync cloud sync server} on the next attempt</p>
-     *
-     * <p>This only has an effect for the client player.</p>
-     */
-    public boolean needsCloudSync;
-
-    /**
-     * The current sync status of this player config
-     *
-     * @see #needsSync
-     * @see SyncStatus
-     */
-    public SyncStatus syncStatus = SyncStatus.UNKNOWN;
-
+    public SyncStatus syncStatus;
     private final Configuration cfg;
-    protected boolean hurtSounds = Configuration.HURT_SOUNDS.getDefault();
-    protected boolean holidayThemes = Configuration.HOLIDAY_THEMES.getDefault();
-    protected boolean showBreastsInArmor = Configuration.SHOW_IN_ARMOR.getDefault();
+    protected boolean hurtSounds;
+    protected boolean armorPhysOverride;
+    protected boolean showBreastsInArmor;
 
-    /**
-     * @deprecated Use {@link #updateGender(Gender)} instead
-     */
+    /** @deprecated Usar el constructor de un solo parámetro siempre que sea posible */
     @Deprecated
     public PlayerConfig(UUID uuid, Gender gender) {
         this(uuid);
-        updateGender(gender);
+        this.updateGender(gender);
     }
 
     public PlayerConfig(UUID uuid) {
         super(uuid);
-        cfg = new Configuration(uuid.toString());
-        cfg.setDefaults();
+        this.syncStatus = SyncStatus.UNKNOWN;
 
-        // Real players always have a UUID of version 4; if this isn't the case, then this is undeniably
-        // an NPC player entity.
-        if(uuid.version() != 4) holidayThemes = false;
+        // Inicializamos con los valores por defecto de la configuración global
+        this.hurtSounds = (Boolean) Configuration.HURT_SOUNDS.getDefault();
+        this.armorPhysOverride = (Boolean) Configuration.ARMOR_PHYSICS_OVERRIDE.getDefault();
+        this.showBreastsInArmor = (Boolean) Configuration.SHOW_IN_ARMOR.getDefault();
+
+        // Creamos un archivo de configuración individual basado en el UUID del jugador
+        this.cfg = new Configuration(this.uuid.toString());
+        this.cfg.set(Configuration.USERNAME, this.uuid);
+
+        // Establecemos los valores por defecto en el archivo si no existen
+        this.cfg.setDefault(Configuration.GENDER);
+        this.cfg.setDefault(Configuration.BUST_SIZE);
+        this.cfg.setDefault(Configuration.HURT_SOUNDS);
+        this.cfg.setDefault(Configuration.BREASTS_OFFSET_X);
+        this.cfg.setDefault(Configuration.BREASTS_OFFSET_Y);
+        this.cfg.setDefault(Configuration.BREASTS_OFFSET_Z);
+        this.cfg.setDefault(Configuration.BREASTS_UNIBOOB);
+        this.cfg.setDefault(Configuration.BREASTS_CLEAVAGE);
+        this.cfg.setDefault(Configuration.BREAST_PHYSICS);
+        this.cfg.setDefault(Configuration.ARMOR_PHYSICS_OVERRIDE);
+        this.cfg.setDefault(Configuration.SHOW_IN_ARMOR);
+        this.cfg.setDefault(Configuration.BOUNCE_MULTIPLIER);
+        this.cfg.setDefault(Configuration.FLOPPY_MULTIPLIER);
     }
 
-    // these shouldn't ever be called on players, but just to be safe, override with a noop.
     @Override
-    public void readFromStack(ItemStack chestplate) {
+    public void readFromStack(@NotNull ItemStack chestplate) {
+        // Los jugadores cargan su config desde archivo o red, no desde el ítem directamente
     }
 
     public Configuration getConfig() {
-        return cfg;
-    }
-
-    public boolean updateGender(Gender value) {
-        return updateValue(Configuration.GENDER, value, v -> this.gender = v);
-    }
-
-    public boolean updateBustSize(float value) {
-        return updateValue(Configuration.BUST_SIZE, value, v -> this.pBustSize = v);
-    }
-
-
-    public boolean hasHolidayThemes() {
-        return holidayThemes;
-    }
-
-    public boolean updateHolidayThemes(boolean value) {
-        return updateValue(Configuration.HOLIDAY_THEMES, value, v -> this.holidayThemes = v);
-    }
-
-
-    public boolean hasHurtSounds() {
-        return hurtSounds;
-    }
-
-    public boolean updateVoicePitch(float value) {
-        return updateValue(Configuration.VOICE_PITCH, value, v -> this.voicePitch = v);
-    }
-
-    public boolean updateHurtSounds(boolean value) {
-        return updateValue(Configuration.HURT_SOUNDS, value, v -> this.hurtSounds = v);
-    }
-
-    public boolean updateBreastPhysics(boolean value) {
-        return updateValue(Configuration.BREAST_PHYSICS, value, v -> this.breastPhysics = v);
+        return this.cfg;
     }
 
     /**
-     * @apiNote The value this method returns has been moved to {@link ClientConfig}, and this method is only
-     * 			retained for compatibility with mods that use this as a mixin target.
+     * Helper para actualizar valores validando contra la configuración
      */
-    @ApiStatus.Obsolete
-    @Environment(EnvType.CLIENT)
-    public boolean getArmorPhysicsOverride() {
-        return ClientConfig.INSTANCE.get(ClientConfig.ARMOR_PHYSICS_OVERRIDE);
+    private <VALUE> boolean updateValue(ConfigKey<VALUE> key, VALUE value, Consumer<VALUE> setter) {
+        if (key.validate(value)) {
+            setter.accept(value);
+            return true;
+        }
+        return false;
     }
 
+    public boolean updateGender(Gender value) {
+        return this.updateValue(Configuration.GENDER, value, (v) -> this.gender = v);
+    }
+
+    public boolean updateBustSize(float value) {
+        return this.updateValue(Configuration.BUST_SIZE, value, (v) -> this.pBustSize = v);
+    }
+
+    public boolean hasHurtSounds() {
+        return this.hurtSounds;
+    }
+
+    public boolean updateHurtSounds(boolean value) {
+        return this.updateValue(Configuration.HURT_SOUNDS, value, (v) -> this.hurtSounds = v);
+    }
+
+    public boolean updateBreastPhysics(boolean value) {
+        return this.updateValue(Configuration.BREAST_PHYSICS, value, (v) -> this.breastPhysics = v);
+    }
+
+    @Override
+    public boolean getArmorPhysicsOverride() {
+        return this.armorPhysOverride;
+    }
+
+    public boolean updateArmorPhysicsOverride(boolean value) {
+        return this.updateValue(Configuration.ARMOR_PHYSICS_OVERRIDE, value, (v) -> this.armorPhysOverride = v);
+    }
+
+    @Override
     public boolean showBreastsInArmor() {
-        return showBreastsInArmor;
+        return this.showBreastsInArmor;
     }
 
     public boolean updateShowBreastsInArmor(boolean value) {
-        return updateValue(Configuration.SHOW_IN_ARMOR, value, v -> this.showBreastsInArmor = v);
+        return this.updateValue(Configuration.SHOW_IN_ARMOR, value, (v) -> this.showBreastsInArmor = v);
     }
 
     public boolean updateBounceMultiplier(float value) {
-        return updateValue(Configuration.BOUNCE_MULTIPLIER, value, v -> this.bounceMultiplier = v);
+        return this.updateValue(Configuration.BOUNCE_MULTIPLIER, value, (v) -> this.bounceMultiplier = v);
     }
 
     public boolean updateFloppiness(float value) {
-        return updateValue(Configuration.FLOPPY_MULTIPLIER, value, v -> this.floppyMultiplier = v);
+        return this.updateValue(Configuration.FLOPPY_MULTIPLIER, value, (v) -> this.floppyMultiplier = v);
     }
 
     public SyncStatus getSyncStatus() {
@@ -163,148 +127,100 @@ public class PlayerConfig extends EntityConfig {
     }
 
     /**
-     * Returns a copy of the player's current configuration; the stored values are guaranteed to be valid for
-     * the associated {@link ConfigKey}, and does not include any unrecognized keys.
-     *
-     * @return A new copy of the player's {@link JsonObject saved config values}
+     * Convierte la configuración del jugador a JSON para el sistema de red
      */
-    public JsonObject toJson() {
-        var json = new JsonObject();
-        Configuration.KEYS.forEach(key -> key.dump(this, json));
-        return json;
+    public static JsonObject toJsonObject(PlayerConfig plr) {
+        JsonObject obj = new JsonObject();
+        Configuration.USERNAME.save(obj, plr.uuid);
+        Configuration.GENDER.save(obj, plr.getGender());
+        Configuration.BUST_SIZE.save(obj, plr.getBustSize());
+        Configuration.HURT_SOUNDS.save(obj, plr.hasHurtSounds());
+        Configuration.BREAST_PHYSICS.save(obj, plr.hasBreastPhysics());
+        Configuration.SHOW_IN_ARMOR.save(obj, plr.showBreastsInArmor());
+        Configuration.ARMOR_PHYSICS_OVERRIDE.save(obj, plr.getArmorPhysicsOverride());
+        Configuration.BOUNCE_MULTIPLIER.save(obj, plr.getBounceMultiplier());
+        Configuration.FLOPPY_MULTIPLIER.save(obj, plr.getFloppiness());
+
+        Breasts breasts = plr.getBreasts();
+        Configuration.BREASTS_OFFSET_X.save(obj, breasts.getXOffset());
+        Configuration.BREASTS_OFFSET_Y.save(obj, breasts.getYOffset());
+        Configuration.BREASTS_OFFSET_Z.save(obj, breasts.getZOffset());
+        Configuration.BREASTS_UNIBOOB.save(obj, breasts.isUniboob());
+        Configuration.BREASTS_CLEAVAGE.save(obj, breasts.getCleavage());
+
+        return obj;
     }
 
     /**
-     * @return {@code true} if the current player {@link Configuration#exists() has a local config file}
+     * Carga los datos guardados en disco para un jugador específico
      */
-    public boolean hasLocalConfig() {
-        return cfg.exists();
-    }
+    public static PlayerConfig loadCachedPlayer(UUID uuid, boolean markForSync) {
+        PlayerConfig plr = WildfireGender.getPlayerById(uuid);
+        if (plr != null) {
+            plr.syncStatus = SyncStatus.CACHED;
+            Configuration config = plr.getConfig();
+            config.load();
 
-    /**
-     * Loads the current player's settings from a file on disk
-     *
-     * @param markForSync {@code true} if {@link #needsSync} should be set to true
-     */
-    public void loadFromDisk(boolean markForSync) {
-        this.syncStatus = SyncStatus.CACHED;
-        cfg.load();
-        loadFromConfig(markForSync);
-    }
+            // Aplicamos los valores cargados
+            plr.updateGender((Gender) config.get(Configuration.GENDER));
+            plr.updateBustSize((Float) config.get(Configuration.BUST_SIZE));
+            plr.updateHurtSounds((Boolean) config.get(Configuration.HURT_SOUNDS));
+            plr.updateBreastPhysics((Boolean) config.get(Configuration.BREAST_PHYSICS));
+            plr.updateShowBreastsInArmor((Boolean) config.get(Configuration.SHOW_IN_ARMOR));
+            plr.updateArmorPhysicsOverride((Boolean) config.get(Configuration.ARMOR_PHYSICS_OVERRIDE));
+            plr.updateBounceMultiplier((Float) config.get(Configuration.BOUNCE_MULTIPLIER));
+            plr.updateFloppiness((Float) config.get(Configuration.FLOPPY_MULTIPLIER));
 
-    /**
-     * Loads the current player's settings from the local {@link Configuration}
-     *
-     * @param markForSync {@code true} if {@link #needsSync} should be set to true
-     */
-    public void loadFromConfig(boolean markForSync) {
-        Configuration.KEYS.forEach(key -> key.writeToPlayer(this));
-        if(markForSync) {
-            this.needsSync = true;
+            Breasts breasts = plr.getBreasts();
+            breasts.updateXOffset((Float) config.get(Configuration.BREASTS_OFFSET_X));
+            breasts.updateYOffset((Float) config.get(Configuration.BREASTS_OFFSET_Y));
+            breasts.updateZOffset((Float) config.get(Configuration.BREASTS_OFFSET_Z));
+            breasts.updateUniboob((Boolean) config.get(Configuration.BREASTS_UNIBOOB));
+            breasts.updateCleavage((Float) config.get(Configuration.BREASTS_CLEAVAGE));
+
+            if (markForSync) {
+                plr.needsSync = true;
+            }
+            return plr;
         }
+        return null;
     }
 
     /**
-     * Write all known {@link ConfigKey}s from this {@link PlayerConfig} to the underlying {@link Configuration}
+     * Guarda la configuración actual del jugador en su archivo JSON
      */
-    public void writeToConfig() {
-        Configuration.KEYS.forEach(key -> key.writeToConfig(this));
-    }
-
-    /**
-     * Saves the settings stored in this {@link PlayerConfig} to the underlying {@link Configuration},
-     * and then attempts to {@link Configuration#save() save to disk}.
-     */
-    public void save() {
-        writeToConfig();
-        getConfig().save();
-        needsSync = true;
-        needsCloudSync = true;
-    }
-
-    /**
-     * @deprecated Use {@code plr.save()} instead
-     */
-    @Deprecated(forRemoval = true)
-    @ApiStatus.ScheduledForRemoval(inVersion = "First release of 26.1")
     public static void saveGenderInfo(PlayerConfig plr) {
-        plr.save();
+        Configuration config = plr.getConfig();
+        config.set(Configuration.USERNAME, plr.uuid);
+        config.set(Configuration.GENDER, plr.getGender());
+        config.set(Configuration.BUST_SIZE, plr.getBustSize());
+        config.set(Configuration.HURT_SOUNDS, plr.hasHurtSounds());
+        config.set(Configuration.BREAST_PHYSICS, plr.hasBreastPhysics());
+        config.set(Configuration.SHOW_IN_ARMOR, plr.showBreastsInArmor());
+        config.set(Configuration.ARMOR_PHYSICS_OVERRIDE, plr.getArmorPhysicsOverride());
+        config.set(Configuration.BOUNCE_MULTIPLIER, plr.getBounceMultiplier());
+        config.set(Configuration.FLOPPY_MULTIPLIER, plr.getFloppiness());
+
+        Breasts breasts = plr.getBreasts();
+        config.set(Configuration.BREASTS_OFFSET_X, breasts.getXOffset());
+        config.set(Configuration.BREASTS_OFFSET_Y, breasts.getYOffset());
+        config.set(Configuration.BREASTS_OFFSET_Z, breasts.getZOffset());
+        config.set(Configuration.BREASTS_UNIBOOB, breasts.isUniboob());
+        config.set(Configuration.BREASTS_CLEAVAGE, breasts.getCleavage());
+
+        config.save();
+        plr.needsSync = true;
     }
 
     @Override
     public boolean hasJacketLayer() {
-        throw new UnsupportedOperationException("PlayerConfig does not support #hasJacketLayer(); use Player#isModelPartShown instead");
-    }
-
-    @ApiStatus.Internal
-    public void attemptCloudSync() {
-        var client = Minecraft.getInstance();
-        if(client.player == null || !this.uuid.equals(client.player.getUUID())) return;
-        if(!needsCloudSync) return;
-        if(client.screen instanceof BaseWildfireScreen) return;
-        if(!ClientConfig.INSTANCE.get(ClientConfig.AUTOMATIC_CLOUD_SYNC)) return;
-        if(CloudSync.syncOnCooldown()) return;
-
-        CompletableFuture.runAsync(() -> {
-            try {
-                CloudSync.sync(this).join();
-                WildfireGender.LOGGER.info("Synced player data to the cloud");
-            } catch(Exception e) {
-                WildfireGender.LOGGER.error("Failed to sync player data", e);
-                SyncLog.add(WildfireLocalization.SYNC_LOG_FAILED_TO_SYNC_DATA);
-            }
-        });
-        needsCloudSync = false;
-    }
-
-    /**
-     * Update player data from the provided {@link JsonObject}
-     *
-     * @apiNote This method will set the player's {@link #getSyncStatus() sync status} to {@link SyncStatus#SYNCED},
-     *          as it's expected that this method is only used in such cases where this would be applicable.
-     *
-     * @param json The {@link JsonObject} to merge with the existing config for this player
-     */
-    public void updateFromJson(JsonObject json) {
-        json.asMap().forEach(this.cfg::set);
-        loadFromConfig(false);
-        this.syncStatus = SyncStatus.SYNCED;
-    }
-
-    @Override
-    public List<String> getDebugInfo() {
-        var lines = super.getDebugInfo();
-        lines.add(1, "Sync status: " + getSyncStatus());
-        lines.add("Female hurt sounds: " + hasHurtSounds());
-        lines.add("Show in armor: " + showBreastsInArmor());
-        return lines;
+        // En jugadores, Minecraft maneja esto de forma nativa.
+        throw new UnsupportedOperationException("Usar isModelPartShown(PlayerModelPart.JACKET) en el objeto Player de Minecraft");
     }
 
     public enum SyncStatus {
-        /**
-         * <p>Indicates that the relevant configuration has had its data loaded from a file on disk.</p>
-         *
-         * <p>This is only applicable on a client, as dedicated servers do not read player data from
-         * configuration files.</p>
-         */
         CACHED,
-
-        /**
-         * <p>Indicates that the relevant configuration has had its data loaded from a sync packet,
-         * or from a profile retrieved from {@link CloudSync the cloud sync server}.</p>
-         *
-         * <p>This is currently only set on the client.</p>
-         */
-        // TODO this should be set on dedicated servers if/when the player config cache is split
-        //		into separate server-sided & client-sided caches
         SYNCED,
-
-        /**
-         * <p>Indicates that this configuration has an unknown sync state.</p>
-         *
-         * <p>This is the default sync state for new configuration instances, and on dedicated servers is
-         * the only sync state.</p>
-         */
-        UNKNOWN,
+        UNKNOWN
     }
 }

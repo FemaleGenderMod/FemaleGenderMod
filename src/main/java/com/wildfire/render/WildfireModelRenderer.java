@@ -1,150 +1,143 @@
-/*
- * Wildfire's Female Gender Mod is a female gender mod created for Minecraft.
- * Copyright (C) 2023-present WildfireRomeo
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package com.wildfire.render;
 
-import com.google.common.base.Preconditions;
-import com.wildfire.main.uvs.UVDirection;
-import com.wildfire.main.uvs.UVLayout;
-import com.wildfire.main.uvs.UVQuad;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import org.joml.Vector3fc;
+import net.minecraft.core.Direction;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import org.joml.Vector3f;
 
-@Environment(EnvType.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public final class WildfireModelRenderer {
+
     private WildfireModelRenderer() {
         throw new UnsupportedOperationException();
     }
 
     public static class ModelBox {
-        public final WildfireModelRenderer.TexturedQuad[] quads;
-        public final float posX1;
-        public final float posY1;
-        public final float posZ1;
-        public final float posX2;
-        public final float posY2;
-        public final float posZ2;
+        public final TexturedQuad[] quads;
+        public final float posX1, posY1, posZ1;
+        public final float posX2, posY2, posZ2;
 
-        protected final UVLayout dynamicUvLayouts;
+        public ModelBox(int tW, int tH, int texU, int texV, float x, float y, float z, int dx, int dy, int dz, float delta, boolean mirror) {
+            this(tW, tH, texU, texV, x, y, z, dx, dy, dz, delta, mirror, 5);
+        }
 
-        protected ModelBox(int tW, int tH, float x, float y, float z, int dx, int dy, int dz, float delta, int quads, UVLayout dynamicUvLayouts) {
+        protected ModelBox(int tW, int tH, int texU, int texV, float x, float y, float z, int dx, int dy, int dz, float delta, boolean mirror, int quads) {
+            this(tW, tH, texU, texV, x, y, z, dx, dy, dz, delta, mirror, quads, false);
+        }
+
+        protected ModelBox(int tW, int tH, int texU, int texV, float x, float y, float z, int dx, int dy, int dz, float delta, boolean mirror, int quads, boolean extra) {
             this.posX1 = x;
             this.posY1 = y;
             this.posZ1 = z;
-            this.posX2 = x + (float) dx;
-            this.posY2 = y + (float) dy;
-            this.posZ2 = z + (float) dz;
+            this.posX2 = x + (float)dx;
+            this.posY2 = y + (float)dy;
+            this.posZ2 = z + (float)dz;
             this.quads = new TexturedQuad[quads];
-            this.dynamicUvLayouts = dynamicUvLayouts;
 
-            float f = x + (float) dx;
-            float f1 = y + (float) dy;
-            float f2 = z + (float) dz;
-            x = x - delta;
-            y = y - delta;
-            z = z - delta;
-            f = f + delta;
-            f1 = f1 + delta;
-            f2 = f2 + delta;
+            float f = x + (float)dx;
+            float f1 = y + (float)dy;
+            float f2 = z + (float)dz;
 
-            initQuads(tW, tH, dx, dy, dz, quads,
-                    new PositionTextureVertex(f, y, z, 0.0F, 8.0F),
-                    new PositionTextureVertex(f, f1, z, 8.0F, 8.0F),
-                    new PositionTextureVertex(x, f1, z, 8.0F, 0.0F),
-                    new PositionTextureVertex(x, y, f2, 0.0F, 0.0F),
-                    new PositionTextureVertex(f, y, f2, 0.0F, 8.0F),
-                    new PositionTextureVertex(f, f1, f2, 8.0F, 8.0F),
-                    new PositionTextureVertex(x, f1, f2, 8.0F, 0.0F),
-                    new PositionTextureVertex(x, y, z, 0.0F, 0.0F)
-            );
+            x -= delta; y -= delta; z -= delta;
+            f += delta; f1 += delta; f2 += delta;
+
+            if (mirror) {
+                float temp = f;
+                f = x;
+                x = temp;
+            }
+
+            // Definición de vértices del cubo
+            PositionTextureVertex v0 = new PositionTextureVertex(f, y, z, 0.0F, 8.0F);
+            PositionTextureVertex v1 = new PositionTextureVertex(f, f1, z, 8.0F, 8.0F);
+            PositionTextureVertex v2 = new PositionTextureVertex(x, f1, z, 8.0F, 0.0F);
+            PositionTextureVertex v3 = new PositionTextureVertex(x, y, f2, 0.0F, 0.0F);
+            PositionTextureVertex v4 = new PositionTextureVertex(f, y, f2, 0.0F, 8.0F);
+            PositionTextureVertex v5 = new PositionTextureVertex(f, f1, f2, 8.0F, 8.0F);
+            PositionTextureVertex v6 = new PositionTextureVertex(x, f1, f2, 8.0F, 0.0F);
+            PositionTextureVertex v7 = new PositionTextureVertex(x, y, z, 0.0F, 0.0F);
+
+            this.initQuads(tW, tH, texU, texV, dx, dy, dz, mirror, extra, v0, v1, v2, v3, v4, v5, v6, v7);
         }
 
-        protected void initQuads(int tW, int tH, int dx, int dy, int dz, int quads,
-                                 PositionTextureVertex vertex, PositionTextureVertex vertex1, PositionTextureVertex vertex2,
-                                 PositionTextureVertex vertex3, PositionTextureVertex vertex4, PositionTextureVertex vertex5,
-                                 PositionTextureVertex vertex6, PositionTextureVertex vertex7) {
-            PositionTextureVertex[][] faceVertices = {
-                    {vertex4, vertex, vertex1, vertex5},	// EAST
-                    {vertex7, vertex3, vertex6, vertex2},	// WEST
-                    {vertex4, vertex3, vertex7, vertex},	// DOWN
-                    {vertex1, vertex2, vertex6, vertex5},	// UP
-                    {vertex, vertex7, vertex2, vertex1},	// NORTH
-                    {vertex3, vertex4, vertex5, vertex6}	// SOUTH
-            };
-
-            int i = 0;
-            for(var entry : dynamicUvLayouts.getAllSides().entrySet()) {
-                UVDirection direction = entry.getKey();
-                UVQuad quad = entry.getValue();
-                if(quad == null) continue;
-
-                this.quads[i] = new TexturedQuad(
-                        quad.x1(), quad.y1(), quad.x2(), quad.y2(),
-                        tW, tH,
-                        direction,
-                        faceVertices[i][0],
-                        faceVertices[i][1],
-                        faceVertices[i][2],
-                        faceVertices[i][3]
-                );
-                i++;
-            }
+        protected void initQuads(int tW, int tH, int texU, int texV, int dx, int dy, int dz, boolean mirror, boolean extra, PositionTextureVertex v0, PositionTextureVertex v1, PositionTextureVertex v2, PositionTextureVertex v3, PositionTextureVertex v4, PositionTextureVertex v5, PositionTextureVertex v6, PositionTextureVertex v7) {
+            this.quads[0] = new TexturedQuad((float)(texU + dz + dx), (float)(texV + dz), (float)(texU + dz + dx + dz), (float)(texV + dz + dy), (float)tW, (float)tH, mirror, Direction.SOUTH, new PositionTextureVertex[]{v4, v0, v1, v5});
+            this.quads[1] = new TexturedQuad((float)texU, (float)(texV + dz), (float)(texU + dz), (float)(texV + dz + dy), (float)tW, (float)tH, mirror, Direction.NORTH, new PositionTextureVertex[]{v7, v3, v6, v2});
+            this.quads[2] = new TexturedQuad((float)(texU + dz), (float)texV, (float)(texU + dz + dx), (float)(texV + dz), (float)tW, (float)tH, mirror, Direction.UP, new PositionTextureVertex[]{v4, v3, v7, v0});
+            this.quads[3] = new TexturedQuad((float)(texU + dz), (float)(texV + dz + 4), (float)(texU + dz + dx), (float)(texV + 1 + dz + dy), (float)tW, (float)(tH - 1), mirror, Direction.DOWN, new PositionTextureVertex[]{v1, v2, v6, v5});
+            this.quads[4] = new TexturedQuad((float)(texU + dz), (float)(texV + dz), (float)(texU + dz + dx), (float)(texV + dz + dy), (float)tW, (float)tH, mirror, Direction.WEST, new PositionTextureVertex[]{v0, v7, v2, v1});
         }
     }
 
     public static class OverlayModelBox extends ModelBox {
-        public OverlayModelBox(int tW, int tH, float x, float y, float z, int dx, int dy, int dz, float delta, UVLayout dynamicUvLayouts) {
-            super(tW, tH, x, y, z, dx, dy, dz, delta, 5, dynamicUvLayouts);
+        public OverlayModelBox(boolean isLeft, int tW, int tH, int texU, int texV, float x, float y, float z, int dx, int dy, int dz, float delta, boolean mirror) {
+            super(tW, tH, texU, texV, x, y, z, dx, dy, dz, delta, mirror, 4, isLeft);
+        }
+
+        @Override
+        protected void initQuads(int tW, int tH, int texU, int texV, int dx, int dy, int dz, boolean mirror, boolean isLeft, PositionTextureVertex v0, PositionTextureVertex v1, PositionTextureVertex v2, PositionTextureVertex v3, PositionTextureVertex v4, PositionTextureVertex v5, PositionTextureVertex v6, PositionTextureVertex v7) {
+            if (!isLeft) {
+                this.quads[0] = new TexturedQuad((float)(texU + dz + dx), (float)(texV + dz), (float)(texU + dz + dx + dz), (float)(texV + dz + dy), (float)tW, (float)tH, mirror, Direction.SOUTH, new PositionTextureVertex[]{v4, v0, v1, v5});
+            } else {
+                this.quads[0] = new TexturedQuad((float)texU, (float)(texV + dz), (float)(texU + dz), (float)(texV + dz + dy), (float)tW, (float)tH, mirror, Direction.NORTH, new PositionTextureVertex[]{v7, v3, v6, v2});
+            }
+            this.quads[1] = new TexturedQuad((float)(texU + dz), (float)texV, (float)(texU + dz + dx), (float)(texV + dz), (float)tW, (float)tH, mirror, Direction.UP, new PositionTextureVertex[]{v4, v3, v7, v0});
+            this.quads[2] = new TexturedQuad((float)(texU + dz), (float)(texV + dz + 4), (float)(texU + dz + dx), (float)(texV + 1 + dz + dy), (float)tW, (float)(tH - 1), mirror, Direction.DOWN, new PositionTextureVertex[]{v1, v2, v6, v5});
+            this.quads[3] = new TexturedQuad((float)(texU + dz), (float)(texV + dz), (float)(texU + dz + dx), (float)(texV + dz + dy), (float)tW, (float)tH, mirror, Direction.WEST, new PositionTextureVertex[]{v0, v7, v2, v1});
         }
     }
 
     public static class BreastModelBox extends ModelBox {
-        public BreastModelBox(int tW, int tH, float x, float y, float z, int dx, int dy, int dz, float delta, UVLayout dynamicUvLayouts) {
-            super(tW, tH, x, y, z, dx, dy, dz, delta, 5, dynamicUvLayouts);
+        public BreastModelBox(int tW, int tH, int texU, int texV, float x, float y, float z, int dx, int dy, int dz, float delta, boolean mirror) {
+            super(tW, tH, texU, texV, x, y, z, dx, dy, dz, delta, mirror);
+        }
+
+        @Override
+        protected void initQuads(int tW, int tH, int texU, int texV, int dx, int dy, int dz, boolean mirror, boolean extra, PositionTextureVertex v0, PositionTextureVertex v1, PositionTextureVertex v2, PositionTextureVertex v3, PositionTextureVertex v4, PositionTextureVertex v5, PositionTextureVertex v6, PositionTextureVertex v7) {
+            this.quads[0] = new TexturedQuad((float)(texU + 4 + dx), (float)(texV + 4), (float)(texU + 4 + dx + 4), (float)(texV + 4 + dy), (float)tW, (float)tH, mirror, Direction.SOUTH, new PositionTextureVertex[]{v4, v0, v1, v5});
+            this.quads[1] = new TexturedQuad((float)texU, (float)(texV + 4), (float)(texU + 4), (float)(texV + 4 + dy), (float)tW, (float)tH, mirror, Direction.NORTH, new PositionTextureVertex[]{v7, v3, v6, v2});
+            this.quads[2] = new TexturedQuad((float)(texU + 4), (float)texV, (float)(texU + 4 + dx), (float)(texV + 4), (float)tW, (float)tH, mirror, Direction.UP, new PositionTextureVertex[]{v4, v3, v7, v0});
+            this.quads[3] = new TexturedQuad((float)(texU + 4), (float)(texV + 4 + 4), (float)(texU + 4 + dx), (float)(texV + 1 + 4 + dy), (float)tW, (float)(tH - 1), mirror, Direction.DOWN, new PositionTextureVertex[]{v1, v2, v6, v5});
+            this.quads[4] = new TexturedQuad((float)(texU + 4), (float)(texV + 4), (float)(texU + 4 + dx), (float)(texV + 4 + dy), (float)tW, (float)tH, mirror, Direction.WEST, new PositionTextureVertex[]{v0, v7, v2, v1});
         }
     }
 
-    public record PositionTextureVertex(float x, float y, float z, float u, float v) {
+    public static record PositionTextureVertex(float x, float y, float z, float u, float v) {
         public PositionTextureVertex withTexturePosition(float texU, float texV) {
-            return new PositionTextureVertex(x, y, z, texU, texV);
+            return new PositionTextureVertex(this.x, this.y, this.z, texU, texV);
         }
     }
 
     public static class TexturedQuad {
-        public final WildfireModelRenderer.PositionTextureVertex[] vertexPositions;
-        public final Vector3fc normal;
-        public final float[] uvs;
+        public final PositionTextureVertex[] vertexPositions;
+        public final Vector3f normal;
 
-        public TexturedQuad(float u1, float v1, float u2, float v2, float texWidth, float texHeight, UVDirection directionIn, PositionTextureVertex... positionsIn) {
-            Preconditions.checkArgument(positionsIn.length == 4, "Incorrect number of vertices; expected 4, got %s", positionsIn.length);
+        public TexturedQuad(float u1, float v1, float u2, float v2, float texWidth, float texHeight, boolean mirrorIn, Direction directionIn, PositionTextureVertex... positionsIn) {
+            if (positionsIn.length != 4) {
+                throw new IllegalArgumentException("Wrong number of vertices. Expected: 4, Received: " + positionsIn.length);
+            } else {
+                this.vertexPositions = positionsIn;
 
-            //Set UVs in array to reference in render side.
-            this.uvs = new float[]{ u1, v1, u2, v2 };
+                positionsIn[0] = positionsIn[0].withTexturePosition(u2 / texWidth, v1 / texHeight);
+                positionsIn[1] = positionsIn[1].withTexturePosition(u1 / texWidth, v1 / texHeight);
+                positionsIn[2] = positionsIn[2].withTexturePosition(u1 / texWidth, v2 / texHeight);
+                positionsIn[3] = positionsIn[3].withTexturePosition(u2 / texWidth, v2 / texHeight);
 
-            this.vertexPositions = positionsIn;
-            float f = 0.0F / texWidth;
-            float f1 = 0.0F / texHeight;
-            positionsIn[0] = positionsIn[0].withTexturePosition(u2 / texWidth - f, v1 / texHeight + f1);
-            positionsIn[1] = positionsIn[1].withTexturePosition(u1 / texWidth + f, v1 / texHeight + f1);
-            positionsIn[2] = positionsIn[2].withTexturePosition(u1 / texWidth + f, v2 / texHeight - f1);
-            positionsIn[3] = positionsIn[3].withTexturePosition(u2 / texWidth - f, v2 / texHeight - f1);
-            this.normal = directionIn.getUnitVector();
+                if (mirrorIn) {
+                    int len = positionsIn.length;
+                    for(int j = 0; j < len / 2; ++j) {
+                        PositionTextureVertex temp = positionsIn[j];
+                        positionsIn[j] = positionsIn[len - 1 - j];
+                        positionsIn[len - 1 - j] = temp;
+                    }
+                }
+
+                // method_23955() en Mojang es step() para obtener el vector normal
+                this.normal = directionIn.step();
+                if (mirrorIn) {
+                    this.normal.mul(-1.0F, 1.0F, 1.0F);
+                }
+            }
         }
     }
 }

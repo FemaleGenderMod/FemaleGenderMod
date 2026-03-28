@@ -1,87 +1,69 @@
-/*
- * Wildfire's Female Gender Mod is a female gender mod created for Minecraft.
- * Copyright (C) 2023-present WildfireRomeo
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package com.wildfire.main;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.mojang.logging.LogUtils;
 import com.wildfire.main.entitydata.PlayerConfig;
-import com.wildfire.main.networking.WildfireSync;
-import net.fabricmc.api.ModInitializer;
-import net.minecraft.resources.Identifier;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import java.time.Duration;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class WildfireGender implements ModInitializer {
+/**
+ * Clase principal del mod para NeoForge 1.21.1.
+ * La anotación @Mod define el ID del mod y marca esta clase como el punto de entrada.
+ */
+@Mod(WildfireGender.MODID)
+public class WildfireGender {
     public static final String MODID = "wildfire_gender";
     public static final Logger LOGGER = LogUtils.getLogger();
-    public static final LoadingCache<UUID, PlayerConfig> CACHE;
 
-    static {
-        var builder = CacheBuilder.newBuilder();
-        // Only automatically expire cache entries on the client; a server may go a decent while without accessing
-        // the player cache, and we can't easily re-cache a player's settings on a server, while a client
-        // will typically either receive settings from the server in a sync, or simply re-fetch from
-        // a local config file or from the cloud.
-        // Note that servers will manually invalidate cache entries upon a player disconnecting
-        // (see WildfireEventHandler#playerDisconnected).
-        if(WildfireHelper.onClient()) {
-            // TODO this design is super janky, and has some potential edge case issues around LAN worlds;
-            //		notably, connected players could potentially have their configs expire, although this is currently
-            //		prevented through further jank with how SyncedPlayerList is implemented (which should also
-            //		be addressed along with this)
-            // best solution to this issue is likely going to be simply splitting the client & server caches into
-            // their own dedicated (Loading)Cache instances at some point in the future.
-            // might also be nice to take the opportunity to also properly split the configs into a server/client
-            // pattern (like entities are right now), although that's probably not going to be very fun to do
-            builder.expireAfterAccess(Duration.ofMinutes(15));
-        }
-        CACHE = builder.build(CacheLoader.from(key -> {
-            var config = new PlayerConfig(key);
-            // only attempt to load player data on the client
-            if(WildfireHelper.onClient()) {
-                // markForSync being true will only ever do anything for the client player
-                WildfireGenderClient.loadGenderInfo(config, true, false);
-            }
-            return config;
-        }));
+    // Caché de configuraciones de jugadores, sincronizado para evitar errores de hilos
+    public static final Map<UUID, PlayerConfig> PLAYER_CACHE = new ConcurrentHashMap<>();
+
+    // En NeoForge 1.21.1, el IEventBus se pide directamente como parámetro en el constructor
+    public WildfireGender(IEventBus modEventBus) {
+
+        // Registramos el método de configuración común
+        modEventBus.addListener(this::commonSetup);
+
+        // Se eliminó el registro en EVENT_BUS porque esta clase no tiene métodos @SubscribeEvent.
+        // Si más adelante añades eventos globales aquí, descomenta la siguiente línea:
+        // NeoForge.EVENT_BUS.register(this);
+
+        // Inicializamos los eventos comunes (si tienes lógica manual en EventHandler)
+        WildfireEventHandler.init();
     }
 
-    @Override
-    public void onInitialize() {
-        WildfireSync.register();
-        WildfireEventHandler.registerCommonEvents();
+    /**
+     * Equivalente a onInitialize de Fabric.
+     * Aquí se ejecutan las tareas de carga que no dependen del cliente ni del servidor.
+     */
+    private void commonSetup(final FMLCommonSetupEvent event) {
+        LOGGER.info("Initializing Wildfire Gender Common Setup...");
+
+        // Nota: En el port que hicimos de WildfireSync, usamos @EventBusSubscriber,
+        // por lo que el registro de red se hace automáticamente.
+        // Si tu WildfireSync.register() tiene lógica extra, llámalo aquí:
+        // WildfireSync.register();
     }
 
+    /**
+     * Busca un jugador en el caché por su UUID.
+     */
     public static @Nullable PlayerConfig getPlayerById(UUID id) {
-        return CACHE.getIfPresent(id);
+        return PLAYER_CACHE.get(id);
     }
 
-    public static PlayerConfig getOrAddPlayerById(UUID id) {
-        return CACHE.getUnchecked(id);
-    }
-
-    public static Identifier id(String path) {
-        return Identifier.fromNamespaceAndPath(MODID, path);
+    /**
+     * Busca un jugador en el caché o crea uno nuevo si no existe.
+     * (Asumiendo que PlayerConfig tiene un constructor vacío).
+     */
+    public static @NotNull PlayerConfig getOrAddPlayerById(UUID id) {
+        return PLAYER_CACHE.computeIfAbsent(id, PlayerConfig::new);
     }
 }

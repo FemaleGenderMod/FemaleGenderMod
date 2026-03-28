@@ -1,77 +1,73 @@
-/*
- * Wildfire's Female Gender Mod is a female gender mod created for Minecraft.
- * Copyright (C) 2023-present WildfireRomeo
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package com.wildfire.gui;
 
-import com.mojang.blaze3d.platform.cursor.CursorTypes;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.Nullable;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
-import java.util.function.Supplier;
-
-@Environment(EnvType.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class WildfireButton extends Button {
+    public boolean transparent;
 
-    private final @Nullable ButtonRenderer renderer;
-    private final Supplier<Component> messageSupplier;
-    public boolean transparent = false;
-
-    private WildfireButton(int x, int y, int w, int h, Supplier<Component> text, Button.OnPress onPress, CreateNarration narrationSupplier, @Nullable ButtonRenderer renderer) {
-        super(x, y, w, h, text.get(), onPress, narrationSupplier);
-        messageSupplier = text;
-        this.renderer = renderer;
+    public WildfireButton(int x, int y, int w, int h, Component text, Button.OnPress onPress, Button.CreateNarration narrationSupplier) {
+        super(x, y, w, h, text, onPress, narrationSupplier);
+        this.transparent = false;
     }
 
-    public void updateMessage() {
-        setMessage(messageSupplier.get());
+    public WildfireButton(int x, int y, int w, int h, Component text, Button.OnPress onPress) {
+        this(x, y, w, h, text, onPress, DEFAULT_NARRATION);
     }
 
-    protected void drawInner(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-        if(renderer != null) {
-            renderer.render(this, graphics, mouseX, mouseY, partialTicks);
-            return;
-        }
-        Minecraft minecraft = Minecraft.getInstance();
-        Font font = minecraft.font;
-        int textColor = active ? 0xFFFFFF : 0x666666;
-        int i = this.getX() + 2;
-        int j = this.getX() + this.getWidth() - 2;
-        GuiUtils.drawScrollableTextWithoutShadow(GuiUtils.Justify.CENTER, graphics, font, this.getMessage(), i, this.getY(), j, this.getY() + this.getHeight(), textColor);
+    public WildfireButton(int x, int y, int w, int h, Component text, Button.OnPress onPress, Tooltip tooltip) {
+        this(x, y, w, h, text, onPress, DEFAULT_NARRATION);
+        this.setTooltip(tooltip);
     }
 
     @Override
-    protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-        int clr = 0x444444 + (84 << 24);
-        if(this.isHoveredOrFocused()) clr = 0x666666 + (84 << 24);
-        if(!active) clr = 0x222222 + (84 << 24);
-        if(!transparent) graphics.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), clr);
+    protected void renderWidget(GuiGraphics ctx, int mouseX, int mouseY, float partialTicks) {
+        Minecraft minecraft = Minecraft.getInstance();
+        Font font = minecraft.font;
 
-        drawInner(graphics, mouseX, mouseY, partialTicks);
-        if(isHovered()) {
-            graphics.requestCursor(active ? CursorTypes.POINTING_HAND : CursorTypes.NOT_ALLOWED);
+        // Definición de colores basada en el estado del botón
+        int clr = 1413760068; // Color base
+        if (this.isHoveredOrFocused()) {
+            clr = 1415997030; // Color cuando pasas el mouse
         }
+
+        if (!this.active) {
+            clr = 1411523106; // Color cuando está desactivado
+        }
+
+        // Dibujar el fondo del botón si no es transparente
+        if (!this.transparent) {
+            ctx.fill(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, clr);
+        }
+
+        // Color del texto
+        int textColor = this.active ? 16777215 : 6710886;
+
+        // Dibujar el texto con scroll usando nuestra utilidad de GuiUtils
+        int textLeft = this.getX() + 2;
+        int textRight = this.getX() + this.width - 2;
+
+        GuiUtils.drawScrollableTextWithoutShadow(
+                ctx,
+                font,
+                this.getMessage(),
+                textLeft,
+                this.getY(),
+                textRight,
+                this.getY() + this.height,
+                textColor
+        );
+
+        // Resetear el color del shader por si acaso
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
     public WildfireButton setTransparent(boolean b) {
@@ -82,81 +78,5 @@ public class WildfireButton extends Button {
     public WildfireButton setActive(boolean b) {
         this.active = b;
         return this;
-    }
-
-    @SuppressWarnings({"NotNullFieldNotInitialized", "UnusedReturnValue"})
-    public static final class Builder {
-        private Supplier<Component> messageSupplier;
-        private int x, y, width, height;
-        private PressAction onPress;
-        private CreateNarration narrationSupplier = DEFAULT_NARRATION;
-        private @Nullable Tooltip tooltip = null;
-        private @Nullable ButtonRenderer renderer = null;
-        private boolean active = true;
-
-        public Builder message(Supplier<Component> messageSupplier) {
-            this.messageSupplier = messageSupplier;
-            return this;
-        }
-
-        public Builder position(int x, int y) {
-            this.x = x;
-            this.y = y;
-            return this;
-        }
-
-        public Builder size(int width, int height) {
-            this.width = width;
-            this.height = height;
-            return this;
-        }
-
-        public Builder onPress(PressAction onPress) {
-            this.onPress = onPress;
-            return this;
-        }
-
-        public Builder narration(CreateNarration narrationSupplier) {
-            this.narrationSupplier = narrationSupplier;
-            return this;
-        }
-
-        public Builder tooltip(@Nullable Tooltip tooltip) {
-            this.tooltip = tooltip;
-            return this;
-        }
-
-        public Builder active(boolean active) {
-            this.active = active;
-            return this;
-        }
-
-        public Builder renderer(@Nullable ButtonRenderer renderer) {
-            this.renderer = renderer;
-            return this;
-        }
-
-        public WildfireButton build() {
-            var built = new WildfireButton(x, y, width, height, messageSupplier, onPress, narrationSupplier, renderer);
-            built.setActive(active);
-            if(tooltip != null) {
-                built.setTooltip(tooltip);
-            }
-            return built;
-        }
-    }
-
-    @FunctionalInterface
-    public interface PressAction extends Button.OnPress {
-        default void onPress(Button button) {
-            onPress((WildfireButton) button);
-        }
-
-        void onPress(WildfireButton button);
-    }
-
-    @FunctionalInterface
-    public interface ButtonRenderer {
-        void render(WildfireButton button, GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks);
     }
 }

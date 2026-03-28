@@ -1,60 +1,45 @@
-/*
- * Wildfire's Female Gender Mod is a female gender mod created for Minecraft.
- * Copyright (C) 2023-present WildfireRomeo
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package com.wildfire.mixins;
 
-import com.wildfire.events.EntityHurtSoundEvent;
-import com.wildfire.events.EntityTickEvent;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import com.wildfire.main.WildfireGender;
+import com.wildfire.main.entitydata.PlayerConfig;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.entity.player.Player;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+@OnlyIn(Dist.CLIENT)
 @Mixin(LivingEntity.class)
-@Environment(EnvType.CLIENT)
-abstract class LivingEntityMixin extends Entity {
-    private LivingEntityMixin(EntityType<?> type, Level world) {
-        super(type, world);
-    }
+public abstract class LivingEntityMixin {
 
-    // TODO would it be worth adding an extra @Inject to #animateDamage(float) to account for servers (namely hypixel)
-    //		using DamageTiltS2CPacket instead of the standard entity damage packet?
-    @Inject(
-        method = "handleDamageEvent",
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/world/entity/LivingEntity;playSound(Lnet/minecraft/sounds/SoundEvent;FF)V"
-        )
-    )
-    public void wildfiregender$playGenderHurtSound(DamageSource damageSource, CallbackInfo ci) {
-        EntityHurtSoundEvent.EVENT.invoker().onHurt((LivingEntity)(Object)this, damageSource);
-    }
+    /**
+     * Inyectamos en getHurtSound. Si devolvemos un sonido personalizado,
+     * el juego base se encargará automáticamente de reproducirlo con su propio pitch y volumen,
+     * evitando que suenen dos voces al mismo tiempo.
+     */
+    @Inject(method = "getHurtSound", at = @At("HEAD"), cancellable = true)
+    protected void wildfiregender$overrideHurtSound(DamageSource damageSource, CallbackInfoReturnable<SoundEvent> cir) {
+        LivingEntity entity = (LivingEntity) (Object) this;
 
-    @Inject(method = "tick", at = @At("TAIL"))
-    public void wildfiregender$onTick(CallbackInfo ci) {
-        if(!level().isClientSide()) return; // ignore ticks from the singleplayer integrated server
-        EntityTickEvent.EVENT.invoker().onTick((LivingEntity)(Object)this);
+        // Solo actuamos si la entidad es un jugador y estamos en el lado del cliente
+        if (entity instanceof Player player && player.level().isClientSide) {
+
+            PlayerConfig genderPlayer = WildfireGender.getPlayerById(player.getUUID());
+
+            // Si hay configuración y los sonidos de daño están activados
+            if (genderPlayer != null && genderPlayer.hasHurtSounds()) {
+                SoundEvent hurtSound = genderPlayer.getGender().getHurtSound();
+
+                if (hurtSound != null) {
+                    // Reemplazamos el sonido de daño original por el nuestro
+                    cir.setReturnValue(hurtSound);
+                }
+            }
+        }
     }
 }

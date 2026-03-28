@@ -1,0 +1,13 @@
+{
+  "itemGroup.wildfire_gender": "Example Mod Tab",
+  "block.wildfire_gender.example_block": "Example Block",
+  "item.wildfire_gender.example_item": "Example Item",
+
+  "wildfire_gender.configuration.title": "Female Gender Mod (Fork) Configs",
+  "wildfire_gender.configuration.section.wildfire_gender.common.toml": "Female Gender Mod (Fork) Configs",
+  "wildfire_gender.configuration.section.wildfire_gender.common.toml.title": "Female Gender Mod (Fork) Configs",
+  "wildfire_gender.configuration.items": "Item List",
+  "wildfire_gender.configuration.logDirtBlock": "Log Dirt Block",
+  "wildfire_gender.configuration.magicNumberIntroduction": "Magic Number Text",
+  "wildfire_gender.configuration.magicNumber": "Magic Number"
+}

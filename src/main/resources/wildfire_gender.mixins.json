@@ -1,26 +1,16 @@
 {
-    "required": true,
-    "minVersion": "0.8",
-    "package": "com.wildfire.mixins",
-    "compatibilityLevel": "JAVA_25",
-    "mixins": [
-        "ArmorStandMixin"
-    ],
-    "client": [
-        "AvatarRendererMixin",
-        "CustomFeatureRendererMixin",
-        "ItemStackMixin",
-        "LivingEntityMixin",
-        "LivingEntityRendererMixin",
-        "TextureManagerMixin",
-        "accessors.ClientMannequinAccessor",
-        "accessors.EquipmentLayerRendererAccessor",
-        "accessors.FeatureRenderDispatcherAccessor",
-        "accessors.GameRendererAccessor",
-        "accessors.LivingEntityRendererAccessor",
-        "accessors.YggdrasilMinecraftSessionServiceAccessor"
-    ],
-    "injectors": {
-        "defaultRequire": 1
-    }
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.wildfire.mixins",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "ArmorStandEntityMixin"
+  ],
+  "client": [
+    "BreastPhysicsTickMixin",
+    "LivingEntityMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
 }

@@ -1,39 +1,22 @@
-/*
- * Wildfire's Female Gender Mod is a female gender mod created for Minecraft.
- * Copyright (C) 2023-present WildfireRomeo
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package com.wildfire.main;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.wildfire.api.IGenderArmor;
-import com.wildfire.main.config.types.FloatConfigKey;
-import com.wildfire.resources.GenderArmorResourceManager;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.core.component.DataComponents;
+import com.wildfire.api.WildfireAPI;
+import com.wildfire.main.config.FloatConfigKey;
+import com.wildfire.render.armor.EmptyGenderArmor;
+import com.wildfire.render.armor.SimpleGenderArmor;
+import net.minecraft.core.Holder;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
-import net.minecraft.util.TriState;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ArmorMaterial;
+import net.minecraft.world.item.ArmorMaterials;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.ItemAttributeModifiers;
 
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
@@ -43,72 +26,64 @@ public final class WildfireHelper {
         throw new UnsupportedOperationException();
     }
 
-    public static final PrimitiveCodec<TriState> TRISTATE = new PrimitiveCodec<>() {
-        @Override
-        public <T> DataResult<TriState> read(final DynamicOps<T> ops, final T input) {
-            return DataResult.success(ops.getBooleanValue(input)
-                    .map(v -> v ? TriState.TRUE : TriState.FALSE)
-                    .result().orElse(TriState.DEFAULT));
-        }
-
-        @Override
-        public <T> T write(final DynamicOps<T> ops, final TriState value) {
-            if(value == TriState.DEFAULT) {
-                return ops.empty();
-            }
-            return ops.createBoolean(value == TriState.TRUE);
-        }
-
-        @Override
-        public String toString() {
-            return "TriState";
-        }
-    };
-
     public static int randInt(int min, int max) {
         return ThreadLocalRandom.current().nextInt(min, max + 1);
     }
+
     public static float randFloat(float min, float max) {
-        return (float) ThreadLocalRandom.current().nextDouble(min, (double) max + 1);
+        return (float) ThreadLocalRandom.current().nextDouble(min, max + 1.0F);
     }
 
-    public static float round(float num, float decimalPlaces) {
-        float factor = (float) Math.pow(10, decimalPlaces);
-        return Math.round(num * factor) / factor;
-    }
-
-    @Environment(EnvType.CLIENT)
+    /**
+     * Determina la configuración de género de una armadura específica.
+     */
     public static IGenderArmor getArmorConfig(ItemStack stack) {
-        if(stack.isEmpty()) {
-            return IGenderArmor.EMPTY;
+        if (stack.isEmpty()) {
+            return EmptyGenderArmor.INSTANCE;
         }
 
-        return GenderArmorResourceManager.get(stack)
-            .orElseGet(() -> stack.has(DataComponents.EQUIPPABLE) ? IGenderArmor.DEFAULT : IGenderArmor.EMPTY);
+        Item item = stack.getItem();
+
+        // Primero revisamos si hay algo registrado en la API (para compatibilidad con otros mods)
+        IGenderArmor apiConfig = WildfireAPI.getGenderArmors().get(item);
+        if (apiConfig != null) {
+            return apiConfig;
+        }
+
+        // Si es una armadura de pecho (Chestplate) de Vanilla, asignamos el modelo predefinido
+        if (item instanceof ArmorItem armorItem) {
+            if (armorItem.getEquipmentSlot() == EquipmentSlot.CHEST) {
+                Holder<ArmorMaterial> material = armorItem.getMaterial();
+
+                if (material.is(ArmorMaterials.LEATHER)) return SimpleGenderArmor.LEATHER;
+                if (material.is(ArmorMaterials.CHAIN)) return SimpleGenderArmor.CHAIN_MAIL;
+                if (material.is(ArmorMaterials.GOLD)) return SimpleGenderArmor.GOLD;
+                if (material.is(ArmorMaterials.IRON)) return SimpleGenderArmor.IRON;
+                if (material.is(ArmorMaterials.DIAMOND)) return SimpleGenderArmor.DIAMOND;
+                if (material.is(ArmorMaterials.NETHERITE)) return SimpleGenderArmor.NETHERITE;
+
+                return SimpleGenderArmor.FALLBACK;
+            }
+        }
+
+        return EmptyGenderArmor.INSTANCE;
     }
 
-    public static Codec<Float> boundedFloat(float minInclusive, float maxInclusive) {
-        return Codec.FLOAT.xmap(val -> Mth.clamp(val, minInclusive, maxInclusive), Function.identity());
+    /**
+     * Utilidad para leer NBT de forma segura devolviendo un Optional.
+     */
+    public static <T> Optional<T> readNbt(CompoundTag compound, String key, Function<String, T> reader) {
+        // En Mojang: contains() reemplaza a method_10545()
+        return !compound.contains(key) ? Optional.empty() : Optional.of(reader.apply(key));
     }
 
-    public static Codec<Float> boundedFloat(FloatConfigKey configKey) {
-        return boundedFloat(configKey.getMinInclusive(), configKey.getMaxInclusive());
-    }
-
-    public static String getModVersion(String modId) {
-        var mod = FabricLoader.getInstance().getModContainer(modId).orElseThrow();
-        return mod.getMetadata().getVersion().getFriendlyString();
-    }
-
-    public static String toFormattedPercent(double value) {
-        return ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(value * 100.0);
-    }
-
-    public static boolean onClient() {
-        return FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
-    }
-
-    public static double snapToStep(double value, double stepSize) {
-        return Math.round(value / stepSize) * stepSize;
+    /**
+     * Lee un valor flotante del NBT y lo limita (clamp) según las reglas de configuración.
+     */
+    public static Optional<Float> readNbt(CompoundTag compound, String key, FloatConfigKey configKey) {
+        Objects.requireNonNull(compound);
+        // compound::getFloat reemplaza a compound::method_10583
+        return readNbt(compound, key, compound::getFloat)
+                .map((v) -> Mth.clamp(v, configKey.getMinInclusive(), configKey.getMaxInclusive()));
     }
 }

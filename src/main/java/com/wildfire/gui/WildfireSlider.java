@@ -1,137 +1,83 @@
-/*
- * Wildfire's Female Gender Mod is a female gender mod created for Minecraft.
- * Copyright (C) 2023-present WildfireRomeo
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package com.wildfire.gui;
 
-import com.mojang.blaze3d.platform.cursor.CursorTypes;
-import com.wildfire.main.WildfireHelper;
-import com.wildfire.main.config.types.FloatConfigKey;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.wildfire.main.config.FloatConfigKey;
 import it.unimi.dsi.fastutil.floats.Float2ObjectFunction;
 import it.unimi.dsi.fastutil.floats.FloatConsumer;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
-import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
-@Environment(EnvType.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class WildfireSlider extends AbstractWidget {
-    private double value;
+    private double value; // Valor normalizado 0.0 - 1.0
     private final double minValue;
     private final double maxValue;
     private final FloatConsumer valueUpdate;
     private final Float2ObjectFunction<Component> messageUpdate;
     private final FloatConsumer onSave;
-
     private float lastValue;
     private boolean changed;
-    private boolean dragging;
 
-    private double mouseStep = 0;
-    private double arrowKeyStep = 0.05;
+    public WildfireSlider(int xPos, int yPos, int width, int height, FloatConfigKey config, double currentVal, FloatConsumer valueUpdate, Float2ObjectFunction<Component> messageUpdate, FloatConsumer onSave) {
+        this(xPos, yPos, width, height, (double)config.getMinInclusive(), (double)config.getMaxInclusive(), currentVal, valueUpdate, messageUpdate, onSave);
+    }
 
-    private WildfireSlider(int xPos, int yPos, int width, int height, double minVal, double maxVal, double currentVal, FloatConsumer valueUpdate,
-                          Float2ObjectFunction<Component> messageUpdate, FloatConsumer onSave) {
+    public WildfireSlider(int xPos, int yPos, int width, int height, double minVal, double maxVal, double currentVal, FloatConsumer valueUpdate, Float2ObjectFunction<Component> messageUpdate, FloatConsumer onSave) {
         super(xPos, yPos, width, height, Component.empty());
         this.minValue = minVal;
         this.maxValue = maxVal;
         this.valueUpdate = valueUpdate;
         this.messageUpdate = messageUpdate;
         this.onSave = onSave;
-        setValueInternal(currentVal);
-    }
-
-    public void setArrowKeyStep(double arrowKeyStep) {
-        this.arrowKeyStep = arrowKeyStep;
-    }
-
-    private void setMouseStep(double mouseStep) {
-        this.mouseStep = mouseStep;
+        this.setValueInternal(currentVal);
     }
 
     protected void updateMessage() {
-        setMessage(messageUpdate.get(lastValue));
+        this.setMessage(this.messageUpdate.get(this.lastValue));
     }
 
     protected void applyValue() {
-        float newValue = getFloatValue();
-        if (lastValue != newValue) {
-            valueUpdate.accept(newValue);
-            lastValue = newValue;
-            changed = true;
+        float newValue = this.getFloatValue();
+        if (this.lastValue != newValue) {
+            this.valueUpdate.accept(newValue);
+            this.lastValue = newValue;
+            this.changed = true;
         }
     }
 
     public void save() {
-        if (changed) {
-            onSave.accept(lastValue);
-            changed = false;
+        if (this.changed) {
+            this.onSave.accept(this.lastValue);
+            this.changed = false;
         }
     }
 
     @Override
-    public void onRelease(MouseButtonEvent event) {
-        this.dragging = false;
-        save();
+    public void onRelease(double mouseX, double mouseY) {
+        this.save();
     }
 
     @Override
-    public void onClick(MouseButtonEvent event, boolean doubleClick) {
-        this.dragging = true;
-        this.setValueFromMouse(event.x());
+    public void onClick(double mouseX, double mouseY) {
+        this.setValueFromMouse(mouseX);
     }
 
     @Override
-    public boolean keyPressed(KeyEvent event) {
-        int keyCode = event.key();
-        if(keyCode == GLFW.GLFW_KEY_LEFT || keyCode == GLFW.GLFW_KEY_RIGHT) {
-            value += (keyCode == GLFW.GLFW_KEY_LEFT ? -arrowKeyStep : arrowKeyStep);
-            value = WildfireHelper.snapToStep(Mth.clamp(value, 0, 1), arrowKeyStep);
-            applyValue();
-            updateMessage();
-            return true;
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        boolean result = super.keyPressed(keyCode, scanCode, modifiers);
+        // 263 = Izquierda, 262 = Derecha
+        if (keyCode == 263 || keyCode == 262) {
+            this.save();
         }
-        return super.keyPressed(event);
-    }
-
-    @Override
-    protected void onDrag(MouseButtonEvent event, double d, double e) {
-        this.setValueFromMouse(event.x());
-    }
-
-    @Override
-    public boolean keyReleased(KeyEvent event) {
-        var keyCode = event.key();
-        if(keyCode == GLFW.GLFW_KEY_LEFT || keyCode == GLFW.GLFW_KEY_RIGHT) {
-            save();
-            return true;
-        }
-        return super.keyReleased(event);
+        return result;
     }
 
     @Override
@@ -140,163 +86,70 @@ public class WildfireSlider extends AbstractWidget {
     }
 
     @Override
-    protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
-        if (!this.visible) {
-            return;
-        }
-        int xP = getX() + 2;
-        graphics.fill(xP - 2, getY(), getX() + this.width, getY() + this.height, 0x222222 + (128 << 24));
-        int xPos = getX() + 2 + (int) (this.value * (float)(this.width - 3));
+    protected void renderWidget(GuiGraphics ctx, int mouseX, int mouseY, float delta) {
+        if (this.visible) {
+            RenderSystem.disableDepthTest();
 
-        graphics.fill(getX() + 1, getY() + 1, xPos - 1, getY() + this.height - 1, active?(0x222266 + (180 << 24)):(0x111133 + (180 << 24)));
+            // Dibujar fondo del slider
+            int xP = this.getX() + 2;
+            ctx.fill(xP - 2, this.getY(), this.getX() + this.width - 1, this.getY() + this.height, -2145246686);
 
-        if(active) {
-            int xPos2 = this.getX() + 3 + (int) (this.value * (float) (this.width - 4));
-            graphics.fill(xPos2 - 2, getY() + 1, xPos2, getY() + this.height - 1, 0xFFFFFF + (120 << 24));
-        }
-        Font font = Minecraft.getInstance().font;
-        int i = this.getX() + 2;
-        int j = this.getX() + this.getWidth() - 2;
+            // Dibujar progreso (barra de color)
+            int xPos = this.getX() + 2 + (int)(this.value * (double)((float)(this.width - 3)));
+            ctx.fill(this.getX() + 1, this.getY() + 1, xPos - 1, this.getY() + this.height - 1, -1272831386);
 
-        int textColor = (isHoveredOrFocused()&&active) || changed ? 0xFFFF55 : 0xFFFFFF;
-        if(!active) {
-            textColor = 0x666666;
-        }
-        GuiUtils.drawScrollableTextWithoutShadow(GuiUtils.Justify.CENTER, graphics, font, this.getMessage(), i, this.getY(), j, this.getY() + this.getHeight(), textColor);
+            // Dibujar el "indicador" o manija
+            int xPos2 = this.getX() + 3 + (int)(this.value * (double)((float)(this.width - 5)));
+            ctx.fill(xPos2 - 2, this.getY() + 1, xPos2, this.getY() + this.height - 1, 2030043135);
 
-        if(isHovered() || dragging) {
-            if(!active) {
-                graphics.requestCursor(CursorTypes.NOT_ALLOWED);
-            } else {
-                graphics.requestCursor(dragging ? CursorTypes.RESIZE_EW : CursorTypes.POINTING_HAND);
-            }
+            RenderSystem.enableDepthTest();
+
+            // Dibujar el texto encima
+            Font font = Minecraft.getInstance().font;
+            int i = this.getX() + 2;
+            int j = this.getX() + this.width - 2;
+
+            // Si el mouse está encima o ha cambiado, usamos un color amarillento (16777045), si no, blanco.
+            int textColor = (!this.isHovered && !this.changed) ? 16777215 : 16777045;
+
+            GuiUtils.drawScrollableTextWithoutShadow(ctx, font, this.getMessage(), i, this.getY(), j, this.getY() + this.height, textColor);
         }
     }
 
     public float getFloatValue() {
-        return (float) getValue();
+        return (float)this.getValue();
     }
 
     public double getValue() {
-        return this.value * (maxValue - minValue) + minValue;
+        return this.value * (this.maxValue - this.minValue) + this.minValue;
     }
 
     public void setValue(double value) {
-        setValueInternal(value);
-        applyValue();
+        this.setValueInternal(value);
+        this.applyValue();
     }
 
     private void setValueInternal(double value) {
-        this.value = Mth.clamp((value - this.minValue) / (this.maxValue - this.minValue), 0, 1);
-        this.lastValue = (float) value;
-        updateMessage();
-        //Note: Does not call applyValue
+        this.value = Mth.clamp((value - this.minValue) / (this.maxValue - this.minValue), 0.0, 1.0);
+        this.lastValue = (float)value;
+        this.updateMessage();
     }
 
     @Override
-    public void updateWidgetNarration(NarrationElementOutput builder) {
-        builder.add(NarratedElementType.TITLE, Component.translatable("gui.narrate.slider", this.getMessage()));
-        if(active) {
-            if(isFocused()) {
-                builder.add(NarratedElementType.USAGE, Component.translatable("narration.slider.usage.focused"));
-            } else {
-                builder.add(NarratedElementType.USAGE, Component.translatable("narration.slider.usage.hovered"));
-            }
-        }
+    protected void onDrag(double mouseX, double mouseY, double deltaX, double deltaY) {
+        this.setValueFromMouse(mouseX);
+        super.onDrag(mouseX, mouseY, deltaX, deltaY);
+    }
+
+    @Override
+    protected void updateWidgetNarration(NarrationElementOutput builder) {
+        // En Forge 1.21.1 este método reemplaza a method_47399
     }
 
     private void setValueFromMouse(double mouseX) {
-        this.value = ((mouseX - (double)(this.getX() + 4)) / (double)(this.getWidth() - 8));
-        this.value = Mth.clamp(this.value, 0, 1);
-
-        if (mouseStep > 0) {
-            double snapped = Math.round(this.value / mouseStep) * mouseStep;
-            this.value = Mth.clamp(snapped, 0, 1);
-        }
-
-        applyValue();
-        updateMessage();
+        this.value = (mouseX - (double)(this.getX() + 4)) / (double)(this.width - 8);
+        this.value = Mth.clamp(this.value, 0.0, 1.0);
+        this.applyValue();
+        this.updateMessage();
     }
-
-    @SuppressWarnings({"NotNullFieldNotInitialized", "UnusedReturnValue"})
-    public static final class Builder {
-        private int x, y, width, height;
-        private float min, max;
-        private double value;
-        private @Nullable Double step = null;
-        private @Nullable Double mouseStep = null;
-        private boolean active = true;
-        private Float2ObjectFunction<Component> messageSupplier;
-        private FloatConsumer onUpdate, onSave;
-
-        public Builder message(Float2ObjectFunction<Component> messageSupplier) {
-            this.messageSupplier = messageSupplier;
-            return this;
-        }
-
-        public Builder position(int x, int y) {
-            this.x = x;
-            this.y = y;
-            return this;
-        }
-
-        public Builder size(int width, int height) {
-            this.width = width;
-            this.height = height;
-            return this;
-        }
-
-        public Builder update(FloatConsumer onUpdate) {
-            this.onUpdate = onUpdate;
-            return this;
-        }
-
-        public Builder save(FloatConsumer onSave) {
-            this.onSave = onSave;
-            return this;
-        }
-
-        public Builder range(FloatConfigKey key) {
-            return range(key.getMinInclusive(), key.getMaxInclusive());
-        }
-
-        public Builder range(float min, float max) {
-            this.min = min;
-            this.max = max;
-            return this;
-        }
-
-        public Builder current(double value) {
-            this.value = value;
-            return this;
-        }
-
-        public Builder active(boolean active) {
-            this.active = active;
-            return this;
-        }
-
-        public Builder step(double step) {
-            this.step = step;
-            return this;
-        }
-
-        public Builder mouseStep(double step) {
-            this.mouseStep = step;
-            return this;
-        }
-
-        public WildfireSlider build() {
-            var built = new WildfireSlider(x, y, width, height, min, max, value, onUpdate, messageSupplier, onSave);
-            built.active = active;
-            if(step != null) {
-                built.setArrowKeyStep(step);
-            }
-            if(mouseStep != null) {
-                built.setMouseStep(mouseStep);
-            }
-            return built;
-        }
-    }
-
 }

@@ -1,318 +1,237 @@
-/*
- * Wildfire's Female Gender Mod is a female gender mod created for Minecraft.
- * Copyright (C) 2023-present WildfireRomeo
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package com.wildfire.render;
+
+import java.util.function.Consumer;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.wildfire.api.IGenderArmor;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireHelper;
-import com.wildfire.main.config.ClientConfig;
-import com.wildfire.main.uvs.UVLayout;
-import com.wildfire.mixins.accessors.LivingEntityRendererAccessor;
-import com.wildfire.render.WildfireModelRenderer.BreastModelBox;
-import com.wildfire.render.WildfireModelRenderer.OverlayModelBox;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import com.wildfire.main.entitydata.Breasts;
+import com.wildfire.main.entitydata.EntityConfig;
+import com.wildfire.physics.BreastPhysics;
+
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
-import net.minecraft.client.renderer.entity.state.AvatarRenderState;
-import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
-import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.util.ARGB;
+import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.UnknownNullability;
-import org.joml.*;
+import net.minecraft.world.level.block.Blocks;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
-import java.lang.Math;
-import java.util.Objects;
-import java.util.function.Consumer;
+@OnlyIn(Dist.CLIENT)
+public class GenderLayer<T extends LivingEntity, M extends HumanoidModel<T>> extends RenderLayer<T, M> {
+	private WildfireModelRenderer.BreastModelBox lBreast;
+	private WildfireModelRenderer.BreastModelBox rBreast;
+	private final RenderLayerParent<T, M> context;
 
-@Environment(EnvType.CLIENT)
-public class GenderLayer<S extends HumanoidRenderState, M extends HumanoidModel<S>> extends RenderLayer<S, M> {
+	private static final WildfireModelRenderer.OverlayModelBox lBreastWear = new WildfireModelRenderer.OverlayModelBox(true, 64, 64, 17, 34, -4.0F, 0.0F, 0.0F, 4, 5, 3, 0.0F, false);
+	private static final WildfireModelRenderer.OverlayModelBox rBreastWear = new WildfireModelRenderer.OverlayModelBox(false, 64, 64, 21, 34, 0.0F, 0.0F, 0.0F, 4, 5, 3, 0.0F, false);
 
-    private static final float DEG_TO_RAD = (float) (Math.PI / 180);
+	protected ItemStack armorStack;
+	protected IGenderArmor genderArmor;
+	protected boolean isChestplateOccupied;
+	protected boolean bounceEnabled;
+	protected boolean breathingAnimation;
+	protected float breastOffsetX, breastOffsetY, breastOffsetZ;
+	protected float lPhysPositionY, lPhysPositionX, rPhysPositionY, rPhysPositionX;
+	protected float lPhysBounceRotation, rPhysBounceRotation;
+	protected float breastSize, zOffset, outwardAngle, preBreastSize, preBreastOffsetZ;
+	protected Breasts breasts;
 
-    @UnknownNullability("null until #resizeBox() is first called")
-    private BreastModelBox lBreast, rBreast;
-    @UnknownNullability("null until #resizeBox() is first called")
-    private OverlayModelBox lBreastWear, rBreastWear;
+	public GenderLayer(RenderLayerParent<T, M> render) {
+		super(render);
+		this.context = render;
+		this.lBreast = new WildfireModelRenderer.BreastModelBox(64, 64, 16, 17, -4.0F, 0.0F, 0.0F, 4, 5, 4, 0.0F, false);
+		this.rBreast = new WildfireModelRenderer.BreastModelBox(64, 64, 20, 17, 0.0F, 0.0F, 0.0F, 4, 5, 4, 0.0F, false);
+	}
 
-    private @Nullable UVLayout prevLeftBreastUVLayout, prevRightBreastUVLayout,
-        prevLeftBreastOverlayUVLayout, prevRightBreastOverlayUVLayout;
+	@Nullable
+	private RenderType getRenderLayer(T entity) {
+		if (this.context instanceof LivingEntityRenderer<T, M> renderer) {
+			return renderer.getModel().renderType(renderer.getTextureLocation(entity));
+		}
+		return null;
+	}
 
-    private final RenderLayerParent<S, M> context;
+	@Override
+	public void render(@NotNull PoseStack matrixStack, @NotNull MultiBufferSource buffer, int light, @NotNull T entity, float limbAngle, float limbDistance, float partialTicks, float animationProgress, float headYaw, float headPitch) {
+		if (Minecraft.getInstance().player == null) return;
 
-    private boolean isUniboob;
-    // although ItemStack instances are mutable, this is safe to keep a reference to as this is a copy of the real stack
-    protected ItemStack armorStack = ItemStack.EMPTY;
-    protected IGenderArmor genderArmor = IGenderArmor.EMPTY;
-    protected boolean isChestplateOccupied, bounceEnabled, breathingAnimation;
-    protected float breastOffsetX, breastOffsetY, breastOffsetZ, lPhysPositionY, lPhysPositionX, rPhysPositionY, rPhysPositionX,
-            lPhysBounceRotation, rPhysBounceRotation, breastSize, zOffset, outwardAngle;
+		EntityConfig config = EntityConfig.getEntity(entity);
+		if (config != null) {
+			try {
+				if (!this.setupRender(entity, config, partialTicks)) return;
 
-    public GenderLayer(RenderLayerParent<S, M> render) {
-        super(render);
-        this.context = render;
-    }
+				int overlay = LivingEntityRenderer.getOverlayCoords(entity, 0.0F);
+				this.renderSides(entity, this.getParentModel(), matrixStack, (side) ->
+						this.renderBreast(entity, matrixStack, buffer, light, overlay, side)
+				);
+			} catch (Exception e) {
+				WildfireGender.LOGGER.error("Failed to render breast layer", e);
+			}
+		}
+	}
 
-    /**
-     * Convenience method around {@link LivingEntityRendererAccessor#invokeGetRenderType}
-     */
-    private @Nullable RenderType getRenderLayer(S state) {
-        boolean bodyVisible = !state.isInvisible;
-        boolean translucent = state.isInvisible && !state.isInvisibleToPlayer;
-        boolean glowing = state.appearsGlowing();
+	protected boolean setupRender(T entity, EntityConfig config, float partialTicks) {
+		this.armorStack = entity.getItemBySlot(EquipmentSlot.CHEST);
+		this.genderArmor = WildfireHelper.getArmorConfig(this.armorStack);
+		this.isChestplateOccupied = this.genderArmor.coversBreasts() && !config.getArmorPhysicsOverride();
 
-        var renderer = (LivingEntityRenderer<?, ?, ?>) context;
-        return ((LivingEntityRendererAccessor) renderer).invokeGetRenderType(state, bodyVisible, translucent, glowing);
-    }
+		if (this.genderArmor.alwaysHidesBreasts() || (!config.showBreastsInArmor() && this.isChestplateOccupied)) {
+			return false;
+		}
 
-    @Override
-    public void submit(PoseStack matrixStack, SubmitNodeCollector queue, int light, S state, float limbAngle, float limbDistance) {
-        var entityConfigState = GenderRenderState.get(state);
-        if(entityConfigState == null) return;
+		this.breasts = config.getBreasts();
+		this.breastOffsetX = (float) Math.round(breasts.getXOffset() * 10.0F) / 10.0F;
+		this.breastOffsetY = (float) -Math.round(breasts.getYOffset() * 10.0F) / 10.0F;
+		this.breastOffsetZ = (float) -Math.round(breasts.getZOffset() * 10.0F) / 10.0F;
 
-        try {
-            if(!setupRender(state, entityConfigState)) return;
-            int overlay = LivingEntityRenderer.getOverlayCoords(state, 0);
+		BreastPhysics lPhys = config.getLeftBreastPhysics();
+		float bSize = lPhys.getBreastSize(partialTicks);
+		this.outwardAngle = Math.min(Math.round(breasts.getCleavage() * 100.0F), 10.0F);
 
-            //noinspection CodeBlock2Expr
-            renderSides(state, getParentModel(), matrixStack, side -> {
-                renderBreast(state, matrixStack, queue, overlay, side);
-            });
-        } catch(Exception e) {
-            WildfireGender.LOGGER.error("Failed to render breast layer", e);
-        }
-    }
+		this.resizeBox(bSize);
+		this.lPhysPositionY = Mth.lerp(partialTicks, lPhys.getPrePositionY(), lPhys.getPositionY());
+		this.lPhysPositionX = Mth.lerp(partialTicks, lPhys.getPrePositionX(), lPhys.getPositionX());
+		this.lPhysBounceRotation = Mth.lerp(partialTicks, lPhys.getPreBounceRotation(), lPhys.getBounceRotation());
 
-    /**
-     * Common logic for setting up breast rendering
-     *
-     * @return {@code true} if rendering should continue
-     */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    protected boolean setupRender(S entityState, GenderRenderState genderState) {
-        if(!ClientConfig.RENDER_BREASTS) return false;
+		if (breasts.isUniboob()) {
+			this.rPhysPositionY = lPhysPositionY;
+			this.rPhysPositionX = lPhysPositionX;
+			this.rPhysBounceRotation = lPhysBounceRotation;
+		} else {
+			BreastPhysics rPhys = config.getRightBreastPhysics();
+			this.rPhysPositionY = Mth.lerp(partialTicks, rPhys.getPrePositionY(), rPhys.getPositionY());
+			this.rPhysPositionX = Mth.lerp(partialTicks, rPhys.getPrePositionX(), rPhys.getPositionX());
+			this.rPhysBounceRotation = Mth.lerp(partialTicks, rPhys.getPreBounceRotation(), rPhys.getBounceRotation());
+		}
 
-        armorStack = entityState.chestEquipment;
-        //Note: When the stack is empty the helper will fall back to an implementation that returns the proper data
-        genderArmor = WildfireHelper.getArmorConfig(armorStack);
-        isChestplateOccupied = genderArmor.coversBreasts() && !genderState.armorPhysicsOverride;
-        if(genderArmor.alwaysHidesBreasts() || !genderState.showBreastsInArmor && isChestplateOccupied) {
-            //If the armor always hides breasts or there is armor and the player configured breasts
-            // to be hidden when wearing armor, we can just exit early rather than doing any calculations
-            return false;
-        }
+		this.breastSize = Math.max(bSize * 1.5F, bSize);
+		if (this.breastSize < 0.02F) return false;
 
-        if(!isLayerVisible(entityState)) {
-            return false;
-        }
+		this.zOffset = 0.0625F - bSize * 0.0625F;
+		float resistance = Mth.clamp(this.genderArmor.physicsResistance(), 0.0F, 1.0F);
 
-        GenderRenderState.BreastState breasts = genderState.breasts;
-        breastOffsetX = WildfireHelper.round(breasts.xOffset, 1);
-        breastOffsetY = -WildfireHelper.round(breasts.yOffset, 1);
-        breastOffsetZ = -WildfireHelper.round(breasts.zOffset, 1);
+		// Lógica de animación de respiración (activada si no está sumergido o en fuego)
+		this.breathingAnimation = (config.getArmorPhysicsOverride() || resistance <= 0.5F) &&
+				(!entity.isInWater() || entity.level().getBlockState(entity.blockPosition()).is(Blocks.BUBBLE_COLUMN));
 
-        isUniboob = breasts.uniboob;
+		this.bounceEnabled = config.hasBreastPhysics() && (!this.isChestplateOccupied || resistance < 1.0F);
+		return true;
+	}
 
-        GenderRenderState.BreastPhysicsState leftPhysicsState = genderState.leftBreastPhysics;
-        final float bSize = leftPhysicsState.getBreastSize();
-        outwardAngle = Math.round(breasts.cleavage * 100f);
-        outwardAngle = Math.min(outwardAngle, 10);
+	protected void resizeBox(float bSize) {
+		float reducer = (bSize < 0.84F ? 1 : 0) + (bSize < 0.72F ? 1 : 0) - 1.0F;
+		if (this.preBreastSize != bSize || this.preBreastOffsetZ != this.breastOffsetZ) {
+			int depth = (int) (4.0F - this.breastOffsetZ - reducer);
+			this.lBreast = new WildfireModelRenderer.BreastModelBox(64, 64, 16, 17, -4.0F, 0.0F, 0.0F, 4, 5, depth, 0.0F, false);
+			this.rBreast = new WildfireModelRenderer.BreastModelBox(64, 64, 20, 17, 0.0F, 0.0F, 0.0F, 4, 5, depth, 0.0F, false);
+			this.preBreastSize = bSize;
+			this.preBreastOffsetZ = this.breastOffsetZ;
+		}
+	}
 
-        resizeBox(genderState, bSize);
+	protected void setupTransformations(T entity, M model, PoseStack matrixStack, BreastSide side) {
+		if (entity.isBaby()) {
+			float f = 0.5F;
+			matrixStack.scale(f, f, f);
+			matrixStack.translate(0.0F, 24.0F / 16.0F, 0.0F);
+		}
 
-        lPhysPositionY = leftPhysicsState.getPositionY();
-        lPhysPositionX = leftPhysicsState.getPositionX();
-        lPhysBounceRotation = leftPhysicsState.getBounceRotation();
-        if(isUniboob) {
-            rPhysPositionY = lPhysPositionY;
-            rPhysPositionX = lPhysPositionX;
-            rPhysBounceRotation = lPhysBounceRotation;
-        } else {
-            GenderRenderState.BreastPhysicsState rightPhysicsState = genderState.rightBreastPhysics;
-            rPhysPositionY = rightPhysicsState.getPositionY();
-            rPhysPositionX = rightPhysicsState.getPositionX();
-            rPhysBounceRotation = rightPhysicsState.getBounceRotation();
-        }
+		ModelPart body = model.body;
+		matrixStack.translate(body.x * 0.0625F, body.y * 0.0625F, body.z * 0.0625F);
+		if (body.zRot != 0.0F) matrixStack.mulPose((new Quaternionf()).rotationZ(body.zRot));
+		if (body.yRot != 0.0F) matrixStack.mulPose((new Quaternionf()).rotationY(body.yRot));
+		if (body.xRot != 0.0F) matrixStack.mulPose((new Quaternionf()).rotationX(body.xRot));
 
-        breastSize = Math.min(bSize * 1.5f, 0.7f); // Limit the max size to 0.7f
+		if (this.bounceEnabled) {
+			matrixStack.translate((side.isLeft ? lPhysPositionX : rPhysPositionX) / 32.0F, (side.isLeft ? lPhysPositionY : rPhysPositionY) / 32.0F, 0.0F);
+		}
 
-        if (bSize > 0.7f) {
-            breastSize = bSize; // If bSize exceeds 0.7f, use bSize
-        }
+		matrixStack.translate((side.isLeft ? breastOffsetX : -breastOffsetX) * 0.0625F, 0.05625F + breastOffsetY * 0.0625F, zOffset - 0.125F + breastOffsetZ * 0.0625F);
 
-        if (breastSize < 0.02f) {
-            return false; // Return false if breastSize is too small
-        }
+		if (!breasts.isUniboob()) {
+			float sign = side.isLeft ? 1 : -1;
+			matrixStack.translate(-0.125F * sign, 0.0F, 0.0F);
+			if (this.bounceEnabled) {
+				matrixStack.mulPose((new Quaternionf()).rotationY((side.isLeft ? lPhysBounceRotation : rPhysBounceRotation) * (float)(Math.PI / 180.0)));
+			}
+			matrixStack.translate(0.125F * sign, 0.0F, 0.0F);
+		}
 
-        zOffset = 0.0625f - (bSize * 0.0625f); // Calculate zOffset
-        breastSize += 0.5f * Math.abs(bSize - 0.7f) * 2f; // Adjust breastSize based on bSize
+		float totalRotation = Math.min(this.breastSize + (this.bounceEnabled ? -(side.isLeft ? lPhysPositionY : rPhysPositionY) / 12.0F : 0), 1.0F);
 
-        float resistance = Mth.clamp(genderArmor.physicsResistance(), 0, 1);
-        breathingAnimation = ((genderState.armorPhysicsOverride || resistance <= 0.5F) && genderState.isBreathing);
-        bounceEnabled = genderState.hasBreastPhysics && (!isChestplateOccupied || resistance < 1); //oh, you found this?
-        return true;
-    }
+		matrixStack.mulPose((new Quaternionf()).rotationY((side.isLeft ? outwardAngle : -outwardAngle) * (float)(Math.PI / 180.0)));
+		matrixStack.mulPose((new Quaternionf()).rotationX((-35.0F * totalRotation) * (float)(Math.PI / 180.0)));
 
-    protected boolean isLayerVisible(S state) {
-        return !state.isInvisibleToPlayer || state.appearsGlowing();
-    }
+		if (this.breathingAnimation) {
+			float breath = -Mth.sin((float)entity.tickCount * 0.09F) * 0.45F + 0.45F;
+			matrixStack.mulPose((new Quaternionf()).rotationX(breath * (float)(Math.PI / 180.0)));
+		}
+		matrixStack.scale(0.9995F, 1.0F, 1.0F);
+	}
 
-    protected void resizeBox(GenderRenderState state, float breastSize) {
-        //TODO: Better way for this?
-        if(!Objects.equals(this.prevLeftBreastUVLayout, state.leftBreastUVLayout)
-                || !Objects.equals(this.prevRightBreastUVLayout, state.rightBreastUVLayout)
-                || !Objects.equals(this.prevLeftBreastOverlayUVLayout, state.leftBreastOverlayUVLayout)
-                || !Objects.equals(this.prevRightBreastOverlayUVLayout, state.rightBreastOverlayUVLayout)) {
+	private void renderBreast(T entity, PoseStack matrixStack, MultiBufferSource buffer, int light, int overlay, BreastSide side) {
+		RenderType type = this.getRenderLayer(entity);
+		if (type != null) {
+			int color = FastColor.ARGB32.color(entity.isInvisible() ? 38 : 255, 255, 255, 255);
+			VertexConsumer consumer = buffer.getBuffer(type);
+			renderBox(side.isLeft ? lBreast : rBreast, matrixStack, consumer, light, overlay, color);
 
-            this.prevLeftBreastUVLayout = state.leftBreastUVLayout;
-            this.prevRightBreastUVLayout = state.rightBreastUVLayout;
-            this.prevLeftBreastOverlayUVLayout = state.leftBreastOverlayUVLayout;
-            this.prevRightBreastOverlayUVLayout = state.rightBreastOverlayUVLayout;
+			if (entity instanceof AbstractClientPlayer player && player.isModelPartShown(PlayerModelPart.JACKET)) {
+				matrixStack.pushPose();
+				matrixStack.translate(0.0F, 0.0F, -0.015F);
+				matrixStack.scale(1.05F, 1.05F, 1.05F);
+				renderBox(side.isLeft ? lBreastWear : rBreastWear, matrixStack, consumer, light, overlay, color);
+				matrixStack.popPose();
+			}
+		}
+	}
 
-            this.lBreast = new BreastModelBox(64, 64, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, state.leftBreastUVLayout);
-            this.rBreast = new BreastModelBox(64, 64, 0F, 0.0F, 0F, 4, 5, 3, 0.0F, state.rightBreastUVLayout);
-            this.lBreastWear = new OverlayModelBox(64, 64, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, state.leftBreastOverlayUVLayout);
-            this.rBreastWear = new OverlayModelBox(64, 64, 0, 0.0F, 0F, 4, 5, 3, 0.0F, state.rightBreastOverlayUVLayout);
-        }
-    }
+	protected void renderSides(T entity, M model, PoseStack matrixStack, Consumer<BreastSide> renderer) {
+		matrixStack.pushPose();
+		this.setupTransformations(entity, model, matrixStack, BreastSide.LEFT);
+		renderer.accept(BreastSide.LEFT);
+		matrixStack.popPose();
 
-    protected void setupTransformations(S state, M model, PoseStack matrixStack, BreastSide side) {
-        if(state.isBaby) {
-            matrixStack.scale(state.ageScale, state.ageScale, state.ageScale);
-            matrixStack.translate(0f, 0.75f, 0f);
-        }
+		matrixStack.pushPose();
+		this.setupTransformations(entity, model, matrixStack, BreastSide.RIGHT);
+		renderer.accept(BreastSide.RIGHT);
+		matrixStack.popPose();
+	}
 
-        ModelPart body = model.body;
-        matrixStack.translate(body.x * 0.0625f, body.y * 0.0625f, body.z * 0.0625f);
-        if(body.zRot != 0.0F || body.yRot != 0.0F || body.xRot != 0.0F) {
-            matrixStack.mulPose(new Quaternionf().rotationZYX(body.zRot, body.yRot, body.xRot));
-        }
-
-        if(bounceEnabled) {
-            matrixStack.translate((side.isLeft ? lPhysPositionX : rPhysPositionX) / 32f, 0, 0);
-            matrixStack.translate(0, (side.isLeft ? lPhysPositionY : rPhysPositionY) / 32f, 0);
-        }
-
-        matrixStack.translate((side.isLeft ? breastOffsetX : -breastOffsetX) * 0.0625f, 0.05625f + (breastOffsetY * 0.0625f), zOffset - 0.0625f * 2f + (breastOffsetZ * 0.0425f)); //shift down to correct position
-
-        if(!isUniboob) {
-            matrixStack.translate(-0.0625f * 2 * (side.isLeft ? 1 : -1), 0, 0);
-        }
-        if(bounceEnabled) {
-            matrixStack.mulPose(new Quaternionf().rotationXYZ(0, (float)((side.isLeft ? lPhysBounceRotation : rPhysBounceRotation) * (Math.PI / 180f)), 0));
-        }
-        if(!isUniboob) {
-            matrixStack.translate(0.0625f * 2 * (side.isLeft ? 1 : -1), 0, 0);
-        }
-
-        float rotation = breastSize;
-        if(bounceEnabled) {
-            matrixStack.translate(0, -0.035f * breastSize, 0); //shift down to correct position
-            rotation -= (side.isLeft ? lPhysPositionY : rPhysPositionY) / 12f;
-        }
-
-        rotation = Math.min(rotation, breastSize + 0.2f);
-        rotation = Math.min(rotation, 1); //hard limit for MAX
-
-        if(isChestplateOccupied) {
-            matrixStack.translate(0, 0, 0.01f);
-        }
-
-        Quaternionf rotationTransform = new Quaternionf()
-                .rotationY((side.isLeft ? outwardAngle : -outwardAngle) * DEG_TO_RAD)
-                .rotateX(-35f * rotation * DEG_TO_RAD);
-
-        if(breathingAnimation) {
-            float f5 = -Mth.cos(state.ageInTicks * 0.09F) * 0.45F + 0.45F;
-            rotationTransform.rotateX(f5 * DEG_TO_RAD);
-        }
-
-        matrixStack.mulPose(rotationTransform);
-        matrixStack.scale(0.9995f, 1f, 1f); //z-fighting FIXXX
-    }
-
-    private void renderBreast(S state, PoseStack matrixStack, SubmitNodeCollector queue, int overlay, BreastSide side) {
-        RenderType renderLayer = getRenderLayer(state);
-        if(renderLayer == null) return; // only render if the player is visible in some capacity
-
-        int alpha = state.isInvisible ? ARGB.as8BitChannel(0.15f) : 255;
-        int color = ARGB.color(alpha, 255, 255, 255);
-
-        var model = side.isLeft ? lBreast : rBreast;
-        queue.submitCustomGeometry(matrixStack, renderLayer, new BreastRenderCommand(model, state, overlay, color));
-
-        if(state instanceof AvatarRenderState playerState && playerState.showJacket) {
-            matrixStack.translate(0, 0, -0.015f);
-            matrixStack.scale(1.05f, 1.05f, 1.05f);
-            var jacketModel = side.isLeft ? lBreastWear : rBreastWear;
-            queue.submitCustomGeometry(matrixStack, renderLayer, new BreastRenderCommand(jacketModel, state, overlay, color));
-        }
-    }
-
-    protected void renderSides(S state, M model, PoseStack matrixStack, Consumer<BreastSide> renderer) {
-        matrixStack.pushPose();
-        try {
-            setupTransformations(state, model, matrixStack, BreastSide.LEFT);
-            renderer.accept(BreastSide.LEFT);
-        } finally {
-            matrixStack.popPose();
-        }
-
-        matrixStack.pushPose();
-        try {
-            setupTransformations(state, model, matrixStack, BreastSide.RIGHT);
-            renderer.accept(BreastSide.RIGHT);
-        } finally {
-            matrixStack.popPose();
-        }
-    }
-
-    public static void renderBox(WildfireModelRenderer.ModelBox model, PoseStack.Pose entry, VertexConsumer vertexConsumer,
-                                    int light, int overlay, int color) {
-        Matrix4f matrix4f = entry.pose();
-        Matrix3f matrix3f = entry.normal();
-        for(var quad : model.quads) {
-
-            //Make sure UVs aren't set to zero. If they are, the textures screw up. Don't render the quad at all.
-            if(quad.uvs[0] == 0.0F && quad.uvs[1] == 0.0F && quad.uvs[2] == 0.0F && quad.uvs[3] == 0.0F) continue;
-
-            Vector3f vector3f = new Vector3f(quad.normal.x(), quad.normal.y(), quad.normal.z()).mul(matrix3f);
-            float normalX = vector3f.x;
-            float normalY = vector3f.y;
-            float normalZ = vector3f.z;
-            for (var vertex : quad.vertexPositions) {
-                float j = vertex.x() / 16.0F;
-                float k = vertex.y() / 16.0F;
-                float l = vertex.z() / 16.0F;
-                Vector4f vector4f = new Vector4f(j, k, l, 1.0F).mul(matrix4f);
-                vertexConsumer.addVertex(vector4f.x(), vector4f.y(), vector4f.z(), color, vertex.u(), vertex.v(),
-                        overlay, light, normalX, normalY, normalZ);
-            }
-        }
-    }
+	protected static void renderBox(WildfireModelRenderer.ModelBox model, PoseStack matrixStack, VertexConsumer consumer, int light, int overlay, int color) {
+	Matrix4f pose = matrixStack.last().pose();
+	Matrix3f normalMatrix = matrixStack.last().normal();
+	for (WildfireModelRenderer.TexturedQuad quad : model.quads) {
+		Vector3f norm = new Vector3f(quad.normal).mul(normalMatrix);
+		for (WildfireModelRenderer.PositionTextureVertex vertex : quad.vertexPositions) {
+			consumer.addVertex(pose, vertex.x() / 16.0F, vertex.y() / 16.0F, vertex.z() / 16.0F)
+					.setColor(color)
+					.setUv(vertex.u(), vertex.v())
+					.setOverlay(overlay)
+					.setLight(light)
+					.setNormal(norm.x(), norm.y(), norm.z());
+		}
+	}
+}
 }

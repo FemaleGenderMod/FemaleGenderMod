@@ -1,219 +1,154 @@
-/*
- * Wildfire's Female Gender Mod is a female gender mod created for Minecraft.
- * Copyright (C) 2023-present WildfireRomeo
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package com.wildfire.render;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.wildfire.api.IBreastArmorTexture;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.uvs.UVLayout;
-import com.wildfire.main.uvs.UVQuad;
-import com.wildfire.mixins.accessors.EquipmentLayerRendererAccessor;
-import com.wildfire.render.WildfireModelRenderer.BreastModelBox;
-import com.wildfire.render.ducks.MissingTextureLogger;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import com.wildfire.main.entitydata.EntityConfig;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.geom.EntityModelSet;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Sheets;
-import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
-import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
-import net.minecraft.client.renderer.entity.state.ArmorStandRenderState;
-import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.EquipmentAssetManager;
-import net.minecraft.client.resources.model.EquipmentClientInfo;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.Identifier;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.util.ARGB;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.player.PlayerModelPart;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.armortrim.ArmorTrim;
 import net.minecraft.world.item.component.DyedItemColor;
-import net.minecraft.world.item.equipment.EquipmentAsset;
-import net.minecraft.world.item.equipment.trim.ArmorTrim;
-import org.jetbrains.annotations.UnknownNullability;
 
-@Environment(EnvType.CLIENT)
-public class GenderArmorLayer<S extends HumanoidRenderState, M extends HumanoidModel<S>> extends GenderLayer<S, M> {
+public class GenderArmorLayer<T extends LivingEntity, M extends HumanoidModel<T>> extends GenderLayer<T, M> {
+    private final TextureAtlas armorTrimsAtlas;
 
-    private final EquipmentLayerRenderer equipmentRenderer;
-    private final EquipmentAssetManager equipmentModelLoader;
-    protected static final BreastModelBox lTrim, rTrim;
+    protected static final WildfireModelRenderer.BreastModelBox lBoobArmor = new WildfireModelRenderer.BreastModelBox(64, 32, 16, 17, -4.0F, 0.0F, 0.0F, 4, 5, 3, 0.0F, false);
+    protected static final WildfireModelRenderer.BreastModelBox rBoobArmor = new WildfireModelRenderer.BreastModelBox(64, 32, 20, 17, 0.0F, 0.0F, 0.0F, 4, 5, 3, 0.0F, false);
+    protected static final WildfireModelRenderer.BreastModelBox lTrim = new WildfireModelRenderer.BreastModelBox(64, 32, 16, 17, -4.0F, 0.0F, 0.0F, 4, 5, 4, 0.001F, false);
+    protected static final WildfireModelRenderer.BreastModelBox rTrim = new WildfireModelRenderer.BreastModelBox(64, 32, 20, 17, 0.0F, 0.0F, 0.0F, 4, 5, 4, 0.001F, false);
 
-    @UnknownNullability("null until #resizeBox() is first called")
-    protected BreastModelBox lBoobArmor, rBoobArmor;
-    @UnknownNullability("null until first render pass")
-    private GenderRenderState genderRenderState;
-
-    @SuppressWarnings({"unused", "FieldMayBeFinal"}) // TODO fix this
-    private IBreastArmorTexture textureData = IBreastArmorTexture.DEFAULT;
-
-    static {
-        var left = new UVLayout(
-                new UVQuad(24, 21, 28, 26),  // EAST
-                new UVQuad(16, 21, 20, 26),  // WEST
-                new UVQuad(20, 17, 24, 21),  // DOWN
-                new UVQuad(20, 25, 24, 27),  // UP
-                new UVQuad(20, 21, 24, 26)   // NORTH
-        );
-
-        var right = new UVLayout(
-                new UVQuad(28, 21, 32, 26),  // EAST
-                new UVQuad(20, 21, 24, 26),  // WEST
-                new UVQuad(24, 17, 28, 21),  // DOWN
-                new UVQuad(24, 25, 28, 27),  // UP
-                new UVQuad(24, 21, 28, 26)   // NORTH
-        );
-
-        // apply a very slight delta to fix rare layering issues with the normal armor layer
-        // TODO look into how difficult it'd be to replicate Model render priority here
-        lTrim = new BreastModelBox(64, 32, -4F, 0.0F, 0F, 4, 5, 4, 0.001F, left);
-        rTrim = new BreastModelBox(64, 32, 0, 0.0F, 0F, 4, 5, 4, 0.001F, right);
-    }
-
-    private static boolean textureExists(Identifier texture) {
-        var texManager = Minecraft.getInstance().getTextureManager();
-        return !((MissingTextureLogger) texManager).wildfire_gender$missingTextures().contains(texture);
-    }
-
-    public GenderArmorLayer(RenderLayerParent<S, M> render, EquipmentAssetManager equipmentModelLoader, EquipmentLayerRenderer equipmentRenderer) {
-        super(render);
-        this.equipmentRenderer = equipmentRenderer;
-        this.equipmentModelLoader = equipmentModelLoader;
+    public GenderArmorLayer(RenderLayerParent<T, M> renderer, EntityModelSet modelSet) {
+        super(renderer);
+        this.armorTrimsAtlas = Minecraft.getInstance().getModelManager().getAtlas(Sheets.ARMOR_TRIMS_SHEET);
     }
 
     @Override
-    public void submit(PoseStack matrixStack, SubmitNodeCollector queue, int light, S state, float limbAngle, float limbDistance) {
-        this.genderRenderState = GenderRenderState.get(state);
-        if (this.genderRenderState == null) return;
+    public void render(PoseStack matrixStack, MultiBufferSource buffer, int light, @NotNull T entity, float limbAngle, float limbDistance, float partialTicks, float animationProgress, float headYaw, float headPitch) {
+        Minecraft client = Minecraft.getInstance();
+        if (client.player == null) return;
 
-        final ItemStack chestplate = state.chestEquipment;
-        // Check if the worn item in the chest slot is actually equippable in the chest slot, and has a model to render
-        var component = chestplate.get(DataComponents.EQUIPPABLE);
-        if(component == null || component.slot() != EquipmentSlot.CHEST) return;
-        var asset = component.assetId().orElse(null);
-        if(asset == null) return;
-        var layers = equipmentModelLoader.get(asset).getLayers(EquipmentClientInfo.LayerType.HUMANOID);
-        if(layers.isEmpty()) return;
+        ItemStack chestplate = entity.getItemBySlot(EquipmentSlot.CHEST);
 
-        try {
-            if(!setupRender(state, this.genderRenderState)) return;
-            if(state instanceof ArmorStandRenderState && !genderArmor.armorStandsCopySettings()) return;
+        if (!chestplate.isEmpty() && chestplate.getItem() instanceof ArmorItem armorItem) {
+            try {
+                EntityConfig config = EntityConfig.getEntity(entity);
+                if (config == null || !this.setupRender(entity, config, partialTicks)) return;
 
-            int color = DyedItemColor.getOrDefault(chestplate, 0);
-            boolean glint = chestplate.hasFoil();
+                if (entity instanceof ArmorStand && !this.genderArmor.armorStandsCopySettings()) return;
 
-            renderSides(state, getParentModel(), matrixStack, side -> {
-                // TODO is there still a need to allow for overriding the armor texture identifier?
-                layers.forEach(layer -> {
-                    int layerColor = EquipmentLayerRenderer.getColorForLayer(layer, color);
-                    var texture = layer.getTextureLocation(EquipmentClientInfo.LayerType.HUMANOID);
-                    renderBreastArmor(texture, matrixStack, queue, state, side, layerColor, glint);
+                Holder<ArmorMaterial> material = armorItem.getMaterial();
+                int color = DyedItemColor.getOrDefault(chestplate, -1);
+                boolean hasGlint = chestplate.hasFoil();
+
+                // CORRECCIÓN: Asegúrate de que el lambda reciba 'matrixStack' correctamente
+                this.renderSides(entity, this.getParentModel(), matrixStack, (side) -> {
+                    material.value().layers().forEach((layer) -> {
+                        // 1.21.1 utiliza 'dyeable()' en lugar de 'useTint()'
+                        int layerColor = layer.dyeable() ? color : -1;
+                        this.renderBreastArmor(layer.texture(false), matrixStack, buffer, light, side, layerColor, hasGlint);
+                    });
+
+                    // 1.21.1 utiliza DataComponents.TRIM
+                    ArmorTrim trim = chestplate.get(DataComponents.TRIM);
+                    if (trim != null) {
+                        this.renderArmorTrim(material, matrixStack, buffer, light, trim, hasGlint, side);
+                    }
                 });
-
-                var trim = armorStack.get(DataComponents.TRIM);
-                if(trim != null) {
-                    renderArmorTrim(asset, matrixStack, queue, state, trim, side, glint);
-                }
-            });
-        } catch(Exception e) {
-            WildfireGender.LOGGER.error("Failed to render breast armor", e);
+            } catch (Exception e) {
+                WildfireGender.LOGGER.error("Failed to render breast armor layer", e);
+            }
         }
     }
 
+    /**
+     * CORRECCIÓN: Esta firma debe ser EXACTA a la de GenderLayer.
+     */
     @Override
-    protected boolean isLayerVisible(S state) {
-        return genderArmor.coversBreasts();
+    protected void setupTransformations(T entity, M model, PoseStack matrixStack, BreastSide side) {
+        super.setupTransformations(entity, model, matrixStack, side);
+
+        boolean hasJacket = false;
+        if (entity instanceof AbstractClientPlayer player) {
+            hasJacket = player.isModelPartShown(PlayerModelPart.JACKET);
+        } else if (entity instanceof ArmorStand) {
+            EntityConfig config = EntityConfig.getEntity(entity);
+            hasJacket = config != null && config.hasJacketLayer();
+        }
+
+        if (hasJacket) {
+            matrixStack.translate(0.0F, 0.0F, -0.015F);
+            matrixStack.scale(1.05F, 1.05F, 1.05F);
+        }
+
+        matrixStack.translate(side.isLeft ? 0.001F : -0.001F, 0.015F, -0.015F);
+        matrixStack.scale(1.05F, 1.0F, 1.0F);
     }
 
-    @Override
-    protected void resizeBox(GenderRenderState state, float breastSize) {
-        /*if(genderArmor == null || Objects.equals(textureData, genderArmor.texture())) {
-            return;
-        }
+    protected void renderBreastArmor(ResourceLocation texture, PoseStack matrixStack, MultiBufferSource buffer, int light, BreastSide side, int color, boolean glint) {
+        WildfireModelRenderer.BreastModelBox box = side.isLeft ? lBoobArmor : rBoobArmor;
+        VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.armorCutoutNoCull(texture));
 
-        textureData = genderArmor.texture();
-        var texSize = textureData.textureSize();
-        var lUV = textureData.leftUv();
-        var rUV = textureData.rightUv();
-        var dim = textureData.dimensions();*/
-
-        //lBoobArmor = new BreastModelBox(texSize.x(), texSize.y(), lUV.x(), lUV.y(), -4F, 0.0F, 0F, dim.x(), dim.y(), 4, 0.0F, false);
-        //rBoobArmor = new BreastModelBox(texSize.x(), texSize.y(), rUV.x(), rUV.y(), 0, 0.0F, 0F, dim.x(), dim.y(), 4, 0.0F, false);
-
-        // FIXME make this work with armor configs
-        if(this.lBoobArmor == null || this.rBoobArmor == null) {
-            lBoobArmor = new BreastModelBox(64, 32, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, state.leftBreastArmorUVLayout);
-            rBoobArmor = new BreastModelBox(64, 32, 0, 0.0F, 0F, 4, 5, 3, 0.0F, state.rightBreastArmorUVLayout);
-        }
+        // El método renderBox es estático en GenderLayer, asegúrate de que use los mismos imports
+        GenderLayer.renderBox(box, matrixStack, vertexConsumer, light, OverlayTexture.NO_OVERLAY, color);
     }
 
-    @Override
-    protected void setupTransformations(S state, M model, PoseStack matrixStack, BreastSide side) {
-        super.setupTransformations(state, model, matrixStack, side);
-        if (genderRenderState.hasJacketLayer) {
-            matrixStack.translate(0, 0, -0.015f);
-            matrixStack.scale(1.05f, 1.05f, 1.05f);
-        }
-        matrixStack.translate(side.isLeft ? 0.001f : -0.001f, 0.015f, -0.015f);
-        matrixStack.scale(1.05f, 1, 1);
-    }
+    protected void renderArmorTrim(Holder<ArmorMaterial> material, PoseStack matrixStack, MultiBufferSource buffer, int light, ArmorTrim trim, boolean glint, BreastSide side) {
+        WildfireModelRenderer.BreastModelBox trimBox = side.isLeft ? lTrim : rTrim;
 
-    // TODO eventually expose some way for mods to override this, maybe through a default impl in IGenderArmor or similar
-    protected void renderBreastArmor(Identifier texture, PoseStack matrixStack, SubmitNodeCollector queue,
-                                     S state, BreastSide side, int color, boolean glint) {
-        if(!textureExists(texture)) {
-            return;
-        }
+        // 1.21.1 utiliza 'outerTexture' para obtener la textura del trim
+        TextureAtlasSprite sprite = this.armorTrimsAtlas.getSprite(trim.outerTexture(material));
+        VertexConsumer vertexConsumer = sprite.wrap(buffer.getBuffer(Sheets.armorTrimsSheet(false)));
 
-        var model = side.isLeft ? lBoobArmor : rBoobArmor;
-        var layer = RenderTypes.armorCutoutNoCull(texture);
-        queue.submitCustomGeometry(matrixStack, layer, new BreastRenderCommand(model, state, OverlayTexture.NO_OVERLAY, ARGB.opaque(color)));
+        GenderLayer.renderBox(trimBox, matrixStack, vertexConsumer, light, OverlayTexture.NO_OVERLAY, -1);
 
-        if(glint) {
-            renderGlint(matrixStack, queue, state, model);
+        if (glint) {
+            VertexConsumer glintConsumer = buffer.getBuffer(RenderType.armorEntityGlint());
+            GenderLayer.renderBox(trimBox, matrixStack, glintConsumer, light, OverlayTexture.NO_OVERLAY, -1);
         }
     }
 
-    protected void renderArmorTrim(ResourceKey<EquipmentAsset> armorModel, PoseStack matrixStack, SubmitNodeCollector queue,
-                                   S state, ArmorTrim trim, BreastSide side, boolean glint) {
-        var model = side.isLeft ? lTrim : rTrim;
+    /**
+     * Método público para permitir que otros mods rendericen armaduras personalizadas en el modelo de pecho.
+     * Este método permite renderizar armaduras con texturas personalizadas, independientemente del tipo.
+     * @param entity La entidad que lleva la armadura
+     * @param texture La textura de la armadura a renderizar
+     * @param matrixStack La pila de matrices para transformaciones
+     * @param buffer El buffer de renderizado
+     * @param light La iluminación
+     * @param side El lado del pecho (izquierdo o derecho)
+     * @param color El color de tinte de la armadura (-1 si no tiene)
+     * @param glint Si la armadura tiene efecto de brillo
+     * @param partialTicks Ticks parciales para animación
+     */
+    public void renderCustomArmor(T entity, ResourceLocation texture, PoseStack matrixStack, MultiBufferSource buffer, int light, BreastSide side, int color, boolean glint, float partialTicks) {
+        EntityConfig config = EntityConfig.getEntity(entity);
+        if (config == null || !this.setupRender(entity, config, partialTicks)) return;
 
-        // this sucks, but it sucks less than simply copy/pasting the entire relevant block of code, and is
-        // (at least theoretically) more compatible with other mods, assuming they simply mixin to TrimSpriteKey
-        // to modify the armor trim sprite location.
-        var key = new EquipmentLayerRenderer.TrimSpriteKey(trim, EquipmentClientInfo.LayerType.HUMANOID, armorModel);
-        TextureAtlasSprite sprite = ((EquipmentLayerRendererAccessor) equipmentRenderer).getTrimSpriteLookup().apply(key);
+        if (entity instanceof ArmorStand && !this.genderArmor.armorStandsCopySettings()) return;
 
-        var layer = Sheets.armorTrimsSheet(trim.pattern().value().decal());
-        queue.submitCustomGeometry(matrixStack, layer, BreastRenderCommand.trim(model, state, sprite));
-
-        if(glint) {
-            renderGlint(matrixStack, queue, state, model);
-        }
-    }
-
-    protected void renderGlint(PoseStack matrixStack, SubmitNodeCollector renderQueue, S state, BreastModelBox box) {
-        var glintLayer = RenderTypes.armorEntityGlint();
-        renderQueue.submitCustomGeometry(matrixStack, glintLayer, new BreastRenderCommand(box, state, OverlayTexture.NO_OVERLAY, -1));
+        this.setupTransformations(entity, this.getParentModel(), matrixStack, side);
+        this.renderBreastArmor(texture, matrixStack, buffer, light, side, color, glint);
     }
 }
