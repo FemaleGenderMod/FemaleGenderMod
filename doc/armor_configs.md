@@ -91,30 +91,30 @@ The default mapping for vanilla-compatible armor types is as follows:
 
 ```json5
 {
-	"uvs": {
-		// both left and right must be defined here!
-		"left": {
-			// faces not defined here will not be rendered
-			"east": [
-				24, // first X position
-				21, // first Y position
-				28, // second X position
-				26  // second Y position
-			],
-			// and so on for the rest of these
-			"west": [16, 21, 20, 26],
-			"down": [20, 17, 24, 21],
-			"up": [20, 25, 24, 27],
-			"north": [20, 21, 24, 26]
-		},
-		"right": {
-			"east": [28, 21, 32, 26],
-			"west": [20, 21, 24, 26],
-			"down": [24, 17, 28, 21],
-			"up": [24, 25, 28, 27],
-			"north": [24, 21, 28, 26]
-		}
-	}
+  "uvs": {
+    // both left and right must be defined here!
+    "left": {
+      // faces not defined here will not be rendered
+      "east": [
+        24, // first X position
+        21, // first Y position
+        28, // second X position
+        26  // second Y position
+      ],
+      // and so on for the rest of these
+      "west": [16, 21, 20, 26],
+      "down": [20, 17, 24, 21],
+      "up": [20, 25, 24, 27],
+      "north": [20, 21, 24, 26]
+    },
+    "right": {
+      "east": [28, 21, 32, 26],
+      "west": [20, 21, 24, 26],
+      "down": [24, 17, 28, 21],
+      "up": [24, 25, 28, 27],
+      "north": [24, 21, 28, 26]
+    }
+  }
 }
 ```
 
