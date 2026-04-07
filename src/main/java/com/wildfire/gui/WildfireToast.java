@@ -94,7 +94,8 @@ public class WildfireToast implements Toast {
 
     private boolean shouldHide() {
         Minecraft client = Minecraft.getInstance();
-        if(client.screen instanceof BaseWildfireScreen) {
+        //~ if >26.1 'client.screen' -> 'client.gui.screen()'
+        if(client.gui.screen() instanceof BaseWildfireScreen) {
             return true;
         }
         return WildfireEventHandler.getConfigKeybind().isDown();

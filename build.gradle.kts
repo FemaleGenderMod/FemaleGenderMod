@@ -1,8 +1,9 @@
 plugins {
+    // plugin versions are defined in stonecutter.gradle.kts
     id("net.fabricmc.fabric-loom")
 }
 
-version = "fabric-${project.property("mod_version")}+${project.property("minecraft_version")}"
+version = "${project.property("mod_version")}+${sc.current.project}"
 group = project.property("maven_group") as String
 
 base {
@@ -11,38 +12,38 @@ base {
 
 repositories {
     maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1") { name = "DevAuth" }
-    maven("https://maven.terraformersmc.com/") { name = "Terraformers" } // mod menu
+    maven("https://maven.terraformersmc.com/") { name = "Terraformers" }
 }
 
 dependencies {
-    // To change the versions see the gradle.properties file
-    minecraft("com.mojang:minecraft:${project.property("minecraft_version")}")
+    minecraft("com.mojang:minecraft:${sc.current.version}")
     implementation("net.fabricmc:fabric-loader:${project.property("loader_version")}")
 
-    val apiVersion = project.property("fabric_version") as String
-    implementation(fabricApi.module("fabric-networking-api-v1", apiVersion))
-    implementation(fabricApi.module("fabric-key-mapping-api-v1", apiVersion))
-    implementation(fabricApi.module("fabric-lifecycle-events-v1", apiVersion))
-    implementation(fabricApi.module("fabric-command-api-v2", apiVersion))
-    implementation(fabricApi.module("fabric-rendering-v1", apiVersion))
-    implementation(fabricApi.module("fabric-resource-loader-v1", apiVersion))
-    runtimeOnly(fabricApi.module("fabric-registry-sync-v0", apiVersion))
+    implementation(platform("net.fabricmc.fabric-api:fabric-api-bom:${property("dependencies.fabric")}"))
+    implementation("net.fabricmc.fabric-api:fabric-networking-api-v1")
+    implementation("net.fabricmc.fabric-api:fabric-key-mapping-api-v1")
+    implementation("net.fabricmc.fabric-api:fabric-lifecycle-events-v1")
+    implementation("net.fabricmc.fabric-api:fabric-command-api-v2")
+    implementation("net.fabricmc.fabric-api:fabric-rendering-v1")
+    implementation("net.fabricmc.fabric-api:fabric-resource-loader-v1")
+    runtimeOnly("net.fabricmc.fabric-api:fabric-registry-sync-v0")
 
     // Allow logging into an actual Minecraft account in a dev env
     // See https://github.com/DJtheRedstoner/DevAuth
     localRuntime("me.djtheredstoner:DevAuth-fabric:1.2.2")
 
-    // If you want to load Mod Menu in a development environment, change this to implementation
-    // and uncomment the associated Fabric API module.
-    compileOnly("com.terraformersmc:modmenu:${project.property("modmenu_version")}")
-    //runtimeOnly(fabricApi.module("fabric-screen-api-v1", apiVersion))
+    val modmenu: String = sc.properties["dependencies.modmenu"]
+    compileOnly("com.terraformersmc:modmenu:${modmenu}")
+    if(sc.properties["debug.load_modmenu"]) {
+        localRuntime("com.terraformersmc:modmenu:${modmenu}")
+        localRuntime("net.fabricmc.fabric-api:fabric-screen-api-v1")
+    }
 }
 
 tasks.processResources {
     val props = mapOf(
-        "version" to project.property("mod_version") as String,
-        "minecraft_version" to project.property("minecraft_version") as String,
-        "minecraft_dependency" to project.property("minecraft_dependency") as String,
+        "version" to project.version as String,
+        "minecraft_dependency" to sc.properties["dependencies.minecraft"],
     )
 
     inputs.properties(props)
@@ -65,6 +66,13 @@ loom {
         named("vineflower") {
             options.put("mark-corresponding-synthetics", "1")
         }
+    }
+
+    runConfigs.configureEach {
+        ideConfigGenerated(stonecutter.current.isActive)
+        // by default loom will use versions/*/run for the run dir, so instead tell it to use the
+        // run dir in the project root directory
+        runDir = "../../run"
     }
 
     accessWidenerPath = sc.process(rootProject.file("src/main/resources/wildfire_gender.accesswidener"), "build/dev.aw")

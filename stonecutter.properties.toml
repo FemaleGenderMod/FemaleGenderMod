@@ -1,4 +1,4 @@
-loader_version = "0.18.4"
+loader_version = "0.19.2"
 
 # Mod Properties
 mod_version = "5.0.0-Beta.3"
@@ -7,9 +7,18 @@ archives_base_name = "Female-Gender-Mod"
 
 # Note that mod menu may be several versions out of date; this is fine, as we only care about using this
 # for its API, which shouldn't realistically need to be updated often (if ever).
-modmenu_version = "18.0.0-alpha.6"
+dependencies.modmenu = "18.0.0-alpha.6"
+debug.load_modmenu = false
 
 ["26.1"]
-    minecraft_version = "26.1"
-    minecraft_dependency = ">=26.1 <26.2"
-    fabric_version = "0.144.3+26.1"
+    dependencies.minecraft = ">=26.1 <26.2"
+    dependencies.fabric = "0.144.3+26.1"
+    # TODO use these in publish workflows whenever we add them
+    publish.min_version = "26.1"
+    publish.max_version = "26.1.2"
+
+["26.2"]
+    dependencies.minecraft = ">=26.2-alpha.7 <26.2"
+    dependencies.fabric = "0.150.3+26.2"
+    publish.min_version = "26.2"
+    publish.max_version = "latest"

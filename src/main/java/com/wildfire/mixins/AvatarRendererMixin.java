@@ -48,9 +48,9 @@ abstract class AvatarRendererMixin extends LivingEntityRenderer<Avatar, AvatarRe
     }
 
     @ModifyReturnValue(method = "shouldShowName(Lnet/minecraft/world/entity/Avatar;D)Z", at = @At("RETURN"))
-    public boolean wildfiregender$forceLabel(boolean original, @Local(argsOnly = true) Avatar player) {
+    public boolean wildfiregender$forceLabel(boolean original, @Local(argsOnly = true) Avatar entity) {
         if(FabricLoader.getInstance().isDevelopmentEnvironment()) {
-            if(player instanceof LocalPlayer && ClientConfig.INSTANCE.get(ClientConfig.DISPLAY_OWN_NAMETAG)) {
+            if(entity instanceof LocalPlayer && ClientConfig.INSTANCE.get(ClientConfig.DISPLAY_OWN_NAMETAG)) {
                 return true;
             }
         }
@@ -60,9 +60,19 @@ abstract class AvatarRendererMixin extends LivingEntityRenderer<Avatar, AvatarRe
     @SuppressWarnings("CodeBlock2Expr")
     @Inject(
         method = "submitNameDisplay(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V",
-        at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;pushPose()V", shift = At.Shift.AFTER)
+        at = @At(
+            value = "INVOKE",
+            target = "Lcom/mojang/blaze3d/vertex/PoseStack;pushPose()V",
+            shift = At.Shift.AFTER
+        )
     )
-    public void wildfiregender$renderNametag(AvatarRenderState state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera, CallbackInfo ci) {
+    public void wildfiregender$renderNametag(
+        final AvatarRenderState state,
+        final PoseStack poseStack,
+        final SubmitNodeCollector collector,
+        final CameraRenderState camera,
+        CallbackInfo ci
+    ) {
         PlayerNametagRenderEvent.EVENT.invoker().onRenderNameTag(state, poseStack, (text) -> {
             collector.submitNameTag(
                 poseStack,
@@ -71,7 +81,8 @@ abstract class AvatarRendererMixin extends LivingEntityRenderer<Avatar, AvatarRe
                 text,
                 !state.isDiscrete,
                 state.lightCoords,
-                state.distanceToCameraSq,
+                //? if 26.1
+                //state.distanceToCameraSq,
                 camera
             );
         });

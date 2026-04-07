@@ -19,7 +19,11 @@
 package com.wildfire.main;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.wildfire.events.*;
+import com.wildfire.events.ArmorStandInteractEvents;
+import com.wildfire.events.ArmorStatsTooltipEvent;
+import com.wildfire.events.EntityHurtSoundEvent;
+import com.wildfire.events.EntityTickEvent;
+import com.wildfire.events.PlayerNametagRenderEvent;
 import com.wildfire.gui.SyncedPlayerList;
 import com.wildfire.gui.WildfireToast;
 import com.wildfire.gui.screen.WardrobeBrowserScreen;
@@ -34,6 +38,7 @@ import com.wildfire.render.GenderArmorLayer;
 import com.wildfire.render.GenderLayer;
 import com.wildfire.render.GenderRenderState;
 import com.wildfire.render.HolidayFeaturesRenderer;
+import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
@@ -68,7 +73,11 @@ import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Util;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -76,9 +85,6 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 import org.lwjgl.glfw.GLFW;
-
-import java.util.Objects;
-import java.util.function.Consumer;
 
 public final class WildfireEventHandler {
     private WildfireEventHandler() {
@@ -190,8 +196,10 @@ public final class WildfireEventHandler {
 
     @Environment(EnvType.CLIENT)
     private static void renderHud(GuiGraphicsExtractor context, DeltaTracker tickCounter) {
-        var font = Minecraft.getInstance().font;
-        if(Minecraft.getInstance().screen instanceof WardrobeBrowserScreen) {
+        var client = Minecraft.getInstance();
+        var font = client.font;
+        //~ if >26.1 'client.screen' -> 'client.gui.screen()'
+        if(client.gui.screen() instanceof WardrobeBrowserScreen) {
             return;
         }
 
@@ -249,12 +257,14 @@ public final class WildfireEventHandler {
             if(clientConfig != null) clientConfig.attemptCloudSync();
         }
 
-        if(TOGGLE_KEYBIND.consumeClick() && client.screen == null) {
+        //~ if >26.1 'client.screen' -> 'client.gui.screen()' {
+        if(TOGGLE_KEYBIND.consumeClick() && client.gui.screen() == null) {
             ClientConfig.RENDER_BREASTS ^= true;
         }
-        if(CONFIG_KEYBIND.consumeClick() && client.screen == null) {
+        if(CONFIG_KEYBIND.consumeClick() && client.gui.screen() == null) {
             WardrobeBrowserScreen.open(client, client.player);
         }
+        //~}
     }
 
     /**
@@ -272,7 +282,8 @@ public final class WildfireEventHandler {
 
         if (ClientConfig.INSTANCE.get(ClientConfig.SHOW_TOAST)) {
             var button = WildfireEventHandler.CONFIG_KEYBIND.getTranslatedKeyMessage();
-            ToastManager toastManager = client.getToastManager();
+            //~ if >26.1 'client.getToastManager()' -> 'client.gui.toastManager()'
+            ToastManager toastManager = client.gui.toastManager();
             toastManager.addToast(new WildfireToast(Minecraft.getInstance().font, Component.translatable("wildfire_gender.player_list.title"), Component.translatable("toast.wildfire_gender.get_started", button)));
         }
     }

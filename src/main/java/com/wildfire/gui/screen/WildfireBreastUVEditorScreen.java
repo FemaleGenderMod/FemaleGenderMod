@@ -20,7 +20,7 @@ package com.wildfire.gui.screen;
 
 import com.wildfire.gui.GuiUtils;
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.config.Configuration;
+import com.wildfire.main.WildfireHelper;import com.wildfire.main.config.Configuration;
 import com.wildfire.main.uvs.BreastTypes;
 import com.wildfire.main.uvs.UVDirection;
 import com.wildfire.main.uvs.UVLayout;
@@ -139,12 +139,13 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
                             int increment = getPositionIncrement();
                             ChatFormatting colorVal = increment == 10 ? ChatFormatting.AQUA :
                                     (increment == 20 ? ChatFormatting.BLUE : ChatFormatting.WHITE);
+                            int color = WildfireHelper.getTextColor(colorVal).orElseThrow();
                             ctx.blit(RenderPipelines.GUI_TEXTURED,
                                     isAdd ? TEXTURE_ADD : TEXTURE_SUBTRACT,
                                     button.getX() + button.getWidth() / 2 - 3,
                                     button.getY() + button.getHeight() / 2 - 3,
                                     0,0,6,6,6,6,6,6,
-                                    ARGB.opaque(Objects.requireNonNull(colorVal.getColor())));
+                                    ARGB.opaque(color));
                         })
                         .message(() -> isAdd ? Component.translatable("wildfire_gender.uv_editor.add") : Component.translatable("wildfire_gender.uv_editor.remove"))
                         .position(uvPositionWindowX + xOffset, y + buttonArrayY + yOffset)

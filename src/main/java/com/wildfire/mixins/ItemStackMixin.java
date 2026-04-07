@@ -48,23 +48,25 @@ import java.util.function.Consumer;
 abstract class ItemStackMixin {
     @Shadow public abstract Item getItem();
 
+    @SuppressWarnings("LocalMayUseName") // mixinextras seems to have issues with argsOnly named locals
     @WrapOperation(method = "addAttributeTooltips", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;forEachModifier(Lnet/minecraft/world/entity/EquipmentSlotGroup;Lorg/apache/commons/lang3/function/TriConsumer;)V"))
     public void wildfiregender$appendPhysicsStats(
-            ItemStack instance,
-            EquipmentSlotGroup slot,
-            TriConsumer<Holder<Attribute>, AttributeModifier, ItemAttributeModifiers.Display> attributeModifierConsumer,
-            Operation<Void> original,
-            @Local(name = "first") MutableBoolean missingAttribute,
-            @Local(argsOnly = true) @Nullable Player player,
-            @Local(argsOnly = true) Consumer<Component> textConsumer
+        ItemStack instance,
+        EquipmentSlotGroup slot,
+        @SuppressWarnings("NameDoesntMatchTargetClass") // name conflicts with our @Local consumer
+        TriConsumer<Holder<Attribute>, AttributeModifier, ItemAttributeModifiers.Display> consumers,
+        Operation<Void> original,
+        @Local(name = "first") MutableBoolean first,
+        @Local(argsOnly = true) @Nullable Player player,
+        @Local(argsOnly = true) Consumer<Component> consumer
     ) {
-        original.call(instance, slot, attributeModifierConsumer);
-        if(slot == EquipmentSlotGroup.CHEST && missingAttribute.isFalse()) {
+        original.call(instance, slot, consumers);
+        if(slot == EquipmentSlotGroup.CHEST && first.isFalse()) {
             var item = (ItemStack)(Object)this;
             if(item.get(DataComponents.EQUIPPABLE) == null) {
                 return;
             }
-            ArmorStatsTooltipEvent.EVENT.invoker().appendTooltips(item, textConsumer, player);
+            ArmorStatsTooltipEvent.EVENT.invoker().appendTooltips(item, consumer, player);
         }
     }
 }

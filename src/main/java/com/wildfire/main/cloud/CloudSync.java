@@ -126,10 +126,16 @@ public final class CloudSync {
         }
 
         var client = Minecraft.getInstance();
-        var netHandler = client.getConnection();
-        if(!client.isLocalServer() && netHandler != null && !netHandler.getConnection().isEncrypted()) {
+        var connection = client.getConnection();
+        if(connection == null) {
+            return null;
+        }
+
+        //~ if >26.1 'connection.getConnection().isEncrypted()' -> 'connection.onlineMode()'
+        if(!client.isLocalServer() && !connection.onlineMode()) {
             return SyncUnavailable.OFFLINE_SERVER;
         }
+
         return null;
     }
 

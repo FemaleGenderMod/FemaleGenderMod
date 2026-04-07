@@ -50,6 +50,7 @@ import java.lang.Math;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+// TODO split this into an AbstractGenderLayer?
 @Environment(EnvType.CLIENT)
 public class GenderLayer<S extends HumanoidRenderState, M extends HumanoidModel<S>> extends RenderLayer<S, M> {
 

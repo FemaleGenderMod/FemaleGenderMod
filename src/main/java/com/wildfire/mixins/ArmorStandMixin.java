@@ -37,6 +37,7 @@ abstract class ArmorStandMixin extends LivingEntity {
         super(entityType, world);
     }
 
+    @SuppressWarnings("LocalMayUseName")
     @ModifyArg(
         method = "swapItem",
         at = @At(
@@ -46,6 +47,7 @@ abstract class ArmorStandMixin extends LivingEntity {
         index = 1
     )
     public ItemStack wildfiregender$attachBreastData(ItemStack stack, @Local(argsOnly = true) EquipmentSlot slot, @Local(argsOnly = true) Player player) {
+        //noinspection resource
         if(level().isClientSide() || slot != EquipmentSlot.CHEST || stack.isEmpty()) {
             return stack;
         }
@@ -55,6 +57,7 @@ abstract class ArmorStandMixin extends LivingEntity {
         return stack;
     }
 
+    @SuppressWarnings("LocalMayUseName")
     @ModifyArg(
         method = "swapItem",
         at = @At(
@@ -64,6 +67,7 @@ abstract class ArmorStandMixin extends LivingEntity {
         index = 1
     )
     public ItemStack wildfiregender$removeBreastDataOnReplace(ItemStack stack, @Local(argsOnly = true) Player player) {
+        //noinspection resource
         if(!player.level().isClientSide()) {
             ArmorStandInteractEvents.REMOVE.invoker().onRemove(stack);
         }
@@ -79,6 +83,7 @@ abstract class ArmorStandMixin extends LivingEntity {
         index = 2
     )
     public ItemStack wildfiregender$removeBreastDataOnBreak(ItemStack stack) {
+        //noinspection resource
         if(!level().isClientSide()) {
             ArmorStandInteractEvents.REMOVE.invoker().onRemove(stack);
         }

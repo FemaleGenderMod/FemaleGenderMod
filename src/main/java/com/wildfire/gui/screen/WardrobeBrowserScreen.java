@@ -75,7 +75,8 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
     }
 
     public static void open(Minecraft client, LocalPlayer player) {
-        client.setScreen(create(player, null));
+        //~ if >26.1 'setScreen' -> 'gui.setScreen'
+        client.gui.setScreen(create(player, null));
     }
 
     @Override
@@ -102,7 +103,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
                 .message(() -> plr.getGender().getDisplayName())
                 .position(this.width / 2 - 130, this.height / 2 + 33)
                 .size(80, 15)
-                .onPress(button -> {
+                .onPress(_ -> {
                     plr.updateGender(plr.getGender().next());
                     plr.save();
                     rebuildWidgets();
@@ -112,8 +113,9 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
                 .message(() -> Component.translatable("wildfire_gender.appearance_settings.title").append("..."))
                 .position(this.width / 2 - 36, this.height / 2 - 63)
                 .size(157, 20)
-                .onPress(button -> {
-                    client.setScreen(new WildfireBreastCustomizationScreen(WardrobeBrowserScreen.this, this.playerUUID));
+                .onPress(_ -> {
+                    //~ if >26.1 'setScreen' -> 'gui.setScreen'
+                    client.gui.setScreen(new WildfireBreastCustomizationScreen(WardrobeBrowserScreen.this, this.playerUUID));
                 })
                 .active(plr.getGender().canHaveBreasts()));
 
@@ -124,8 +126,9 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
             builder.renderer((button, ctx, mouseX, mouseY, partialTicks) -> {
                 ctx.blit(RenderPipelines.GUI_TEXTURED, CLOUD_ICON, button.getX() + 2, button.getY() + 2, 0, 0, 20, 14, 32, 26, 32, 26);
             });
-            builder.onPress(button -> {
-                client.setScreen(new WildfireCloudSyncScreen(this, this.playerUUID));
+            builder.onPress(_ -> {
+                //~ if >26.1 'setScreen' -> 'gui.setScreen'
+                client.gui.setScreen(new WildfireCloudSyncScreen(this, this.playerUUID));
             });
             var cloudUnavailable = CloudSync.unavailableReason();
             if(cloudUnavailable != null) {
@@ -140,8 +143,9 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
                 .message(() -> Component.translatable("wildfire_gender.credits.title").append("..."))
                 .position(this.width / 2 + 2, this.height / 2 + 33)
                 .size(78, 15)
-                .onPress(button -> {
-                    client.setScreen(new WildfireCreditsScreen(WardrobeBrowserScreen.this, this.playerUUID));
+                .onPress(_ -> {
+                    //~ if >26.1 'setScreen' -> 'gui.setScreen'
+                    client.gui.setScreen(new WildfireCreditsScreen(WardrobeBrowserScreen.this, this.playerUUID));
                 }));
 
         /*this.addDrawableChild(new WildfireButton(this.width / 2 + 111, y - 63, 9, 9, Text.literal("X"),
