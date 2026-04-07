@@ -1,5 +1,5 @@
 plugins {
-    id("net.fabricmc.fabric-loom") version "1.15-SNAPSHOT"
+    id("net.fabricmc.fabric-loom")
 }
 
 version = "fabric-${project.property("mod_version")}+${project.property("minecraft_version")}"
@@ -67,7 +67,7 @@ loom {
         }
     }
 
-    accessWidenerPath = file("src/main/resources/wildfire_gender.accesswidener")
+    accessWidenerPath = sc.process(rootProject.file("src/main/resources/wildfire_gender.accesswidener"), "build/dev.aw")
 }
 
 tasks.jar {

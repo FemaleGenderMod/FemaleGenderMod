@@ -1,0 +1,15 @@
+loader_version = "0.18.4"
+
+# Mod Properties
+mod_version = "5.0.0-Beta.3"
+maven_group = "com.wildfiregender.main"
+archives_base_name = "Female-Gender-Mod"
+
+# Note that mod menu may be several versions out of date; this is fine, as we only care about using this
+# for its API, which shouldn't realistically need to be updated often (if ever).
+modmenu_version = "18.0.0-alpha.6"
+
+["26.1"]
+    minecraft_version = "26.1"
+    minecraft_dependency = ">=26.1 <26.2"
+    fabric_version = "0.144.3+26.1"
