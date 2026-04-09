@@ -1,0 +1,186 @@
+{
+  "key.category.wildfire_gender.generic": "Әйел Жынысы Моды",
+  "key.wildfire_gender.gender_menu": "Әйел жынысы мәзірі",
+  "key.wildfire_gender.toggle": "Омырау көрсетуді ауыстыру",
+  "toast.wildfire_gender.get_started": "Бастау үшін %s бас!",
+
+  "wildfire_gender.armor.tooltip": "+%s Омырау қолдауы",
+
+  "wildfire_gender.uv_editor": "Омырау текстура өңдегіші",
+  "wildfire_gender.uv_editor.reset_defaults_all": "Барлығын әдепкіге қайтару",
+  "wildfire_gender.uv_editor.reset_defaults": "Әдепкіге қайтару",
+  "wildfire_gender.uv_editor.no_face_selected": "Оны өңдеу үшін сол жақтан текстура бетін таңда.",
+  "wildfire_gender.uv_editor.selection.left_breast": "Сол",
+  "wildfire_gender.uv_editor.selection.right_breast": "Оң",
+  "wildfire_gender.uv_editor.selection.left_breast_overlay": "Сол",
+  "wildfire_gender.uv_editor.selection.right_breast_overlay": "Оң",
+
+  "wildfire_gender.uv_editor.selection.layer_body": "Дене қабаты",
+  "wildfire_gender.uv_editor.selection.layer_jacket": "Киім қабаты",
+
+  "wildfire_gender.uv_editor.xpos": "X-орны",
+  "wildfire_gender.uv_editor.ypos": "Y-орны",
+  "wildfire_gender.uv_editor.width": "Ені",
+  "wildfire_gender.uv_editor.height": "Биіктігі",
+  "wildfire_gender.uv_editor.increment_tip.line1": "+10 үшін SHIFT ұста",
+  "wildfire_gender.uv_editor.increment_tip.line2": "+20 үшін SHIFT+CTRL",
+  "wildfire_gender.uv_editor.add": "Қосу",
+  "wildfire_gender.uv_editor.remove": "Азайту",
+
+  "wildfire_gender.uv_editor.faces.inner": "Ішкі бет",
+  "wildfire_gender.uv_editor.faces.outer": "Сыртқы бет",
+  "wildfire_gender.uv_editor.faces.top": "Үстіңгі бет",
+  "wildfire_gender.uv_editor.faces.bottom": "Астыңғы бет",
+  "wildfire_gender.uv_editor.faces.front": "Алдыңғы бет",
+
+  "wildfire_gender.credits.title": "Мод авторлары",
+  "wildfire_gender.credits.description": "Бұл модты жасауға көмектескен керемет адамдардың тізімі!",
+  "wildfire_gender.credits.general": "Жалпы",
+  "wildfire_gender.credits.translators": "Аудармашылар",
+
+  "wildfire_gender.player_list.title": "Әйел жынысы моды",
+  "wildfire_gender.player_list.settings_button": "Баптау",
+  "wildfire_gender.player_list.sync_status": "Синхрондау күйі",
+  "wildfire_gender.player_list.state.loading": "Деректер жүктелуде...",
+  "wildfire_gender.player_list.state.synced": "Синхрондалған ойыншы",
+  "wildfire_gender.player_list.bounce_multiplier": "Секіру көбейткіші: %sx",
+  "wildfire_gender.player_list.breast_momentum": "Омырау инерциясы: %s%%",
+  "wildfire_gender.player_list.female_sounds": "Әйел дыбыстары: %s",
+  "wildfire_gender.wardrobe.players_using_mod": "Синхрондалған ойыншылар:",
+
+  "wildfire_gender.always_show_list": "Синхрондалған ойыншыларды көрсету: %s",
+  "wildfire_gender.always_show_list.mod_ui_only": "Осы экран",
+  "wildfire_gender.always_show_list.mod_ui_only.tooltip": "Синхрондалған ойыншылар тізімі тек осы мәзірде көрінеді",
+  "wildfire_gender.always_show_list.tab_list_open": "Ойыншылар тізімі",
+  "wildfire_gender.always_show_list.tab_list_open.tooltip": "Синхрондалған ойыншылар тізімі осы мәзірде немесе %s басқанда көрінеді",
+  "wildfire_gender.always_show_list.always": "Әрқашан",
+  "wildfire_gender.always_show_list.always.tooltip": "Синхрондалған ойыншылар тізімі әрқашан көрінеді",
+
+  "wildfire_gender.wardrobe.title": "Әйел жынысы моды",
+  "wildfire_gender.breast_customization.tab_customization": "Өзгерту",
+  "wildfire_gender.breast_customization.tab_physics": "Омырау физикасы",
+  "wildfire_gender.breast_customization.tab_miscellaneous": "Басқада",
+
+  "wildfire_gender.breast_customization.presets.add_new": "Жаңасын қос...",
+  "wildfire_gender.breast_customization.presets.delete": "Жою",
+
+  "wildfire_gender.wardrobe.slider.breast_size": "Омырау өлшемі: %s%%",
+  "wildfire_gender.wardrobe.slider.separation": "Ара қашықтығы: %s",
+  "wildfire_gender.wardrobe.slider.height": "Биіктігі: %s",
+  "wildfire_gender.wardrobe.slider.depth": "Тереңдігі: %s",
+  "wildfire_gender.wardrobe.slider.rotation": "Бұрылуы: %s°",
+  "wildfire_gender.slider.voice_pitch": "Дыбыс биіктігі: %s%%",
+
+  "wildfire_gender.appearance_settings.title": "Кейіпкерді өзгерту",
+  "wildfire_gender.char_settings.title": "Кейіпкер баптаулары ЕСКІ",
+  "wildfire_gender.char_settings.physics": "Омырау физикасы: %s",
+  "wildfire_gender.char_settings.jump": "Секіру",
+  "wildfire_gender.char_settings.jumping": "Секіруді тоқтату",
+
+  "wildfire_gender.char_settings.override_armor_physics": "Сауыт физикасы: %s",
+  "wildfire_gender.tooltip.override_armor_physics.line1": "Қосылған кезде омырау физикасы сауыт кигеннен азаймайды; бұл негізінен сауытты жасыратын ресурс пакеттер үшін арналған.",
+  "wildfire_gender.tooltip.override_armor_physics.line2": "Бұл басқа ойыншыларды және өзіңді қалай көретініңе әсер етеді, бірақ басқалардың сені қалай көретініне әсер етпейді.",
+
+  "wildfire_gender.char_settings.hide_in_armor": "Сауытта жасыру: %s",
+  "wildfire_gender.char_settings.show_armor_stat": "Сауыт түсіндірмесін көрсету: %s",
+  "wildfire_gender.char_settings.hurt_sounds": "Әйел жарақат дыбыстары: %s",
+  "wildfire_gender.tooltip.hurt_sounds": "Жынысың әйел немесе басқа етіп орнатылса, кейіпкер зақым алғанда әйел дауысымен айғайлайды",
+
+  "wildfire_gender.breast_customization.dual_physics": "Қосарлы физика: %s",
+
+  "wildfire_gender.label.gender": "Жынысы",
+  "wildfire_gender.label.female": "Әйел",
+  "wildfire_gender.label.male": "Ер",
+  "wildfire_gender.label.other": "Басқа",
+
+  "wildfire_gender.label.enabled": "Иә",
+  "wildfire_gender.label.disabled": "Жоқ",
+  "wildfire_gender.label.on": "Иә",
+  "wildfire_gender.label.off": "Жоқ",
+  "wildfire_gender.label.yes": "Иә",
+  "wildfire_gender.label.no": "Жоқ",
+  "wildfire_gender.label.with_creator": "Осы модтың авторымен бірге ойнап жатырсың!",
+  "wildfire_gender.label.with_contributor": "Осы модтың үлес қосушысымен бірге ойнап жатырсың!",
+  "wildfire_gender.label.with_both": "Осы модтың авторы мен үлес қосушысымен бірге ойнап жатырсың!",
+
+  "wildfire_gender.slider.bounce": "Қарқындылығы: %s%%",
+  "wildfire_gender.slider.floppy": "Инерциясы: %s%%",
+
+  "wildfire_gender.cancer_awareness.title": "Омырау қатерлі ісігіне қарсы күрес айы!",
+
+  "wildfire_gender.first_time_setup.title": "Әйел жынысы модына қош келдіңіз!",
+  "wildfire_gender.first_time_setup.description": "Жыныс баптауларын бұлтқа синхрондауды қосқың келе ме? Бұ басқа ойыншыларға сенің омырау көрінісіңді көруге мүмкіндік береді, тіпті серверде мод болмаған жағдайдың өзінде.",
+  "wildfire_gender.first_time_setup.notice": "Бұл баптауды кез келген уақытта мод мәзірінен өзгерте аласың.",
+  "wildfire_gender.first_time_setup.enable": "Бұлтқа синхрондауды қос",
+  "wildfire_gender.first_time_setup.disable": "Бұлтқа синхрондауды өшір",
+  "wildfire_gender.first_time_setup.enable.tooltip.line1": "Бұлтқа синхрондау қосылған кезде, баптауларың сақталып, басқа ойыншыларға беріледі, тіпті сенде мод болмаған жағдайдың өзінде.",
+  "wildfire_gender.first_time_setup.enable.tooltip.line2": "Бұлтқа синхрондау деректерін кез келген уақытта өшіріп, бұлтта сақталған баптауларды жоя аласың.",
+
+  "wildfire_gender.cloud_settings": "Бұлтқа синхрондау баптаулары",
+  "wildfire_gender.cloud.tooltip": "Бұлтқа синхрондау",
+  "wildfire_gender.cloud.unavailable.invalid_account": "Бұлтқа синхрондау қолжетімсіз, өйткені дұрыс Minecraft тіркелгісімен кірмегенсің",
+  "wildfire_gender.cloud.unavailable.offline_server": "Бұлтқа синхрондау қолжетімсіз, өйткені сіз қосылған сервер офлайн режимде",
+  "wildfire_gender.cloud.status": "Бұлтқа синхрондау: %s",
+  "wildfire_gender.cloud.automatic": "Автоматты синхрондау: %s",
+  "wildfire_gender.cloud.automatic.tooltip.line1": "Қосылған кезде, баптау өзгертілгеннен кейін автоматты түрде бұлтқа синхрондалады.",
+  "wildfire_gender.cloud.automatic.tooltip.line2": "Бұл өшірулі болса да, төмендегі батырмамен қолмен синхрондай аласың.",
+
+  "wildfire_gender.cloud.sync": "Қазір синхронда",
+  "wildfire_gender.cloud.syncing": "Синхрондалуда...",
+  "wildfire_gender.cloud.syncing.success": "Синхрондалды",
+  "wildfire_gender.cloud.syncing.fail": "Синхрондау сәтсіз",
+
+  "wildfire_gender.cloud.delete": "Жою",
+  "wildfire_gender.cloud.deleted": "Жойылды",
+  "wildfire_gender.cloud.delete_failed": "Жою сәтсіз",
+
+  "wildfire_gender.cloud.status_log": "Мод күйі журналы",
+
+  "wildfire_gender.sync_log.authenticating_mojang": "Mojang-пен аутентификация...",
+  "wildfire_gender.sync_log.authenticating_sync": "Бұлтпен аутентификация...",
+  "wildfire_gender.sync_log.authentication_failed": "Аутентификация сәтсіз.",
+  "wildfire_gender.sync_log.reauthenticating": "Қайта аутентификация...",
+
+  "wildfire_gender.sync_log.failed_to_sync_data": "Деректерді синхрондау сәтсіз.",
+  "wildfire_gender.sync_log.attempting_sync": "Деректер синхрондалуда...",
+  "wildfire_gender.sync_log.sync_success": "Синхрондау сәтті.",
+  "wildfire_gender.sync_log.sync_too_frequently": "Тым жиі синхрондау.",
+
+  "wildfire_gender.sync_log.data_deleted": "Бұлт синхрондау деректері жойылды.",
+  "wildfire_gender.sync_log.data_deletion_failed": "Бұлт синхрондау деректерін жою сәтсіз.",
+  "wildfire_gender.sync_log.no_data_to_delete": "Бұлт синхрондау деректері табылмады.",
+
+  "wildfire_gender.sync_log.get_single_profile": "Деректер алынуда...",
+  "wildfire_gender.sync_log.get_multiple_profiles": "Деректер тобы алынуда...",
+
+  "wildfire_gender.details.next_page": "Келесі бет",
+  "wildfire_gender.details.prev_page": "Алдыңғы бет",
+  "wildfire_gender.details.go_back": "Артқа қайту",
+
+  "wildfire_gender.cloud_details.title": "Бұлт синхрондау сервері туралы",
+
+  "wildfire_gender.contributor.role.mod_creator": "Әйел жынысы моды авторы",
+  "wildfire_gender.contributor.role.mod_creator.short": "Мод авторы",
+  "wildfire_gender.contributor.role.fabric_maintainer": "Әйел жынысы моды жауаптысы",
+  "wildfire_gender.contributor.role.fabric_maintainer.short": "Жауапты (Fabric)",
+  "wildfire_gender.contributor.role.neoforge_maintainer": "Әйел жынысы моды жауаптысы",
+  "wildfire_gender.contributor.role.neoforge_maintainer.short": "Жауапты (NeoForge)",
+  "wildfire_gender.contributor.role.developer": "Әйел жынысы моды жасаушысы",
+  "wildfire_gender.contributor.role.developer.short": "Жасаушы",
+  "wildfire_gender.contributor.role.ci_maintainer": "Әйел жынысы моды үлес қосушысы",
+  "wildfire_gender.contributor.role.ci_maintainer.short": "Жауапты (CI/CD)",
+  "wildfire_gender.contributor.role.translator": "Әйел жынысы моды аудармашысы",
+  "wildfire_gender.contributor.role.translator.short": "Аудармашы",
+  "wildfire_gender.contributor.role.mascot": "Әйел жынысы моды талисманы",
+  "wildfire_gender.contributor.role.mascot.short": "Мод талисманы",
+  "wildfire_gender.contributor.role.voice_actor_female": "Әйел дыбысы - Keira Emberlyn",
+  "wildfire_gender.contributor.role.voice_actor_female.short": "Әйел дыбысы",
+  "wildfire_gender.contributor.role.generic": "Әйел жынысы моды үлес қосушысы",
+  "wildfire_gender.contributor.role.generic.short": "Үлес қосушы",
+
+  "wildfire_gender.misc.holiday_themes": "Мереке тақырыптары: %s",
+  "wildfire_gender.tooltip.holiday_themes.line1": "Қосылған кезде, бұл мүмкіндік Аяз-ата қалпағын және басқада мереке заттарын мереке кезінде автоматты түрде көрсетеді.",
+
+  "wildfire_gender.not_in_world.title": "Басты мәзірде қолжетімсіз",
+  "wildfire_gender.not_in_world": "Жыныс баптауларын өзгерту үшін әлемде болуың керек."
+}
