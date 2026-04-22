@@ -16,11 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.main.networking;
+package com.wildfire.main.networking.packets;
 
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.entitydata.PlayerConfigHolder;
+import com.wildfire.main.networking.WildfireSync;
 import io.netty.buffer.ByteBuf;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -30,12 +31,13 @@ import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.TriState;
 
 import java.util.UUID;
 
 public record ClientboundSyncPacket(UUID uuid, PlayerConfig config) implements CustomPacketPayload {
 
-    public static final Type<ClientboundSyncPacket> ID = new CustomPacketPayload.Type<>(WildfireGender.id("sync"));
+    public static final Type<ClientboundSyncPacket> ID = new CustomPacketPayload.Type<>(WildfireGender.id("clientbound/sync"));
     public static final StreamCodec<ByteBuf, ClientboundSyncPacket> CODEC = StreamCodec.composite(
         UUIDUtil.STREAM_CODEC, p -> p.uuid,
         PlayerConfig.COMPACT_STREAM_CODEC, p -> p.config,
@@ -52,7 +54,8 @@ public record ClientboundSyncPacket(UUID uuid, PlayerConfig config) implements C
     }
 
     public static boolean canSend(ServerPlayer player) {
-        return ServerPlayNetworking.canSend(player, ID);
+        TriState matchingVersion = player.connection.getPacketContext().orElse(WildfireSync.MATCHING_VERSION, TriState.DEFAULT);
+        return ServerPlayNetworking.canSend(player, ID) && matchingVersion.toBoolean(false);
     }
 
     @Environment(EnvType.CLIENT)
@@ -62,6 +65,7 @@ public record ClientboundSyncPacket(UUID uuid, PlayerConfig config) implements C
             return;
         }
 
+        WildfireSync.LOGGER.debug("Received player data for player {}", uuid);
         PlayerConfigHolder plr = WildfireGender.getOrAddPlayerById(uuid);
         plr.updateFromPacket(config, true);
     }

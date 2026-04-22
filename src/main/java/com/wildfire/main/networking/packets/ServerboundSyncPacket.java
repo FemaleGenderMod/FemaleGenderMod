@@ -16,23 +16,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.main.networking;
+package com.wildfire.main.networking.packets;
 
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.entitydata.PlayerConfig;
+import com.wildfire.main.networking.WildfireSync;
 import com.wildfire.main.entitydata.PlayerConfigHolder;
 import io.netty.buffer.ByteBuf;
+import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 
 public record ServerboundSyncPacket(PlayerConfig config) implements CustomPacketPayload {
 
-    public static final Type<ServerboundSyncPacket> ID = new CustomPacketPayload.Type<>(WildfireGender.id("send_gender_info"));
+    public static final Type<ServerboundSyncPacket> ID = new CustomPacketPayload.Type<>(WildfireGender.id("serverbound/sync"));
     public static final StreamCodec<ByteBuf, ServerboundSyncPacket> CODEC = PlayerConfig.COMPACT_STREAM_CODEC.map(ServerboundSyncPacket::new, ServerboundSyncPacket::config);
 
     @Override
@@ -42,10 +46,16 @@ public record ServerboundSyncPacket(PlayerConfig config) implements CustomPacket
 
     @Environment(EnvType.CLIENT)
     public static boolean canSend() {
-        return ClientPlayNetworking.canSend(ID);
+        ClientPacketListener connection = Minecraft.getInstance().getConnection();
+        if(connection == null) {
+            return false;
+        }
+        TriState matchingVersion = connection.getPacketContext().orElse(WildfireSync.MATCHING_VERSION, TriState.DEFAULT);
+        return ClientPlayNetworking.canSend(ID) && matchingVersion.toBoolean(false);
     }
 
     public void handle(ServerPlayNetworking.Context context) {
+        WildfireSync.LOGGER.debug("Received player data from player {}", context.player().getUUID());
         ServerPlayer player = context.player();
         PlayerConfigHolder plr = WildfireGender.getOrAddPlayerById(player.getUUID());
         if (!context.server().isSingleplayerOwner(player.nameAndId())) {

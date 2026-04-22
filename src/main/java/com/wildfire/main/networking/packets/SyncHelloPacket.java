@@ -16,19 +16,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.main.networking;
+package com.wildfire.main.networking.packets;
 
 import com.wildfire.main.WildfireGender;
+import com.wildfire.main.networking.WildfireSync;
 import io.netty.buffer.ByteBuf;
+import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
+import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-
-import java.util.function.Function;
+import net.minecraft.util.TriState;
 
 /// Packet sent upon joining a server that supports it, identifying the sync packet version used by the mod.
 ///
@@ -37,7 +38,19 @@ import java.util.function.Function;
 ///
 /// @since 5.0.0-Beta.2
 public sealed interface SyncHelloPacket extends CustomPacketPayload {
-    /*static*/ int VERSION = 2;//TODO: Do we want to try to make it so that if it detects version 1 it syncs using that format?
+    /// Denotes the current sync protocol version
+    ///
+    /// This version handshake is initiated by the connecting client, with the server only then responding
+    /// with its own protocol version.
+    ///
+    /// If the server doesn't respond or responds with a different value, then the server is assumed to not support
+    /// syncing over the current protocol, and will not send or receive any sync packets, and vice versa.
+    ///
+    /// | Protocol Version   | Changes                                                                                                                           |
+    /// | ------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
+    /// | `1` (5.0.0-Beta.2) | Initial versioned protocol                                                                                                        |
+    /// | `2` (TBD)          | Hello packet is now sent during configuration phase, sync packets are now identified as `clientbound/sync` and `serverbound/sync` |
+    /*public static final*/ int VERSION = 2;//TODO: Do we want to try to make it so that if it detects version 1 it syncs using that format?
 
     int version();
 
@@ -65,10 +78,16 @@ public sealed interface SyncHelloPacket extends CustomPacketPayload {
 
         @SuppressWarnings("unused")
         @Environment(EnvType.CLIENT)
-        public void handle(ClientPlayNetworking.Context context) {
-            WildfireSync.LOGGER.info("Received hello response from server with protocol version {}", version);
-            if(version != VERSION) {
-                WildfireSync.LOGGER.warn("Sync version mismatch; network errors will likely occur! (our sync version is {})", VERSION);
+        public void handle(ClientConfigurationNetworking.Context context) {
+            if(version == VERSION) {
+                WildfireSync.LOGGER.info("Received hello response from server with protocol version {}", version);
+                context.packetContext().set(WildfireSync.MATCHING_VERSION, TriState.TRUE);
+            } else {
+                WildfireSync.LOGGER.warn(
+                    "Server reported an unsupported sync protocol version! Server supports version {} but we expect {}",
+                    version, VERSION
+                );
+                context.packetContext().set(WildfireSync.MATCHING_VERSION, TriState.FALSE);
             }
         }
     }
@@ -86,12 +105,18 @@ public sealed interface SyncHelloPacket extends CustomPacketPayload {
             return ID;
         }
 
-        public void handle(ServerPlayNetworking.Context context) {
-            WildfireSync.LOGGER.info("Received hello from player {} using sync protocol version {}", context.player().getUUID(), version);
-            // note that while the only action the client performs upon receiving this response is printing some messages
-            // to the game logs, this should still be treated as a required response to any client that sends it
-            // if the server supports it.
+        public void handle(ServerConfigurationNetworking.Context context) {
             context.responseSender().sendPacket(new Clientbound());
+            if(version == VERSION) {
+                WildfireSync.LOGGER.info("Received hello packet from client with protocol version {}", version);
+                context.packetContext().set(WildfireSync.MATCHING_VERSION, TriState.TRUE);
+            } else {
+                WildfireSync.LOGGER.warn(
+                    "Client reported an unsupported sync protocol version! Client supports version {} but we expect {}",
+                    version, VERSION
+                );
+                context.packetContext().set(WildfireSync.MATCHING_VERSION, TriState.FALSE);
+            }
         }
     }
 }
