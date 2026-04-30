@@ -30,7 +30,6 @@ import com.wildfire.physics.BreastPhysics;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.RenderStateDataKey;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -50,10 +49,10 @@ import org.jetbrains.annotations.Nullable;
 public class GenderRenderState {
     private static final RenderStateDataKey<GenderRenderState> STATE = RenderStateDataKey.create(() -> "GenderRenderState");
 
-    public static void update(LivingEntity entity, EntityRenderState state) {
+    public static void update(LivingEntity entity, EntityRenderState state, float partialTicks) {
         if(!EntityConfig.isSupportedEntity(entity)) return;
         var config = EntityConfig.getEntity(entity);
-        state.setData(STATE, new GenderRenderState(config, entity));
+        state.setData(STATE, new GenderRenderState(config, entity, partialTicks));
     }
 
     public static @Nullable GenderRenderState get(EntityRenderState state) {
@@ -85,12 +84,12 @@ public class GenderRenderState {
     public final boolean isBreathing;
     public final @Nullable Component nametag;
 
-    private GenderRenderState(EntityConfig entityConfig, LivingEntity entity) {
+    private GenderRenderState(EntityConfig entityConfig, LivingEntity entity, float partialTicks) {
         this.breasts = new BreastState(entityConfig.getBreasts());
         this.leftBreastPhysics = new BreastPhysicsState(entityConfig.getLeftBreastPhysics());
         this.rightBreastPhysics = new BreastPhysicsState(entityConfig.getRightBreastPhysics());
 
-        this.partialTicks = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true);
+        this.partialTicks = partialTicks;
 
         this.gender = entityConfig.getGender();
         this.bustSize = entityConfig.getBustSize();
@@ -118,6 +117,7 @@ public class GenderRenderState {
         this.rightBreastOverlayUVLayout = entityConfig.getRightBreastOverlayUVLayout().copy();
         this.armor = WildfireHelper.getArmorConfig(entity.getItemBySlot(EquipmentSlot.CHEST));
 
+        //noinspection resource
         this.isBreathing = !entity.isUnderWater() || MobEffectUtil.hasWaterBreathing(entity) ||
             entity.level().getBlockState(entity.blockPosition()).is(Blocks.BUBBLE_COLUMN);
         this.nametag = entity instanceof Player ? WildfireGenderClient.getNametag(entity.getUUID()) : null;
