@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.main.networking.packets;
+package com.wildfire.main.networking.packets.sync;
 
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.entitydata.PlayerConfig;
@@ -27,21 +27,21 @@ import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.TriState;
 
 public record ServerboundSyncPacket(PlayerConfig config) implements CustomPacketPayload {
 
-    public static final Type<ServerboundSyncPacket> ID = new CustomPacketPayload.Type<>(WildfireGender.id("serverbound/sync"));
+    public static final Type<ServerboundSyncPacket> TYPE = WildfireGender.packet("serverbound/sync");
     public static final StreamCodec<ByteBuf, ServerboundSyncPacket> CODEC = PlayerConfig.COMPACT_STREAM_CODEC.map(ServerboundSyncPacket::new, ServerboundSyncPacket::config);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
-        return ID;
+        return TYPE;
     }
 
     @Environment(EnvType.CLIENT)
@@ -50,8 +50,9 @@ public record ServerboundSyncPacket(PlayerConfig config) implements CustomPacket
         if(connection == null) {
             return false;
         }
+
         TriState matchingVersion = connection.getPacketContext().orElse(WildfireSync.MATCHING_VERSION, TriState.DEFAULT);
-        return ClientPlayNetworking.canSend(ID) && matchingVersion.toBoolean(false);
+        return ClientPlayNetworking.canSend(TYPE) && matchingVersion.toBoolean(false);
     }
 
     public void handle(ServerPlayNetworking.Context context) {

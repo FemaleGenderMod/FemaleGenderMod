@@ -17,6 +17,6 @@
  */
 
 @NullMarked
-package com.wildfire.main.networking.packets;
+package com.wildfire.main.networking.packets.hello;
 
 import org.jspecify.annotations.NullMarked;

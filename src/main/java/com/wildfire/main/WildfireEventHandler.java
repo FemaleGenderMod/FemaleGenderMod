@@ -35,7 +35,7 @@ import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.main.entitydata.EntityConfigHolder;
 import com.wildfire.main.entitydata.PlayerConfigHolder;
 import com.wildfire.main.entitydata.PlayerConfig;
-import com.wildfire.main.networking.packets.ServerboundSyncPacket;
+import com.wildfire.main.networking.packets.sync.ServerboundSyncPacket;
 import com.wildfire.main.networking.WildfireSync;
 import com.wildfire.render.GenderArmorLayer;
 import com.wildfire.render.GenderLayer;

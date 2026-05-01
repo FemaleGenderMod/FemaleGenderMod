@@ -16,16 +16,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.main.networking.packets;
+package com.wildfire.main.networking.packets.sync;
 
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.entitydata.PlayerConfigHolder;
 import com.wildfire.main.networking.WildfireSync;
 import io.netty.buffer.ByteBuf;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.codec.StreamCodec;
@@ -37,7 +34,7 @@ import java.util.UUID;
 
 public record ClientboundSyncPacket(UUID uuid, PlayerConfig config) implements CustomPacketPayload {
 
-    public static final Type<ClientboundSyncPacket> ID = new CustomPacketPayload.Type<>(WildfireGender.id("clientbound/sync"));
+    public static final Type<ClientboundSyncPacket> TYPE = WildfireGender.packet("clientbound/sync");
     public static final StreamCodec<ByteBuf, ClientboundSyncPacket> CODEC = StreamCodec.composite(
         UUIDUtil.STREAM_CODEC, p -> p.uuid,
         PlayerConfig.COMPACT_STREAM_CODEC, p -> p.config,
@@ -50,12 +47,12 @@ public record ClientboundSyncPacket(UUID uuid, PlayerConfig config) implements C
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
-        return ID;
+        return TYPE;
     }
 
     public static boolean canSend(ServerPlayer player) {
         TriState matchingVersion = player.connection.getPacketContext().orElse(WildfireSync.MATCHING_VERSION, TriState.DEFAULT);
-        return ServerPlayNetworking.canSend(player, ID) && matchingVersion.toBoolean(false);
+        return ServerPlayNetworking.canSend(player, TYPE) && matchingVersion.toBoolean(false);
     }
 
     @Environment(EnvType.CLIENT)
