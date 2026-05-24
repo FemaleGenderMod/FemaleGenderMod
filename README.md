@@ -74,7 +74,7 @@ I am not providing support for past versions of Minecraft. The mod will only be 
 <details>
 <summary>7) Is this mod compatible with Minecraft: Bedrock Edition (Mobile)?</summary>
 
-No, and it never will be.
+Female Gender Mod is not available for Bedrock Edition and there are no plans to support it. However, [Extended Character Appearance](https://zazakrizpycreations.blogspot.com/2026/04/ExtendedCharacterAppearance.html) offers a very similar character model for Bedrock Edition players.
 
 </details>
 
