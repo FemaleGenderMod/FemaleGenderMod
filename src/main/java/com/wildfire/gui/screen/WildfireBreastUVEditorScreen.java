@@ -194,7 +194,6 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
         graphics.fill(this.width - w / 2, 30, this.width - 5, 128, 0x66000000);
 
         graphics.fill(uvWindowPos.x() - 2, uvWindowPos.y() - 2, uvWindowPos.x() + textureDrawWidth + 2, uvWindowPos.y() + textureDrawWidth + 2, 0xCC000000);
-        graphics.fill(uvWindowPos.x(), uvWindowPos.y(), uvWindowPos.x() + textureDrawWidth, uvWindowPos.y() + textureDrawWidth, 0xFFFFFFFF);
     }
 
 
@@ -218,9 +217,18 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
         var player = getPlayer();
 
         if(player != null && selectedUVs != null) {
+            Identifier skinId = net.minecraft.client.resources.DefaultPlayerSkin.get(this.playerUUID).body().texturePath();
+            if (minecraft.player instanceof net.minecraft.client.player.AbstractClientPlayer clientPlayer) {
+                var actualSkin = clientPlayer.getSkin();
+                // Only use the actual player skin if it is verified/loaded from Mojang servers.
+                // secure() == false means the skin is still the built-in default.
+                if (actualSkin.secure()) {
+                    skinId = actualSkin.body().texturePath();
+                }
+            }
 
             //noinspection SuspiciousNameCombination
-            graphics.blit(RenderPipelines.GUI_TEXTURED, minecraft.player.getSkin().body().id(),
+            graphics.blit(RenderPipelines.GUI_TEXTURED, skinId,
                     uvWindowPos.x(), uvWindowPos.y(),
                     0, 0, textureDrawWidth, textureDrawWidth, textureDrawWidth, textureDrawWidth);
 
