@@ -1,14 +1,14 @@
 {
-    "key.category.wildfire_gender.generic": "Wildfire's Female Gender Mod",
+    "key.category.wildfire_gender.generic": "Female Gender Mod",
     "key.wildfire_gender.gender_menu": "Меню",
     "key.wildfire_gender.toggle": "Переключить визуализацию груди",
-    "toast.wildfire_gender.get_started": "Нажмите %s чтобы начать!",
+    "toast.wildfire_gender.get_started": "Нажмите %s, чтобы начать!",
 
     "wildfire_gender.armor.tooltip": "+%s Поддержка Груди",
 
     "wildfire_gender.uv_editor": "Редактор текстуры груди",
     "wildfire_gender.uv_editor.reset_defaults_all": "Сбросить все параметры UV",
-    "wildfire_gender.uv_editor.reset_defaults": "Сбросить UVs",
+    "wildfire_gender.uv_editor.reset_defaults": "Сбросить UV",
     "wildfire_gender.uv_editor.no_face_selected": "Выберете текстуру ниже чтобы её редактировать.",
     "wildfire_gender.uv_editor.selection.left_breast": "Левая",
     "wildfire_gender.uv_editor.selection.right_breast": "Правая",
@@ -20,10 +20,10 @@
 
     "wildfire_gender.uv_editor.xpos": "X-Поз",
     "wildfire_gender.uv_editor.ypos": "Y-Поз",
-    "wildfire_gender.uv_editor.width": "Толщина",
+    "wildfire_gender.uv_editor.width": "Ширина",
     "wildfire_gender.uv_editor.height": "Высота",
-    "wildfire_gender.uv_editor.increment_tip.line1": "Удержи SHIFT на +10",
-    "wildfire_gender.uv_editor.increment_tip.line2": "Удержи SHIFT+CTRL на +20",
+    "wildfire_gender.uv_editor.increment_tip.line1": "Зажмите SHIFT для +10",
+    "wildfire_gender.uv_editor.increment_tip.line2": "SHIFT+CTRL для +20",
     "wildfire_gender.uv_editor.add": "Добавить",
     "wildfire_gender.uv_editor.remove": "Убрать",
 
@@ -46,17 +46,17 @@
     "wildfire_gender.player_list.bounce_multiplier": "Множитель отскока: %s",
     "wildfire_gender.player_list.breast_momentum": "Импульс груди: %s%%",
     "wildfire_gender.player_list.female_sounds": "Женские звуки: %s",
-    "wildfire_gender.wardrobe.players_using_mod": "Игроков использующих мод:",
+    "wildfire_gender.wardrobe.players_using_mod": "Синхронизированные игроки:",
 
     "wildfire_gender.always_show_list": "Показать синхронизированных игроков: %s",
     "wildfire_gender.always_show_list.mod_ui_only": "Этот экран",
-    "wildfire_gender.always_show_list.mod_ui_only.tooltip": "Синхронизированный список игроков будет отображаться только в этом меню.",
+    "wildfire_gender.always_show_list.mod_ui_only.tooltip": "Список синхронизированных игроков будет отображаться только в этом меню.",
     "wildfire_gender.always_show_list.tab_list_open": "Список игроков",
-    "wildfire_gender.always_show_list.tab_list_open.tooltip": "Синхронизированный список игроков будет отображаться в этом меню или при нажатии %s",
+    "wildfire_gender.always_show_list.tab_list_open.tooltip": "Список синхронизированных игроков будет отображаться в этом меню или при нажатии %s",
     "wildfire_gender.always_show_list.always": "Всегда",
     "wildfire_gender.always_show_list.always.tooltip": "Список синхронизированных игроков будет всегда отображаться",
 
-    "wildfire_gender.wardrobe.title": "Меню кастомизации",
+    "wildfire_gender.wardrobe.title": "Меню настройки",
     "wildfire_gender.breast_customization.tab_customization": "Настройка",
     "wildfire_gender.breast_customization.tab_physics": "Физика груди",
     "wildfire_gender.breast_customization.tab_miscellaneous": "Прочее",
@@ -68,7 +68,7 @@
     "wildfire_gender.wardrobe.slider.separation": "Расстояние: %s",
     "wildfire_gender.wardrobe.slider.height": "Высота: %s",
     "wildfire_gender.wardrobe.slider.depth": "Глубина: %s",
-    "wildfire_gender.wardrobe.slider.rotation": "Вращение: %s градусов",
+    "wildfire_gender.wardrobe.slider.rotation": "Вращение: %s°",
     "wildfire_gender.slider.voice_pitch": "Питч: %s%%",
 
     "wildfire_gender.appearance_settings.title": "Персонализация персонажа",
@@ -95,8 +95,8 @@
 
     "wildfire_gender.label.enabled": "Вкл",
     "wildfire_gender.label.disabled": "Выкл",
-    "wildfire_gender.label.on": "Вкл.",
-    "wildfire_gender.label.off": "Выкл.",
+    "wildfire_gender.label.on": "Вкл",
+    "wildfire_gender.label.off": "Выкл",
     "wildfire_gender.label.yes": "Да",
     "wildfire_gender.label.no": "Нет",
     "wildfire_gender.label.with_creator": "Вы играете на одном сервере с создателем этого мода!",
@@ -108,15 +108,15 @@
 
     "wildfire_gender.cancer_awareness.title": "Эй, сегодня месяц повышения осведомленности о раке молочной железы!",
 
-    "wildfire_gender.first_time_setup.title": "Wildfire's Female Gender Mod",
+    "wildfire_gender.first_time_setup.title": "Добро пожаловать в Female Gender Mod!",
     "wildfire_gender.first_time_setup.description": "Хотите включить синхронизацию с облачным сервером для ваших настроек пола? Эта функция позволяет другим игрокам просматривать ваш настроенный пол, даже если на сервере не установлен мод.",
     "wildfire_gender.first_time_setup.notice": "Эту настройку вы всегда сможете изменить в меню мода.",
     "wildfire_gender.first_time_setup.enable": "Включить синхронизацию",
     "wildfire_gender.first_time_setup.disable": "Выключить синхронизацию",
-    "wildfire_gender.first_time_setup.enable.tooltip.line1": "С функцией обалака ваша конфигурация будет сохранена и передоваться другим игрокам даже если у вас не установлен мод.",
+    "wildfire_gender.first_time_setup.enable.tooltip.line1": "С функцией облачной синхронизации ваша конфигурация будет сохранена и передоваться другим игрокам даже если у вас не установлен мод.",
     "wildfire_gender.first_time_setup.enable.tooltip.line2": "Вы можете удалить ваши данные в облаке в настройках облака после его выключения.",
 
-    "wildfire_gender.cloud_settings": "Настройки синхронизации",
+    "wildfire_gender.cloud_settings": "Настройки облачной синхронизации сервера",
     "wildfire_gender.cloud.tooltip": "Облачная синхронизация",
     "wildfire_gender.cloud.unavailable.invalid_account": "Синхронизация с облаком недоступна, так как вы не вошли в действующую учетную запись Minecraft.",
     "wildfire_gender.cloud.unavailable.offline_server": "Синхронизация с облаком недоступна, так как вы на пиратском сервере.",
@@ -136,28 +136,28 @@
 
     "wildfire_gender.cloud.status_log": "Журнал статуса",
 
-    "wildfire_gender.sync_log.authenticating_mojang": "Авторизация Mojang...",
-    "wildfire_gender.sync_log.authenticating_sync": "Авторизация с облаком...",
+    "wildfire_gender.sync_log.authenticating_mojang": "Авторизация в Mojang...",
+    "wildfire_gender.sync_log.authenticating_sync": "Авторизация в облаке...",
     "wildfire_gender.sync_log.authentication_failed": "Ошибка авторизации.",
     "wildfire_gender.sync_log.reauthenticating": "Повторная авторизация...",
 
     "wildfire_gender.sync_log.failed_to_sync_data": "Не удалось синхронизировать данные.",
     "wildfire_gender.sync_log.attempting_sync": "Синхронизация профиля...",
     "wildfire_gender.sync_log.sync_success": "Синхронизация успешна.",
+    "wildfire_gender.sync_log.sync_too_frequently": "Частота синхронизации ограничена.",
 
     "wildfire_gender.sync_log.data_deleted": "Аккаунт в облаке был удалён.",
     "wildfire_gender.sync_log.data_deletion_failed": "Не удалось удалить аккаунт в облаке.",
-    "wildfire_gender.sync_log.no_data_to_delete": "Аккаунт не найден.",
-    "wildfire_gender.sync_log.sync_too_frequently": "Частота синхронизации ограничена.",
+    "wildfire_gender.sync_log.no_data_to_delete": "Аккаунт в облаке не найден.",
 
     "wildfire_gender.sync_log.get_single_profile": "Получение профиля...",
     "wildfire_gender.sync_log.get_multiple_profiles": "Извлечение пакета профилей...",
 
-    "wildfire_gender.details.next_page": "Следующая страница",
-    "wildfire_gender.details.prev_page": "Предыдущая страница",
+    "wildfire_gender.details.next_page": "След. страница",
+    "wildfire_gender.details.prev_page": "Пред. страница",
     "wildfire_gender.details.go_back": "Назад",
 
-    "wildfire_gender.cloud_details.title": "Информация об облачном синхранизации",
+    "wildfire_gender.cloud_details.title": "Информация об облачной синхранизации",
 
     "wildfire_gender.contributor.role.mod_creator": "Создатель Female Gender Mod",
     "wildfire_gender.contributor.role.mod_creator.short": "Создатель мода",
@@ -166,19 +166,21 @@
     "wildfire_gender.contributor.role.neoforge_maintainer": "Разработчик Female Gender Mod",
     "wildfire_gender.contributor.role.neoforge_maintainer.short": "Разработчик (NeoForge)",
     "wildfire_gender.contributor.role.developer": "Участник Female Gender Mod",
-    "wildfire_gender.contributor.role.developer.short": "Програмист",
+    "wildfire_gender.contributor.role.developer.short": "Программист",
+    "wildfire_gender.contributor.role.ci_maintainer": "Участник Female Gender Mod",
+    "wildfire_gender.contributor.role.ci_maintainer.short": "Разработчик /CD",
     "wildfire_gender.contributor.role.translator": "Переводчик Female Gender Mod",
     "wildfire_gender.contributor.role.translator.short": "Переводчик мода",
     "wildfire_gender.contributor.role.mascot": "Маскот Female Gender Mod",
     "wildfire_gender.contributor.role.mascot.short": "Маскот мода",
-    "wildfire_gender.contributor.role.voice_actor_female": "Актёр озвучивания Keira Emberlyn",
-    "wildfire_gender.contributor.role.voice_actor_female.short": "Актёр озвучивания",
+    "wildfire_gender.contributor.role.voice_actor_female": "Актриса озвучивания Keira Emberlyn",
+    "wildfire_gender.contributor.role.voice_actor_female.short": "Актриса озвучивания",
     "wildfire_gender.contributor.role.generic": "Участник Female Gender Mod",
     "wildfire_gender.contributor.role.generic.short": "Участник в разработке",
 
-    "wildfire_gender.misc.holiday_themes": "Празднечные темы: %s",
+    "wildfire_gender.misc.holiday_themes": "Праздничные темы: %s",
     "wildfire_gender.tooltip.holiday_themes.line1": "При включении этой функции автоматически демонстрируется косметика, например, шапки Санты и другие предметы праздничной тематики во время соответствующих праздников.",
 
     "wildfire_gender.not_in_world.title": "Недоступно в главном меню",
-    "wildfire_gender.not_in_world": "Тебе нужно быть в мире чтобы настроить свой гендер."
+    "wildfire_gender.not_in_world": "Тебе нужно быть в мире чтобы настроить параметры своего пола."
 }
