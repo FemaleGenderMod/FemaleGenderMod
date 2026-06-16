@@ -241,7 +241,8 @@ public class PlayerConfig extends EntityConfig {
         var client = Minecraft.getInstance();
         if(client.player == null || !this.uuid.equals(client.player.getUUID())) return;
         if(!needsCloudSync) return;
-        if(client.screen instanceof BaseWildfireScreen) return;
+        //~ if >=26.2 'client.screen' -> 'client.gui.screen()'
+        if(client.gui.screen() instanceof BaseWildfireScreen) return;
         if(!ClientConfig.INSTANCE.get(ClientConfig.AUTOMATIC_CLOUD_SYNC)) return;
         if(CloudSync.syncOnCooldown()) return;
 

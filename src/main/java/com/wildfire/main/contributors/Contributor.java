@@ -22,14 +22,11 @@ import com.google.common.base.Preconditions;
 import com.google.gson.annotations.SerializedName;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
-import java.util.Objects;
 
 @Environment(EnvType.CLIENT)
 public record Contributor(
@@ -41,8 +38,7 @@ public record Contributor(
         @SerializedName("show_in_credits")
         @Nullable Boolean showInCredits
 ) {
-    // requireNonNull() to help IDEs figure out that @Nullable only applies to non-color Formatting entries
-    private static final int DEFAULT_COLOR = Objects.requireNonNull(ChatFormatting.GOLD.getColor());
+    private static final int DEFAULT_COLOR = 0xFFAA00; // ChatFormatting.GOLD
 
     public int getColor() {
         if(color != null) {
@@ -51,11 +47,11 @@ public record Contributor(
         return getRole().getColor();
     }
 
-    public @Nullable Component asText() {
+    public Component asText() {
         return getRole().nametag().withColor(getColor());
     }
 
-    public @NotNull Role getRole() {
+    public Role getRole() {
         if(roles == 0) {
             return Role.GENERIC;
         }
@@ -70,7 +66,7 @@ public record Contributor(
     }
 
     public enum Role {
-        MOD_CREATOR(0, ChatFormatting.LIGHT_PURPLE.getColor()),
+        MOD_CREATOR(0, 0xFF55FF), // ChatFormatting.LIGHT_PURPLE
         FABRIC_MAINTAINER(1, 0xA78FFF),
         NEOFORGE_MAINTAINER(2, 0xA78FFF),
         CI_MAINTAINER(8, 0x50C878),
@@ -111,16 +107,6 @@ public record Contributor(
                 return text.withColor(color);
             }
             return text;
-        }
-
-        public MutableComponent withColor(MutableComponent text, ChatFormatting defaultColor) {
-            Preconditions.checkNotNull(text);
-            if(color != null) {
-                return text.withColor(color);
-            }
-
-            Preconditions.checkNotNull(defaultColor.getColor());
-            return text.withColor(defaultColor.getColor());
         }
 
         public MutableComponent nametag() {

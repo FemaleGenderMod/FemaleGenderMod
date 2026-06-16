@@ -28,12 +28,14 @@ import com.wildfire.resources.GenderArmorResourceManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.util.Mth;
 import net.minecraft.util.TriState;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 
+import java.util.OptionalInt;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
@@ -110,5 +112,18 @@ public final class WildfireHelper {
 
     public static double snapToStep(double value, double stepSize) {
         return Math.round(value / stepSize) * stepSize;
+    }
+
+    public static OptionalInt getTextColor(ChatFormatting formatting) {
+        //? if 26.1 {
+        /*Integer color = formatting.getColor();
+        return color == null ? OptionalInt.empty() : OptionalInt.of(color);
+        *///?} else {
+        var color = net.minecraft.network.chat.TextColor.fromLegacyFormat(formatting);
+        if(color == null) {
+            return OptionalInt.empty();
+        }
+        return OptionalInt.of(color.getValue());
+        //?}
     }
 }

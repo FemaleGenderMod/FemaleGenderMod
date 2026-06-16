@@ -48,6 +48,7 @@ import org.joml.Quaternionf;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+// TODO split this into an AbstractGenderLayer?
 @Environment(EnvType.CLIENT)
 public class GenderLayer<S extends HumanoidRenderState, M extends HumanoidModel<S>> extends RenderLayer<S, M> {
 
@@ -208,11 +209,9 @@ public class GenderLayer<S extends HumanoidRenderState, M extends HumanoidModel<
             matrixStack.translate(0f, 0.75f, 0f);
         }
 
+        model.root().translateAndRotate(matrixStack);
         ModelPart body = model.body;
-        matrixStack.translate(body.x * 0.0625f, body.y * 0.0625f, body.z * 0.0625f);
-        if(body.zRot != 0.0F || body.yRot != 0.0F || body.xRot != 0.0F) {
-            matrixStack.mulPose(new Quaternionf().rotationZYX(body.zRot, body.yRot, body.xRot));
-        }
+        body.translateAndRotate(matrixStack);
 
         if(bounceEnabled) {
             matrixStack.translate((side.isLeft ? lPhysPositionX : rPhysPositionX) / 32f, 0, 0);

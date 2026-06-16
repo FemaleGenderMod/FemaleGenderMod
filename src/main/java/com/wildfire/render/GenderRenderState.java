@@ -50,9 +50,10 @@ public class GenderRenderState {
     private static final RenderStateDataKey<GenderRenderState> STATE = RenderStateDataKey.create(() -> "GenderRenderState");
 
     public static void update(LivingEntity entity, EntityRenderState state, float partialTicks) {
-        if(!EntityConfig.isSupportedEntity(entity)) return;
-        var config = EntityConfig.getEntity(entity);
-        state.setData(STATE, new GenderRenderState(config, entity, partialTicks));
+        if(EntityConfig.isSupportedEntity(entity)) {
+            var config = EntityConfig.getEntity(entity);
+            state.setData(STATE, new GenderRenderState(config, entity, partialTicks));
+        }
     }
 
     public static @Nullable GenderRenderState get(EntityRenderState state) {

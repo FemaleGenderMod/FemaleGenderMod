@@ -14,7 +14,6 @@
         "TextureManagerMixin",
         "accessors.ClientMannequinAccessor",
         "accessors.EquipmentLayerRendererAccessor",
-        "accessors.FeatureRenderDispatcherAccessor",
         "accessors.LivingEntityRendererAccessor",
         "accessors.YggdrasilMinecraftSessionServiceAccessor"
     ],

@@ -92,7 +92,8 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
                     ref.no.setActive(false);
 
                     final var nextScreen = new WardrobeBrowserScreen(null, playerUUID);
-                    doInitialSync().thenRun(() -> minecraft.execute(() -> minecraft.setScreen(nextScreen)));
+                    //~ if >=26.2 'setScreen' -> 'gui.setScreen'
+                    doInitialSync().thenRun(() -> minecraft.execute(() -> minecraft.gui.setScreen(nextScreen)));
                 })
                 .tooltip(Tooltip.create(Component.empty()
                         .append(Component.translatable("wildfire_gender.first_time_setup.enable.tooltip.line1"))
@@ -108,7 +109,8 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
                     config.set(ClientConfig.AUTOMATIC_CLOUD_SYNC, false);
                     config.set(ClientConfig.FIRST_TIME_LOAD, false);
 
-                    minecraft.setScreen(new WardrobeBrowserScreen(null, playerUUID));
+                    //~ if >=26.2 'minecraft.setScreen' -> 'minecraft.gui.setScreen'
+                    minecraft.gui.setScreen(new WardrobeBrowserScreen(null, playerUUID));
                 }));
     }
 

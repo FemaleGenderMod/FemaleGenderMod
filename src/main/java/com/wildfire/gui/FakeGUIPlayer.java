@@ -27,16 +27,15 @@ import com.wildfire.main.contributors.Contributors;
 import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.mixins.accessors.ClientMannequinAccessor;
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Supplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.ClientMannequin;
 import net.minecraft.client.renderer.PlayerSkinRenderCache;
 import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.UUID;
-import java.util.concurrent.ExecutionException;
-import java.util.function.Supplier;
 
 public class FakeGUIPlayer {
 
@@ -131,6 +130,12 @@ public class FakeGUIPlayer {
             // with other mods that might be injecting into the data tracker update methods to know
             // when real entities in the world are updated
             ((ClientMannequinAccessor) this).invokeUpdateSkin();
+            // workaround for #getId() throwing an error if an id isn't set on 26.2+, which results in the game crashing
+            // when attempting to extract the render state for one of these mannequins.
+            // the id here doesn't matter given this entity is never spawned in the world, so just set some arbitrary id.
+            // the proper fix would be to extract the render state ourselves, but doing so would make keeping up with
+            // updates more complex when we could just take the quick and easy way out.
+            this.setId(1);
         }
 
         public void applyLoadedSkin() {
