@@ -1,0 +1,189 @@
+{
+	"modmenu.nameTranslation.wildfire_gender": "女性性別模組",
+	"modmenu.descriptionTranslation.wildfire_gender": "透過增加胸部為玩家模型添加額外的自訂選項，使其外觀更具女性特徵",
+  
+	"key.category.wildfire_gender.generic": "女性性別模組",
+	"key.wildfire_gender.gender_menu": "女性性別選單",
+	"key.wildfire_gender.toggle": "切換胸部渲染",
+	"toast.wildfire_gender.get_started": "按下 %s 開始使用！",
+
+	"wildfire_gender.armor.tooltip": "+%s 胸部支撐",
+
+	"wildfire_gender.uv_editor": "胸部紋理編輯器",
+	"wildfire_gender.uv_editor.reset_defaults_all": "全部重設為預設 UV",
+	"wildfire_gender.uv_editor.reset_defaults": "重設為預設 UV",
+	"wildfire_gender.uv_editor.no_face_selected": "在左側選擇一個紋理面以進行編輯。",
+	"wildfire_gender.uv_editor.selection.left_breast": "左側",
+	"wildfire_gender.uv_editor.selection.right_breast": "右側",
+	"wildfire_gender.uv_editor.selection.left_breast_overlay": "左側",
+	"wildfire_gender.uv_editor.selection.right_breast_overlay": "右側",
+
+	"wildfire_gender.uv_editor.selection.layer_body": "身體層",
+	"wildfire_gender.uv_editor.selection.layer_jacket": "外套層",
+
+	"wildfire_gender.uv_editor.xpos": "X 座標",
+	"wildfire_gender.uv_editor.ypos": "Y 座標",
+	"wildfire_gender.uv_editor.width": "寬度",
+	"wildfire_gender.uv_editor.height": "高度",
+	"wildfire_gender.uv_editor.increment_tip.line1": "按住 SHIFT 增減 10",
+	"wildfire_gender.uv_editor.increment_tip.line2": "按住 SHIFT+CTRL 增減 20",
+	"wildfire_gender.uv_editor.add": "新增",
+	"wildfire_gender.uv_editor.remove": "移除",
+
+	"wildfire_gender.uv_editor.faces.inner": "內側面",
+	"wildfire_gender.uv_editor.faces.outer": "外側面",
+	"wildfire_gender.uv_editor.faces.top": "頂部面",
+	"wildfire_gender.uv_editor.faces.bottom": "底部面",
+	"wildfire_gender.uv_editor.faces.front": "正面",
+
+	"wildfire_gender.credits.title": "模組製作名單",
+	"wildfire_gender.credits.description": "這些是讓本模組得以實現的出色貢獻者名單！",
+	"wildfire_gender.credits.general": "一般",
+	"wildfire_gender.credits.translators": "翻譯者",
+
+	"wildfire_gender.player_list.title": "女性性別模組",
+	"wildfire_gender.player_list.settings_button": "設定",
+	"wildfire_gender.player_list.sync_status": "同步狀態",
+	"wildfire_gender.player_list.state.loading": "正在載入資料...",
+	"wildfire_gender.player_list.state.synced": "已同步玩家",
+	"wildfire_gender.player_list.bounce_multiplier": "彈性倍率：%sx",
+	"wildfire_gender.player_list.breast_momentum": "胸部動量：%s%%",
+	"wildfire_gender.player_list.female_sounds": "女性聲音：%s",
+	"wildfire_gender.wardrobe.players_using_mod": "已同步的玩家：",
+
+	"wildfire_gender.always_show_list": "顯示已同步的玩家：%s",
+	"wildfire_gender.always_show_list.mod_ui_only": "僅此畫面",
+	"wildfire_gender.always_show_list.mod_ui_only.tooltip": "已同步玩家名單將僅在此選單中顯示",
+	"wildfire_gender.always_show_list.tab_list_open": "玩家名單",
+	"wildfire_gender.always_show_list.tab_list_open.tooltip": "已同步玩家名單將在此選單中或按下 %s 時顯示",
+	"wildfire_gender.always_show_list.always": "總是",
+	"wildfire_gender.always_show_list.always.tooltip": "將始終顯示已同步玩家名單",
+
+	"wildfire_gender.wardrobe.title": "女性性別模組",
+	"wildfire_gender.breast_customization.tab_customization": "自訂",
+	"wildfire_gender.breast_customization.tab_physics": "胸部物理",
+	"wildfire_gender.breast_customization.tab_miscellaneous": "雜項",
+
+	"wildfire_gender.breast_customization.presets.add_new": "新增...",
+	"wildfire_gender.breast_customization.presets.delete": "刪除",
+
+	"wildfire_gender.wardrobe.slider.breast_size": "胸部大小：%s%%",
+	"wildfire_gender.wardrobe.slider.separation": "間距：%s",
+	"wildfire_gender.wardrobe.slider.height": "高度：%s",
+	"wildfire_gender.wardrobe.slider.depth": "深度：%s",
+	"wildfire_gender.wardrobe.slider.rotation": "旋轉角度：%s°",
+	"wildfire_gender.slider.voice_pitch": "音調：%s%%",
+
+	"wildfire_gender.appearance_settings.title": "角色個人化",
+	"wildfire_gender.char_settings.title": "角色設定 (舊)",
+	"wildfire_gender.char_settings.physics": "胸部物理：%s",
+	"wildfire_gender.char_settings.jump": "跳躍",
+	"wildfire_gender.char_settings.jumping": "停止跳躍",
+
+	"wildfire_gender.char_settings.override_armor_physics": "盔甲物理：%s",
+	"wildfire_gender.tooltip.override_armor_physics.line1": "啟用後，胸部物理效果將不再因穿著盔甲而減弱或抑制；這主要用於隱藏盔甲的資源包。",
+	"wildfire_gender.tooltip.override_armor_physics.line2": "這會影響您看到其他玩家及自己的方式，但不會影響其他人看到您的樣子。",
+
+	"wildfire_gender.char_settings.hide_in_armor": "在盔甲中隱藏：%s",
+	"wildfire_gender.char_settings.show_armor_stat": "顯示盔甲提示：%s",
+	"wildfire_gender.char_settings.hurt_sounds": "女性受傷聲音：%s",
+	"wildfire_gender.tooltip.hurt_sounds": "如果您的性別設定為女性或其他，您的角色受到傷害時將播放女性受傷聲音",
+
+	"wildfire_gender.breast_customization.dual_physics": "雙重物理效果：%s",
+
+	"wildfire_gender.label.gender": "性別",
+	"wildfire_gender.label.female": "女性",
+	"wildfire_gender.label.male": "男性",
+	"wildfire_gender.label.other": "其他",
+
+	"wildfire_gender.label.enabled": "已啟用",
+	"wildfire_gender.label.disabled": "已停用",
+	"wildfire_gender.label.on": "開啟",
+	"wildfire_gender.label.off": "關閉",
+	"wildfire_gender.label.yes": "是",
+	"wildfire_gender.label.no": "否",
+	"wildfire_gender.label.with_creator": "您正與本模組的創作者在同一個伺服器遊玩！",
+	"wildfire_gender.label.with_contributor": "您正與本模組的貢獻者在同一個伺服器遊玩！",
+	"wildfire_gender.label.with_both": "您正與本模組的創作者及貢獻者在同一個伺服器遊玩！",
+
+	"wildfire_gender.slider.bounce": "強度：%s%%",
+	"wildfire_gender.slider.floppy": "動量：%s%%",
+
+	"wildfire_gender.cancer_awareness.title": "嘿，現在是國際乳癌防治月！",
+
+	"wildfire_gender.first_time_setup.title": "歡迎使用女性性別模組！",
+	"wildfire_gender.first_time_setup.description": "您是否要為性別設定啟用雲端伺服器同步？此功能允許其他玩家查看您自訂的性別外觀，即使伺服器沒有安裝此模組。",
+	"wildfire_gender.first_time_setup.notice": "您隨時可以在模組選單中更改此設定。",
+	"wildfire_gender.first_time_setup.enable": "啟用雲端同步",
+	"wildfire_gender.first_time_setup.disable": "停用雲端同步",
+	"wildfire_gender.first_time_setup.enable.tooltip.line1": "啟用雲端同步後，即使您目前未安裝該模組，您的設定也會被儲存並提供給其他玩家。",
+	"wildfire_gender.first_time_setup.enable.tooltip.line2": "關閉後，您隨時可以在雲端同步設定選單中刪除您的雲端同步設定檔。",
+
+	"wildfire_gender.cloud_settings": "雲端同步伺服器設定",
+	"wildfire_gender.cloud.tooltip": "雲端同步",
+	"wildfire_gender.cloud.unavailable.invalid_account": "由於您目前未登入有效的 Minecraft 帳號，因此無法使用雲端同步功能",
+	"wildfire_gender.cloud.unavailable.offline_server": "由於您連線的伺服器處於離線模式，因此無法使用雲端同步功能",
+	"wildfire_gender.cloud.status": "雲端同步：%s",
+	"wildfire_gender.cloud.automatic": "自動同步：%s",
+	"wildfire_gender.cloud.automatic.tooltip.line1": "啟用時，任何更改後設定將自動同步到雲端。",
+	"wildfire_gender.cloud.automatic.tooltip.line2": "如果停用此功能，您仍可使用下方按鈕進行手動同步。",
+
+	"wildfire_gender.cloud.sync": "立即同步",
+	"wildfire_gender.cloud.syncing": "同步中...",
+	"wildfire_gender.cloud.syncing.success": "已同步",
+	"wildfire_gender.cloud.syncing.fail": "同步失敗",
+
+	"wildfire_gender.cloud.delete": "刪除",
+	"wildfire_gender.cloud.deleted": "已刪除",
+	"wildfire_gender.cloud.delete_failed": "刪除失敗",
+
+	"wildfire_gender.cloud.status_log": "狀態日誌",
+
+	"wildfire_gender.sync_log.authenticating_mojang": "正在與 Mojang 進行身分驗證...",
+	"wildfire_gender.sync_log.authenticating_sync": "正在驗證雲端同步...",
+	"wildfire_gender.sync_log.authentication_failed": "身分驗證失敗。",
+	"wildfire_gender.sync_log.reauthenticating": "重新驗證中...",
+
+	"wildfire_gender.sync_log.failed_to_sync_data": "同步資料失敗。",
+	"wildfire_gender.sync_log.attempting_sync": "正在同步設定檔...",
+	"wildfire_gender.sync_log.sync_success": "同步成功。",
+	"wildfire_gender.sync_log.sync_too_frequently": "同步過於頻繁，已限制速率。",
+
+	"wildfire_gender.sync_log.data_deleted": "已刪除雲端同步設定檔。",
+	"wildfire_gender.sync_log.data_deletion_failed": "刪除雲端同步設定檔失敗。",
+	"wildfire_gender.sync_log.no_data_to_delete": "找不到雲端同步設定檔。",
+
+	"wildfire_gender.sync_log.get_single_profile": "正在擷取設定檔...",
+	"wildfire_gender.sync_log.get_multiple_profiles": "正在批次擷取設定檔...",
+
+	"wildfire_gender.details.next_page": "下一頁",
+	"wildfire_gender.details.prev_page": "上一頁",
+	"wildfire_gender.details.go_back": "返回",
+
+	"wildfire_gender.cloud_details.title": "雲端同步伺服器資訊",
+
+	"wildfire_gender.contributor.role.mod_creator": "女性性別模組創作者",
+	"wildfire_gender.contributor.role.mod_creator.short": "模組創作者",
+	"wildfire_gender.contributor.role.fabric_maintainer": "女性性別模組維護者",
+	"wildfire_gender.contributor.role.fabric_maintainer.short": "維護者 (Fabric)",
+	"wildfire_gender.contributor.role.neoforge_maintainer": "女性性別模組維護者",
+	"wildfire_gender.contributor.role.neoforge_maintainer.short": "維護者 (NeoForge)",
+	"wildfire_gender.contributor.role.developer": "女性性別模組貢獻者",
+	"wildfire_gender.contributor.role.developer.short": "程式設計師",
+	"wildfire_gender.contributor.role.ci_maintainer": "女性性別模組貢獻者",
+	"wildfire_gender.contributor.role.ci_maintainer.short": "CI/CD 維護者",
+	"wildfire_gender.contributor.role.translator": "女性性別模組翻譯者",
+	"wildfire_gender.contributor.role.translator.short": "模組翻譯者",
+	"wildfire_gender.contributor.role.mascot": "女性性別模組吉祥物",
+	"wildfire_gender.contributor.role.mascot.short": "模組吉祥物",
+	"wildfire_gender.contributor.role.voice_actor_female": "Keira Emberlyn 聲優",
+	"wildfire_gender.contributor.role.voice_actor_female.short": "聲優",
+	"wildfire_gender.contributor.role.generic": "女性性別模組貢獻者",
+	"wildfire_gender.contributor.role.generic.short": "貢獻者",
+
+	"wildfire_gender.misc.holiday_themes": "節日主題：%s",
+	"wildfire_gender.tooltip.holiday_themes.line1": "啟用後，此功能會在相應的節日期間自動展示如聖誕帽等節日主題的裝飾物品。",
+
+	"wildfire_gender.not_in_world.title": "在主選單中無法使用",
+	"wildfire_gender.not_in_world": "您必須進入世界後才能設定您的性別選項。"
+}
