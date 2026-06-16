@@ -96,9 +96,10 @@ public class WildfireCommand {
                 .then(ClientCommands.literal("target")
                         .executes(WildfireCommand::getEntityLookingAt))
                 .then(ClientCommands.literal("firsttime")
-                        .executes(ctx -> {
+                        .executes(_ -> {
                             client.execute(() -> {
-                                client.schedule(() -> client.setScreen(new WildfireFirstTimeSetupScreen(null, client.player.getUUID())));
+                                //~ if >=26.2 'client.setScreen' -> 'client.gui.setScreen'
+                                client.schedule(() -> client.gui.setScreen(new WildfireFirstTimeSetupScreen(null, client.player.getUUID())));
                             });
                             return Command.SINGLE_SUCCESS;
                         }))

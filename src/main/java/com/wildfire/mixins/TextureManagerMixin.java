@@ -39,20 +39,23 @@ import java.util.Set;
 abstract class TextureManagerMixin implements MissingTextureLogger {
     private static final @Unique Set<Identifier> wildfire_gender$missingTextures = ObjectSets.synchronize(new ObjectOpenHashSet<>());
 
+    // TODO there's probably a better way to do this, but this is the easy and cheap way to do this
+    // this does mean there's likely going to be a frame where the texture will throw an error, but it won't
+    // crash the game as we're (probably unreasonably) try/catch-ing every error in the feature renderers.
     @Inject(
             method = "loadContentsSafe",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/texture/TextureContents;createMissing()Lnet/minecraft/client/renderer/texture/TextureContents;")
     )
-    private void wildfire_gender$logMissingTexture(Identifier id, ReloadableTexture texture, CallbackInfoReturnable<TextureContents> cir) {
-        wildfire_gender$missingTextures.add(id);
+    private void wildfire_gender$logMissingTexture(Identifier textureId, ReloadableTexture texture, CallbackInfoReturnable<TextureContents> cir) {
+        wildfire_gender$missingTextures.add(textureId);
     }
 
     @Inject(
             method = "loadContents",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/texture/TextureContents;createMissing()Lnet/minecraft/client/renderer/texture/TextureContents;")
     )
-    private static void wildfire_gender$logMissingTexture(ResourceManager resourceManager, Identifier id, ReloadableTexture texture, CallbackInfoReturnable<TextureContents> cir) {
-        wildfire_gender$missingTextures.add(id);
+    private static void wildfire_gender$logMissingTexture(ResourceManager manager, Identifier location, ReloadableTexture texture, CallbackInfoReturnable<TextureContents> cir) {
+        wildfire_gender$missingTextures.add(location);
     }
 
     @Inject(method = "close", at = @At("TAIL"))
@@ -61,8 +64,8 @@ abstract class TextureManagerMixin implements MissingTextureLogger {
     }
 
     @Inject(method = "lambda$scheduleLoad$0", at = @At("HEAD"))
-    private static void wildfire_gender$removeOnReload(ResourceManager resourceManager, Identifier textureId, ReloadableTexture reloadableTexture, CallbackInfoReturnable<TextureContents> cir) {
-        wildfire_gender$missingTextures.remove(textureId);
+    private static void wildfire_gender$removeOnReload(ResourceManager manager, Identifier location, ReloadableTexture texture, CallbackInfoReturnable<TextureContents> cir) {
+        wildfire_gender$missingTextures.remove(location);
     }
 
     @Override

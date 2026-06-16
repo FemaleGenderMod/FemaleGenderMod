@@ -282,7 +282,7 @@ public class BreastPhysics {
                 // so instead we're increasing the potency of negative amplifiers (and decreasing positive amplifiers),
                 // and clamping this at a lower range than normal.
                 // The effective range of these numbers is around the swing durations of Mining Fatigue V to Haste II.
-                var xAmp = Mth.clamp(1 + (rawAmplifier * (rawAmplifier < 0 ? 1.625f : 0.8f)), 0.25f, 1.225f);
+                float xAmp = Mth.clamp(1 + (rawAmplifier * (rawAmplifier < 0 ? 1.625f : 0.8f)), 0.25f, 1.225f);
                 this.targetBounceX = (0.325f * xAmp * bounceIntensity) * (swingingArm == HumanoidArm.RIGHT ? -1f : 1f);
             }
 
