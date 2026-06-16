@@ -1,3 +1,5 @@
+import me.modmuss50.mpp.ReleaseType
+
 plugins {
     // plugin versions are defined in stonecutter.gradle.kts
     id("net.fabricmc.fabric-loom")
@@ -95,7 +97,7 @@ publishMods {
     displayName = "$modVer for $verTitle"
     version = project.version as String
     changelog = providers.fileContents(rootProject.layout.projectDirectory.file("CHANGELOG.md")).asText
-    type = STABLE
+    type = ReleaseType.of(sc.properties["publish.type"])
     modLoaders.add("fabric")
 
     dryRun = providers.environmentVariable("MODRINTH_TOKEN").getOrNull() == null

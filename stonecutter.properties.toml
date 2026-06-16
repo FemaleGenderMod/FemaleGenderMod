@@ -10,6 +10,7 @@ archives_base_name = "Female-Gender-Mod"
 dependencies.modmenu = "18.0.0-alpha.6"
 debug.load_modmenu = false
 
+publish.type = "BETA"
 # TODO setup curseforge publishing
 publish.modrinth = "bcOsQHnC"
 
