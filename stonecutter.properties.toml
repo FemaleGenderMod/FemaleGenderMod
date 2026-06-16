@@ -1,7 +1,7 @@
 loader_version = "0.19.2"
 
 # Mod Properties
-mod_version = "5.0.0-Beta.3"
+mod_version = "5.0.0-Beta.4"
 maven_group = "com.wildfiregender.main"
 archives_base_name = "Female-Gender-Mod"
 
