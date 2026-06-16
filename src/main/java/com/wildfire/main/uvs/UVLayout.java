@@ -18,14 +18,21 @@
 
 package com.wildfire.main.uvs;
 
+import com.mojang.serialization.Codec;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 
 public class UVLayout {
+    /**
+     * @apiNote Any layouts returned from this codec are {@link Immutable immutable}
+     */
+    public static final Codec<UVLayout> CODEC = Codec.unboundedMap(UVDirection.NAME_CODEC, UVQuad.CODEC).xmap(UVLayout::createImmutable, UVLayout::getQuads);
+
     private final EnumMap<UVDirection, @Nullable UVQuad> quads = new EnumMap<>(UVDirection.class);
 
     public UVLayout(Map<UVDirection, @Nullable UVQuad> map) {
@@ -73,7 +80,7 @@ public class UVLayout {
         return clone;
     }
 
-    public Map<UVDirection, @Nullable UVQuad> getAllSides() {
+    public @UnmodifiableView Map<UVDirection, @Nullable UVQuad> getAllSides() {
         return Collections.unmodifiableMap(quads);
     }
 
@@ -88,5 +95,21 @@ public class UVLayout {
         if (this == obj) return true;
         if (!(obj instanceof UVLayout other)) return false;
         return quads.equals(other.quads);
+    }
+
+    // used to avoid potential class load deadlocks from referencing Immutable::new in CODEC
+    private static Immutable createImmutable(Map<UVDirection, @Nullable UVQuad> quads) {
+        return new Immutable(quads);
+    }
+
+    public static final class Immutable extends UVLayout {
+        public Immutable(Map<UVDirection, @Nullable UVQuad> quads) {
+            super(quads);
+        }
+
+        @Override
+        public void put(UVDirection dir, UVQuad quad) {
+            throw new UnsupportedOperationException();
+        }
     }
 }

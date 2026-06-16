@@ -15,9 +15,9 @@ The full schema with default values is as follows:
   "render_on_armor_stands": null, // true if resistance == 1
   "texture": {
     "texture_size": [64, 32],
-    "dimensions": [4, 5],
-    "left_uv": [16, 17],
-    "right_uv": [-1, -1] // defaults to left_uv added with the x value of dimensions
+    "uvs": {
+        // default values omitted due to its size; see below for full default value
+    }
   }
 }
 ```
@@ -77,6 +77,50 @@ you do *not* need to modify this or any other texture values, as it'll already h
 
 Defaults to `[64, 32]` if unset.
 
+#### `uvs`
+
+>[!IMPORTANT]
+> This only exists on mod versions 5.0.0 and later; for older versions, see below.
+
+>[!TIP]
+> It's strongly recommended to be at least somewhat familiar with the mod's UV editor beforehand!
+
+An object containing the UV mapping for the armor when equipped.
+
+The default mapping for vanilla-compatible armor types is as follows:
+
+```json5
+{
+  "uvs": {
+    // both left and right must be defined here!
+    "left": {
+      // faces not defined here will not be rendered
+      "east": [
+        24, // first X position
+        21, // first Y position
+        28, // second X position
+        26  // second Y position
+      ],
+      // and so on for the rest of these
+      "west": [16, 21, 20, 26],
+      "down": [20, 17, 24, 21],
+      "up": [20, 25, 24, 27],
+      "north": [20, 21, 24, 26]
+    },
+    "right": {
+      "east": [28, 21, 32, 26],
+      "west": [20, 21, 24, 26],
+      "down": [24, 17, 28, 21],
+      "up": [24, 25, 28, 27],
+      "north": [24, 21, 28, 26]
+    }
+  }
+}
+```
+
+<details>
+<summary>Versions before 5.0.0</summary>
+
 #### `dimensions`
 
 Controls how large an area the breasts should grab from the sprite for *each breast*; this means that this value's
@@ -95,3 +139,5 @@ Defaults to `[16, 17]` if unset.
 Controls where the right breast should start rendering this armor from.
 
 Defaults to `left_uv` added with the X value of `dimensions` if unset.
+
+</details>

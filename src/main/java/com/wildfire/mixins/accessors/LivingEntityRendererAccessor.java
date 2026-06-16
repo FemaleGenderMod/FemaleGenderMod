@@ -32,4 +32,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 public interface LivingEntityRendererAccessor {
     @Invoker
     @Nullable RenderType invokeGetRenderType(LivingEntityRenderState state, boolean showBody, boolean translucent, boolean showOutline);
+
+    @Invoker
+    boolean invokeIsBodyVisible(LivingEntityRenderState state);
 }

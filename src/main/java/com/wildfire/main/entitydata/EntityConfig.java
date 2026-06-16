@@ -76,9 +76,6 @@ public class EntityConfig {
     protected UVLayout leftBreastOverlayUVLayout = Configuration.LEFT_BREAST_OVERLAY_UV_LAYOUT.getDefault();
     protected UVLayout rightBreastOverlayUVLayout = Configuration.RIGHT_BREAST_OVERLAY_UV_LAYOUT.getDefault();
 
-    protected UVLayout leftBreastArmorUVLayout = Configuration.LEFT_BREAST_ARMOR_UV_LAYOUT.getDefault();
-    protected UVLayout rightBreastArmorUVLayout = Configuration.RIGHT_BREAST_ARMOR_UV_LAYOUT.getDefault();
-
     protected float voicePitch = Configuration.VOICE_PITCH.getDefault();
 
     // note: hurt sounds, armor physics override, and show in armor are not defined here, as they have no relevance
@@ -139,8 +136,8 @@ public class EntityConfig {
      */
     public static boolean isSupportedEntity(LivingEntity entity) {
         // TODO mannequins are not properly supported right now; this method only returns true to indicate that
-        //		our rendering does technically support it, despite the fact that there is no way to properly utilize
-        //		them without using janky workarounds.
+        //        our rendering does technically support it, despite the fact that there is no way to properly utilize
+        //        them without using janky workarounds.
         return entity instanceof Avatar || entity instanceof ArmorStand;
     }
 
@@ -241,16 +238,6 @@ public class EntityConfig {
 
     public boolean updateRightBreastOverlayUVLayout(UVLayout layout) {
         return updateValue(Configuration.RIGHT_BREAST_OVERLAY_UV_LAYOUT, layout, v -> this.rightBreastOverlayUVLayout = v);
-    }
-
-    @Deprecated(forRemoval = true)
-    public UVLayout getLeftBreastArmorUVLayout() {
-        return this.leftBreastArmorUVLayout;
-    }
-
-    @Deprecated(forRemoval = true)
-    public UVLayout getRightBreastArmorUVLayout() {
-        return this.rightBreastArmorUVLayout;
     }
 
     protected <VALUE> boolean updateValue(ConfigKey<VALUE> key, VALUE value, Consumer<VALUE> setter) {

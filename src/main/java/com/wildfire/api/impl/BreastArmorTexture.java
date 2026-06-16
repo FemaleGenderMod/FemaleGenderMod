@@ -19,7 +19,7 @@
 package com.wildfire.api.impl;
 
 import com.wildfire.api.IBreastArmorTexture;
-import org.jetbrains.annotations.ApiStatus;
+import com.wildfire.main.uvs.UVMap;
 import org.joml.Vector2ic;
 
 /**
@@ -27,10 +27,5 @@ import org.joml.Vector2ic;
  *
  * @see IBreastArmorTexture
  */
-public record BreastArmorTexture(
-        Vector2ic textureSize,
-        Vector2ic leftUv,
-        Vector2ic rightUv,
-        Vector2ic dimensions
-) implements IBreastArmorTexture {
+public record BreastArmorTexture(Vector2ic textureSize, UVMap uvs) implements IBreastArmorTexture {
 }

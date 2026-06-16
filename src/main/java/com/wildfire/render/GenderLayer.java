@@ -19,7 +19,6 @@
 package com.wildfire.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.wildfire.api.IGenderArmor;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireHelper;
@@ -44,9 +43,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
-import org.joml.*;
+import org.joml.Quaternionf;
 
-import java.lang.Math;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -83,12 +81,14 @@ public class GenderLayer<S extends HumanoidRenderState, M extends HumanoidModel<
      * Convenience method around {@link LivingEntityRendererAccessor#invokeGetRenderType}
      */
     private @Nullable RenderType getRenderLayer(S state) {
-        boolean bodyVisible = !state.isInvisible;
-        boolean translucent = state.isInvisible && !state.isInvisibleToPlayer;
+        var renderer = (LivingEntityRenderer<?, ?, ?>) context;
+        var accessor = (LivingEntityRendererAccessor) renderer;
+
+        boolean bodyVisible = accessor.invokeIsBodyVisible(state);
+        boolean translucent = !bodyVisible && !state.isInvisibleToPlayer;
         boolean glowing = state.appearsGlowing();
 
-        var renderer = (LivingEntityRenderer<?, ?, ?>) context;
-        return ((LivingEntityRendererAccessor) renderer).invokeGetRenderType(state, bodyVisible, translucent, glowing);
+        return accessor.invokeGetRenderType(state, bodyVisible, translucent, glowing);
     }
 
     @Override
@@ -120,6 +120,7 @@ public class GenderLayer<S extends HumanoidRenderState, M extends HumanoidModel<
 
         armorStack = entityState.chestEquipment;
         //Note: When the stack is empty the helper will fall back to an implementation that returns the proper data
+        // TODO should this be moved into the render state?
         genderArmor = WildfireHelper.getArmorConfig(armorStack);
         isChestplateOccupied = genderArmor.coversBreasts() && !genderState.armorPhysicsOverride;
         if(genderArmor.alwaysHidesBreasts() || !genderState.showBreastsInArmor && isChestplateOccupied) {
@@ -255,21 +256,21 @@ public class GenderLayer<S extends HumanoidRenderState, M extends HumanoidModel<
         matrixStack.scale(0.9995f, 1f, 1f); //z-fighting FIXXX
     }
 
-    private void renderBreast(S state, PoseStack matrixStack, SubmitNodeCollector queue, int overlay, BreastSide side) {
-        RenderType renderLayer = getRenderLayer(state);
-        if(renderLayer == null) return; // only render if the player is visible in some capacity
+    private void renderBreast(S state, PoseStack poseStack, SubmitNodeCollector collector, int overlay, BreastSide side) {
+        RenderType type = getRenderLayer(state);
+        if(type == null) return; // only render if the player is visible in some capacity
 
         int alpha = state.isInvisible ? ARGB.as8BitChannel(0.15f) : 255;
         int color = ARGB.color(alpha, 255, 255, 255);
 
         var model = side.isLeft ? lBreast : rBreast;
-        queue.submitCustomGeometry(matrixStack, renderLayer, new BreastRenderCommand(model, state, overlay, color));
+        collector.order(1).submitModel(new BreastModel(model), state, poseStack, type, state.lightCoords, overlay, color, null, state.outlineColor, null);
 
         if(state instanceof AvatarRenderState playerState && playerState.showJacket) {
-            matrixStack.translate(0, 0, -0.015f);
-            matrixStack.scale(1.05f, 1.05f, 1.05f);
+            poseStack.translate(0, 0, -0.015f);
+            poseStack.scale(1.05f, 1.05f, 1.05f);
             var jacketModel = side.isLeft ? lBreastWear : rBreastWear;
-            queue.submitCustomGeometry(matrixStack, renderLayer, new BreastRenderCommand(jacketModel, state, overlay, color));
+            collector.order(2).submitModel(new BreastModel(jacketModel), state, poseStack, type, state.lightCoords, overlay, color, null, state.outlineColor, null);
         }
     }
 
@@ -288,30 +289,6 @@ public class GenderLayer<S extends HumanoidRenderState, M extends HumanoidModel<
             renderer.accept(BreastSide.RIGHT);
         } finally {
             matrixStack.popPose();
-        }
-    }
-
-    public static void renderBox(WildfireModelRenderer.ModelBox model, PoseStack.Pose entry, VertexConsumer vertexConsumer,
-                                    int light, int overlay, int color) {
-        Matrix4f matrix4f = entry.pose();
-        Matrix3f matrix3f = entry.normal();
-        for(var quad : model.quads) {
-
-            //Make sure UVs aren't set to zero. If they are, the textures screw up. Don't render the quad at all.
-            if(quad.uvs[0] == 0.0F && quad.uvs[1] == 0.0F && quad.uvs[2] == 0.0F && quad.uvs[3] == 0.0F) continue;
-
-            Vector3f vector3f = new Vector3f(quad.normal.x(), quad.normal.y(), quad.normal.z()).mul(matrix3f);
-            float normalX = vector3f.x;
-            float normalY = vector3f.y;
-            float normalZ = vector3f.z;
-            for (var vertex : quad.vertexPositions) {
-                float j = vertex.x() / 16.0F;
-                float k = vertex.y() / 16.0F;
-                float l = vertex.z() / 16.0F;
-                Vector4f vector4f = new Vector4f(j, k, l, 1.0F).mul(matrix4f);
-                vertexConsumer.addVertex(vector4f.x(), vector4f.y(), vector4f.z(), color, vertex.u(), vertex.v(),
-                        overlay, light, normalX, normalY, normalZ);
-            }
         }
     }
 }

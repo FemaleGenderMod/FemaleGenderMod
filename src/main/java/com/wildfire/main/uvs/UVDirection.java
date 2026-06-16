@@ -18,18 +18,21 @@
 
 package com.wildfire.main.uvs;
 
+import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ByIdMap;
+import net.minecraft.util.StringRepresentable;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
+import java.util.Locale;
 import java.util.function.IntFunction;
 
-public enum UVDirection {
+public enum UVDirection implements StringRepresentable {
     EAST("east", "", "E", 0xFFFF0000, new Vec3i(1, 0, 0)),
     WEST("west", "", "W", 0xFF00FF00, new Vec3i(-1, 0, 0)),
     DOWN("down", "wildfire_gender.uv_editor.faces.bottom", "D", 0xFF0000FF, new Vec3i(0, -1, 0)),
@@ -43,6 +46,7 @@ public enum UVDirection {
     private final Vector3fc floatVector;
 
     public static final IntFunction<UVDirection> BY_ID = ByIdMap.continuous(UVDirection::ordinal, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
+    public static final Codec<UVDirection> NAME_CODEC = StringRepresentable.fromEnum(UVDirection::values);
     public static final StreamCodec<ByteBuf, UVDirection> PACKET_CODEC = ByteBufCodecs.idMapper(BY_ID, UVDirection::ordinal);
 
     UVDirection(String saveName, String unlocalizedName, String shortName, int baseColor, Vec3i vector) {
@@ -66,15 +70,14 @@ public enum UVDirection {
     }
 
     public Component getDirectionText(BreastTypes type) {
-
-        if (this == EAST || this == WEST) {
+        if(this == EAST || this == WEST) {
             String key = (type == BreastTypes.LEFT || type == BreastTypes.LEFT_OVERLAY)
                     ? "wildfire_gender.uv_editor.faces.inner"
                     : "wildfire_gender.uv_editor.faces.outer";
             return Component.translatable(key);
         }
 
-        if (unlocalizedName != null && !unlocalizedName.isEmpty()) {
+        if(!unlocalizedName.isEmpty()) {
             return Component.translatable(unlocalizedName);
         }
 
@@ -91,5 +94,10 @@ public enum UVDirection {
 
     public String getUnlocalizedName() {
         return unlocalizedName;
+    }
+
+    @Override
+    public String getSerializedName() {
+        return name().toLowerCase(Locale.ROOT);
     }
 }

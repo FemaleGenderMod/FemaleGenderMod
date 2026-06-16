@@ -36,6 +36,7 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
 import net.minecraft.client.renderer.entity.state.ArmorStandRenderState;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -50,7 +51,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.item.equipment.EquipmentAsset;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
+import org.apache.commons.lang3.mutable.MutableBoolean;
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.UnknownNullability;
+
+import java.util.Objects;
 
 @Environment(EnvType.CLIENT)
 public class GenderArmorLayer<S extends HumanoidRenderState, M extends HumanoidModel<S>> extends GenderLayer<S, M> {
@@ -64,30 +69,27 @@ public class GenderArmorLayer<S extends HumanoidRenderState, M extends HumanoidM
     @UnknownNullability("null until first render pass")
     private GenderRenderState genderRenderState;
 
-    @SuppressWarnings({"unused", "FieldMayBeFinal"}) // TODO fix this
     private IBreastArmorTexture textureData = IBreastArmorTexture.DEFAULT;
 
     static {
         var left = new UVLayout(
-                new UVQuad(24, 21, 28, 26),  // EAST
-                new UVQuad(16, 21, 20, 26),  // WEST
-                new UVQuad(20, 17, 24, 21),  // DOWN
-                new UVQuad(20, 25, 24, 27),  // UP
-                new UVQuad(20, 21, 24, 26)   // NORTH
+            new UVQuad(24, 21, 28, 26),  // EAST
+            new UVQuad(16, 21, 20, 26),  // WEST
+            new UVQuad(20, 17, 24, 21),  // DOWN
+            new UVQuad(20, 25, 24, 27),  // UP
+            new UVQuad(20, 21, 24, 26)   // NORTH
         );
 
         var right = new UVLayout(
-                new UVQuad(28, 21, 32, 26),  // EAST
-                new UVQuad(20, 21, 24, 26),  // WEST
-                new UVQuad(24, 17, 28, 21),  // DOWN
-                new UVQuad(24, 25, 28, 27),  // UP
-                new UVQuad(24, 21, 28, 26)   // NORTH
+            new UVQuad(28, 21, 32, 26),  // EAST
+            new UVQuad(20, 21, 24, 26),  // WEST
+            new UVQuad(24, 17, 28, 21),  // DOWN
+            new UVQuad(24, 25, 28, 27),  // UP
+            new UVQuad(24, 21, 28, 26)   // NORTH
         );
 
-        // apply a very slight delta to fix rare layering issues with the normal armor layer
-        // TODO look into how difficult it'd be to replicate Model render priority here
-        lTrim = new BreastModelBox(64, 32, -4F, 0.0F, 0F, 4, 5, 4, 0.001F, left);
-        rTrim = new BreastModelBox(64, 32, 0, 0.0F, 0F, 4, 5, 4, 0.001F, right);
+        lTrim = new BreastModelBox(64, 32, -4F, 0.0F, 0F, 4, 5, 3, 0, left);
+        rTrim = new BreastModelBox(64, 32, 0, 0.0F, 0F, 4, 5, 3, 0, right);
     }
 
     private static boolean textureExists(Identifier texture) {
@@ -104,7 +106,7 @@ public class GenderArmorLayer<S extends HumanoidRenderState, M extends HumanoidM
     @Override
     public void submit(PoseStack matrixStack, SubmitNodeCollector queue, int light, S state, float limbAngle, float limbDistance) {
         this.genderRenderState = GenderRenderState.get(state);
-        if (this.genderRenderState == null) return;
+        if(this.genderRenderState == null) return;
 
         final ItemStack chestplate = state.chestEquipment;
         // Check if the worn item in the chest slot is actually equippable in the chest slot, and has a model to render
@@ -117,22 +119,24 @@ public class GenderArmorLayer<S extends HumanoidRenderState, M extends HumanoidM
 
         try {
             if(!setupRender(state, this.genderRenderState)) return;
-            if(state instanceof ArmorStandRenderState && !genderArmor.armorStandsCopySettings()) return;
+            if(state instanceof ArmorStandRenderState && !genderRenderState.armor.armorStandsCopySettings()) return;
 
             int color = DyedItemColor.getOrDefault(chestplate, 0);
-            boolean glint = chestplate.hasFoil();
 
             renderSides(state, getParentModel(), matrixStack, side -> {
+                var order = new MutableInt(1);
+
                 // TODO is there still a need to allow for overriding the armor texture identifier?
                 layers.forEach(layer -> {
+                    var glint = new MutableBoolean(chestplate.hasFoil());
                     int layerColor = EquipmentLayerRenderer.getColorForLayer(layer, color);
                     var texture = layer.getTextureLocation(EquipmentClientInfo.LayerType.HUMANOID);
-                    renderBreastArmor(texture, matrixStack, queue, state, side, layerColor, glint);
+                    renderBreastArmor(texture, matrixStack, queue, state, side, layerColor, glint, order);
                 });
 
                 var trim = armorStack.get(DataComponents.TRIM);
                 if(trim != null) {
-                    renderArmorTrim(asset, matrixStack, queue, state, trim, side, glint);
+                    renderArmorTrim(asset, matrixStack, queue, state, trim, side, order);
                 }
             });
         } catch(Exception e) {
@@ -147,30 +151,22 @@ public class GenderArmorLayer<S extends HumanoidRenderState, M extends HumanoidM
 
     @Override
     protected void resizeBox(GenderRenderState state, float breastSize) {
-        /*if(genderArmor == null || Objects.equals(textureData, genderArmor.texture())) {
+        if(lBoobArmor != null && rBoobArmor != null && Objects.equals(textureData, genderArmor.texture())) {
             return;
         }
 
         textureData = genderArmor.texture();
         var texSize = textureData.textureSize();
-        var lUV = textureData.leftUv();
-        var rUV = textureData.rightUv();
-        var dim = textureData.dimensions();*/
+        var uvs = textureData.uvs();
 
-        //lBoobArmor = new BreastModelBox(texSize.x(), texSize.y(), lUV.x(), lUV.y(), -4F, 0.0F, 0F, dim.x(), dim.y(), 4, 0.0F, false);
-        //rBoobArmor = new BreastModelBox(texSize.x(), texSize.y(), rUV.x(), rUV.y(), 0, 0.0F, 0F, dim.x(), dim.y(), 4, 0.0F, false);
-
-        // FIXME make this work with armor configs
-        if(this.lBoobArmor == null || this.rBoobArmor == null) {
-            lBoobArmor = new BreastModelBox(64, 32, -4F, 0.0F, 0F, 4, 5, 3, 0.0F, state.leftBreastArmorUVLayout);
-            rBoobArmor = new BreastModelBox(64, 32, 0, 0.0F, 0F, 4, 5, 3, 0.0F, state.rightBreastArmorUVLayout);
-        }
+        lBoobArmor = new BreastModelBox(texSize.x(), texSize.y(), -4F, 0.0F, 0F, 4, 5, 3, 0.0F, uvs.left());
+        rBoobArmor = new BreastModelBox(texSize.x(), texSize.y(), 0, 0.0F, 0F, 4, 5, 3, 0.0F, uvs.right());
     }
 
     @Override
     protected void setupTransformations(S state, M model, PoseStack matrixStack, BreastSide side) {
         super.setupTransformations(state, model, matrixStack, side);
-        if (genderRenderState.hasJacketLayer) {
+        if(genderRenderState.hasJacketLayer) {
             matrixStack.translate(0, 0, -0.015f);
             matrixStack.scale(1.05f, 1.05f, 1.05f);
         }
@@ -179,41 +175,63 @@ public class GenderArmorLayer<S extends HumanoidRenderState, M extends HumanoidM
     }
 
     // TODO eventually expose some way for mods to override this, maybe through a default impl in IGenderArmor or similar
-    protected void renderBreastArmor(Identifier texture, PoseStack matrixStack, SubmitNodeCollector queue,
-                                     S state, BreastSide side, int color, boolean glint) {
+    protected void renderBreastArmor(Identifier texture, PoseStack poseStack, SubmitNodeCollector collector,
+                                     S state, BreastSide side, int color, MutableBoolean glint, MutableInt order) {
         if(!textureExists(texture)) {
             return;
         }
 
-        var model = side.isLeft ? lBoobArmor : rBoobArmor;
-        var layer = RenderTypes.armorCutoutNoCull(texture);
-        queue.submitCustomGeometry(matrixStack, layer, new BreastRenderCommand(model, state, OverlayTexture.NO_OVERLAY, ARGB.opaque(color)));
+        var model = new BreastModel(side.isLeft ? lBoobArmor : rBoobArmor);
+        RenderType type = RenderTypes.armorCutoutNoCull(texture);
+        collector.order(order.getAndIncrement()).submitModel(
+            model,
+            state,
+            poseStack,
+            type,
+            state.lightCoords,
+            OverlayTexture.NO_OVERLAY,
+            ARGB.opaque(color),
+            null,
+            state.outlineColor,
+            null
+        );
 
-        if(glint) {
-            renderGlint(matrixStack, queue, state, model);
+        if(glint.isTrue()) {
+            collector.order(order.intValue()).submitModel(
+                model,
+                state,
+                poseStack,
+                RenderTypes.armorEntityGlint(),
+                state.lightCoords,
+                OverlayTexture.NO_OVERLAY,
+                -1,
+                null,
+                0,
+                null
+            );
+            glint.setFalse();
         }
     }
 
-    protected void renderArmorTrim(ResourceKey<EquipmentAsset> armorModel, PoseStack matrixStack, SubmitNodeCollector queue,
-                                   S state, ArmorTrim trim, BreastSide side, boolean glint) {
-        var model = side.isLeft ? lTrim : rTrim;
+    protected void renderArmorTrim(ResourceKey<EquipmentAsset> armorModel, PoseStack poseStack, SubmitNodeCollector collector,
+                                   S state, ArmorTrim trim, BreastSide side, MutableInt order) {
+        var model = new BreastModel(side.isLeft ? lTrim : rTrim);
 
-        // this sucks, but it sucks less than simply copy/pasting the entire relevant block of code, and is
-        // (at least theoretically) more compatible with other mods, assuming they simply mixin to TrimSpriteKey
-        // to modify the armor trim sprite location.
         var key = new EquipmentLayerRenderer.TrimSpriteKey(trim, EquipmentClientInfo.LayerType.HUMANOID, armorModel);
         TextureAtlasSprite sprite = ((EquipmentLayerRendererAccessor) equipmentRenderer).getTrimSpriteLookup().apply(key);
 
-        var layer = Sheets.armorTrimsSheet(trim.pattern().value().decal());
-        queue.submitCustomGeometry(matrixStack, layer, BreastRenderCommand.trim(model, state, sprite));
-
-        if(glint) {
-            renderGlint(matrixStack, queue, state, model);
-        }
-    }
-
-    protected void renderGlint(PoseStack matrixStack, SubmitNodeCollector renderQueue, S state, BreastModelBox box) {
-        var glintLayer = RenderTypes.armorEntityGlint();
-        renderQueue.submitCustomGeometry(matrixStack, glintLayer, new BreastRenderCommand(box, state, OverlayTexture.NO_OVERLAY, -1));
+        RenderType type = Sheets.armorTrimsSheet(trim.pattern().value().decal());
+        collector.order(order.getAndIncrement()).submitModel(
+            model,
+            state,
+            poseStack,
+            type,
+            state.lightCoords,
+            OverlayTexture.NO_OVERLAY,
+            -1,
+            sprite,
+            0,
+            null
+        );
     }
 }

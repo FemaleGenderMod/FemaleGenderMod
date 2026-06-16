@@ -16,15 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.mixins.accessors;
+package com.wildfire.main.uvs;
 
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.feature.FeatureRenderDispatcher;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-@Mixin(GameRenderer.class)
-public interface GameRendererAccessor {
-    @Accessor("featureRenderDispatcher")
-    FeatureRenderDispatcher getRenderDispatcher();
+public record UVMap(UVLayout left, UVLayout right) {
+    public static final Codec<UVMap> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        UVLayout.CODEC.fieldOf("left").forGetter(UVMap::left),
+        UVLayout.CODEC.fieldOf("right").forGetter(UVMap::right)
+    ).apply(instance, UVMap::new));
 }
