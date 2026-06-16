@@ -1,6 +1,7 @@
 plugins {
     // plugin versions are defined in stonecutter.gradle.kts
     id("net.fabricmc.fabric-loom")
+    id("me.modmuss50.mod-publish-plugin")
 }
 
 version = "${project.property("mod_version")}+${sc.current.project}"
@@ -81,5 +82,31 @@ loom {
 tasks.jar {
     from("LICENSE") {
         rename { "${it}_${project.property("archives_base_name")}" }
+    }
+}
+
+publishMods {
+    val modVer: String = sc.properties["mod_version"]
+    val minVer: String = sc.properties["publish.min_version"]
+    val maxVer: String = sc.properties["publish.max_version"]
+    val verTitle: String = sc.properties["publish.version_title"]
+
+    file = tasks.jar.get().archiveFile
+    displayName = "$modVer for $verTitle"
+    version = project.version as String
+    changelog = providers.fileContents(rootProject.layout.projectDirectory.file("CHANGELOG.md")).asText
+    type = STABLE
+    modLoaders.add("fabric")
+
+    dryRun = providers.environmentVariable("MODRINTH_TOKEN").getOrNull() == null
+
+    modrinth {
+        projectId = property("publish.modrinth").toString()
+        accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+        minecraftVersionRange {
+            start = minVer
+            end = maxVer
+        }
+        requires("fabric-api")
     }
 }
