@@ -54,7 +54,7 @@ public class ModMenuIntegration implements ModMenuApi {
 
         public NotInWorldScreen(Minecraft client, Screen parent) {
             super(
-                //~ if >26.1 'setScreen' -> 'gui.setScreen'
+                //~ if >=26.2 'setScreen' -> 'gui.setScreen'
                 _ -> client.gui.setScreen(parent),
                 Component.translatable("wildfire_gender.not_in_world.title").withStyle(ChatFormatting.RED),
                 Component.translatable("wildfire_gender.not_in_world")
@@ -69,7 +69,7 @@ public class ModMenuIntegration implements ModMenuApi {
 
         @Override
         public void onClose() {
-            //~ if >26.1 'setScreen' -> 'gui.setScreen'
+            //~ if >=26.2 'setScreen' -> 'gui.setScreen'
             minecraft.gui.setScreen(parent);
         }
     }

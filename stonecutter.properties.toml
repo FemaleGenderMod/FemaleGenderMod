@@ -18,7 +18,7 @@ debug.load_modmenu = false
     publish.max_version = "26.1.2"
 
 ["26.2"]
-    dependencies.minecraft = ">=26.2-alpha.7 <26.2"
-    dependencies.fabric = "0.150.3+26.2"
+    dependencies.minecraft = ">=26.2 <26.3"
+    dependencies.fabric = "0.152.1+26.2"
     publish.min_version = "26.2"
     publish.max_version = "latest"

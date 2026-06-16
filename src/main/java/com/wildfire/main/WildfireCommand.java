@@ -98,7 +98,7 @@ public class WildfireCommand {
                 .then(ClientCommands.literal("firsttime")
                         .executes(_ -> {
                             client.execute(() -> {
-                                //~ if >26.1 'client.setScreen' -> 'client.gui.setScreen'
+                                //~ if >=26.2 'client.setScreen' -> 'client.gui.setScreen'
                                 client.schedule(() -> client.gui.setScreen(new WildfireFirstTimeSetupScreen(null, client.player.getUUID())));
                             });
                             return Command.SINGLE_SUCCESS;

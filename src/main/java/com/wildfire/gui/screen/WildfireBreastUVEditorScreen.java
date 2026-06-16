@@ -20,7 +20,8 @@ package com.wildfire.gui.screen;
 
 import com.wildfire.gui.GuiUtils;
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.WildfireHelper;import com.wildfire.main.config.Configuration;
+import com.wildfire.main.WildfireHelper;
+import com.wildfire.main.config.Configuration;
 import com.wildfire.main.uvs.BreastTypes;
 import com.wildfire.main.uvs.UVDirection;
 import com.wildfire.main.uvs.UVLayout;

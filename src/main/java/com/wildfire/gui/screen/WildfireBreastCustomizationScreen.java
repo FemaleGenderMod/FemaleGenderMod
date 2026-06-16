@@ -174,7 +174,7 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .position(this.width / 2 - 36, this.height / 2 + 43)
                 .size(120, 15)
                 .onPress(button -> {
-                    //~ if >26.1 'minecraft.setScreen' -> 'minecraft.gui.setScreen'
+                    //~ if >=26.2 'minecraft.setScreen' -> 'minecraft.gui.setScreen'
                     minecraft.gui.setScreen(new WildfireBreastUVEditorScreen(WildfireBreastCustomizationScreen.this, playerUUID));
                 }));
     }

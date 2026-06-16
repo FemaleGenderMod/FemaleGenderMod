@@ -131,7 +131,7 @@ public final class CloudSync {
             return null;
         }
 
-        //~ if >26.1 'connection.getConnection().isEncrypted()' -> 'connection.onlineMode()'
+        //~ if >=26.2 'connection.getConnection().isEncrypted()' -> 'connection.onlineMode()'
         if(!client.isLocalServer() && !connection.onlineMode()) {
             return SyncUnavailable.OFFLINE_SERVER;
         }

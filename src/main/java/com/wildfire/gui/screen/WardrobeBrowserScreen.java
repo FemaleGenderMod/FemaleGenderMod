@@ -75,7 +75,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
     }
 
     public static void open(Minecraft client, LocalPlayer player) {
-        //~ if >26.1 'setScreen' -> 'gui.setScreen'
+        //~ if >=26.2 'setScreen' -> 'gui.setScreen'
         client.gui.setScreen(create(player, null));
     }
 
@@ -114,7 +114,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
                 .position(this.width / 2 - 36, this.height / 2 - 63)
                 .size(157, 20)
                 .onPress(_ -> {
-                    //~ if >26.1 'setScreen' -> 'gui.setScreen'
+                    //~ if >=26.2 'setScreen' -> 'gui.setScreen'
                     client.gui.setScreen(new WildfireBreastCustomizationScreen(WardrobeBrowserScreen.this, this.playerUUID));
                 })
                 .active(plr.getGender().canHaveBreasts()));
@@ -127,7 +127,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
                 ctx.blit(RenderPipelines.GUI_TEXTURED, CLOUD_ICON, button.getX() + 2, button.getY() + 2, 0, 0, 20, 14, 32, 26, 32, 26);
             });
             builder.onPress(_ -> {
-                //~ if >26.1 'setScreen' -> 'gui.setScreen'
+                //~ if >=26.2 'setScreen' -> 'gui.setScreen'
                 client.gui.setScreen(new WildfireCloudSyncScreen(this, this.playerUUID));
             });
             var cloudUnavailable = CloudSync.unavailableReason();
@@ -144,7 +144,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
                 .position(this.width / 2 + 2, this.height / 2 + 33)
                 .size(78, 15)
                 .onPress(_ -> {
-                    //~ if >26.1 'setScreen' -> 'gui.setScreen'
+                    //~ if >=26.2 'setScreen' -> 'gui.setScreen'
                     client.gui.setScreen(new WildfireCreditsScreen(WardrobeBrowserScreen.this, this.playerUUID));
                 }));
 

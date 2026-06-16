@@ -80,7 +80,7 @@ public abstract class BaseWildfireScreen extends Screen {
 
     @Override
     public void onClose() {
-        //~ if >26.1 'minecraft.setScreen' -> 'minecraft.gui.setScreen'
+        //~ if >=26.2 'minecraft.setScreen' -> 'minecraft.gui.setScreen'
         minecraft.gui.setScreen(parent);
     }
 }

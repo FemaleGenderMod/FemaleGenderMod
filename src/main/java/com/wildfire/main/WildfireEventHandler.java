@@ -198,7 +198,7 @@ public final class WildfireEventHandler {
     private static void renderHud(GuiGraphicsExtractor context, DeltaTracker tickCounter) {
         var client = Minecraft.getInstance();
         var font = client.font;
-        //~ if >26.1 'client.screen' -> 'client.gui.screen()'
+        //~ if >=26.2 'client.screen' -> 'client.gui.screen()'
         if(client.gui.screen() instanceof WardrobeBrowserScreen) {
             return;
         }
@@ -257,7 +257,7 @@ public final class WildfireEventHandler {
             if(clientConfig != null) clientConfig.attemptCloudSync();
         }
 
-        //~ if >26.1 'client.screen' -> 'client.gui.screen()' {
+        //~ if >=26.2 'client.screen' -> 'client.gui.screen()' {
         if(TOGGLE_KEYBIND.consumeClick() && client.gui.screen() == null) {
             ClientConfig.RENDER_BREASTS ^= true;
         }
@@ -282,7 +282,7 @@ public final class WildfireEventHandler {
 
         if (ClientConfig.INSTANCE.get(ClientConfig.SHOW_TOAST)) {
             var button = WildfireEventHandler.CONFIG_KEYBIND.getTranslatedKeyMessage();
-            //~ if >26.1 'client.getToastManager()' -> 'client.gui.toastManager()'
+            //~ if >=26.2 'client.getToastManager()' -> 'client.gui.toastManager()'
             ToastManager toastManager = client.gui.toastManager();
             toastManager.addToast(new WildfireToast(Minecraft.getInstance().font, Component.translatable("wildfire_gender.player_list.title"), Component.translatable("toast.wildfire_gender.get_started", button)));
         }
