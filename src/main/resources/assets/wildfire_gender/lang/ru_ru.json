@@ -113,8 +113,8 @@
     "wildfire_gender.first_time_setup.notice": "Эту настройку вы всегда сможете изменить в меню мода.",
     "wildfire_gender.first_time_setup.enable": "Включить синхронизацию",
     "wildfire_gender.first_time_setup.disable": "Выключить синхронизацию",
-    "wildfire_gender.first_time_setup.enable.tooltip.line1": "С функцией облачной синхронизации ваша конфигурация будет сохранена и передоваться другим игрокам даже если у вас не установлен мод.",
-    "wildfire_gender.first_time_setup.enable.tooltip.line2": "Вы можете удалить ваши данные в облаке в настройках облака после его выключения.",
+    "wildfire_gender.first_time_setup.enable.tooltip.line1": "С функцией облачной синхронизации ваша конфигурация будет сохранена и передаваться другим игрокам даже если у вас не установлен мод.",
+    "wildfire_gender.first_time_setup.enable.tooltip.line2": "Вы можете удалить ваши облачные данные в настройках облака после его выключения.",
 
     "wildfire_gender.cloud_settings": "Настройки облачной синхронизации сервера",
     "wildfire_gender.cloud.tooltip": "Облачная синхронизация",
