@@ -228,7 +228,7 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
         if(player != null && selectedUVs != null) {
 
             //noinspection SuspiciousNameCombination
-            graphics.blit(RenderPipelines.GUI_TEXTURED, minecraft.player.getSkin().body().id(),
+            graphics.blit(RenderPipelines.GUI_TEXTURED, minecraft.player.getSkin().body().texturePath(),
                     uvWindowPos.x(), uvWindowPos.y(),
                     0, 0, textureDrawWidth, textureDrawWidth, textureDrawWidth, textureDrawWidth);
 
