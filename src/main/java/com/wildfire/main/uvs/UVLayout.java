@@ -20,17 +20,15 @@ package com.wildfire.main.uvs;
 
 import com.mojang.serialization.Codec;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
+import org.jspecify.annotations.Nullable;
 
 public class UVLayout {
-    /**
-     * @apiNote Any layouts returned from this codec are {@link Immutable immutable}
-     */
+    /// @apiNote Any layouts returned from this codec are [`immutable`][Immutable]
     public static final Codec<UVLayout> CODEC = Codec.unboundedMap(UVDirection.NAME_CODEC, UVQuad.CODEC).xmap(UVLayout::createImmutable, UVLayout::getQuads);
 
     private final EnumMap<UVDirection, @Nullable UVQuad> quads = new EnumMap<>(UVDirection.class);
@@ -95,6 +93,11 @@ public class UVLayout {
         if (this == obj) return true;
         if (!(obj instanceof UVLayout other)) return false;
         return quads.equals(other.quads);
+    }
+
+    @Override
+    public int hashCode() {
+        return quads.hashCode();
     }
 
     // used to avoid potential class load deadlocks from referencing Immutable::new in CODEC

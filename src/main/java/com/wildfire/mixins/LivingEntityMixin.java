@@ -54,7 +54,6 @@ abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "tick", at = @At("TAIL"))
     public void wildfiregender$onTick(CallbackInfo ci) {
-        //noinspection resource
         if(!level().isClientSide()) return; // ignore ticks from the singleplayer integrated server
         EntityTickEvent.EVENT.invoker().onTick((LivingEntity)(Object)this);
     }

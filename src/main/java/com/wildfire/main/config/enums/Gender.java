@@ -20,22 +20,22 @@ package com.wildfire.main.config.enums;
 
 import com.wildfire.main.WildfireSounds;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.ByIdMap;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.IntFunction;
+import org.jspecify.annotations.Nullable;
 
 public enum Gender {
 
     // NOTE: The order of these should remain unchanged! Changing these WILL modify player configs!
-    FEMALE(Component.translatable("wildfire_gender.label.female").withStyle(ChatFormatting.LIGHT_PURPLE), true, WildfireSounds.FEMALE_HURT),
-    MALE(Component.translatable("wildfire_gender.label.male").withStyle(ChatFormatting.BLUE), false, null),
-    OTHER(Component.translatable("wildfire_gender.label.other").withStyle(ChatFormatting.GREEN), true, WildfireSounds.FEMALE_HURT);
+    FEMALE(Component.translatable("wildfire_gender.label.female").withColor(TextColor.LIGHT_PURPLE), true, WildfireSounds.FEMALE_HURT),
+    MALE(Component.translatable("wildfire_gender.label.male").withColor(TextColor.BLUE), false, null),
+    OTHER(Component.translatable("wildfire_gender.label.other").withColor(TextColor.GREEN), true, WildfireSounds.FEMALE_HURT);
 
     public static final IntFunction<Gender> BY_ID = ByIdMap.continuous(Gender::ordinal, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
     public static final StreamCodec<ByteBuf, Gender> CODEC = ByteBufCodecs.idMapper(BY_ID, Gender::ordinal);

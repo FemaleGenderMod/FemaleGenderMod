@@ -31,13 +31,9 @@ import org.joml.Vector2ic;
 
 import java.util.Map;
 
-/**
- * Defines the texture data for a given armor piece when covering an entity's breasts
- */
+/// Defines the texture data for a given armor piece when covering an entity's breasts
 public interface IBreastArmorTexture {
-    /**
-     * Default breast texture values, supplying values for armors directly compatible with the vanilla armor renderer.
-     */
+    /// Default breast texture values, supplying values for armors directly compatible with the vanilla armor renderer.
     IBreastArmorTexture DEFAULT = new IBreastArmorTexture() {
     };
 
@@ -76,46 +72,36 @@ public interface IBreastArmorTexture {
                     .forGetter(IBreastArmorTexture::uvs)
     ).apply(instance, BreastArmorTexture::new));
 
-    /**
-     * The size of the armor sprite in pixels
-     *
-     * @implNote Defaults to {@code Vector2ic(64, 32)}
-     *
-     * @return A {@link Vector2ic} indicating how large the texture file is
-     */
+    /// The size of the armor sprite in pixels
+    ///
+    /// @implNote Defaults to `Vector2ic(64, 32)`
+    ///
+    /// @return A [Vector2ic] indicating how large the texture file is
     default Vector2ic textureSize() {
         return DEFAULT_TEXTURE_SIZE;
     }
 
-    /**
-     * @deprecated This property is no longer used; use {@link #uvs()} instead
-     */
+    /// @deprecated This property is no longer used; use [#uvs()] instead
     @Deprecated
     default Vector2ic dimensions() {
         return DEFAULT_DIMENSIONS;
     }
 
-    /**
-     * @deprecated This property is no longer used; use {@link #uvs()} instead
-     */
+    /// @deprecated This property is no longer used; use [#uvs()] instead
     @Deprecated
     default Vector2ic leftUv() {
         return DEFAULT_LEFT_UV;
     }
 
-    /**
-     * @deprecated This property is no longer used; use {@link #uvs()} instead
-     */
+    /// @deprecated This property is no longer used; use [#uvs()] instead
     @Deprecated
     default Vector2ic rightUv() {
         return DEFAULT_RIGHT_UV;
     }
 
-    /**
-     * @apiNote The returned {@link UVMap} is expected to consist of {@link UVLayout.Immutable immutable layouts}
-     *
-     * @return The UV layout
-     */
+    /// @apiNote The returned [UVMap] is expected to consist of [`immutable layouts`][UVLayout.Immutable]
+    ///
+    /// @return The UV layout
     default UVMap uvs() {
         return DEFAULT_UVS;
     }

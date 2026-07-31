@@ -21,7 +21,7 @@ package com.wildfire.main.config.types;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public abstract class NumberConfigKey<TYPE extends Number & Comparable<TYPE>> extends ConfigKey<TYPE> {
 
@@ -62,7 +62,7 @@ public abstract class NumberConfigKey<TYPE extends Number & Comparable<TYPE>> ex
     }
 
     @Override
-    public boolean validate(TYPE value) {
+    public boolean validate(@Nullable TYPE value) {
         if (super.validate(value)) {
             return (minInclusive == null || minInclusive.compareTo(value) <= 0) &&
                    (maxInclusive == null || maxInclusive.compareTo(value) >= 0);

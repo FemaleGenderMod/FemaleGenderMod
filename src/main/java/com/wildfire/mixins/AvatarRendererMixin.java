@@ -73,7 +73,7 @@ abstract class AvatarRendererMixin extends LivingEntityRenderer<Avatar, AvatarRe
         final CameraRenderState camera,
         CallbackInfo ci
     ) {
-        PlayerNametagRenderEvent.EVENT.invoker().onRenderNameTag(state, poseStack, (text) -> {
+        PlayerNametagRenderEvent.EVENT.invoker().onRenderNameTag(state, poseStack, text -> {
             collector.submitNameTag(
                 poseStack,
                 state.nameTagAttachment,

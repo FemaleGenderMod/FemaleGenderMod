@@ -23,11 +23,9 @@ import com.wildfire.gui.WildfireSlider;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.config.Configuration;
-import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.entitydata.PlayerConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -36,7 +34,9 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.CommonColors;
 import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.Objects;
@@ -48,8 +48,8 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
     private static final int FULL_WIDTH = 166;
     private static final int HALF_WIDTH = FULL_WIDTH / 2 - 2;
 
-    private static final Component ENABLED = Component.translatable("wildfire_gender.label.enabled").withStyle(ChatFormatting.GREEN);
-    private static final Component DISABLED = Component.translatable("wildfire_gender.label.disabled").withStyle(ChatFormatting.RED);
+    private static final Component ENABLED = Component.translatable("wildfire_gender.label.enabled").withColor(TextColor.GREEN);
+    private static final Component DISABLED = Component.translatable("wildfire_gender.label.disabled").withColor(TextColor.RED);
 
     private static final Identifier BACKGROUND_FEMALE = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/breast_customization.png");
     private static final Identifier BACKGROUND_OTHER = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/breast_customization_other.png");
@@ -72,7 +72,7 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .message(() -> Component.translatable("wildfire_gender.breast_customization.tab_customization"))
                 .position(this.width / 2 - 130, y - 52)
                 .size(172/2 - 2, 12)
-                .onPress(button -> {
+                .onPress(_ -> {
                     currentTab = Tab.CUSTOMIZATION;
                     rebuildWidgets();
                 })
@@ -82,7 +82,7 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .message(() -> Component.translatable("wildfire_gender.breast_customization.tab_physics"))
                 .position(this.width / 2 - 42, y - 52)
                 .size(172/2 - 2, 12)
-                .onPress(button -> {
+                .onPress(_ -> {
                     currentTab = Tab.PHYSICS;
                     rebuildWidgets();
                 })
@@ -92,7 +92,7 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .message(() -> Component.translatable("wildfire_gender.breast_customization.tab_miscellaneous"))
                 .position(this.width / 2 + 46, y - 52)
                 .size(172/2 - 2, 12)
-                .onPress(button -> {
+                .onPress(_ -> {
                     currentTab = Tab.MISC;
                     rebuildWidgets();
                 })
@@ -173,9 +173,9 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .message(() -> Component.translatable("wildfire_gender.uv_editor"))
                 .position(this.width / 2 - 36, this.height / 2 + 43)
                 .size(120, 15)
-                .onPress(button -> {
+                .onPress(_ -> {
                     //~ if >=26.2 'minecraft.setScreen' -> 'minecraft.gui.setScreen'
-                    minecraft.gui.setScreen(new WildfireBreastUVEditorScreen(WildfireBreastCustomizationScreen.this, playerUUID));
+                    minecraft.gui.setScreen(new WildfireBreastUVEditorScreen(this, playerUUID));
                 }));
     }
 
@@ -244,7 +244,7 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .active(plr.hasBreastPhysics()));
 
         ref.bounceSlider = addSlider(builder -> builder
-                .message(value -> Component.translatable("wildfire_gender.slider.bounce", Math.round((3 * value) * 100)))
+                .message(value -> Component.translatable("wildfire_gender.slider.bounce", Math.round(3 * value * 100)))
                 .position(this.width / 2 - 36, tabOffsetY + 46)
                 .size(HALF_WIDTH, 20)
                 .range(Configuration.BOUNCE_MULTIPLIER)
@@ -291,7 +291,7 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .range(Configuration.VOICE_PITCH)
                 .current(plr.getVoicePitch())
                 .update(plr::updateVoicePitch)
-                .save(value -> {
+                .save(_ -> {
                     plr.save();
                     var clientPlayer = Objects.requireNonNull(minecraft).player;
                     if(clientPlayer != null) {
@@ -340,17 +340,17 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
         PlayerConfig plr = getPlayer();
         if(plr == null) return;
         Identifier backgroundTexture = switch(plr.getGender()) {
-            case Gender.MALE -> null;
-            case Gender.FEMALE -> BACKGROUND_FEMALE;
-            case Gender.OTHER -> BACKGROUND_OTHER;
+            case FEMALE -> BACKGROUND_FEMALE;
+            case OTHER -> BACKGROUND_OTHER;
+            default -> null;
         };
 
         if(backgroundTexture != null) {
             graphics.blit(RenderPipelines.GUI_TEXTURED, backgroundTexture, (this.width - 272) / 2, (this.height - 138) / 2, 0, 0, 272, 130, 512, 512);
         }
 
-        graphics.blit(RenderPipelines.GUI_TEXTURED, currentTab.background, (this.width) / 2 - 42, (this.height) / 2 - 43, 0, 0, 178, currentTab.backgroundHeight, 512, 512);
-        graphics.text(font, getTitle(), (width / 2) - font.width(getTitle()) / 2, (height / 2) - 82, 0xFFFFFF, false);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, currentTab.background, this.width / 2 - 42, this.height / 2 - 43, 0, 0, 178, currentTab.backgroundHeight, 512, 512);
+        graphics.text(font, getTitle(), (width / 2) - font.width(getTitle()) / 2, (height / 2) - 82, CommonColors.WHITE, false);
 
         renderPlayerInFrame(graphics, this.width / 2 - 90, this.height / 2 + 44, mouseX, mouseY);
     }

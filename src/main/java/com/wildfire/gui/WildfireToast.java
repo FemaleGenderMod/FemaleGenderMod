@@ -34,11 +34,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.CommonColors;
 import net.minecraft.util.FormattedCharSequence;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import org.jspecify.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public class WildfireToast implements Toast {
@@ -88,7 +88,7 @@ public class WildfireToast implements Toast {
         int k = 7 + (this.getTextHeight() - j) / 2;
 
         for(int l = 0; l < this.text.size(); l++) {
-            graphics.text(font, this.text.get(l), 30, k + l * 11, 0xFFFFFFFF, false);
+            graphics.text(font, this.text.get(l), 30, k + l * 11, CommonColors.WHITE, false);
         }
     }
 

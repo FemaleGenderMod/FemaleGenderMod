@@ -22,19 +22,25 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Suppliers;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.cloud.CloudSync;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.SequencedMap;
+import java.util.Set;
+import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Optionull;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextColor;
 import org.intellij.lang.annotations.Language;
 import org.intellij.lang.annotations.Pattern;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import org.jspecify.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public final class Contributors {
@@ -95,7 +101,7 @@ public final class Contributors {
         return Optionull.map(getContributors().get(uuid), mapping);
     }
 
-    public static @Nullable Contributor.Role getRole(UUID uuid) {
+    public static Contributor.@Nullable Role getRole(UUID uuid) {
         return map(uuid, Contributor::getRole);
     }
 
@@ -103,7 +109,7 @@ public final class Contributors {
         return map(uuid, Contributor::asText);
     }
 
-    public static @Nullable Integer getColor(UUID uuid) {
+    public static @Nullable TextColor getColor(UUID uuid) {
         return map(uuid, Contributor::getColor);
     }
 
@@ -118,7 +124,7 @@ public final class Contributors {
         addContributor(uuid, name, role, true);
     }
 
-    private static LinkedHashMap<UUID, Contributor> merge(Map<UUID, Contributor> toMerge) {
+    private static SequencedMap<UUID, Contributor> merge(Map<UUID, Contributor> toMerge) {
         var merged = new LinkedHashMap<>(CONTRIBUTORS);
         for(var entry : toMerge.entrySet()) {
             // ensure hardcoded contributors are always present in the credits screen by ignoring a fetched

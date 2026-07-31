@@ -23,12 +23,16 @@ import com.wildfire.gui.SyncedPlayerList;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.config.ClientConfig;
-import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.contributors.Contributors;
 import com.wildfire.main.entitydata.PlayerConfig;
+import java.time.Month;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Tooltip;
@@ -42,12 +46,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
+import net.minecraft.util.CommonColors;
 import net.minecraft.world.scores.PlayerTeam;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.jspecify.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public class WardrobeBrowserScreen extends BaseWildfireScreen {
@@ -58,7 +62,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
     private static final Identifier TXTR_RIBBON = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/bc_ribbon.png");
     private static final Identifier CLOUD_ICON = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/cloud.png");
 
-    private static final boolean isBreastCancerAwarenessMonth = Calendar.getInstance().get(Calendar.MONTH) == Calendar.OCTOBER;
+    private static final boolean isBreastCancerAwarenessMonth = Month.from(ZonedDateTime.now()) == Month.OCTOBER;
 
     private final WidgetTooltipHolder contribTooltip = new WidgetTooltipHolder();
 
@@ -115,7 +119,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
                 .size(157, 20)
                 .onPress(_ -> {
                     //~ if >=26.2 'setScreen' -> 'gui.setScreen'
-                    client.gui.setScreen(new WildfireBreastCustomizationScreen(WardrobeBrowserScreen.this, this.playerUUID));
+                    client.gui.setScreen(new WildfireBreastCustomizationScreen(this, this.playerUUID));
                 })
                 .active(plr.getGender().canHaveBreasts()));
 
@@ -123,9 +127,9 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
             builder.message(() -> Component.translatable("wildfire_gender.cloud_settings"));
             builder.position(this.width / 2 - 36, y + 30);
             builder.size(24, 18);
-            builder.renderer((button, ctx, mouseX, mouseY, partialTicks) -> {
-                ctx.blit(RenderPipelines.GUI_TEXTURED, CLOUD_ICON, button.getX() + 2, button.getY() + 2, 0, 0, 20, 14, 32, 26, 32, 26);
-            });
+            builder.renderer((button, ctx, _, _, _) ->
+                ctx.blit(RenderPipelines.GUI_TEXTURED, CLOUD_ICON, button.getX() + 2, button.getY() + 2, 0, 0, 20, 14, 32, 26, 32, 26)
+            );
             builder.onPress(_ -> {
                 //~ if >=26.2 'setScreen' -> 'gui.setScreen'
                 client.gui.setScreen(new WildfireCloudSyncScreen(this, this.playerUUID));
@@ -145,7 +149,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
                 .size(78, 15)
                 .onPress(_ -> {
                     //~ if >=26.2 'setScreen' -> 'gui.setScreen'
-                    client.gui.setScreen(new WildfireCreditsScreen(WardrobeBrowserScreen.this, this.playerUUID));
+                    client.gui.setScreen(new WildfireCreditsScreen(this, this.playerUUID));
                 }));
 
         /*this.addDrawableChild(new WildfireButton(this.width / 2 + 111, y - 63, 9, 9, Text.literal("X"),
@@ -159,9 +163,9 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
         PlayerConfig plr = getPlayer();
         if(plr == null) return;
         Identifier backgroundTexture = switch(plr.getGender()) {
-            case Gender.MALE -> BACKGROUND_MALE;
-            case Gender.FEMALE -> BACKGROUND_FEMALE;
-            case Gender.OTHER -> BACKGROUND_OTHER;
+            case MALE -> BACKGROUND_MALE;
+            case FEMALE -> BACKGROUND_FEMALE;
+            case OTHER -> BACKGROUND_OTHER;
         };
 
         graphics.blit(RenderPipelines.GUI_TEXTURED, backgroundTexture, (this.width - 272) / 2, (this.height - 138) / 2, 0, 0, 268, 124, 512, 512);
@@ -174,14 +178,14 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
         super.extractRenderState(graphics, mouseX, mouseY, delta);
         int x = this.width / 2;
         int y = this.height / 2;
-        graphics.text(font, getTitle(), x - font.width(getTitle()) / 2, y - 82, 0xFFFFFF, false);
+        graphics.text(font, getTitle(), x - font.width(getTitle()) / 2, y - 82, CommonColors.WHITE, false);
 
         drawCreatorContributorText(graphics, mouseX, mouseY, y + 65 + (isBreastCancerAwarenessMonth ? 30 : 0));
 
         if(isBreastCancerAwarenessMonth) {
             int bcaY = y - 45;
-            graphics.fill(x - 159, bcaY + 106, x + 159, bcaY + 136, 0x55000000);
-            graphics.text(font, Component.translatable("wildfire_gender.cancer_awareness.title").withStyle(ChatFormatting.BOLD, ChatFormatting.ITALIC), this.width / 2 - 148, bcaY + 117, 0xFFFFFFFF);
+            graphics.fill(x - 159, bcaY + 106, x + 159, bcaY + 136, ARGB.black(0x55));
+            graphics.text(font, Component.translatable("wildfire_gender.cancer_awareness.title").withStyle(style -> style.withBold(true).withItalic(true)), this.width / 2 - 148, bcaY + 117, CommonColors.WHITE);
             graphics.blit(RenderPipelines.GUI_TEXTURED, TXTR_RIBBON, x + 130, bcaY + 109, 0, 0, 26, 26, 20, 20, 20, 20);
         }
 
@@ -217,7 +221,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
         }
 
         int textWidth = font.width(text);
-        GuiUtils.drawCenteredTextWrapped(graphics, this.font, text, this.width / 2, creatorY, 300, ARGB.opaque(0xFF00FF));
+        GuiUtils.drawCenteredTextWrapped(graphics, this.font, text, this.width / 2, creatorY, 300, 0xFFFF00FF);
 
         // Render a tooltip with the relevant player names when hovered over
         int lines = (int) Math.ceil(textWidth / 300.0);

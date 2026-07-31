@@ -23,7 +23,6 @@ import net.fabricmc.api.Environment;
 
 /*import com.wildfire.gui.GuiUtils;
 import com.wildfire.main.WildfireGender;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -39,7 +38,7 @@ public class WildfireCloudDetailsScreen /*extends BaseWildfireScreen*/ {
 
     private static final Component TITLE = Component.translatable("wildfire_gender.cloud_details.title");
 
-    private static final Component PAGE_1 = Component.translatable("wildfire_gender.cloud_details.title").withStyle(ChatFormatting.UNDERLINE);
+    private static final Component PAGE_1 = Component.translatable("wildfire_gender.cloud_details.title").withStyle(style -> style.withUnderlined(true));
 
     private static final Component NEXT_PAGE = Component.translatable("wildfire_gender.details.next_page");
     private static final Component PREV_PAGE = Component.translatable("wildfire_gender.details.prev_page");
@@ -94,7 +93,7 @@ public class WildfireCloudDetailsScreen /*extends BaseWildfireScreen*/ {
         GuiUtils.drawCenteredText(ctx, font, TITLE, x, y - 94, 4473924);
 
         if (currentPage == 0) {
-            GuiUtils.drawCenteredTextWrapped(ctx, font, Component.translatable("wildfire_gender.cloud_details.page1"), x, y - 75, 256 - 10, 0x00FF00);
+            GuiUtils.drawCenteredTextWrapped(ctx, font, Component.translatable("wildfire_gender.cloud_details.page1"), x, y - 75, 256 - 10, CommonColors.GREEN);
         }
     }
 

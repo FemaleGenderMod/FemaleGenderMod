@@ -27,9 +27,7 @@ import org.joml.Vector3f;
 
 import java.util.function.Consumer;
 
-/**
- * Data class representing an entity's breast appearance settings
- */
+/// Data class representing an entity's breast appearance settings
 @SuppressWarnings("UnusedReturnValue")
 public final class Breasts {
 
@@ -74,93 +72,71 @@ public final class Breasts {
         updateZOffset(offsets.z);
     }
 
-    /**
-     * How far apart the player's breasts should be rendered from each other, also referred to as Separation in the UI
-     *
-     * @implNote Negative float values renders the breasts further apart, while positive values renders them closer together
-     *
-     * @return  A {@code float} between {@code -1f} and {@code 1f}
-     */
+    /// How far apart the player's breasts should be rendered from each other, also referred to as Separation in the UI
+    ///
+    /// @implNote Negative float values renders the breasts further apart, while positive values renders them closer together
+    ///
+    /// @return  A `float` between `-1f` and `1f`
     public float getXOffset() {
         return xOffset;
     }
 
-    /**
-     * @see #getXOffset()
-     */
+    /// @see #getXOffset()
     public boolean updateXOffset(float value) {
         return updateValue(Configuration.BREASTS_OFFSET_X, value, v -> this.xOffset = v);
     }
 
-    /**
-     * How far up or down the player's breasts should be rendered, also referred to as Height in the UI
-     *
-     * @implNote Negative values renders the breasts lower down, while positive values renders them higher up
-     *
-     * @return  A {@code float} between {@code -1f} and {@code 1f}
-     */
+    /// How far up or down the player's breasts should be rendered, also referred to as Height in the UI
+    ///
+    /// @implNote Negative values renders the breasts lower down, while positive values renders them higher up
+    ///
+    /// @return  A `float` between `-1f` and `1f`
     public float getYOffset() {
         return yOffset;
     }
 
-    /**
-     * @see #getYOffset()
-     */
+    /// @see #getYOffset()
     public boolean updateYOffset(float value) {
         return updateValue(Configuration.BREASTS_OFFSET_Y, value, v -> this.yOffset = v);
     }
 
-    /**
-     * How far back the player's breasts should be rendered, also referred to as Depth in the UI
-     *
-     * @return  A {@code float} between {@code 0f} and {@code 1f}
-     */
+    /// How far back the player's breasts should be rendered, also referred to as Depth in the UI
+    ///
+    /// @return  A `float` between `0f` and `1f`
     public float getZOffset() {
         return zOffset;
     }
 
-    /**
-     * @see #getZOffset()
-     */
+    /// @see #getZOffset()
     public boolean updateZOffset(float value) {
         return updateValue(Configuration.BREASTS_OFFSET_Z, value, v -> this.zOffset = v);
     }
 
-    /**
-     * How much rotation outward there should be on each of the player's breasts
-     *
-     * @return  A {@code float} between {@code 0f} and {@code 0.1f}
-     */
+    /// How much rotation outward there should be on each of the player's breasts
+    ///
+    /// @return  A `float` between `0f` and `0.1f`
     public float getCleavage() {
         return cleavage;
     }
 
-    /**
-     * @see #getCleavage()
-     */
+    /// @see #getCleavage()
     public boolean updateCleavage(float value) {
         return updateValue(Configuration.BREASTS_CLEAVAGE, value, v -> this.cleavage = v);
     }
 
-    /**
-     * Determines if breast physics should be independent of each other; also referred to as Dual-Physics in the UI
-     *
-     * @return {@code false} if physics should be independent on each breast, {@code true} if both should use the same physics
-     */
+    /// Determines if breast physics should be independent of each other; also referred to as Dual-Physics in the UI
+    ///
+    /// @return `false` if physics should be independent on each breast, `true` if both should use the same physics
     public boolean isUniboob() {
         return uniboob;
     }
 
-    /**
-     * @see #isUniboob()
-     */
+    /// @see #isUniboob()
     public boolean updateUniboob(boolean value) {
         return updateValue(Configuration.BREASTS_UNIBOOB, value, v -> this.uniboob = v);
     }
 
-    /**
-     * Copy settings from the provided {@link Breasts breasts data} onto the current instance
-     */
+    /// Copy settings from the provided [`breasts data`][Breasts] onto the current instance
     public void copyFrom(Breasts breasts) {
         this.xOffset = breasts.xOffset;
         this.yOffset = breasts.yOffset;

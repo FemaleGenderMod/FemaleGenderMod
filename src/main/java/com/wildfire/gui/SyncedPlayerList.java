@@ -23,7 +23,6 @@ import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.contributors.Contributors;
 import com.wildfire.main.entitydata.PlayerConfig;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -33,6 +32,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import net.minecraft.network.chat.TextColor;
+import net.minecraft.util.CommonColors;
 
 public final class SyncedPlayerList {
     private SyncedPlayerList() {
@@ -51,8 +52,8 @@ public final class SyncedPlayerList {
             return;
         }
 
-        var header = Component.translatable("wildfire_gender.wardrobe.players_using_mod").withStyle(ChatFormatting.AQUA);
-        context.text(font, header, 5, 5, 0xFFFFFFFF, true);
+        var header = Component.translatable("wildfire_gender.wardrobe.players_using_mod").withColor(TextColor.AQUA);
+        context.text(font, header, 5, 5, CommonColors.WHITE, true);
 
         int yPos = 18;
         for(var entry : syncedPlayers) {
@@ -60,7 +61,7 @@ public final class SyncedPlayerList {
                     .append(Component.literal(entry.name()).withColor(entry.color()))
                     .append(" - ")
                     .append(entry.gender().getDisplayName());
-            context.text(font, text, 10, yPos, 0xFFFFFFFF, false);
+            context.text(font, text, 10, yPos, CommonColors.WHITE, false);
             yPos += 10;
         }
     }
@@ -92,7 +93,7 @@ public final class SyncedPlayerList {
             }
 
             var color = Contributors.getColor(entry.getProfile().id());
-            list.add(new SyncedPlayer(entry.getProfile().name(), color == null ? 0xFFFFFF : color, config.getGender()));
+            list.add(new SyncedPlayer(entry.getProfile().name(), color == null ? TextColor.WHITE : color, config.getGender()));
 
             if(list.size() >= 40) {
                 break;
@@ -102,6 +103,6 @@ public final class SyncedPlayerList {
         syncedPlayers = list;
     }
 
-    private record SyncedPlayer(String name, int color, Gender gender) {
+    private record SyncedPlayer(String name, TextColor color, Gender gender) {
     }
 }

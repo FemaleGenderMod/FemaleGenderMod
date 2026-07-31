@@ -28,9 +28,7 @@ import net.minecraft.network.chat.Component;
 
 import java.util.function.Consumer;
 
-/**
- * Event invoked before a player's nametag is rendered above their head
- */
+/// Event invoked before a player's nametag is rendered above their head
 @FunctionalInterface
 @Environment(EnvType.CLIENT)
 public interface PlayerNametagRenderEvent {

@@ -24,21 +24,25 @@ import com.wildfire.main.GenderConfigs;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.contributors.Contributor;
 import com.wildfire.main.contributors.Contributors;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
+import net.minecraft.util.CommonColors;
 import org.jetbrains.annotations.UnknownNullability;
 import org.joml.Matrix3x2fStack;
 import org.joml.Vector2f;
-
-import java.util.*;
 
 @Environment(EnvType.CLIENT)
 public class WildfireCreditsScreen extends BaseWildfireScreen {
@@ -68,7 +72,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
             .map(it -> new FakeGUIPlayer(it.getValue().name(), it.getKey(), GenderConfigs.DEFAULT_FEMALE))
             .toArray(FakeGUIPlayer[]::new);
 
-    private final int boxesPerPage = 12;
+    private static final int boxesPerPage = 12;
 
     private enum Category {
         GENERAL, TRANSLATORS
@@ -97,7 +101,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
                 .position(this.width / 2 - 89, navigationY + 34)
                 .size(87, 13)
                 .active(categoryTab == Category.TRANSLATORS)
-                .onPress(button -> {
+                .onPress(_ -> {
                     categoryTab = Category.GENERAL;
                     creditsPage = 0;
                     ref.prevPage.active = false;
@@ -112,7 +116,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
                 .position(this.width / 2 + 2, navigationY + 34)
                 .size(87, 13)
                 .active(categoryTab == Category.GENERAL)
-                .onPress(button -> {
+                .onPress(_ -> {
                     categoryTab = Category.TRANSLATORS;
                     creditsPage = 0;
                     ref.prevPage.active = false;
@@ -126,14 +130,14 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
                 .message(() -> Component.translatable("wildfire_gender.details.go_back"))
                 .position(this.width / 2 - 25, navigationY + 6)
                 .size(50, 13)
-                .onPress(button -> onClose()));
+                .onPress(_ -> onClose()));
 
         ref.nextPage = addButton(builder -> builder
                 .message(() -> Component.translatable("wildfire_gender.details.next_page"))
                 .position(this.width / 2 + 29, navigationY + 6)
                 .size(60, 13)
                 .active(creditsPage < getTotalPages()-1)
-                .onPress(button -> {
+                .onPress(_ -> {
                     if(creditsPage < getTotalPages()-1) {
                         creditsPage++;
                     }
@@ -180,8 +184,8 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
         Matrix3x2fStack mStack = graphics.pose();
 
         mStack.pushMatrix();
-        GuiUtils.drawCenteredText(graphics, font, Component.translatable("wildfire_gender.credits.title"), width / 2, height / 2 - 100, ARGB.opaque(0xFFFFFF));
-        GuiUtils.drawCenteredText(graphics, font, Component.translatable("wildfire_gender.credits.description"), width / 2, height / 2 - 85, ARGB.opaque(0x888888));
+        GuiUtils.drawCenteredText(graphics, font, Component.translatable("wildfire_gender.credits.title"), width / 2, height / 2 - 100, CommonColors.WHITE);
+        GuiUtils.drawCenteredText(graphics, font, Component.translatable("wildfire_gender.credits.description"), width / 2, height / 2 - 85, 0xFF888888);
         mStack.popMatrix();
 
         graphics.blit(RenderPipelines.GUI_TEXTURED, BUTTON_CONTAINER, this.width / 2 - (190 / 2), navigationY, 0, 0, 190, 25, 190, 25);
@@ -213,7 +217,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
             graphics.blit(RenderPipelines.GUI_TEXTURED, CREDIT_CONTAINER, creditBoxX, creditBoxY, 0, 0, 52, 68, 52, 68);
 
             graphics.pose().pushMatrix();
-            int color = ARGB.opaque(Objects.requireNonNull(creditBox.getRole()).getColor());
+            int color = ARGB.opaque(Objects.requireNonNull(creditBox.getRole()).getColor().getValue());
             graphics.blit(RenderPipelines.GUI_TEXTURED, CREDIT_OUTLINE, creditBoxX + 3, creditBoxY + 3, 0, 0, 46, 53, 46, 53, color);
             graphics.pose().popMatrix();
 
@@ -226,8 +230,8 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
             mStack.pushMatrix();
             mStack.translate(xP, yP + 47);
             mStack.scale(new Vector2f(0.55f, 0.55f));
-            mStack.translate(-xP, (-yP) - 47);
-            GuiUtils.drawCenteredTextWrapped(graphics, font, Component.literal(creditBox.getName()), xP, yP + 7, (int) (50 * 1.45f), ARGB.opaque(0xFFFFFF));
+            mStack.translate(-xP, -yP - 47);
+            GuiUtils.drawCenteredTextWrapped(graphics, font, Component.literal(creditBox.getName()), xP, yP + 7, (int) (50 * 1.45f), CommonColors.WHITE);
             mStack.popMatrix();
 
             if (mouseX > xP - 24 && mouseX < xP + 23 && mouseY > yP + 22 && mouseY < yP + 31) {
@@ -235,17 +239,17 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
                 var role = creditBox.getRoleOrGeneric();
                 txtList.add(role.withColor(Component.empty()
                         .append(creditBox.getName())
-                        .append(Component.literal(" - ").withStyle(ChatFormatting.DARK_GRAY))
+                        .append(Component.literal(" - ").withColor(TextColor.DARK_GRAY))
                         .append(role.shortName())));
                 if (creditBox.getDescription() != null && !creditBox.getDescription().isEmpty()) {
-                    txtList.add(Component.literal(creditBox.getDescription()).withStyle(ChatFormatting.GRAY));
+                    txtList.add(Component.literal(creditBox.getDescription()).withColor(TextColor.GRAY));
                 }
                 graphics.setComponentTooltipForNextFrame(font, txtList, mouseX, mouseY);
             }
         }
 
         //String pageInfo = (creditsPage) + " / " + (totalPages-1);
-        //GuiUtils.drawCenteredText(ctx, textRenderer, Text.literal(pageInfo), width / 2, height / 2, ColorHelper.fullAlpha(0xFFFFFF));
+        //GuiUtils.drawCenteredText(ctx, textRenderer, Text.literal(pageInfo), width / 2, height / 2, CommonColors.WHITE);
 
         super.extractRenderState(graphics, mouseX, mouseY, delta);
     }

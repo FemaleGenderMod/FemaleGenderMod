@@ -24,7 +24,9 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.ByIdMap;
+import net.minecraft.util.CommonColors;
 import net.minecraft.util.StringRepresentable;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
@@ -33,9 +35,9 @@ import java.util.Locale;
 import java.util.function.IntFunction;
 
 public enum UVDirection implements StringRepresentable {
-    EAST("east", "", "E", 0xFFFF0000, new Vec3i(1, 0, 0)),
-    WEST("west", "", "W", 0xFF00FF00, new Vec3i(-1, 0, 0)),
-    DOWN("down", "wildfire_gender.uv_editor.faces.bottom", "D", 0xFF0000FF, new Vec3i(0, -1, 0)),
+    EAST("east", "", "E", CommonColors.RED, new Vec3i(1, 0, 0)),
+    WEST("west", "", "W", CommonColors.GREEN, new Vec3i(-1, 0, 0)),
+    DOWN("down", "wildfire_gender.uv_editor.faces.bottom", "D", CommonColors.BLUE, new Vec3i(0, -1, 0)),
     UP("up", "wildfire_gender.uv_editor.faces.top", "U", 0xFF00FFFF, new Vec3i(0, 1, 0)),
     NORTH("north", "wildfire_gender.uv_editor.faces.front", "N", 0xFFFF00FF, new Vec3i(0, 0, -1));
 
@@ -54,15 +56,13 @@ public enum UVDirection implements StringRepresentable {
         this.saveName = saveName;
         this.shortName = shortName;
         this.baseColor = baseColor;
-        this.floatVector = new Vector3f((float)vector.getX(), (float)vector.getY(), (float)vector.getZ());
+        this.floatVector = new Vector3f(vector.getX(), vector.getY(), vector.getZ());
     }
 
     public int getFaceColor(boolean faded) {
         if (!faded) return baseColor;
 
-        int alpha = 0x33;
-        int rgb = baseColor & 0x00FFFFFF;
-        return (alpha << 24) | rgb;
+        return ARGB.color(0x33, baseColor);
     }
 
     public Vector3f getUnitVector() {

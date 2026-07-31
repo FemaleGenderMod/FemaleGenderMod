@@ -29,15 +29,14 @@ import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.ARGB;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.util.CommonColors;
 import org.jetbrains.annotations.UnknownNullability;
 import org.joml.Vector2f;
 
@@ -46,16 +45,17 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.function.Supplier;
+import org.jspecify.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 
-    private static final Component TITLE = Component.translatable("wildfire_gender.first_time_setup.title").withStyle(ChatFormatting.UNDERLINE);
+    private static final Component TITLE = Component.translatable("wildfire_gender.first_time_setup.title").withStyle(style -> style.withUnderlined(true));
     private static final Component DESCRIPTION = Component.translatable("wildfire_gender.first_time_setup.description");
     private static final Component NOTICE = Component.translatable("wildfire_gender.first_time_setup.notice");
 
-    private static final Component ENABLE_CLOUD_SYNCING = Component.translatable("wildfire_gender.first_time_setup.enable").withStyle(ChatFormatting.GREEN);
-    private static final Component DISABLE_CLOUD_SYNCING = Component.translatable("wildfire_gender.first_time_setup.disable").withStyle(ChatFormatting.RED);
+    private static final Component ENABLE_CLOUD_SYNCING = Component.translatable("wildfire_gender.first_time_setup.enable").withColor(TextColor.GREEN);
+    private static final Component DISABLE_CLOUD_SYNCING = Component.translatable("wildfire_gender.first_time_setup.disable").withColor(TextColor.RED);
 
     private static final Identifier BACKGROUND = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/first_time_bg.png");
 
@@ -166,18 +166,18 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
         int x = this.width / 2;
         int y = this.height / 2;
 
-        GuiUtils.drawCenteredText(graphics, font, TITLE, x, y - 24, ARGB.opaque(4210752));
+        GuiUtils.drawCenteredText(graphics, font, TITLE, x, y - 24, CommonColors.DARK_GRAY);
 
-        GuiUtils.drawCenteredTextWrapped(graphics, font, Component.literal("Keira Emberlyn:").withStyle(ChatFormatting.LIGHT_PURPLE), x + 32, y - 10, (int) ((256-65)), ARGB.opaque(0xFFFFFF));
+        GuiUtils.drawCenteredTextWrapped(graphics, font, Component.literal("Keira Emberlyn:").withColor(TextColor.LIGHT_PURPLE), x + 32, y - 10, 256 - 65, CommonColors.WHITE);
 
         //TODO: Vertical scroll bar for longer text?
-        GuiUtils.drawCenteredTextWrapped(graphics, font, DESCRIPTION, x + 32, y + 2, (int) ((256-65)), ARGB.opaque(0xFFFFFF));
+        GuiUtils.drawCenteredTextWrapped(graphics, font, DESCRIPTION, x + 32, y + 2, 256 - 65, CommonColors.WHITE);
 
         mStack.pushMatrix();
         mStack.translate(x, y + 47);
         mStack.scale(new Vector2f(0.8f, 0.8f));
-        mStack.translate(-x, (-y) - 47);
-        GuiUtils.drawCenteredTextWrapped(graphics, font, NOTICE, x, y + 68, (int) ((256-10) * 1.2f), ARGB.opaque(4210752));
+        mStack.translate(-x, -y - 47);
+        GuiUtils.drawCenteredTextWrapped(graphics, font, NOTICE, x, y + 68, (int) ((256-10) * 1.2f), CommonColors.DARK_GRAY);
         mStack.popMatrix();
 
         var fakeKeira = this.fakeKeira.get().getEntity();

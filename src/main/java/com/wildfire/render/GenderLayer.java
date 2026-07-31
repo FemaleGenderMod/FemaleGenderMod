@@ -41,12 +41,12 @@ import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 import org.joml.Quaternionf;
 
 import java.util.Objects;
 import java.util.function.Consumer;
+import org.jspecify.annotations.Nullable;
 
 // TODO split this into an AbstractGenderLayer?
 @Environment(EnvType.CLIENT)
@@ -77,9 +77,7 @@ public class GenderLayer<S extends HumanoidRenderState, M extends HumanoidModel<
         this.context = render;
     }
 
-    /**
-     * Convenience method around {@link LivingEntityRendererAccessor#invokeGetRenderType}
-     */
+    /// Convenience method around [LivingEntityRendererAccessor#invokeGetRenderType]
     private @Nullable RenderType getRenderLayer(S state) {
         var renderer = (LivingEntityRenderer<?, ?, ?>) context;
         var accessor = (LivingEntityRendererAccessor) renderer;
@@ -109,11 +107,9 @@ public class GenderLayer<S extends HumanoidRenderState, M extends HumanoidModel<
         }
     }
 
-    /**
-     * Common logic for setting up breast rendering
-     *
-     * @return {@code true} if rendering should continue
-     */
+    /// Common logic for setting up breast rendering
+    ///
+    /// @return `true` if rendering should continue
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     protected boolean setupRender(S entityState, GenderRenderState genderState) {
         if(!ClientConfig.RENDER_BREASTS) return false;
@@ -175,7 +171,7 @@ public class GenderLayer<S extends HumanoidRenderState, M extends HumanoidModel<
         breastSize += 0.5f * Math.abs(bSize - 0.7f) * 2f; // Adjust breastSize based on bSize
 
         float resistance = Mth.clamp(genderArmor.physicsResistance(), 0, 1);
-        breathingAnimation = ((genderState.armorPhysicsOverride || resistance <= 0.5F) && genderState.isBreathing);
+        breathingAnimation = (genderState.armorPhysicsOverride || resistance <= 0.5F) && genderState.isBreathing;
         bounceEnabled = genderState.hasBreastPhysics && (!isChestplateOccupied || resistance < 1); //oh, you found this?
         return true;
     }

@@ -37,7 +37,8 @@ import java.util.Set;
 
 @Mixin(TextureManager.class)
 abstract class TextureManagerMixin implements MissingTextureLogger {
-    private static final @Unique Set<Identifier> wildfire_gender$missingTextures = ObjectSets.synchronize(new ObjectOpenHashSet<>());
+    @Unique
+    private static final Set<Identifier> wildfire_gender$missingTextures = ObjectSets.synchronize(new ObjectOpenHashSet<>());
 
     // TODO there's probably a better way to do this, but this is the easy and cheap way to do this
     // this does mean there's likely going to be a frame where the texture will throw an error, but it won't

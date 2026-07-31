@@ -28,7 +28,6 @@ import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.util.ARGB;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.util.Util;
@@ -69,13 +68,12 @@ public final class GuiUtils {
     public static void drawCenteredTextWrapped(GuiGraphicsExtractor graphics, Font font, FormattedText text, int x, int y, int width, int color) {
         for(var var7 = font.split(text, width).iterator(); var7.hasNext(); y += 9) {
             FormattedCharSequence orderedText = var7.next();
-            GuiUtils.drawCenteredText(graphics, font, orderedText, x, y, color);
+            drawCenteredText(graphics, font, orderedText, x, y, color);
         }
     }
 
     // Reimplementation of ClickableWidget#drawScrollableText but with the text shadow removed
     public static void drawScrollableTextWithoutShadow(Justify justify, GuiGraphicsExtractor graphics, Font font, Component text, int left, int top, int right, int bottom, int color) {
-        color = ARGB.opaque(color);
         int i = font.width(text);
         int j = (top + bottom - 9) / 2 + 1;
         int k = right - left;

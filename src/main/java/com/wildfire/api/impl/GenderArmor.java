@@ -20,13 +20,10 @@ package com.wildfire.api.impl;
 
 import com.wildfire.api.IBreastArmorTexture;
 import com.wildfire.api.IGenderArmor;
-import org.jetbrains.annotations.ApiStatus;
 
-/**
- * Default record implementation of {@link IGenderArmor} used for resource pack entries
- *
- * @see IGenderArmor
- */
+/// Default record implementation of [IGenderArmor] used for resource pack entries
+///
+/// @see IGenderArmor
 public record GenderArmor(
         float physicsResistance,
         float tightness,

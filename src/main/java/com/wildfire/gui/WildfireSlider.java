@@ -18,6 +18,7 @@
 
 package com.wildfire.gui;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.config.types.FloatConfigKey;
@@ -35,9 +36,10 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.util.ARGB;
+import net.minecraft.util.CommonColors;
 import net.minecraft.util.Mth;
-import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
+import org.jspecify.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public class WildfireSlider extends AbstractWidget {
@@ -109,8 +111,8 @@ public class WildfireSlider extends AbstractWidget {
     @Override
     public boolean keyPressed(KeyEvent event) {
         int keyCode = event.key();
-        if(keyCode == GLFW.GLFW_KEY_LEFT || keyCode == GLFW.GLFW_KEY_RIGHT) {
-            value += (keyCode == GLFW.GLFW_KEY_LEFT ? -arrowKeyStep : arrowKeyStep);
+        if(keyCode == InputConstants.KEY_LEFT || keyCode == InputConstants.KEY_RIGHT) {
+            value += keyCode == InputConstants.KEY_LEFT ? -arrowKeyStep : arrowKeyStep;
             value = WildfireHelper.snapToStep(Mth.clamp(value, 0, 1), arrowKeyStep);
             applyValue();
             updateMessage();
@@ -127,7 +129,7 @@ public class WildfireSlider extends AbstractWidget {
     @Override
     public boolean keyReleased(KeyEvent event) {
         var keyCode = event.key();
-        if(keyCode == GLFW.GLFW_KEY_LEFT || keyCode == GLFW.GLFW_KEY_RIGHT) {
+        if(keyCode == InputConstants.KEY_LEFT || keyCode == InputConstants.KEY_RIGHT) {
             save();
             return true;
         }
@@ -145,22 +147,22 @@ public class WildfireSlider extends AbstractWidget {
             return;
         }
         int xP = getX() + 2;
-        graphics.fill(xP - 2, getY(), getX() + this.width, getY() + this.height, 0x222222 + (128 << 24));
+        graphics.fill(xP - 2, getY(), getX() + this.width, getY() + this.height, 0x80222222);
         int xPos = getX() + 2 + (int) (this.value * (float)(this.width - 3));
 
-        graphics.fill(getX() + 1, getY() + 1, xPos - 1, getY() + this.height - 1, active?(0x222266 + (180 << 24)):(0x111133 + (180 << 24)));
+        graphics.fill(getX() + 1, getY() + 1, xPos - 1, getY() + this.height - 1, active ? 0xB4222266 : 0xB4111133);
 
         if(active) {
             int xPos2 = this.getX() + 3 + (int) (this.value * (float) (this.width - 4));
-            graphics.fill(xPos2 - 2, getY() + 1, xPos2, getY() + this.height - 1, 0xFFFFFF + (120 << 24));
+            graphics.fill(xPos2 - 2, getY() + 1, xPos2, getY() + this.height - 1, ARGB.white(0x78));
         }
         Font font = Minecraft.getInstance().font;
         int i = this.getX() + 2;
         int j = this.getX() + this.getWidth() - 2;
 
-        int textColor = (isHoveredOrFocused()&&active) || changed ? 0xFFFF55 : 0xFFFFFF;
+        int textColor = (isHoveredOrFocused()&&active) || changed ? CommonColors.SOFT_YELLOW : CommonColors.WHITE;
         if(!active) {
-            textColor = 0x666666;
+            textColor = 0xFF666666;
         }
         GuiUtils.drawScrollableTextWithoutShadow(GuiUtils.Justify.CENTER, graphics, font, this.getMessage(), i, this.getY(), j, this.getY() + this.getHeight(), textColor);
 
@@ -206,7 +208,7 @@ public class WildfireSlider extends AbstractWidget {
     }
 
     private void setValueFromMouse(double mouseX) {
-        this.value = ((mouseX - (double)(this.getX() + 4)) / (double)(this.getWidth() - 8));
+        this.value = (mouseX - (this.getX() + 4)) / (this.getWidth() - 8);
         this.value = Mth.clamp(this.value, 0, 1);
 
         if (mouseStep > 0) {

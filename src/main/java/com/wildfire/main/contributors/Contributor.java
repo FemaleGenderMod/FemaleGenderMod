@@ -24,9 +24,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.network.chat.TextColor;
 
 import java.util.Locale;
+import org.jspecify.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public record Contributor(
@@ -38,11 +39,11 @@ public record Contributor(
         @SerializedName("show_in_credits")
         @Nullable Boolean showInCredits
 ) {
-    private static final int DEFAULT_COLOR = 0xFFAA00; // ChatFormatting.GOLD
+    private static final TextColor DEFAULT_COLOR = TextColor.GOLD;
 
-    public int getColor() {
+    public TextColor getColor() {
         if(color != null) {
-            return color;
+            return TextColor.fromRgb(color);
         }
         return getRole().getColor();
     }
@@ -66,7 +67,7 @@ public record Contributor(
     }
 
     public enum Role {
-        MOD_CREATOR(0, 0xFF55FF), // ChatFormatting.LIGHT_PURPLE
+        MOD_CREATOR(0, TextColor.LIGHT_PURPLE),
         FABRIC_MAINTAINER(1, 0xA78FFF),
         NEOFORGE_MAINTAINER(2, 0xA78FFF),
         CI_MAINTAINER(8, 0x50C878),
@@ -78,9 +79,13 @@ public record Contributor(
         ;
 
         private final int bit;
-        private final @Nullable Integer color;
+        private final @Nullable TextColor color;
 
-        Role(int bit, @Nullable Integer color) {
+        Role(int bit, int color) {
+            this(bit, TextColor.fromRgb(color));
+        }
+
+        Role(int bit, @Nullable TextColor color) {
             this.bit = 1 << bit;
             this.color = color;
         }
@@ -97,7 +102,7 @@ public record Contributor(
             return (bitmask & bit()) == bit();
         }
 
-        public int getColor() {
+        public TextColor getColor() {
             return color == null ? DEFAULT_COLOR : color;
         }
 

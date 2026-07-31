@@ -27,9 +27,10 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.util.CommonColors;
 
 import java.util.function.Supplier;
+import org.jspecify.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public class WildfireButton extends Button {
@@ -55,7 +56,7 @@ public class WildfireButton extends Button {
         }
         Minecraft minecraft = Minecraft.getInstance();
         Font font = minecraft.font;
-        int textColor = active ? 0xFFFFFF : 0x666666;
+        int textColor = active ? CommonColors.WHITE : 0xFF666666;
         int i = this.getX() + 2;
         int j = this.getX() + this.getWidth() - 2;
         GuiUtils.drawScrollableTextWithoutShadow(GuiUtils.Justify.CENTER, graphics, font, this.getMessage(), i, this.getY(), j, this.getY() + this.getHeight(), textColor);
@@ -63,9 +64,9 @@ public class WildfireButton extends Button {
 
     @Override
     protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-        int clr = 0x444444 + (84 << 24);
-        if(this.isHoveredOrFocused()) clr = 0x666666 + (84 << 24);
-        if(!active) clr = 0x222222 + (84 << 24);
+        int clr = 0x54444444;
+        if(this.isHoveredOrFocused()) clr = 0x54666666;
+        if(!active) clr = 0x54222222;
         if(!transparent) graphics.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), clr);
 
         drawInner(graphics, mouseX, mouseY, partialTicks);
@@ -148,6 +149,7 @@ public class WildfireButton extends Button {
 
     @FunctionalInterface
     public interface PressAction extends Button.OnPress {
+        @Override
         default void onPress(Button button) {
             onPress((WildfireButton) button);
         }

@@ -38,31 +38,23 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-/**
- * A version of {@link EntityConfig} backed by a {@link Configuration} for use with players
- */
+/// A version of [EntityConfig] backed by a [Configuration] for use with players
 public class PlayerConfig extends EntityConfig {
 
-    /**
-     * <p>{@code true} if this config should be synced to the connected server on the next attempt</p>
-     *
-     * <p>This only has an effect for the client player.</p>
-     */
+    /// `true` if this config should be synced to the connected server on the next attempt
+    ///
+    /// This only has an effect for the client player.
     public boolean needsSync;
 
-    /**
-     * <p>{@code true} if this config should be synced to the {@link CloudSync cloud sync server} on the next attempt</p>
-     *
-     * <p>This only has an effect for the client player.</p>
-     */
+    /// `true` if this config should be synced to the [`cloud sync server`][CloudSync] on the next attempt
+    ///
+    /// This only has an effect for the client player.
     public boolean needsCloudSync;
 
-    /**
-     * The current sync status of this player config
-     *
-     * @see #needsSync
-     * @see SyncStatus
-     */
+    /// The current sync status of this player config
+    ///
+    /// @see #needsSync
+    /// @see SyncStatus
     public SyncStatus syncStatus = SyncStatus.UNKNOWN;
 
     private final Configuration cfg;
@@ -70,9 +62,7 @@ public class PlayerConfig extends EntityConfig {
     protected boolean holidayThemes = Configuration.HOLIDAY_THEMES.getDefault();
     protected boolean showBreastsInArmor = Configuration.SHOW_IN_ARMOR.getDefault();
 
-    /**
-     * @deprecated Use {@link #updateGender(Gender)} instead
-     */
+    /// @deprecated Use [#updateGender(Gender)] instead
     @Deprecated
     public PlayerConfig(UUID uuid, Gender gender) {
         this(uuid);
@@ -132,16 +122,16 @@ public class PlayerConfig extends EntityConfig {
         return updateValue(Configuration.BREAST_PHYSICS, value, v -> this.breastPhysics = v);
     }
 
-    /**
-     * @apiNote The value this method returns has been moved to {@link ClientConfig}, and this method is only
-     * 			retained for compatibility with mods that use this as a mixin target.
-     */
+    /// @apiNote The value this method returns has been moved to [ClientConfig], and this method is only
+    /// 			retained for compatibility with mods that use this as a mixin target.
+    @Override
     @ApiStatus.Obsolete
     @Environment(EnvType.CLIENT)
     public boolean getArmorPhysicsOverride() {
         return ClientConfig.INSTANCE.get(ClientConfig.ARMOR_PHYSICS_OVERRIDE);
     }
 
+    @Override
     public boolean showBreastsInArmor() {
         return showBreastsInArmor;
     }
@@ -162,41 +152,33 @@ public class PlayerConfig extends EntityConfig {
         return this.syncStatus;
     }
 
-    /**
-     * Returns a copy of the player's current configuration; the stored values are guaranteed to be valid for
-     * the associated {@link ConfigKey}, and does not include any unrecognized keys.
-     *
-     * @return A new copy of the player's {@link JsonObject saved config values}
-     */
+    /// Returns a copy of the player's current configuration; the stored values are guaranteed to be valid for
+    /// the associated [ConfigKey], and does not include any unrecognized keys.
+    ///
+    /// @return A new copy of the player's [`saved config values`][JsonObject]
     public JsonObject toJson() {
         var json = new JsonObject();
         Configuration.KEYS.forEach(key -> key.dump(this, json));
         return json;
     }
 
-    /**
-     * @return {@code true} if the current player {@link Configuration#exists() has a local config file}
-     */
+    /// @return `true` if the current player [`has a local config file`][Configuration#exists()]
     public boolean hasLocalConfig() {
         return cfg.exists();
     }
 
-    /**
-     * Loads the current player's settings from a file on disk
-     *
-     * @param markForSync {@code true} if {@link #needsSync} should be set to true
-     */
+    /// Loads the current player's settings from a file on disk
+    ///
+    /// @param markForSync`true` if [#needsSync] should be set to true
     public void loadFromDisk(boolean markForSync) {
         this.syncStatus = SyncStatus.CACHED;
         cfg.load();
         loadFromConfig(markForSync);
     }
 
-    /**
-     * Loads the current player's settings from the local {@link Configuration}
-     *
-     * @param markForSync {@code true} if {@link #needsSync} should be set to true
-     */
+    /// Loads the current player's settings from the local [Configuration]
+    ///
+    /// @param markForSync`true` if [#needsSync] should be set to true
     public void loadFromConfig(boolean markForSync) {
         Configuration.KEYS.forEach(key -> key.writeToPlayer(this));
         if(markForSync) {
@@ -204,17 +186,13 @@ public class PlayerConfig extends EntityConfig {
         }
     }
 
-    /**
-     * Write all known {@link ConfigKey}s from this {@link PlayerConfig} to the underlying {@link Configuration}
-     */
+    /// Write all known [ConfigKey]s from this [PlayerConfig] to the underlying [Configuration]
     public void writeToConfig() {
         Configuration.KEYS.forEach(key -> key.writeToConfig(this));
     }
 
-    /**
-     * Saves the settings stored in this {@link PlayerConfig} to the underlying {@link Configuration},
-     * and then attempts to {@link Configuration#save() save to disk}.
-     */
+    /// Saves the settings stored in this [PlayerConfig] to the underlying [Configuration],
+    /// and then attempts to [`save to disk`][Configuration#save()].
     public void save() {
         writeToConfig();
         getConfig().save();
@@ -222,9 +200,7 @@ public class PlayerConfig extends EntityConfig {
         needsCloudSync = true;
     }
 
-    /**
-     * @deprecated Use {@code plr.save()} instead
-     */
+    /// @deprecated Use `plr.save()` instead
     @Deprecated(forRemoval = true)
     @ApiStatus.ScheduledForRemoval(inVersion = "First release of 26.1")
     public static void saveGenderInfo(PlayerConfig plr) {
@@ -258,14 +234,12 @@ public class PlayerConfig extends EntityConfig {
         needsCloudSync = false;
     }
 
-    /**
-     * Update player data from the provided {@link JsonObject}
-     *
-     * @apiNote This method will set the player's {@link #getSyncStatus() sync status} to {@link SyncStatus#SYNCED},
-     *          as it's expected that this method is only used in such cases where this would be applicable.
-     *
-     * @param json The {@link JsonObject} to merge with the existing config for this player
-     */
+    /// Update player data from the provided [JsonObject]
+    ///
+    /// @apiNote This method will set the player's [`sync status`][#getSyncStatus()] to [SyncStatus#SYNCED],
+    ///          as it's expected that this method is only used in such cases where this would be applicable.
+    ///
+    /// @param json The [JsonObject] to merge with the existing config for this player
     public void updateFromJson(JsonObject json) {
         json.asMap().forEach(this.cfg::set);
         loadFromConfig(false);
@@ -282,30 +256,24 @@ public class PlayerConfig extends EntityConfig {
     }
 
     public enum SyncStatus {
-        /**
-         * <p>Indicates that the relevant configuration has had its data loaded from a file on disk.</p>
-         *
-         * <p>This is only applicable on a client, as dedicated servers do not read player data from
-         * configuration files.</p>
-         */
+        /// Indicates that the relevant configuration has had its data loaded from a file on disk.
+        ///
+        /// This is only applicable on a client, as dedicated servers do not read player data from
+        /// configuration files.
         CACHED,
 
-        /**
-         * <p>Indicates that the relevant configuration has had its data loaded from a sync packet,
-         * or from a profile retrieved from {@link CloudSync the cloud sync server}.</p>
-         *
-         * <p>This is currently only set on the client.</p>
-         */
+        /// Indicates that the relevant configuration has had its data loaded from a sync packet,
+        /// or from a profile retrieved from [`the cloud sync server`][CloudSync].
+        ///
+        /// This is currently only set on the client.
         // TODO this should be set on dedicated servers if/when the player config cache is split
         //		into separate server-sided & client-sided caches
         SYNCED,
 
-        /**
-         * <p>Indicates that this configuration has an unknown sync state.</p>
-         *
-         * <p>This is the default sync state for new configuration instances, and on dedicated servers is
-         * the only sync state.</p>
-         */
+        /// Indicates that this configuration has an unknown sync state.
+        ///
+        /// This is the default sync state for new configuration instances, and on dedicated servers is
+        /// the only sync state.
         UNKNOWN,
     }
 }

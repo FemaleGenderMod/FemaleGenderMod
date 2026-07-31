@@ -30,14 +30,12 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 import java.util.function.Function;
 
-/**
- * <p>Packet sent upon joining a server that supports it, identifying the sync packet version used by the mod.</p>
- *
- * <p>While we currently only use this to print some messages to the game logs, this is primarily intended
- * for use by third-party sync implementations to aid in supporting multiple versions.</p>
- *
- * @since 5.0.0-Beta.2
- */
+/// Packet sent upon joining a server that supports it, identifying the sync packet version used by the mod.
+///
+/// While we currently only use this to print some messages to the game logs, this is primarily intended
+/// for use by third-party sync implementations to aid in supporting multiple versions.
+///
+/// @since 5.0.0-Beta.2
 public sealed interface SyncHelloPacket extends CustomPacketPayload {
     /*static*/ int VERSION = 1;
 

@@ -18,12 +18,12 @@
 
 package com.wildfire.main;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextColor;
 
 public class WildfireLocalization {
-    public static final Component ENABLED = Component.translatable("wildfire_gender.label.enabled").withStyle(ChatFormatting.GREEN);
-    public static final Component DISABLED = Component.translatable("wildfire_gender.label.disabled").withStyle(ChatFormatting.RED);
+    public static final Component ENABLED = Component.translatable("wildfire_gender.label.enabled").withColor(TextColor.GREEN);
+    public static final Component DISABLED = Component.translatable("wildfire_gender.label.disabled").withColor(TextColor.RED);
     public static final Component OFF = Component.translatable("wildfire_gender.label.off");
 
     public static final Component SYNC_LOG_AUTHENTICATING_MOJANG = Component.translatable("wildfire_gender.sync_log.authenticating_mojang");
