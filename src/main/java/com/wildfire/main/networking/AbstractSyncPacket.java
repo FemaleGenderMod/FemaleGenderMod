@@ -132,7 +132,7 @@ abstract class AbstractSyncPacket {
     }
 
     static final StreamCodec<ByteBuf, UVLayout> UV_CODEC = ByteBufCodecs.map(
-            size -> new EnumMap<>(UVDirection.class),
+            _ -> new EnumMap<>(UVDirection.class),
             UVDirection.PACKET_CODEC,
             UVQuad.PACKET_CODEC,
             UVDirection.values().length

@@ -18,24 +18,20 @@
 
 package com.wildfire.main;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.wildfire.api.IGenderArmor;
-import com.wildfire.main.config.types.FloatConfigKey;
 import com.wildfire.resources.GenderArmorResourceManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.util.Mth;
 import net.minecraft.util.TriState;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Function;
 
 public final class WildfireHelper {
 
@@ -85,14 +81,6 @@ public final class WildfireHelper {
 
         return GenderArmorResourceManager.get(stack)
             .orElseGet(() -> stack.has(DataComponents.EQUIPPABLE) ? IGenderArmor.DEFAULT : IGenderArmor.EMPTY);
-    }
-
-    public static Codec<Float> boundedFloat(float minInclusive, float maxInclusive) {
-        return Codec.FLOAT.xmap(val -> Mth.clamp(val, minInclusive, maxInclusive), Function.identity());
-    }
-
-    public static Codec<Float> boundedFloat(FloatConfigKey configKey) {
-        return boundedFloat(configKey.getMinInclusive(), configKey.getMaxInclusive());
     }
 
     public static String getModVersion(String modId) {

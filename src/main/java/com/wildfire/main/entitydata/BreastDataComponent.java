@@ -40,22 +40,22 @@ public record BreastDataComponent(float breastSize, float cleavage, Vector3f off
 
     private static final String KEY = "WildfireGender";
     private static final Codec<BreastDataComponent> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            WildfireHelper.boundedFloat(Configuration.BUST_SIZE)
+            Configuration.BUST_SIZE.codec()
                     .optionalFieldOf("BreastSize", 0f)
                     .forGetter(BreastDataComponent::breastSize),
-            WildfireHelper.boundedFloat(Configuration.BREASTS_CLEAVAGE)
+            Configuration.BREASTS_CLEAVAGE.codec()
                     .optionalFieldOf("Cleavage", Configuration.BREASTS_CLEAVAGE.getDefault())
                     .forGetter(BreastDataComponent::cleavage),
             Codec.BOOL
                     .optionalFieldOf("Jacket", true)
                     .forGetter(BreastDataComponent::jacket),
-            WildfireHelper.boundedFloat(Configuration.BREASTS_OFFSET_X)
+            Configuration.BREASTS_OFFSET_X.codec()
                     .optionalFieldOf("XOffset", 0f)
                     .forGetter(component -> component.offsets.x),
-            WildfireHelper.boundedFloat(Configuration.BREASTS_OFFSET_Y)
+            Configuration.BREASTS_OFFSET_Y.codec()
                     .optionalFieldOf("YOffset", 0f)
                     .forGetter(component -> component.offsets.y),
-            WildfireHelper.boundedFloat(Configuration.BREASTS_OFFSET_Z)
+            Configuration.BREASTS_OFFSET_Z.codec()
                     .optionalFieldOf("ZOffset", 0f)
                     .forGetter(component -> component.offsets.y)
         ).apply(instance, (breastSize, cleavage, jacket, x, y, z) -> new BreastDataComponent(breastSize, cleavage, new Vector3f(x, y, z), jacket, null))

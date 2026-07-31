@@ -23,6 +23,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.wildfire.api.impl.BreastArmorTexture;
 import com.wildfire.api.impl.GenderArmor;
 import com.wildfire.main.WildfireHelper;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.TriState;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -53,10 +54,10 @@ public interface IGenderArmor {
 
     @ApiStatus.Internal
     Codec<IGenderArmor> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            WildfireHelper.boundedFloat(0f, 1f)
+            ExtraCodecs.floatRange(0f, 1f)
                     .optionalFieldOf("resistance", 0.5f)
                     .forGetter(IGenderArmor::physicsResistance),
-            WildfireHelper.boundedFloat(0f, 1f)
+            ExtraCodecs.floatRange(0f, 1f)
                     .optionalFieldOf("tightness", 0f)
                     .forGetter(IGenderArmor::tightness),
             Codec.BOOL
