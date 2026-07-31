@@ -65,6 +65,7 @@ public interface IGenderArmor {
             Codec.BOOL
                     .optionalFieldOf("hide_breasts", false)
                     .forGetter(IGenderArmor::alwaysHidesBreasts),
+            //TODO: Switch to Tristate.CODEC?
             WildfireHelper.TRISTATE
                     .optionalFieldOf("render_on_armor_stands", TriState.DEFAULT)
                     .forGetter(armor -> armor.armorStandsCopySettings() ? TriState.TRUE : TriState.FALSE),

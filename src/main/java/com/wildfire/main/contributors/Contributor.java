@@ -34,7 +34,7 @@ public record Contributor(
         // TODO this technically supports multiple roles due to this using a bitmask, but any additional roles other than
         //		the topmost one defined in Role is currently ignored
         int roles,
-        @Nullable Integer color,
+        @Nullable Integer color,//TODO: Can this be moved to a TextColor or does that break serializiation
         @Nullable String name,
         @SerializedName("show_in_credits")
         @Nullable Boolean showInCredits
