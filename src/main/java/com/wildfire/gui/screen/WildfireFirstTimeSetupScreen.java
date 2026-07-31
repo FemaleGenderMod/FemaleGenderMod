@@ -54,7 +54,9 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
     private static final Component DESCRIPTION = Component.translatable("wildfire_gender.first_time_setup.description");
     private static final Component NOTICE = Component.translatable("wildfire_gender.first_time_setup.notice");
 
+    //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
     private static final Component ENABLE_CLOUD_SYNCING = Component.translatable("wildfire_gender.first_time_setup.enable").withColor(TextColor.GREEN);
+    //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
     private static final Component DISABLE_CLOUD_SYNCING = Component.translatable("wildfire_gender.first_time_setup.disable").withColor(TextColor.RED);
 
     private static final Identifier BACKGROUND = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/first_time_bg.png");
@@ -168,6 +170,7 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 
         GuiUtils.drawCenteredText(graphics, font, TITLE, x, y - 24, CommonColors.DARK_GRAY);
 
+        //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
         GuiUtils.drawCenteredTextWrapped(graphics, font, Component.literal("Keira Emberlyn:").withColor(TextColor.LIGHT_PURPLE), x + 32, y - 10, 256 - 65, CommonColors.WHITE);
 
         //TODO: Vertical scroll bar for longer text?

@@ -48,7 +48,9 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
     private static final int FULL_WIDTH = 166;
     private static final int HALF_WIDTH = FULL_WIDTH / 2 - 2;
 
+    //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
     private static final Component ENABLED = Component.translatable("wildfire_gender.label.enabled").withColor(TextColor.GREEN);
+    //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
     private static final Component DISABLED = Component.translatable("wildfire_gender.label.disabled").withColor(TextColor.RED);
 
     private static final Identifier BACKGROUND_FEMALE = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/breast_customization.png");

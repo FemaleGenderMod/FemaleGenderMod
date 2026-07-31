@@ -33,8 +33,11 @@ import org.jspecify.annotations.Nullable;
 public enum Gender {
 
     // NOTE: The order of these should remain unchanged! Changing these WILL modify player configs!
+    //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
     FEMALE(Component.translatable("wildfire_gender.label.female").withColor(TextColor.LIGHT_PURPLE), true, WildfireSounds.FEMALE_HURT),
+    //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
     MALE(Component.translatable("wildfire_gender.label.male").withColor(TextColor.BLUE), false, null),
+    //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
     OTHER(Component.translatable("wildfire_gender.label.other").withColor(TextColor.GREEN), true, WildfireSounds.FEMALE_HURT);
 
     public static final IntFunction<Gender> BY_ID = ByIdMap.continuous(Gender::ordinal, values(), ByIdMap.OutOfBoundsStrategy.WRAP);

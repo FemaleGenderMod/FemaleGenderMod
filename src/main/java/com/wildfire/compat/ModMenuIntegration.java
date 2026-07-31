@@ -54,6 +54,7 @@ public class ModMenuIntegration implements ModMenuApi {
             super(
                 //~ if >=26.2 'setScreen' -> 'gui.setScreen'
                 _ -> client.gui.setScreen(parent),
+                //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
                 Component.translatable("wildfire_gender.not_in_world.title").withColor(TextColor.RED),
                 Component.translatable("wildfire_gender.not_in_world")
             );

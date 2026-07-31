@@ -186,6 +186,7 @@ public final class WildfireEventHandler {
         if(!config.coversBreasts() || config.physicsResistance() == 0f) return;
 
         var formatted = WildfireHelper.toFormattedPercent(config.physicsResistance()) + "%";
+        //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
         tooltipAppender.accept(Component.translatable("wildfire_gender.armor.tooltip", formatted).withColor(TextColor.LIGHT_PURPLE));
     }
 

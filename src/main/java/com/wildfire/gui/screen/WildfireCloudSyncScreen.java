@@ -101,6 +101,7 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
         ref.btnSyncNow.visible = CloudSync.isEnabled();
 
         ref.btnDelete = addButton(builder -> builder
+                //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
                 .message(() -> Component.translatable("wildfire_gender.cloud.delete").withColor(TextColor.RED))
                 .position(xPos + 98, yPos + 42)
                 .size(60, 15)

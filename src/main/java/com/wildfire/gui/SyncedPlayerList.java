@@ -52,12 +52,14 @@ public final class SyncedPlayerList {
             return;
         }
 
+        //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
         var header = Component.translatable("wildfire_gender.wardrobe.players_using_mod").withColor(TextColor.AQUA);
         context.text(font, header, 5, 5, CommonColors.WHITE, true);
 
         int yPos = 18;
         for(var entry : syncedPlayers) {
             var text = Component.empty()
+                    //~ if >=26.2 '.color().getValue()' -> '.color()'
                     .append(Component.literal(entry.name()).withColor(entry.color()))
                     .append(" - ")
                     .append(entry.gender().getDisplayName());
@@ -93,6 +95,7 @@ public final class SyncedPlayerList {
             }
 
             var color = Contributors.getColor(entry.getProfile().id());
+            //~ if >=26.2 'fromRgb(0xFFFFFF)' -> 'WHITE'
             list.add(new SyncedPlayer(entry.getProfile().name(), color == null ? TextColor.WHITE : color, config.getGender()));
 
             if(list.size() >= 40) {

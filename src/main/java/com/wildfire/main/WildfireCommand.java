@@ -65,9 +65,13 @@ import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.argument;
 @Environment(EnvType.CLIENT)
 public class WildfireCommand {
     private static final Component COMMAND_PREFIX = Component.empty()
+            //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
             .append(Component.literal("[").withColor(TextColor.GRAY))
+            //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
             .append(Component.literal("F").withColor(TextColor.LIGHT_PURPLE))
+            //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
             .append(Component.literal("GM").withColor(TextColor.WHITE))
+            //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
             .append(Component.literal("] ").withColor(TextColor.GRAY));
 
     static void init() {
@@ -158,7 +162,9 @@ public class WildfireCommand {
             var name = nameToDescription[i * 2];
             var description = nameToDescription[(i * 2) + 1];
             lines.add(Component.empty().append(COMMAND_PREFIX)
+                //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
                 .append(Component.literal(name).withColor(TextColor.AQUA))
+                //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
                 .append(Component.literal(" - ").withColor(TextColor.GRAY))
                 .append(Component.literal(description)));
         }

@@ -39,6 +39,7 @@ public record Contributor(
         @SerializedName("show_in_credits")
         @Nullable Boolean showInCredits
 ) {
+    //~ if >=26.2 'fromRgb(0xFFAA00)' -> 'GOLD'
     private static final TextColor DEFAULT_COLOR = TextColor.GOLD;
 
     public TextColor getColor() {
@@ -49,6 +50,7 @@ public record Contributor(
     }
 
     public Component asText() {
+        //~ if >=26.2 'getColor().getValue()' -> 'getColor()'
         return getRole().nametag().withColor(getColor());
     }
 
@@ -67,6 +69,7 @@ public record Contributor(
     }
 
     public enum Role {
+        //~ if >=26.2 'fromRgb(0xFF55FF)' -> 'LIGHT_PURPLE'
         MOD_CREATOR(0, TextColor.LIGHT_PURPLE),
         FABRIC_MAINTAINER(1, 0xA78FFF),
         NEOFORGE_MAINTAINER(2, 0xA78FFF),
@@ -109,6 +112,7 @@ public record Contributor(
         public MutableComponent withColor(MutableComponent text) {
             Preconditions.checkNotNull(text);
             if(color != null) {
+                //~ if >=26.2 'color.getValue()' -> 'color'
                 return text.withColor(color);
             }
             return text;

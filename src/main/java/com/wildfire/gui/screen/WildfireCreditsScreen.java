@@ -239,9 +239,11 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
                 var role = creditBox.getRoleOrGeneric();
                 txtList.add(role.withColor(Component.empty()
                         .append(creditBox.getName())
+                        //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
                         .append(Component.literal(" - ").withColor(TextColor.DARK_GRAY))
                         .append(role.shortName())));
                 if (creditBox.getDescription() != null && !creditBox.getDescription().isEmpty()) {
+                    //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
                     txtList.add(Component.literal(creditBox.getDescription()).withColor(TextColor.GRAY));
                 }
                 graphics.setComponentTooltipForNextFrame(font, txtList, mouseX, mouseY);
