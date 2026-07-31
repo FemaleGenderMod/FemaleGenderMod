@@ -34,6 +34,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
@@ -224,7 +225,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
             int xP = creditBoxX + (52 / 2);
             int yP = creditBoxY + (68 / 2);
             graphics.enableScissor(xP - 21, yP - 79, xP + 21, yP + 20);
-            GuiUtils.drawEntityOnScreen(graphics, xP - 38, yP - 29, xP + 38, yP + 59, 40, mouseX, mouseY + 35, creditBox.getEntity());
+            InventoryScreen.extractEntityInInventoryFollowsMouse(graphics, xP - 38, yP - 29, xP + 38, yP + 59, 40, GuiUtils.ENTITY_SCALE, mouseX, mouseY + 35, creditBox.getEntity());
             graphics.disableScissor();
 
             mStack.pushMatrix();

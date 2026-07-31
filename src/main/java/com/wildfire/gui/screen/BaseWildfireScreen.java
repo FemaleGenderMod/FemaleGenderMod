@@ -27,6 +27,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
 
 import java.util.Objects;
@@ -69,7 +70,7 @@ public abstract class BaseWildfireScreen extends Screen {
         // This sucks. In order to position the player properly, we need to trick the player renderer into
         // thinking the area the player should be rendered is much taller than it actually is.
         graphics.enableScissor(xP - 38, yP - 79, xP + 38, yP + 9);
-        GuiUtils.drawEntityOnScreen(graphics, xP - 38, yP - 79, xP + 38, yP + 69, 70, mouseX, mouseY + 35, player);
+        InventoryScreen.extractEntityInInventoryFollowsMouse(graphics, xP - 38, yP - 79, xP + 38, yP + 69, 70, GuiUtils.ENTITY_SCALE, mouseX, mouseY + 35, player);
         graphics.disableScissor();
     }
 

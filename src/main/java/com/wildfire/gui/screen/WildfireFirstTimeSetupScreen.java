@@ -32,6 +32,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
@@ -184,7 +185,7 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
         mStack.popMatrix();
 
         var fakeKeira = this.fakeKeira.get().getEntity();
-        GuiUtils.drawEntityOnScreen(graphics, x - 132, y - 13, x - 75, y + 60, 50, mouseX, mouseY, 0, 0.4f, fakeKeira);
+        InventoryScreen.extractEntityInInventoryFollowsMouse(graphics, x - 132, y - 13, x - 75, y + 60, 50, GuiUtils.ENTITY_SCALE + 0.4f, mouseX, mouseY, fakeKeira);
     }
 
     @Override
