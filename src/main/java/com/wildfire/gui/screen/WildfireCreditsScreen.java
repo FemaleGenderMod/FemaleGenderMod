@@ -238,15 +238,15 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
             if (mouseX > xP - 24 && mouseX < xP + 23 && mouseY > yP + 22 && mouseY < yP + 31) {
                 List<Component> txtList = new ArrayList<>();
                 var role = creditBox.getRoleOrGeneric();
+                //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.' {
                 txtList.add(role.withColor(Component.empty()
                         .append(creditBox.getName())
-                        //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
                         .append(Component.literal(" - ").withColor(TextColor.DARK_GRAY))
                         .append(role.shortName())));
                 if (creditBox.getDescription() != null && !creditBox.getDescription().isEmpty()) {
-                    //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
                     txtList.add(Component.literal(creditBox.getDescription()).withColor(TextColor.GRAY));
                 }
+                //~}
                 graphics.setComponentTooltipForNextFrame(font, txtList, mouseX, mouseY);
             }
         }
