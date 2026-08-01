@@ -58,8 +58,8 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
     private static final Identifier BACKGROUND_FEMALE = WildfireGender.id("textures/gui/wardrobe_bg_female.png");
     private static final Identifier BACKGROUND_OTHER = WildfireGender.id("textures/gui/wardrobe_bg_other.png");
 
-    private static final Identifier TXTR_RIBBON = WildfireGender.id("textures/bc_ribbon.png");
-    private static final Identifier CLOUD_ICON = WildfireGender.id("textures/cloud.png");
+    private static final Identifier TXTR_RIBBON = WildfireGender.id("bc_ribbon");
+    private static final Identifier CLOUD_ICON = WildfireGender.id("cloud");
 
     private static final boolean isBreastCancerAwarenessMonth = Month.from(ZonedDateTime.now()) == Month.OCTOBER;
 
@@ -128,7 +128,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
             builder.position(this.width / 2 - 36, y + 30);
             builder.size(24, 18);
             builder.renderer((button, ctx, _, _, _) ->
-                ctx.blit(RenderPipelines.GUI_TEXTURED, CLOUD_ICON, button.getX() + 2, button.getY() + 2, 0, 0, 20, 14, 32, 26, 32, 26)
+                ctx.blitSprite(RenderPipelines.GUI_TEXTURED, CLOUD_ICON, button.getX() + 2, button.getY() + 2, 20, 14)
             );
             builder.onPress(_ -> {
                 //~ if >=26.2 'setScreen' -> 'gui.setScreen'
@@ -187,7 +187,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
             graphics.fill(x - 159, bcaY + 106, x + 159, bcaY + 136, ARGB.black(0x55));
             drawScrollingString(graphics, Component.translatable("wildfire_gender.cancer_awareness.title").withStyle(style -> style.withBold(true).withItalic(true)),
                 x - 153, bcaY + 117, TextAlignment.LEFT, CommonColors.WHITE, 283, 5, false);
-            graphics.blit(RenderPipelines.GUI_TEXTURED, TXTR_RIBBON, x + 130, bcaY + 109, 0, 0, 26, 26, 20, 20, 20, 20);
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, TXTR_RIBBON, x + 130, bcaY + 109, 26, 26);
         }
 
         SyncedPlayerList.drawSyncedPlayers(this, graphics, 126, graphics.guiWidth());

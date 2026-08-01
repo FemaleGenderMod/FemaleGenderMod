@@ -50,8 +50,8 @@ import org.jspecify.annotations.Nullable;
 
 public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
-    private static final Identifier TEXTURE_ADD = WildfireGender.id("textures/gui/widgets/add.png");
-    private static final Identifier TEXTURE_SUBTRACT = WildfireGender.id("textures/gui/widgets/subtract.png");
+    private static final Identifier TEXTURE_ADD = WildfireGender.id("widgets/add");
+    private static final Identifier TEXTURE_SUBTRACT = WildfireGender.id("widgets/subtract");
 
     private @Nullable UVLayout selectedUVs = null;
     private BreastTypes selectedBreastIndex = BreastTypes.LEFT;
@@ -147,11 +147,11 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
                                 //~ if >=26.2 'fromRgb(0xFFFFFF)' -> 'WHITE'
                                 default -> TextColor.WHITE;
                             }).getValue();
-                            ctx.blit(RenderPipelines.GUI_TEXTURED,
+                            ctx.blitSprite(RenderPipelines.GUI_TEXTURED,
                                     isAdd ? TEXTURE_ADD : TEXTURE_SUBTRACT,
                                     button.getX() + button.getWidth() / 2 - 3,
                                     button.getY() + button.getHeight() / 2 - 3,
-                                    0,0,6,6,6,6,6,6,
+                                6,6,
                                     ARGB.opaque(color));
                         })
                         .message(() -> isAdd ? Component.translatable("wildfire_gender.uv_editor.add") : Component.translatable("wildfire_gender.uv_editor.remove"))

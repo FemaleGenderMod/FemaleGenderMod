@@ -47,10 +47,10 @@ import org.joml.Vector2f;
 @Environment(EnvType.CLIENT)
 public class WildfireCreditsScreen extends BaseWildfireScreen {
 
-    private static final Identifier CREDIT_CONTAINER = WildfireGender.id("textures/gui/credits/credit_container.png");
-    private static final Identifier CREDIT_OUTLINE = WildfireGender.id("textures/gui/credits/credit_outline.png");
-    private static final Identifier BUTTON_CONTAINER = WildfireGender.id("textures/gui/credits/button_container.png");
-    private static final Identifier TAB_CONTAINER = WildfireGender.id("textures/gui/credits/tab_container.png");
+    private static final Identifier CREDIT_CONTAINER = WildfireGender.id("credits/credit_container");
+    private static final Identifier CREDIT_OUTLINE = WildfireGender.id("credits/credit_outline");
+    private static final Identifier BUTTON_CONTAINER = WildfireGender.id("credits/button_container");
+    private static final Identifier TAB_CONTAINER = WildfireGender.id("credits/tab_container");
 
     //General contributor list
     private final FakeGUIPlayer[] C_GENERAL = Contributors.getContributors().entrySet().stream()
@@ -185,8 +185,8 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
         drawScrollingString(graphics, getTitle(), 0, height / 2 - 100, TextAlignment.CENTER, CommonColors.WHITE, graphics.guiWidth(), 5, false);
         drawScrollingString(graphics, Component.translatable("wildfire_gender.credits.description"), 0, height / 2 - 85, TextAlignment.CENTER, 0xFF888888, graphics.guiWidth(), 5, false);
 
-        graphics.blit(RenderPipelines.GUI_TEXTURED, BUTTON_CONTAINER, this.width / 2 - (190 / 2), navigationY, 0, 0, 190, 25, 190, 25);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, TAB_CONTAINER, this.width / 2 - (190 / 2), navigationY + 28, 0, 0, 190, 25, 190, 25);
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, BUTTON_CONTAINER, this.width / 2 - (190 / 2), navigationY, 190, 25);
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, TAB_CONTAINER, this.width / 2 - (190 / 2), navigationY + 28, 190, 25);
 
         int columns = 6;
         int boxW = 60;
@@ -211,9 +211,9 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
             int creditBoxX = startX + (col * boxW);
             int creditBoxY = startY + (row * boxH);
 
-            graphics.blit(RenderPipelines.GUI_TEXTURED, CREDIT_CONTAINER, creditBoxX, creditBoxY, 0, 0, 52, 68, 52, 68);
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, CREDIT_CONTAINER, creditBoxX, creditBoxY, 52, 68);
 
-            graphics.blit(RenderPipelines.GUI_TEXTURED, CREDIT_OUTLINE, creditBoxX + 3, creditBoxY + 3, 0, 0, 46, 53, 46, 53,
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, CREDIT_OUTLINE, creditBoxX + 3, creditBoxY + 3, 46, 53,
                 ARGB.opaque(Objects.requireNonNull(creditBox.getRole()).getColor().getValue()));
 
             int xP = creditBoxX + (52 / 2);
