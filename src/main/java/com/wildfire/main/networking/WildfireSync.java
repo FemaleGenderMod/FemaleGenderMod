@@ -18,7 +18,6 @@
 
 package com.wildfire.main.networking;
 
-import com.mojang.logging.LogUtils;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.entitydata.PlayerConfigHolder;
@@ -34,11 +33,12 @@ import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.TriState;
 import org.jetbrains.annotations.ApiStatus;
-import org.slf4j.Logger;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 public final class WildfireSync {
     public static final PacketContext.Key<TriState> MATCHING_VERSION = PacketContext.key(WildfireGender.id("matching_version"));
-    public static final Logger LOGGER = LogUtils.getLogger();
+    public static final Marker MARKER = MarkerFactory.getMarker("SYNC");
 
     private WildfireSync() {
         throw new UnsupportedOperationException();
@@ -73,7 +73,7 @@ public final class WildfireSync {
         }
 
         if(sent > 0) {
-            LOGGER.debug("Sent sync packet for {} to {} connected player(s)", toSync, sent);
+            WildfireGender.LOGGER.debug(MARKER, "Sent sync packet for {} to {} connected player(s)", toSync, sent);
         }
     }
 
@@ -83,7 +83,7 @@ public final class WildfireSync {
     /// @param toSync The [`configuration`][PlayerConfig] for the player being synced
     public static void sendToClient(ServerPlayer sendTo, PlayerConfigHolder toSync) {
         if(ClientboundSyncPacket.canSend(sendTo)) {
-            LOGGER.debug("Sending profile for {} to other player {}", toSync.uuid, sendTo.getUUID());
+            WildfireGender.LOGGER.debug(MARKER, "Sending profile for {} to other player {}", toSync.uuid, sendTo.getUUID());
             ServerPlayNetworking.send(sendTo, new ClientboundSyncPacket(toSync));
         }
     }
@@ -94,7 +94,7 @@ public final class WildfireSync {
     @Environment(EnvType.CLIENT)
     public static void sendToServer(PlayerConfigHolder plr) {
         if (plr.needsSync && ServerboundSyncPacket.canSend()) {
-            LOGGER.debug("Sending player data to server");
+            WildfireGender.LOGGER.debug(MARKER, "Sending player data to server");
             ClientPlayNetworking.send(new ServerboundSyncPacket(plr.config()));
             plr.needsSync = false;
         }

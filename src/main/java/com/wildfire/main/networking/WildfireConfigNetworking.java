@@ -18,6 +18,7 @@
 
 package com.wildfire.main.networking;
 
+import com.wildfire.main.WildfireGender;
 import com.wildfire.main.networking.packets.hello.AbstractSyncHelloPacket;
 import com.wildfire.main.networking.packets.hello.ClientboundSyncHelloPacket;
 import com.wildfire.main.networking.packets.hello.ServerboundSyncHelloPacket;
@@ -38,7 +39,7 @@ import net.minecraft.util.TriState;
         PayloadTypeRegistry.serverboundConfiguration().register(ServerboundSyncHelloPacket.TYPE, ServerboundSyncHelloPacket.CODEC);
         PayloadTypeRegistry.clientboundConfiguration().register(ServerboundSyncHelloPacket.TYPE, ServerboundSyncHelloPacket.CODEC);
 
-        WildfireSync.LOGGER.debug("Registering server-side config phase receiver");
+        WildfireGender.LOGGER.debug(WildfireSync.MARKER, "Registering server-side config phase receiver");
         ServerConfigurationNetworking.registerGlobalReceiver(ServerboundSyncHelloPacket.TYPE, WildfireConfigNetworking::handleServerbound);
     }
 
@@ -50,17 +51,17 @@ import net.minecraft.util.TriState;
 
     @Environment(EnvType.CLIENT)
     private static void initClient(ClientConfigurationPacketListener listener, Minecraft client) {
-        WildfireSync.LOGGER.debug("Registering client-side config phase receiver");
+        WildfireGender.LOGGER.debug(WildfireSync.MARKER, "Registering client-side config phase receiver");
         ClientConfigurationNetworking.registerReceiver(ClientboundSyncHelloPacket.TYPE, WildfireConfigNetworking::handleClientbound);
     }
 
     @Environment(EnvType.CLIENT)
     private static void startClient(ClientConfigurationPacketListener listener, Minecraft client) {
         if(ClientConfigurationNetworking.canSend(ServerboundSyncHelloPacket.TYPE)) {
-            WildfireSync.LOGGER.debug("Sending hello packet to server");
+            WildfireGender.LOGGER.debug(WildfireSync.MARKER, "Sending hello packet to server");
             ClientConfigurationNetworking.send(new ServerboundSyncHelloPacket());
         } else {
-            WildfireSync.LOGGER.debug("Server does not accept hello packet");
+            WildfireGender.LOGGER.debug(WildfireSync.MARKER, "Server does not accept hello packet");
         }
     }
 
@@ -70,10 +71,11 @@ import net.minecraft.util.TriState;
         int expected = AbstractSyncHelloPacket.VERSION;
 
         if(packet.version() == expected) {
-            WildfireSync.LOGGER.info("Received hello packet from client with protocol version {}", version);
+            WildfireGender.LOGGER.info(WildfireSync.MARKER, "Received hello packet from client with protocol version {}", version);
             context.packetContext().set(WildfireSync.MATCHING_VERSION, TriState.TRUE);
         } else {
-            WildfireSync.LOGGER.warn(
+            WildfireGender.LOGGER.warn(
+                WildfireSync.MARKER,
                 "Client reported an unsupported sync protocol version! Client supports version {} but we expect {}",
                 version, expected
             );
@@ -87,10 +89,11 @@ import net.minecraft.util.TriState;
         int expected = AbstractSyncHelloPacket.VERSION;
 
         if(version == expected) {
-            WildfireSync.LOGGER.info("Received hello response from server with protocol version {}", version);
+            WildfireGender.LOGGER.info(WildfireSync.MARKER, "Received hello response from server with protocol version {}", version);
             context.packetContext().set(WildfireSync.MATCHING_VERSION, TriState.TRUE);
         } else {
-            WildfireSync.LOGGER.warn(
+            WildfireGender.LOGGER.warn(
+                WildfireSync.MARKER,
                 "Server reported an unsupported sync protocol version! Server supports version {} but we expect {}",
                 version, expected
             );

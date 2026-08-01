@@ -55,7 +55,11 @@ import net.minecraft.util.TriState;
         if(listener.getPacketContext().orElse(WildfireSync.MATCHING_VERSION, TriState.DEFAULT).toBoolean(false)) {
             ServerPlayNetworking.registerReceiver(listener, ServerboundSyncPacket.TYPE, WildfirePlayNetworking::handleServerbound);
         } else {
-            WildfireSync.LOGGER.debug("{} is not using a supported sync protocol version (or doesn't have the mod), not registering receiver", listener.getPlayer());
+            WildfireGender.LOGGER.debug(
+                WildfireSync.MARKER,
+                "{} is not using a supported sync protocol version (or doesn't have the mod), not registering receivers",
+                listener.getPlayer()
+            );
         }
     }
 
@@ -64,12 +68,15 @@ import net.minecraft.util.TriState;
         if(listener.getPacketContext().orElse(WildfireSync.MATCHING_VERSION, TriState.DEFAULT).toBoolean(false)) {
             ClientPlayNetworking.registerReceiver(ClientboundSyncPacket.TYPE, WildfirePlayNetworking::handleClientbound);
         } else {
-            WildfireSync.LOGGER.debug("Sync protocol does not match with server (or server doesn't have the mod), not registering receiver");
+            WildfireGender.LOGGER.debug(
+                WildfireSync.MARKER,
+                "Server is not using a supported sync protocol version (or doesn't have the mod), not registering receivers"
+            );
         }
     }
 
     private static void handleServerbound(ServerboundSyncPacket packet, ServerPlayNetworking.Context context) {
-        WildfireSync.LOGGER.debug("Received player data from player {}", context.player());
+        WildfireGender.LOGGER.debug(WildfireSync.MARKER, "Received player data from player {}", context.player());
         ServerPlayer player = context.player();
         PlayerConfig plr = WildfireGender.getOrAddPlayerById(player.getUUID());
         packet.updatePlayerFromPacket(plr);
@@ -83,7 +90,7 @@ import net.minecraft.util.TriState;
             return;
         }
 
-        WildfireSync.LOGGER.debug("Received player data for player {}", packet.uuid);
+        WildfireGender.LOGGER.debug(WildfireSync.MARKER, "Received player data for player {}", packet.uuid);
         PlayerConfig plr = WildfireGender.getOrAddPlayerById(packet.uuid);
         packet.updatePlayerFromPacket(plr);
         plr.syncStatus = PlayerConfig.SyncStatus.SYNCED;
