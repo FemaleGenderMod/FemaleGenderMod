@@ -25,9 +25,7 @@ import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 
-/**
- * Event invoked when <b>any</b> {@link LivingEntity} plays a hurt sound.
- */
+/// Event invoked when **any** [LivingEntity] plays a hurt sound.
 @FunctionalInterface
 @Environment(EnvType.CLIENT)
 public interface EntityHurtSoundEvent {

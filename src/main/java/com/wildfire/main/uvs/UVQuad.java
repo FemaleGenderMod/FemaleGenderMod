@@ -20,7 +20,6 @@ package com.wildfire.main.uvs;
 
 import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.ListCodec;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -28,7 +27,7 @@ import net.minecraft.network.codec.StreamCodec;
 import java.util.List;
 
 public record UVQuad(int x1, int y1, int x2, int y2) {
-    public static final Codec<UVQuad> CODEC = ListCodec.INT.listOf(4, 4).xmap(UVQuad::fromIntList, UVQuad::toIntList);
+    public static final Codec<UVQuad> CODEC = Codec.INT.listOf(4, 4).xmap(UVQuad::fromIntList, UVQuad::toIntList);
 
     public static final StreamCodec<ByteBuf, UVQuad> PACKET_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT, UVQuad::x1,

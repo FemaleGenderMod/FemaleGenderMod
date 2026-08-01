@@ -41,7 +41,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -49,14 +48,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
+import org.jspecify.annotations.Nullable;
 
-/**
- * <p>A stripped down version of a {@link PlayerConfig player's config}, intended for use with non-player entities.</p>
- *
- * <p>Unlike players, this has very minimal configuration support.</p>
- *
- * <p>Currently only used for {@link ArmorStand armor stands}, and as a superclass for {@link PlayerConfig player configs}.</p>
- */
+/// A stripped down version of a [`player's config`][PlayerConfig], intended for use with non-player entities.
+///
+/// Unlike players, this has very minimal configuration support.
+///
+/// Currently only used for [`armor stands`][ArmorStand], and as a superclass for [`player configs`][PlayerConfig].
 public class EntityConfig {
 
     public static final LoadingCache<UUID, EntityConfig> CACHE = CacheBuilder.newBuilder()
@@ -100,11 +98,9 @@ public class EntityConfig {
         rBreastPhysics = new BreastPhysics(this);
     }
 
-    /**
-     * Copy gender settings included in the given {@link ItemStack item NBT} to the current entity
-     *
-     * @see BreastDataComponent
-     */
+    /// Copy gender settings included in the given [`item NBT`][ItemStack] to the current entity
+    ///
+    /// @see BreastDataComponent
     public void readFromStack(ItemStack chestplate) {
         CustomData component = chestplate.get(DataComponents.CUSTOM_DATA);
         if(chestplate.isEmpty() || component == null) {
@@ -131,9 +127,7 @@ public class EntityConfig {
         this.jacketLayer = fromComponent.jacket();
     }
 
-    /**
-     * @return {@code true} if the mod has support for the provided entity
-     */
+    /// @return `true` if the mod has support for the provided entity
     public static boolean isSupportedEntity(LivingEntity entity) {
         // TODO mannequins are not properly supported right now; this method only returns true to indicate that
         //        our rendering does technically support it, despite the fact that there is no way to properly utilize
@@ -141,15 +135,13 @@ public class EntityConfig {
         return entity instanceof Avatar || entity instanceof ArmorStand;
     }
 
-    /**
-     * Get the configuration for a given entity
-     *
-     * @apiNote Configuration settings for {@link PlayerConfig}s may not be immediately available upon being
-     *          returned, and may take several seconds to be populated if loaded from the
-     *          {@link com.wildfire.main.cloud.CloudSync cloud sync server}.
-     *
-     * @return The relevant {@link EntityConfig}, or {@link PlayerConfig} if given a {@link Player player}
-     */
+    /// Get the configuration for a given entity
+    ///
+    /// @apiNote Configuration settings for [PlayerConfig]s may not be immediately available upon being
+    ///          returned, and may take several seconds to be populated if loaded from the
+    ///          [`cloud sync server`][com.wildfire.main.cloud.CloudSync].
+    ///
+    /// @return The relevant [EntityConfig], or [PlayerConfig] if given a [`player`][Player]
     public static EntityConfig getEntity(LivingEntity entity) {
         if(entity instanceof Player) {
             return WildfireGender.getOrAddPlayerById(entity.getUUID());
@@ -173,9 +165,7 @@ public class EntityConfig {
         return breastPhysics;
     }
 
-    /**
-     * @apiNote See {@link PlayerConfig#getArmorPhysicsOverride()} for the reasoning behind this being {@link ApiStatus.Obsolete @Obsolete}
-     */
+    /// @apiNote See [PlayerConfig#getArmorPhysicsOverride()] for the reasoning behind this being [`@Obsolete`][ApiStatus.Obsolete]
     @ApiStatus.Obsolete
     @Environment(EnvType.CLIENT)
     public boolean getArmorPhysicsOverride() {
@@ -248,10 +238,8 @@ public class EntityConfig {
         return false;
     }
 
-    /**
-     * Only used in the case of {@link ArmorStand armor stands}; returns {@code true} if the player who equipped
-     * the armor stand's chestplate has their jacket layer visible.
-     */
+    /// Only used in the case of [`armor stands`][ArmorStand]; returns `true` if the player who equipped
+    /// the armor stand's chestplate has their jacket layer visible.
     public boolean hasJacketLayer() {
         return jacketLayer;
     }

@@ -19,34 +19,36 @@
 package com.wildfire.gui.screen;
 
 import com.wildfire.gui.FakeGUIPlayer;
-import com.wildfire.gui.GuiUtils;
 import com.wildfire.main.GenderConfigs;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.contributors.Contributor;
 import com.wildfire.main.contributors.Contributors;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
+import net.minecraft.util.CommonColors;
 import org.jetbrains.annotations.UnknownNullability;
-import org.joml.Matrix3x2fStack;
-import org.joml.Vector2f;
-
-import java.util.*;
 
 @Environment(EnvType.CLIENT)
 public class WildfireCreditsScreen extends BaseWildfireScreen {
 
-    private static final Identifier CREDIT_CONTAINER = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/credits/credit_container.png");
-    private static final Identifier CREDIT_OUTLINE = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/credits/credit_outline.png");
-    private static final Identifier BUTTON_CONTAINER = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/credits/button_container.png");
-    private static final Identifier TAB_CONTAINER = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/credits/tab_container.png");
+    private static final Identifier CREDIT_CONTAINER = WildfireGender.id("credits/credit_container");
+    private static final Identifier CREDIT_OUTLINE = WildfireGender.id("credits/credit_outline");
+    private static final Identifier BUTTON_CONTAINER = WildfireGender.id("credits/button_container");
+    private static final Identifier TAB_CONTAINER = WildfireGender.id("credits/tab_container");
 
     //General contributor list
     private final FakeGUIPlayer[] C_GENERAL = Contributors.getContributors().entrySet().stream()
@@ -68,7 +70,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
             .map(it -> new FakeGUIPlayer(it.getValue().name(), it.getKey(), GenderConfigs.DEFAULT_FEMALE))
             .toArray(FakeGUIPlayer[]::new);
 
-    private final int boxesPerPage = 12;
+    private static final int boxesPerPage = 12;
 
     private enum Category {
         GENERAL, TRANSLATORS
@@ -84,6 +86,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
 
     @Override
     public void init() {
+        super.init();
         final var ref = new Object() {
             @UnknownNullability
             AbstractWidget prevPage, nextPage, generalTab, translatorTab;
@@ -97,7 +100,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
                 .position(this.width / 2 - 89, navigationY + 34)
                 .size(87, 13)
                 .active(categoryTab == Category.TRANSLATORS)
-                .onPress(button -> {
+                .onPress(_ -> {
                     categoryTab = Category.GENERAL;
                     creditsPage = 0;
                     ref.prevPage.active = false;
@@ -112,7 +115,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
                 .position(this.width / 2 + 2, navigationY + 34)
                 .size(87, 13)
                 .active(categoryTab == Category.GENERAL)
-                .onPress(button -> {
+                .onPress(_ -> {
                     categoryTab = Category.TRANSLATORS;
                     creditsPage = 0;
                     ref.prevPage.active = false;
@@ -126,14 +129,14 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
                 .message(() -> Component.translatable("wildfire_gender.details.go_back"))
                 .position(this.width / 2 - 25, navigationY + 6)
                 .size(50, 13)
-                .onPress(button -> onClose()));
+                .onPress(_ -> onClose()));
 
         ref.nextPage = addButton(builder -> builder
                 .message(() -> Component.translatable("wildfire_gender.details.next_page"))
                 .position(this.width / 2 + 29, navigationY + 6)
                 .size(60, 13)
                 .active(creditsPage < getTotalPages()-1)
-                .onPress(button -> {
+                .onPress(_ -> {
                     if(creditsPage < getTotalPages()-1) {
                         creditsPage++;
                     }
@@ -177,15 +180,11 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
-        Matrix3x2fStack mStack = graphics.pose();
+        drawScrollingString(graphics, getTitle(), 0, height / 2 - 100, TextAlignment.CENTER, CommonColors.WHITE, graphics.guiWidth(), 5, false);
+        drawScrollingString(graphics, Component.translatable("wildfire_gender.credits.description"), 0, height / 2 - 85, TextAlignment.CENTER, 0xFF888888, graphics.guiWidth(), 5, false);
 
-        mStack.pushMatrix();
-        GuiUtils.drawCenteredText(graphics, font, Component.translatable("wildfire_gender.credits.title"), width / 2, height / 2 - 100, ARGB.opaque(0xFFFFFF));
-        GuiUtils.drawCenteredText(graphics, font, Component.translatable("wildfire_gender.credits.description"), width / 2, height / 2 - 85, ARGB.opaque(0x888888));
-        mStack.popMatrix();
-
-        graphics.blit(RenderPipelines.GUI_TEXTURED, BUTTON_CONTAINER, this.width / 2 - (190 / 2), navigationY, 0, 0, 190, 25, 190, 25);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, TAB_CONTAINER, this.width / 2 - (190 / 2), navigationY + 28, 0, 0, 190, 25, 190, 25);
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, BUTTON_CONTAINER, this.width / 2 - (190 / 2), navigationY, 190, 25);
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, TAB_CONTAINER, this.width / 2 - (190 / 2), navigationY + 28, 190, 25);
 
         int columns = 6;
         int boxW = 60;
@@ -210,42 +209,36 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
             int creditBoxX = startX + (col * boxW);
             int creditBoxY = startY + (row * boxH);
 
-            graphics.blit(RenderPipelines.GUI_TEXTURED, CREDIT_CONTAINER, creditBoxX, creditBoxY, 0, 0, 52, 68, 52, 68);
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, CREDIT_CONTAINER, creditBoxX, creditBoxY, 52, 68);
 
-            graphics.pose().pushMatrix();
-            int color = ARGB.opaque(Objects.requireNonNull(creditBox.getRole()).getColor());
-            graphics.blit(RenderPipelines.GUI_TEXTURED, CREDIT_OUTLINE, creditBoxX + 3, creditBoxY + 3, 0, 0, 46, 53, 46, 53, color);
-            graphics.pose().popMatrix();
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, CREDIT_OUTLINE, creditBoxX + 3, creditBoxY + 3, 46, 53,
+                ARGB.opaque(Objects.requireNonNull(creditBox.getRole()).getColor().getValue()));
 
             int xP = creditBoxX + (52 / 2);
             int yP = creditBoxY + (68 / 2);
             graphics.enableScissor(xP - 21, yP - 79, xP + 21, yP + 20);
-            GuiUtils.drawEntityOnScreen(graphics, xP - 38, yP - 29, xP + 38, yP + 59, 40, mouseX, mouseY + 35, creditBox.getEntity());
+            InventoryScreen.extractEntityInInventoryFollowsMouse(graphics, xP - 38, yP - 29, xP + 38, yP + 59, 40, ENTITY_SCALE, mouseX, mouseY + 35, creditBox.getEntity());
             graphics.disableScissor();
 
-            mStack.pushMatrix();
-            mStack.translate(xP, yP + 47);
-            mStack.scale(new Vector2f(0.55f, 0.55f));
-            mStack.translate(-xP, (-yP) - 47);
-            GuiUtils.drawCenteredTextWrapped(graphics, font, Component.literal(creditBox.getName()), xP, yP + 7, (int) (50 * 1.45f), ARGB.opaque(0xFFFFFF));
-            mStack.popMatrix();
+            drawScaledScrollingString(graphics, Component.literal(creditBox.getName()), creditBoxX + 3, yP + 23, TextAlignment.CENTER, CommonColors.WHITE, 46,  1, false, 0.55F);
 
             if (mouseX > xP - 24 && mouseX < xP + 23 && mouseY > yP + 22 && mouseY < yP + 31) {
                 List<Component> txtList = new ArrayList<>();
                 var role = creditBox.getRoleOrGeneric();
-                txtList.add(role.withColor(Component.empty()
-                        .append(creditBox.getName())
-                        .append(Component.literal(" - ").withStyle(ChatFormatting.DARK_GRAY))
+                //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.' {
+                txtList.add(role.withColor(Component.literal(creditBox.getName())
+                        .append(Component.literal(" - ").withColor(TextColor.DARK_GRAY))
                         .append(role.shortName())));
                 if (creditBox.getDescription() != null && !creditBox.getDescription().isEmpty()) {
-                    txtList.add(Component.literal(creditBox.getDescription()).withStyle(ChatFormatting.GRAY));
+                    txtList.add(Component.literal(creditBox.getDescription()).withColor(TextColor.GRAY));
                 }
+                //~}
                 graphics.setComponentTooltipForNextFrame(font, txtList, mouseX, mouseY);
             }
         }
 
         //String pageInfo = (creditsPage) + " / " + (totalPages-1);
-        //GuiUtils.drawCenteredText(ctx, textRenderer, Text.literal(pageInfo), width / 2, height / 2, ColorHelper.fullAlpha(0xFFFFFF));
+        //GuiUtils.drawCenteredText(ctx, textRenderer, Text.literal(pageInfo), width / 2, height / 2, CommonColors.WHITE);
 
         super.extractRenderState(graphics, mouseX, mouseY, delta);
     }

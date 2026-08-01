@@ -40,11 +40,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.level.block.Blocks;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
-/**
- * A decoupled render state object that represents a snapshot of a {@link EntityConfig} during a certain frame.
- */
+/// A decoupled render state object that represents a snapshot of a [EntityConfig] during a certain frame.
 @Environment(EnvType.CLIENT)
 public class GenderRenderState {
     private static final RenderStateDataKey<GenderRenderState> STATE = RenderStateDataKey.create(() -> "GenderRenderState");
@@ -118,7 +116,6 @@ public class GenderRenderState {
         this.rightBreastOverlayUVLayout = entityConfig.getRightBreastOverlayUVLayout().copy();
         this.armor = WildfireHelper.getArmorConfig(entity.getItemBySlot(EquipmentSlot.CHEST));
 
-        //noinspection resource
         this.isBreathing = !entity.isUnderWater() || MobEffectUtil.hasWaterBreathing(entity) ||
             entity.level().getBlockState(entity.blockPosition()).is(Blocks.BUBBLE_COLUMN);
         this.nametag = entity instanceof Player ? WildfireGenderClient.getNametag(entity.getUUID()) : null;

@@ -38,7 +38,7 @@ import net.minecraft.world.entity.monster.Strider;
 import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.minecraft.world.entity.vehicle.minecart.Minecart;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class BreastPhysics {
 
@@ -83,15 +83,13 @@ public class BreastPhysics {
     }
 
     private static boolean shouldUseVehicleYaw(LivingEntity rider, Entity vehicle) {
-        return (
-                vehicle.hasControllingPassenger()
-                // boats will typically be caught by the above #hasControllingPassenger() check, but still
-                // special case these to catch any weird modded cases that might arise
-                || vehicle instanceof Boat
-                // general catch-all for other entities that force the rider's body yaw to match theirs,
-                // such as horses
-                || vehicle.getVisualRotationYInDegrees() == rider.getVisualRotationYInDegrees()
-        );
+        return vehicle.hasControllingPassenger()
+               // boats will typically be caught by the above #hasControllingPassenger() check, but still
+               // special case these to catch any weird modded cases that might arise
+               || vehicle instanceof Boat
+               // general catch-all for other entities that force the rider's body yaw to match theirs,
+               // such as horses
+               || vehicle.getVisualRotationYInDegrees() == rider.getVisualRotationYInDegrees();
     }
 
     private float calcRotation(LivingEntity entity, float bounceIntensity) {
@@ -145,7 +143,7 @@ public class BreastPhysics {
         Vec3 motion = entity.position().subtract(this.prePos);
         this.prePos = entity.position();
 
-        float bounceIntensity = (targetBreastSize * 3f) * Math.round((entityConfig.getBounceMultiplier() * 3) * 100) / 100f;
+        float bounceIntensity = targetBreastSize * 3f * Math.round(entityConfig.getBounceMultiplier() * 3 * 100) / 100f;
         float resistance = Mth.clamp(armor.physicsResistance(), 0, 1);
         if(entityConfig.getArmorPhysicsOverride()) resistance = 0; //override resistance
 
@@ -245,9 +243,9 @@ public class BreastPhysics {
                 }
             }
             case Strider strider -> {
-                double heightOffset = (double)strider.getBbHeight() - 0.19
-                        + (double)(0.12F * Mth.cos(strider.walkAnimation.position() * 1.5f)
-                        * 2F * Math.min(0.25F, strider.walkAnimation.speed()));
+                double heightOffset = strider.getBbHeight() - 0.19
+                                      + (0.12F * Mth.cos(strider.walkAnimation.position() * 1.5f)
+                                         * 2F * Math.min(0.25F, strider.walkAnimation.speed()));
                 this.targetBounceY += ((float) (heightOffset * 3f) - 4.5f) * bounceIntensity;
             }
             case null, default -> {}
@@ -283,7 +281,7 @@ public class BreastPhysics {
                 // and clamping this at a lower range than normal.
                 // The effective range of these numbers is around the swing durations of Mining Fatigue V to Haste II.
                 float xAmp = Mth.clamp(1 + (rawAmplifier * (rawAmplifier < 0 ? 1.625f : 0.8f)), 0.25f, 1.225f);
-                this.targetBounceX = (0.325f * xAmp * bounceIntensity) * (swingingArm == HumanoidArm.RIGHT ? -1f : 1f);
+                this.targetBounceX = 0.325f * xAmp * bounceIntensity * (swingingArm == HumanoidArm.RIGHT ? -1f : 1f);
             }
 
             if(swingTickDelta < 0 && lastSwingTick != lastSwingDuration - 1) {
@@ -378,22 +376,21 @@ public class BreastPhysics {
         return Math.max((int) (10 - movement*2f), 1);
     }
 
-    /**
-     * Return the distance from the median of the two provided boundary points from a given point
-     *
-     * @param p1    Lower boundary point (inclusive)
-     * @param p2    Upper boundary point (inclusive)
-     * @param point The target point within the range of {@code p1} and {@code p2} to get the distance from the median of
-     *
-     * @return A {@code float} indicating how far the provided {@code point} is from the median of the two boundary
-     *         points, with {@code 1f} being at the median exactly, and {@code 0f} being at either of the two
-     *         provided boundary points.<br>
-     *         If the provided point is in the latter half of the range between the two boundary points, the returned
-     *         float will be negative.
-     *
-     * @throws IllegalArgumentException If {@code p1} is equal to or greater than {@code p2},
-     *                                  or if {@code point} is not within the specified range.
-     */
+    /// Return the distance from the median of the two provided boundary points from a given point
+    ///
+    /// @param p1    Lower boundary point (inclusive)
+    /// @param p2    Upper boundary point (inclusive)
+    /// @param point The target point within the range of `p1` and `p2` to get the distance from the median of
+    ///
+    /// @return A `float` indicating how far the provided `point` is from the median of the two boundary
+    ///         points, with `1f` being at the median exactly, and `0f` being at either of the two
+    ///         provided boundary points.
+    ///
+    /// If the provided point is in the latter half of the range between the two boundary points, the returned
+    ///         float will be negative.
+    ///
+    /// @throws IllegalArgumentException If `p1` is equal to or greater than `p2`,
+    ///                                  or if `point` is not within the specified range.
     @SuppressWarnings("SameParameterValue")
     private static float distanceFromMedian(final int p1, final int p2, float point) {
         // sanity checks

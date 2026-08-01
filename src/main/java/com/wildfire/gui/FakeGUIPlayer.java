@@ -35,7 +35,7 @@ import net.minecraft.client.entity.ClientMannequin;
 import net.minecraft.client.renderer.PlayerSkinRenderCache;
 import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class FakeGUIPlayer {
 
@@ -67,7 +67,7 @@ public class FakeGUIPlayer {
         return name;
     }
 
-    public @Nullable Contributor.Role getRole() {
+    public Contributor.@Nullable Role getRole() {
         return Contributors.getRole(uuid);
     }
 

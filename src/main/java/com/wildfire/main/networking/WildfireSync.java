@@ -76,12 +76,10 @@ public final class WildfireSync {
         });
     }
 
-    /**
-     * Sync a player's configuration to all nearby connected players
-     *
-     * @param toSync       The {@link ServerPlayer player} to sync
-     * @param playerConfig The {@link PlayerConfig configuration} for the target player
-     */
+    /// Sync a player's configuration to all nearby connected players
+    ///
+    /// @param toSync       The [`player`][ServerPlayer] to sync
+    /// @param playerConfig The [`configuration`][PlayerConfig] for the target player
     public static void sendToAllClients(ServerPlayer toSync, PlayerConfig playerConfig) {
         PlayerLookup.tracking(toSync).stream()
                 .filter(player -> !player.equals(toSync))
@@ -89,23 +87,19 @@ public final class WildfireSync {
                 .forEach(player -> ServerPlayNetworking.send(player, new ClientboundSyncPacket(playerConfig)));
     }
 
-    /**
-     * Sync a player's configuration to another connected player
-     *
-     * @param sendTo The {@link ServerPlayer player} to send the sync to
-     * @param toSync The {@link PlayerConfig configuration} for the player being synced
-     */
+    /// Sync a player's configuration to another connected player
+    ///
+    /// @param sendTo The [`player`][ServerPlayer] to send the sync to
+    /// @param toSync The [`configuration`][PlayerConfig] for the player being synced
     public static void sendToClient(ServerPlayer sendTo, PlayerConfig toSync) {
         if(ClientboundSyncPacket.canSend(sendTo)) {
             ServerPlayNetworking.send(sendTo, new ClientboundSyncPacket(toSync));
         }
     }
 
-    /**
-     * Send the client player's configuration to the server for syncing to other players
-     *
-     * @param plr The {@link PlayerConfig configuration} for the client player
-     */
+    /// Send the client player's configuration to the server for syncing to other players
+    ///
+    /// @param plr The [`configuration`][PlayerConfig] for the client player
     @Environment(EnvType.CLIENT)
     public static void sendToServer(PlayerConfig plr) {
         if(!plr.needsSync || !ServerboundSyncPacket.canSend()) return;

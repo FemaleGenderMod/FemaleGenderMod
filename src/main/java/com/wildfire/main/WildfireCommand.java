@@ -35,7 +35,6 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.core.component.DataComponents;
@@ -43,6 +42,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -64,11 +64,13 @@ import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.argument;
 
 @Environment(EnvType.CLIENT)
 public class WildfireCommand {
-    private static final Component COMMAND_PREFIX = Component.empty()
-            .append(Component.literal("[").withStyle(ChatFormatting.GRAY))
-            .append(Component.literal("F").withStyle(ChatFormatting.LIGHT_PURPLE))
-            .append(Component.literal("GM").withStyle(ChatFormatting.WHITE))
-            .append(Component.literal("] ").withStyle(ChatFormatting.GRAY));
+    //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.' {
+    private static final Component COMMAND_PREFIX =
+            Component.literal("[").withColor(TextColor.GRAY)
+            .append(Component.literal("F").withColor(TextColor.LIGHT_PURPLE))
+            .append(Component.literal("GM").withColor(TextColor.WHITE))
+            .append(Component.literal("] ").withColor(TextColor.GRAY));
+    //~}
 
     static void init() {
         ClientCommandRegistrationCallback.EVENT.register(WildfireCommand::register);
@@ -78,7 +80,7 @@ public class WildfireCommand {
         Minecraft client = Minecraft.getInstance();
 
         var debug = ClientCommands.literal("debug")
-                .executes((ctx) -> {
+                .executes(ctx -> {
                     sendHelp(ctx, Component.literal("Debug Commands:"),
                             "invalidatecache", "Clears the player & entity caches",
                             "target", "Show debug info for entity you are looking at",
@@ -116,7 +118,7 @@ public class WildfireCommand {
         if(Minecraft.getInstance().isLocalServer()) {
             debug
                     .then(ClientCommands.literal("trim")
-                            .then(ClientCommands.argument("glint", BoolArgumentType.bool())
+                            .then(argument("glint", BoolArgumentType.bool())
                                     .executes(WildfireCommand::equipTrimmedChestplate))
                             .executes(WildfireCommand::equipTrimmedChestplate))
                     .then(ClientCommands.literal("armorstand").executes(WildfireCommand::spawnArmorStand));
@@ -142,24 +144,26 @@ public class WildfireCommand {
     }
 
     public static void send(CommandContext<FabricClientCommandSource> ctx, String text) {
-        ctx.getSource().sendFeedback(Component.empty().append(COMMAND_PREFIX).append(text));
+        ctx.getSource().sendFeedback(COMMAND_PREFIX.copy().append(text));
     }
 
     public static void send(CommandContext<FabricClientCommandSource> ctx, Component text) {
-        ctx.getSource().sendFeedback(Component.empty().append(COMMAND_PREFIX).append(text));
+        ctx.getSource().sendFeedback(COMMAND_PREFIX.copy().append(text));
     }
 
     public static void sendHelp(CommandContext<FabricClientCommandSource> ctx, Component header, String... nameToDescription) {
         assert nameToDescription.length % 2 == 0;
         List<Component> lines = new ArrayList<>();
-        lines.add(Component.empty().append(COMMAND_PREFIX).append(header).withStyle(ChatFormatting.UNDERLINE));
+        lines.add(COMMAND_PREFIX.copy().append(header).withStyle(style -> style.withUnderlined(true)));
 
         for(int i = 0; i < nameToDescription.length / 2; i++) {
             var name = nameToDescription[i * 2];
             var description = nameToDescription[(i * 2) + 1];
-            lines.add(Component.empty().append(COMMAND_PREFIX)
-                .append(Component.literal(name).withStyle(ChatFormatting.AQUA))
-                .append(Component.literal(" - ").withStyle(ChatFormatting.GRAY))
+            lines.add(COMMAND_PREFIX.copy()
+                //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
+                .append(Component.literal(name).withColor(TextColor.AQUA))
+                //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
+                .append(Component.literal(" - ").withColor(TextColor.GRAY))
                 .append(Component.literal(description)));
         }
 
@@ -240,8 +244,7 @@ public class WildfireCommand {
 
             var info = ComponentUtils.formatList(config.getDebugInfo(), Component.literal("\n"), Component::literal);
 
-            lines.add(Component.empty()
-                    .append(entity.getDisplayName())
+            lines.add(entity.getDisplayName().copy()
                     .append(" - ")
                     .append(config.getGender().getDisplayName())
                     .withStyle(style -> style.withHoverEvent(new HoverEvent.ShowText(info))));
@@ -257,10 +260,8 @@ public class WildfireCommand {
         return 1;
     }
 
-    /**
-     * Takes a client-sided {@link CommandContext} and returns the {@link ServerPlayer} for the invoking player
-     * when in singleplayer, or throws an error.
-     */
+    /// Takes a client-sided [CommandContext] and returns the [ServerPlayer] for the invoking player
+    /// when in singleplayer, or throws an error.
     private static ServerPlayer getIntegratedServerPlayer(CommandContext<FabricClientCommandSource> ctx) {
         var integratedServer = Objects.requireNonNull(Minecraft.getInstance().getSingleplayerServer());
         var playerManager = Objects.requireNonNull(integratedServer.getPlayerList());

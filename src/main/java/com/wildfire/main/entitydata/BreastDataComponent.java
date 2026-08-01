@@ -18,10 +18,8 @@
 
 package com.wildfire.main.entitydata;
 
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.config.Configuration;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.NbtOps;
@@ -29,43 +27,40 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
+import org.jspecify.annotations.Nullable;
 
-/**
- * <p>Data component-like class for storing player breast settings on armor equipped onto armor stands</p>
- *
- * <p>Note that while this is treated similarly to any other {@link DataComponents data component} for performance reasons,
- * this is never written as its own component on item stacks, but instead uses the {@link DataComponents#CUSTOM_DATA custom NBT data component}
- * (under the {@code WildfireGender} key) for compatibility with vanilla clients on servers.</p>
- */
+/// Data component-like class for storing player breast settings on armor equipped onto armor stands
+///
+/// Note that while this is treated similarly to any other [`data component`][DataComponents] for performance reasons,
+/// this is never written as its own component on item stacks, but instead uses the [`custom NBT data component`][DataComponents#CUSTOM_DATA]
+/// (under the `WildfireGender` key) for compatibility with vanilla clients on servers.
 public record BreastDataComponent(float breastSize, float cleavage, Vector3f offsets, boolean jacket, @Nullable CustomData nbtComponent) {
 
     private static final String KEY = "WildfireGender";
     private static final Codec<BreastDataComponent> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            WildfireHelper.boundedFloat(Configuration.BUST_SIZE)
+            Configuration.BUST_SIZE.codec()
                     .optionalFieldOf("BreastSize", 0f)
                     .forGetter(BreastDataComponent::breastSize),
-            WildfireHelper.boundedFloat(Configuration.BREASTS_CLEAVAGE)
+            Configuration.BREASTS_CLEAVAGE.codec()
                     .optionalFieldOf("Cleavage", Configuration.BREASTS_CLEAVAGE.getDefault())
                     .forGetter(BreastDataComponent::cleavage),
             Codec.BOOL
                     .optionalFieldOf("Jacket", true)
                     .forGetter(BreastDataComponent::jacket),
-            WildfireHelper.boundedFloat(Configuration.BREASTS_OFFSET_X)
+            Configuration.BREASTS_OFFSET_X.codec()
                     .optionalFieldOf("XOffset", 0f)
                     .forGetter(component -> component.offsets.x),
-            WildfireHelper.boundedFloat(Configuration.BREASTS_OFFSET_Y)
+            Configuration.BREASTS_OFFSET_Y.codec()
                     .optionalFieldOf("YOffset", 0f)
                     .forGetter(component -> component.offsets.y),
-            WildfireHelper.boundedFloat(Configuration.BREASTS_OFFSET_Z)
+            Configuration.BREASTS_OFFSET_Z.codec()
                     .optionalFieldOf("ZOffset", 0f)
                     .forGetter(component -> component.offsets.y)
         ).apply(instance, (breastSize, cleavage, jacket, x, y, z) -> new BreastDataComponent(breastSize, cleavage, new Vector3f(x, y, z), jacket, null))
     );
 
-    public static @Nullable BreastDataComponent fromPlayer(@NotNull Player player, @NotNull PlayerConfig config) {
+    public static @Nullable BreastDataComponent fromPlayer(Player player, PlayerConfig config) {
         if(!config.getGender().canHaveBreasts() || !config.showBreastsInArmor()) {
             return null;
         }
@@ -79,9 +74,8 @@ public record BreastDataComponent(float breastSize, float cleavage, Vector3f off
             return null;
         }
 
-        return CODEC.decode(NbtOps.INSTANCE, component.copyTag().getCompoundOrEmpty(KEY))
+        return CODEC.parse(NbtOps.INSTANCE, component.copyTag().getCompoundOrEmpty(KEY))
                 .result()
-                .map(Pair::getFirst)
                 .map(breastDataComponent -> breastDataComponent.withComponent(component))
                 .orElse(null);
     }

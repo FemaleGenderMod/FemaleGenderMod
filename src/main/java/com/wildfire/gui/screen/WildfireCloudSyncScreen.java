@@ -18,7 +18,6 @@
 
 package com.wildfire.gui.screen;
 
-import com.wildfire.gui.GuiUtils;
 import com.wildfire.gui.WildfireButton;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireLocalization;
@@ -28,24 +27,25 @@ import com.wildfire.main.cloud.SyncingTooFrequentlyException;
 import com.wildfire.main.config.ClientConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.Identifier;
 
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import org.jetbrains.annotations.UnknownNullability;
 
 @Environment(EnvType.CLIENT)
 public class WildfireCloudSyncScreen extends BaseWildfireScreen {
 
-    private static final Identifier BACKGROUND = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/sync_bg_v2.png");
+    private static final Identifier BACKGROUND = WildfireGender.id("textures/gui/sync_bg_v2.png");
 
     protected WildfireCloudSyncScreen(Screen parent, UUID uuid) {
         super(Component.translatable("wildfire_gender.cloud_settings"), parent, uuid);
@@ -53,6 +53,7 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
 
     @Override
     public void init() {
+        super.init();
         int x = this.width / 2;
         int y = this.height / 2;
         int yPos = y - 47;
@@ -60,6 +61,7 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
 
         final var config = ClientConfig.INSTANCE;
         final var ref = new Object() {
+            @UnknownNullability
             WildfireButton btnSyncNow, btnDelete, btnAutomaticSync;
         };
 
@@ -73,8 +75,8 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
 
                     button.updateMessage();
                     ref.btnAutomaticSync.setActive(enabled);
-                    ref.btnSyncNow.visible = enabled && available;
-                    ref.btnDelete.visible = !enabled && available;
+                    ref.btnSyncNow.setVisible(enabled && available);
+                    ref.btnDelete.setVisible(!enabled && available);
                     ref.btnAutomaticSync.updateMessage();
                 }));
 
@@ -87,8 +89,7 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
                     config.set(ClientConfig.AUTOMATIC_CLOUD_SYNC, newVal);
                     button.updateMessage();
                 })
-                .tooltip(Tooltip.create(Component.empty()
-                        .append(Component.translatable("wildfire_gender.cloud.automatic.tooltip.line1"))
+                .tooltip(Tooltip.create(Component.translatable("wildfire_gender.cloud.automatic.tooltip.line1")
                         .append("\n\n")
                         .append(Component.translatable("wildfire_gender.cloud.automatic.tooltip.line2"))))
                 .active(CloudSync.isEnabled()));
@@ -98,21 +99,22 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
                 .position(xPos + 98, yPos + 42)
                 .size(60, 15)
                 .onPress(this::sync));
-        ref.btnSyncNow.visible = CloudSync.isEnabled();
+        ref.btnSyncNow.setVisible(CloudSync.isEnabled());
 
         ref.btnDelete = addButton(builder -> builder
-                .message(() -> Component.translatable("wildfire_gender.cloud.delete").withStyle(ChatFormatting.RED))
+                //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
+                .message(() -> Component.translatable("wildfire_gender.cloud.delete").withColor(TextColor.RED))
                 .position(xPos + 98, yPos + 42)
                 .size(60, 15)
                 .onPress(this::delete));
-        ref.btnDelete.visible = !CloudSync.isEnabled();
+        ref.btnDelete.setVisible(!CloudSync.isEnabled());
 
         addButton(builder -> builder
                 .message(() -> Component.literal("X"))
                 .position(this.width / 2 + 73, yPos - 11)
                 .size(9, 9)
-                .onPress(button -> onClose())
-                .narration(text -> GuiUtils.doneNarrationText()));
+                .onPress(_ -> onClose())
+                .narration(_ -> Component.translatable("gui.narrate.button", Component.translatable("gui.done"))));
 
         /*this.addDrawableChild(btnHelp = new WildfireButton(this.width / 2 + 73 - 10, yPos - 11, 9, 9, Text.literal("?"),
                 button -> {
@@ -158,6 +160,7 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         extractTransparentBackground(graphics);
         graphics.blit(RenderPipelines.GUI_TEXTURED, BACKGROUND, (this.width - 172) / 2, (this.height - 124) / 2, 0, 0, 172, 144, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, BACKGROUND, (this.width - 172) / 2, (this.height - 124) / 2, 0, 0, 172, 144, 256, 256);
     }
 
     @Override
@@ -169,10 +172,8 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
         int y = this.height / 2;
         y -= 47;
 
-        GuiUtils.drawScrollableTextWithoutShadow(GuiUtils.Justify.LEFT, graphics, font, getTitle(),
-                x - 79, y - 12, x - 79 + 141, y - 11 + 10, 4473924);
-        GuiUtils.drawScrollableTextWithoutShadow(GuiUtils.Justify.LEFT, graphics, font, Component.translatable("wildfire_gender.cloud.status_log"),
-                x - 79, y + 47, x - 79 + 95, y + 48 + 10, 4473924);
+        drawScrollingString(graphics, getTitle(), x - 79, y - 12, TextAlignment.LEFT, 0xFF444444, 141, 11, 0, false);
+        drawScrollingString(graphics, Component.translatable("wildfire_gender.cloud.status_log"), x - 79, y + 47, TextAlignment.LEFT, 0xFF444444, 95, 11, 0, false);
 
         for(int i = SyncLog.SYNC_LOG.size() - 1; i >= 0; i--) {
             int reverseIndex = SyncLog.SYNC_LOG.size() - 1 - i;
@@ -180,8 +181,7 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
 
             if(reverseIndex < 6) {
                 int ey = y + 110 - (reverseIndex * 10);
-                GuiUtils.drawScrollableTextWithoutShadow(GuiUtils.Justify.LEFT, graphics, font, entry.text(),
-                        x - 78, ey, x - 78 + 156, ey + 10, entry.color());
+                drawScrollingString(graphics, entry.text(), x - 78, ey, TextAlignment.LEFT, entry.color(), 156, 10, 0, false);
             }
         }
     }

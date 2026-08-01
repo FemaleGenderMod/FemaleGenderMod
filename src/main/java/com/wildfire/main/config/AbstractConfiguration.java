@@ -26,10 +26,10 @@ import com.google.gson.stream.JsonWriter;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.config.types.BooleanConfigKey;
 import com.wildfire.main.config.types.ConfigKey;
+import java.nio.charset.StandardCharsets;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileReader;
@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
+import org.jspecify.annotations.Nullable;
 
 public abstract class AbstractConfiguration {
 
@@ -106,7 +107,7 @@ public abstract class AbstractConfiguration {
 
     public void save() {
         if(!supportsSaving()) return;
-        try(FileWriter writer = new FileWriter(cfgFile); JsonWriter jsonWriter = new JsonWriter(writer)) {
+        try(FileWriter writer = new FileWriter(cfgFile, StandardCharsets.UTF_8); JsonWriter jsonWriter = new JsonWriter(writer)) {
             jsonWriter.setIndent("\t");
             ADAPTER.write(jsonWriter, saveValues);
         } catch (IOException e) {
@@ -116,7 +117,7 @@ public abstract class AbstractConfiguration {
 
     public void load() {
         if(!supportsSaving() || !cfgFile.exists()) return;
-        try(FileReader configurationFile = new FileReader(cfgFile)) {
+        try(FileReader configurationFile = new FileReader(cfgFile, StandardCharsets.UTF_8)) {
             JsonObject obj = new Gson().fromJson(configurationFile, JsonObject.class);
             for(Map.Entry<String, JsonElement> entry : obj.entrySet()) {
                 saveValues.add(entry.getKey(), entry.getValue());

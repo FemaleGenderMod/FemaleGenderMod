@@ -22,6 +22,7 @@ import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.config.enums.SyncVerbosity;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
+import net.minecraft.util.CommonColors;
 import net.minecraft.util.Mth;
 
 import java.time.Instant;
@@ -50,8 +51,8 @@ public final class SyncLog {
     }
 
     public record Entry(Component text, Instant timestamp) {
-        public static final int NEW_COLOR = 0x00FF00;
-        public static final int OLD_COLOR = 0x34A100;
+        public static final int NEW_COLOR = CommonColors.GREEN;
+        public static final int OLD_COLOR = 0xFF34A100;
 
         public int color() {
             long secondsPassed = Instant.now().getEpochSecond() - timestamp.getEpochSecond();

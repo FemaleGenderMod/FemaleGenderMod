@@ -19,10 +19,10 @@
 package com.wildfire.main.cloud;
 
 import com.google.gson.JsonObject;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import org.jspecify.annotations.Nullable;
 
 record QueuedFetch(UUID uuid, CompletableFuture<@Nullable JsonObject> future) {
 }

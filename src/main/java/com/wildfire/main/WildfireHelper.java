@@ -18,26 +18,20 @@
 
 package com.wildfire.main;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.wildfire.api.IGenderArmor;
-import com.wildfire.main.config.types.FloatConfigKey;
 import com.wildfire.resources.GenderArmorResourceManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.util.Mth;
 import net.minecraft.util.TriState;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 
-import java.util.OptionalInt;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Function;
 
 public final class WildfireHelper {
 
@@ -49,7 +43,7 @@ public final class WildfireHelper {
         @Override
         public <T> DataResult<TriState> read(final DynamicOps<T> ops, final T input) {
             return DataResult.success(ops.getBooleanValue(input)
-                    .map(v -> v ? TriState.TRUE : TriState.FALSE)
+                    .map(TriState::from)
                     .result().orElse(TriState.DEFAULT));
         }
 
@@ -89,14 +83,6 @@ public final class WildfireHelper {
             .orElseGet(() -> stack.has(DataComponents.EQUIPPABLE) ? IGenderArmor.DEFAULT : IGenderArmor.EMPTY);
     }
 
-    public static Codec<Float> boundedFloat(float minInclusive, float maxInclusive) {
-        return Codec.FLOAT.xmap(val -> Mth.clamp(val, minInclusive, maxInclusive), Function.identity());
-    }
-
-    public static Codec<Float> boundedFloat(FloatConfigKey configKey) {
-        return boundedFloat(configKey.getMinInclusive(), configKey.getMaxInclusive());
-    }
-
     public static String getModVersion(String modId) {
         var mod = FabricLoader.getInstance().getModContainer(modId).orElseThrow();
         return mod.getMetadata().getVersion().getFriendlyString();
@@ -112,18 +98,5 @@ public final class WildfireHelper {
 
     public static double snapToStep(double value, double stepSize) {
         return Math.round(value / stepSize) * stepSize;
-    }
-
-    public static OptionalInt getTextColor(ChatFormatting formatting) {
-        //? if 26.1 {
-        /*Integer color = formatting.getColor();
-        return color == null ? OptionalInt.empty() : OptionalInt.of(color);
-        *///?} else {
-        var color = net.minecraft.network.chat.TextColor.fromLegacyFormat(formatting);
-        if(color == null) {
-            return OptionalInt.empty();
-        }
-        return OptionalInt.of(color.getValue());
-        //?}
     }
 }

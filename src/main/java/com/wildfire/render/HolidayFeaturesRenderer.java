@@ -38,14 +38,13 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
-
-import java.util.Calendar;
+import net.minecraft.util.SpecialDates;
 
 @Environment(EnvType.CLIENT)
 public class HolidayFeaturesRenderer extends RenderLayer<AvatarRenderState, PlayerModel> {
-    private static final Identifier SANTA_HAT_TEXTURE = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/santa_hat.png");
+    private static final Identifier SANTA_HAT_TEXTURE = WildfireGender.id("textures/santa_hat.png");
     private static final HumanoidModel<AvatarRenderState> SANTA_HAT_MODEL = new SantaHatModel();
-    private static final boolean christmas = isAroundChristmas();
+    private static final boolean christmas = SpecialDates.isExtendedChristmas();
 
     public HolidayFeaturesRenderer(RenderLayerParent<AvatarRenderState, PlayerModel> context) {
         super(context);
@@ -78,18 +77,13 @@ public class HolidayFeaturesRenderer extends RenderLayer<AvatarRenderState, Play
         matrixStack.popPose();
     }
 
-    public static boolean isAroundChristmas() {
-        Calendar calendar = Calendar.getInstance();
-        return calendar.get(Calendar.MONTH) == Calendar.DECEMBER && calendar.get(Calendar.DATE) >= 24 && calendar.get(Calendar.DATE) <= 26;
-    }
-
     private static class SantaHatModel extends PlayerModel {
         public SantaHatModel() {
             super(createSantaHat().bakeRoot(), false);
         }
 
         private static LayerDefinition createSantaHat() {
-            var root = PlayerModel.createMesh(CubeDeformation.NONE, false);
+            var root = createMesh(CubeDeformation.NONE, false);
             var clearedRoot = root.getRoot().clearRecursively();
             var headPart = clearedRoot.getChild(PartNames.HEAD);
             headPart.addOrReplaceChild("santa_hat", CubeListBuilder.create().texOffs(0, 0).addBox(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, CubeDeformation.NONE), PartPose.ZERO);

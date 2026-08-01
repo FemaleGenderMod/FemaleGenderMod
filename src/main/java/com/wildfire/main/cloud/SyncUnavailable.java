@@ -18,6 +18,7 @@
 
 package com.wildfire.main.cloud;
 
+import java.util.Locale;
 import net.minecraft.network.chat.Component;
 
 public enum SyncUnavailable {
@@ -26,6 +27,6 @@ public enum SyncUnavailable {
     ;
 
     public Component text() {
-        return Component.translatable("wildfire_gender.cloud.unavailable." + name().toLowerCase());
+        return Component.translatable("wildfire_gender.cloud.unavailable." + name().toLowerCase(Locale.ROOT));
     }
 }

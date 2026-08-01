@@ -24,17 +24,13 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-/**
- * Events invoked when a player interacts with the {@link EquipmentSlot#CHEST chest slot} on an armor stand
- */
+/// Events invoked when a player interacts with the [`chest slot`][EquipmentSlot#CHEST] on an armor stand
 public final class ArmorStandInteractEvents {
     private ArmorStandInteractEvents() {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Event invoked when a player equips an item onto an armor stand's {@link EquipmentSlot#CHEST chest slot}
-     */
+    /// Event invoked when a player equips an item onto an armor stand's [`chest slot`][EquipmentSlot#CHEST]
     public static final Event<EquipItem> EQUIP = EventFactory.createArrayBacked(EquipItem.class, listeners -> (player, item) -> {
         for(var listener : listeners) {
             listener.onEquip(player, item);
@@ -43,12 +39,10 @@ public final class ArmorStandInteractEvents {
 
     // this doesn't have the same chest slot item guarantee as the above event purely because the only use case
     // we have for this event is removing our nbt from the removed items, which is already only applicable
-    // to chest slot items, and safely no-ops otherwise.
-    /**
-     * Event invoked when an item is removed from an armor stand
-     *
-     * @apiNote The provided {@link ItemStack} is <b>not</b> guaranteed to be a {@link EquipmentSlot#CHEST chest slot} item.
-     */
+    // to chest slot items, and safely no-ops otherwise
+    /// Event invoked when an item is removed from an armor stand
+    ///
+    /// @apiNote The provided [ItemStack] is **not** guaranteed to be a [`chest slot`][EquipmentSlot#CHEST] item.
     public static final Event<RemoveItem> REMOVE = EventFactory.createArrayBacked(RemoveItem.class, listeners -> item -> {
         for(var listener : listeners) {
             listener.onRemove(item);

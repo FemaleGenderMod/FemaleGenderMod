@@ -20,6 +20,8 @@ package com.wildfire.main.config.types;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+import com.mojang.serialization.Codec;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Mth;
 
 public class FloatConfigKey extends NumberConfigKey<Float> {
@@ -52,5 +54,9 @@ public class FloatConfigKey extends NumberConfigKey<Float> {
 
     public float getMaxInclusive() {
         return maxInclusive == null ? Float.MAX_VALUE : maxInclusive;
+    }
+
+    public Codec<Float> codec() {
+        return ExtraCodecs.floatRange(getMinInclusive(), getMaxInclusive());
     }
 }

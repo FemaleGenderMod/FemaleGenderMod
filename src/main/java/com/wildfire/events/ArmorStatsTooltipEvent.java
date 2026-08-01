@@ -25,16 +25,14 @@ import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
+import org.jspecify.annotations.Nullable;
 
-/**
- * Event invoked when an armor item is appending its stats to a tooltip.
- * <br>
- * This is only invoked for the {@link net.minecraft.core.component.DataComponents#EQUIPPABLE} data component,
- * and only if stats have already been added for the component.
- */
+/// Event invoked when an armor item is appending its stats to a tooltip.
+///
+/// This is only invoked for the [net.minecraft.core.component.DataComponents#EQUIPPABLE] data component,
+/// and only if stats have already been added for the component.
 @FunctionalInterface
 @Environment(EnvType.CLIENT)
 public interface ArmorStatsTooltipEvent {

@@ -34,11 +34,11 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import org.jspecify.annotations.Nullable;
 
 public class GenderDebugHudEntry implements DebugScreenEntry {
     private final Identifier id;
@@ -83,7 +83,7 @@ public class GenderDebugHudEntry implements DebugScreenEntry {
         var equippable = equippedChestplate.get(DataComponents.EQUIPPABLE);
         // null is perfectly valid to return here
         //noinspection DataFlowIssue
-        var asset = Optionull.map(equippable, (it) -> it.assetId().orElse(null));
+        var asset = Optionull.map(equippable, it -> it.assetId().orElse(null));
         if(asset == null) return;
 
         lines.add("");

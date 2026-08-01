@@ -24,30 +24,33 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.network.chat.TextColor;
 
 import java.util.Locale;
+import org.jspecify.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public record Contributor(
         // TODO this technically supports multiple roles due to this using a bitmask, but any additional roles other than
         //		the topmost one defined in Role is currently ignored
         int roles,
-        @Nullable Integer color,
+        @Nullable Integer color,//TODO: Can this be moved to a TextColor or does that break serializiation
         @Nullable String name,
         @SerializedName("show_in_credits")
         @Nullable Boolean showInCredits
 ) {
-    private static final int DEFAULT_COLOR = 0xFFAA00; // ChatFormatting.GOLD
+    //~ if >=26.2 'fromRgb(0xFFAA00)' -> 'GOLD'
+    private static final TextColor DEFAULT_COLOR = TextColor.GOLD;
 
-    public int getColor() {
+    public TextColor getColor() {
         if(color != null) {
-            return color;
+            return TextColor.fromRgb(color);
         }
         return getRole().getColor();
     }
 
     public Component asText() {
+        //~ if >=26.2 'getColor().getValue()' -> 'getColor()'
         return getRole().nametag().withColor(getColor());
     }
 
@@ -66,7 +69,8 @@ public record Contributor(
     }
 
     public enum Role {
-        MOD_CREATOR(0, 0xFF55FF), // ChatFormatting.LIGHT_PURPLE
+        //~ if >=26.2 'fromRgb(0xFF55FF)' -> 'LIGHT_PURPLE'
+        MOD_CREATOR(0, TextColor.LIGHT_PURPLE),
         FABRIC_MAINTAINER(1, 0xA78FFF),
         NEOFORGE_MAINTAINER(2, 0xA78FFF),
         CI_MAINTAINER(8, 0x50C878),
@@ -78,9 +82,13 @@ public record Contributor(
         ;
 
         private final int bit;
-        private final @Nullable Integer color;
+        private final @Nullable TextColor color;
 
-        Role(int bit, @Nullable Integer color) {
+        Role(int bit, int color) {
+            this(bit, TextColor.fromRgb(color));
+        }
+
+        Role(int bit, @Nullable TextColor color) {
             this.bit = 1 << bit;
             this.color = color;
         }
@@ -97,13 +105,14 @@ public record Contributor(
             return (bitmask & bit()) == bit();
         }
 
-        public int getColor() {
+        public TextColor getColor() {
             return color == null ? DEFAULT_COLOR : color;
         }
 
         public MutableComponent withColor(MutableComponent text) {
             Preconditions.checkNotNull(text);
             if(color != null) {
+                //~ if >=26.2 'color.getValue()' -> 'color'
                 return text.withColor(color);
             }
             return text;

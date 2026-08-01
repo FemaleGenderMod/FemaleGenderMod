@@ -18,6 +18,7 @@
 
 package com.wildfire.main;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.wildfire.events.ArmorStandInteractEvents;
 import com.wildfire.events.ArmorStatsTooltipEvent;
@@ -52,7 +53,6 @@ import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -66,7 +66,7 @@ import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -77,14 +77,12 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
-import org.lwjgl.glfw.GLFW;
+import org.jspecify.annotations.Nullable;
 
 public final class WildfireEventHandler {
     private WildfireEventHandler() {
@@ -105,12 +103,12 @@ public final class WildfireEventHandler {
         if(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
             var category = Util.make(() -> KeyMapping.Category.register(WildfireGender.id("generic")));
             CONFIG_KEYBIND = Util.make(() -> {
-                KeyMapping keybind = new KeyMapping("key.wildfire_gender.gender_menu", GLFW.GLFW_KEY_H, category);
+                KeyMapping keybind = new KeyMapping("key.wildfire_gender.gender_menu", InputConstants.KEY_H, category);
                 KeyMappingHelper.registerKeyMapping(keybind);
                 return keybind;
             });
             TOGGLE_KEYBIND = Util.make(() -> {
-                KeyMapping keybind = new KeyMapping("key.wildfire_gender.toggle", GLFW.GLFW_KEY_UNKNOWN, category);
+                KeyMapping keybind = new KeyMapping("key.wildfire_gender.toggle", InputConstants.UNKNOWN.getValue(), category);
                 KeyMappingHelper.registerKeyMapping(keybind);
                 return keybind;
             });
@@ -120,9 +118,7 @@ public final class WildfireEventHandler {
         }
     }
 
-    /**
-     * Register all events applicable to the server-side for both a dedicated server and singleplayer
-     */
+    /// Register all events applicable to the server-side for both a dedicated server and singleplayer
     public static void registerCommonEvents() {
         EntityTrackingEvents.START_TRACKING.register(WildfireEventHandler::onBeginTracking);
         ServerPlayConnectionEvents.DISCONNECT.register(WildfireEventHandler::playerDisconnected);
@@ -130,9 +126,7 @@ public final class WildfireEventHandler {
         ArmorStandInteractEvents.REMOVE.register(BreastDataComponent::removeFromStack);
     }
 
-    /**
-     * Register all client-side events
-     */
+    /// Register all client-side events
     @Environment(EnvType.CLIENT)
     public static void registerClientEvents() {
         ClientEntityEvents.ENTITY_UNLOAD.register(WildfireEventHandler::onEntityUnload);
@@ -142,7 +136,7 @@ public final class WildfireEventHandler {
         LivingEntityRenderLayerRegistrationCallback.EVENT.register(WildfireEventHandler::registerRenderLayers);
         HudElementRegistry.attachElementAfter(
                 VanillaHudElements.MISC_OVERLAYS,
-                Identifier.fromNamespaceAndPath(WildfireGender.MODID, "player_list"),
+                WildfireGender.id("player_list"),
                 WildfireEventHandler::renderHud
         );
         ArmorStatsTooltipEvent.EVENT.register(WildfireEventHandler::renderTooltip);
@@ -156,15 +150,15 @@ public final class WildfireEventHandler {
         var genderRenderState = GenderRenderState.get(state);
         if(genderRenderState == null) return;
 
-        @Nullable Component nametag = genderRenderState.nametag;
+        Component nametag = genderRenderState.nametag;
         if (nametag == null) return;
 
         matrixStack.pushPose();
         float translationAmt = switch(state.pose) {
-            case Pose.CROUCHING -> 0.8f;
-            case Pose.SLEEPING -> 0.125f;
-            case Pose.SWIMMING, Pose.FALL_FLYING -> 0.3f;
-            case Pose.SITTING -> 0.275f; //not tested; sitting on a pig doesn't work apparently.
+            case CROUCHING -> 0.8f;
+            case SLEEPING -> 0.125f;
+            case SWIMMING, FALL_FLYING -> 0.3f;
+            case SITTING -> 0.275f; //not tested; sitting on a pig doesn't work apparently
             default -> 0.95f;
         };
         matrixStack.translate(0f, translationAmt, 0f);
@@ -191,26 +185,27 @@ public final class WildfireEventHandler {
         if(!config.coversBreasts() || config.physicsResistance() == 0f) return;
 
         var formatted = WildfireHelper.toFormattedPercent(config.physicsResistance()) + "%";
-        tooltipAppender.accept(Component.translatable("wildfire_gender.armor.tooltip", formatted).withStyle(ChatFormatting.LIGHT_PURPLE));
+        //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
+        tooltipAppender.accept(Component.translatable("wildfire_gender.armor.tooltip", formatted).withColor(TextColor.LIGHT_PURPLE));
     }
 
     @Environment(EnvType.CLIENT)
     private static void renderHud(GuiGraphicsExtractor context, DeltaTracker tickCounter) {
         var client = Minecraft.getInstance();
-        var font = client.font;
         //~ if >=26.2 'client.screen' -> 'client.gui.screen()'
         if(client.gui.screen() instanceof WardrobeBrowserScreen) {
+            SyncedPlayerList.resetTimer();
             return;
         }
 
         if(ClientConfig.INSTANCE.get(ClientConfig.ALWAYS_SHOW_LIST).isVisible()) {
-            SyncedPlayerList.drawSyncedPlayers(context, font);
+            SyncedPlayerList.drawSyncedPlayers(context);
+        } else {
+            SyncedPlayerList.resetTimer();
         }
     }
 
-    /**
-     * Attach breast render layers to players and armor stands
-     */
+    /// Attach breast render layers to players and armor stands
     @Environment(EnvType.CLIENT)
     private static void registerRenderLayers(EntityType<? extends LivingEntity> entityType, LivingEntityRenderer<?, ?, ?> entityRenderer,
                                              LivingEntityRenderLayerRegistrationCallback.RegistrationHelper registrationHelper,
@@ -224,9 +219,7 @@ public final class WildfireEventHandler {
         }
     }
 
-    /**
-     * Remove (non-player) entities from the client cache when they're unloaded
-     */
+    /// Remove (non-player) entities from the client cache when they're unloaded
     @Environment(EnvType.CLIENT)
     private static void onEntityUnload(Entity entity, Level world) {
         // note that we don't attempt to unload players; they're instead only ever unloaded once we leave a world,
@@ -234,10 +227,8 @@ public final class WildfireEventHandler {
         EntityConfig.CACHE.invalidate(entity.getUUID());
     }
 
-    /**
-     * Perform various actions that should happen once per client tick, such as syncing client player settings
-     * to the server.
-     */
+    /// Perform various actions that should happen once per client tick, such as syncing client player settings
+    /// to the server.
     @Environment(EnvType.CLIENT)
     private static void onClientTick(Minecraft client) {
         if(client.level == null || client.player == null) return;
@@ -267,9 +258,7 @@ public final class WildfireEventHandler {
         //~}
     }
 
-    /**
-     * Clears all caches when the client player disconnects from a server/closes a singleplayer world
-     */
+    /// Clears all caches when the client player disconnects from a server/closes a singleplayer world
     @Environment(EnvType.CLIENT)
     private static void clientDisconnect(ClientPacketListener networkHandler, Minecraft client) {
         WildfireGender.CACHE.invalidateAll();
@@ -281,23 +270,19 @@ public final class WildfireEventHandler {
         if (client.player == null) return;
 
         if (ClientConfig.INSTANCE.get(ClientConfig.SHOW_TOAST)) {
-            var button = WildfireEventHandler.CONFIG_KEYBIND.getTranslatedKeyMessage();
+            var button = CONFIG_KEYBIND.getTranslatedKeyMessage();
             //~ if >=26.2 'client.getToastManager()' -> 'client.gui.toastManager()'
             ToastManager toastManager = client.gui.toastManager();
             toastManager.addToast(new WildfireToast(Minecraft.getInstance().font, Component.translatable("wildfire_gender.player_list.title"), Component.translatable("toast.wildfire_gender.get_started", button)));
         }
     }
 
-    /**
-     * Removes a disconnecting player from the cache on a server
-     */
+    /// Removes a disconnecting player from the cache on a server
     private static void playerDisconnected(ServerGamePacketListenerImpl handler, MinecraftServer server) {
         WildfireGender.CACHE.invalidate(handler.getPlayer().getUUID());
     }
 
-    /**
-     * Send a sync packet when a player enters the render distance of another player
-     */
+    /// Send a sync packet when a player enters the render distance of another player
     private static void onBeginTracking(Entity tracked, ServerPlayer syncTo) {
         if(tracked instanceof Player toSync) {
             PlayerConfig genderToSync = WildfireGender.getPlayerById(toSync.getUUID());
@@ -311,9 +296,7 @@ public final class WildfireEventHandler {
         }
     }
 
-    /**
-     * Play the relevant mod hurt sound when a player takes damage
-     */
+    /// Play the relevant mod hurt sound when a player takes damage
     @Environment(EnvType.CLIENT)
     private static void onEntityHurt(LivingEntity entity, DamageSource damageSource) {
         Minecraft client = Minecraft.getInstance();
@@ -330,9 +313,7 @@ public final class WildfireEventHandler {
         }
     }
 
-    /**
-     * Tick breast physics on entity tick
-     */
+    /// Tick breast physics on entity tick
     @Environment(EnvType.CLIENT)
     private static void onEntityTick(LivingEntity entity) {
         if(EntityConfig.isSupportedEntity(entity)) {
@@ -344,9 +325,7 @@ public final class WildfireEventHandler {
         }
     }
 
-    /**
-     * Apply player settings to chestplates equipped onto armor stands
-     */
+    /// Apply player settings to chestplates equipped onto armor stands
     private static void onEquipArmorStand(Player player, ItemStack item) {
         PlayerConfig playerConfig = WildfireGender.getPlayerById(player.getUUID());
         if(playerConfig == null) {

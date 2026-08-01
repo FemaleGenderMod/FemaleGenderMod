@@ -18,6 +18,7 @@
 
 package com.wildfire.main.config.enums;
 
+import java.util.Locale;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
@@ -45,14 +46,14 @@ public enum ShowPlayerListMode {
     }
 
     public Component text() {
-        return Component.translatable("wildfire_gender.always_show_list." + name().toLowerCase());
+        return Component.translatable("wildfire_gender.always_show_list." + name().toLowerCase(Locale.ROOT));
     }
 
     public Tooltip tooltip() {
         if(this == TAB_LIST_OPEN) {
             var button = Minecraft.getInstance().options.keyPlayerList.getTranslatedKeyMessage();
-            return Tooltip.create(Component.translatable("wildfire_gender.always_show_list." + name().toLowerCase() + ".tooltip", button));
+            return Tooltip.create(Component.translatable("wildfire_gender.always_show_list." + name().toLowerCase(Locale.ROOT) + ".tooltip", button));
         }
-        return Tooltip.create(Component.translatable("wildfire_gender.always_show_list." + name().toLowerCase() + ".tooltip"));
+        return Tooltip.create(Component.translatable("wildfire_gender.always_show_list." + name().toLowerCase(Locale.ROOT) + ".tooltip"));
     }
 }

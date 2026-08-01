@@ -34,13 +34,8 @@ public class GenderConfigs {
 
     private static final Gson GSON = new Gson();
 
-    public static final JsonObject DEFAULT_FEMALE;
-    public static final JsonObject DEFAULT_MALE;
-
-    static {
-        DEFAULT_FEMALE = loadConfig("modeldata/female_default.json");
-        DEFAULT_MALE = loadConfig("modeldata/male_default.json");
-    }
+    public static final JsonObject DEFAULT_FEMALE = loadConfig("modeldata/female_default.json");
+    public static final JsonObject DEFAULT_MALE = loadConfig("modeldata/male_default.json");
 
     private static JsonObject loadConfig(String cfgFile) {
         try {
