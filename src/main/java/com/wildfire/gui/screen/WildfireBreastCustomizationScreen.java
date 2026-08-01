@@ -53,12 +53,12 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
     private static final Component DISABLED = Component.translatable("wildfire_gender.label.disabled").withColor(TextColor.RED);
     //~}
 
-    private static final Identifier BACKGROUND_FEMALE = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/breast_customization.png");
-    private static final Identifier BACKGROUND_OTHER = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/breast_customization_other.png");
+    private static final Identifier BACKGROUND_FEMALE = WildfireGender.id("textures/gui/breast_customization.png");
+    private static final Identifier BACKGROUND_OTHER = WildfireGender.id("textures/gui/breast_customization_other.png");
 
-    private static final Identifier BACKGROUND_CUSTOMIZATION = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/tabs/breast_customization_tab.png");
-    private static final Identifier BACKGROUND_PHYSICS = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/tabs/breast_physics_tab.png");
-    private static final Identifier BACKGROUND_MISC = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/tabs/miscellaneous_tab.png");
+    private static final Identifier BACKGROUND_CUSTOMIZATION = WildfireGender.id("textures/gui/tabs/breast_customization_tab.png");
+    private static final Identifier BACKGROUND_PHYSICS = WildfireGender.id("textures/gui/tabs/breast_physics_tab.png");
+    private static final Identifier BACKGROUND_MISC = WildfireGender.id("textures/gui/tabs/miscellaneous_tab.png");
 
     private Tab currentTab = Tab.CUSTOMIZATION;
 

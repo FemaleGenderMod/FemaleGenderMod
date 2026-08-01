@@ -44,7 +44,7 @@ import java.util.concurrent.CompletionException;
 @Environment(EnvType.CLIENT)
 public class WildfireCloudSyncScreen extends BaseWildfireScreen {
 
-    private static final Identifier BACKGROUND = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/sync_bg_v2.png");
+    private static final Identifier BACKGROUND = WildfireGender.id("textures/gui/sync_bg_v2.png");
 
     protected WildfireCloudSyncScreen(Screen parent, UUID uuid) {
         super(Component.translatable("wildfire_gender.cloud_settings"), parent, uuid);

@@ -50,8 +50,8 @@ import org.jspecify.annotations.Nullable;
 
 public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
-    private static final Identifier TEXTURE_ADD = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/widgets/add.png");
-    private static final Identifier TEXTURE_SUBTRACT = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/widgets/subtract.png");
+    private static final Identifier TEXTURE_ADD = WildfireGender.id("textures/gui/widgets/add.png");
+    private static final Identifier TEXTURE_SUBTRACT = WildfireGender.id("textures/gui/widgets/subtract.png");
 
     private @Nullable UVLayout selectedUVs = null;
     private BreastTypes selectedBreastIndex = BreastTypes.LEFT;

@@ -137,7 +137,7 @@ public final class WildfireEventHandler {
         LivingEntityRenderLayerRegistrationCallback.EVENT.register(WildfireEventHandler::registerRenderLayers);
         HudElementRegistry.attachElementAfter(
                 VanillaHudElements.MISC_OVERLAYS,
-                Identifier.fromNamespaceAndPath(WildfireGender.MODID, "player_list"),
+                WildfireGender.id("player_list"),
                 WildfireEventHandler::renderHud
         );
         ArmorStatsTooltipEvent.EVENT.register(WildfireEventHandler::renderTooltip);

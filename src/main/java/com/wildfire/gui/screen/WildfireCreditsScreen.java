@@ -47,10 +47,10 @@ import org.joml.Vector2f;
 @Environment(EnvType.CLIENT)
 public class WildfireCreditsScreen extends BaseWildfireScreen {
 
-    private static final Identifier CREDIT_CONTAINER = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/credits/credit_container.png");
-    private static final Identifier CREDIT_OUTLINE = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/credits/credit_outline.png");
-    private static final Identifier BUTTON_CONTAINER = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/credits/button_container.png");
-    private static final Identifier TAB_CONTAINER = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/credits/tab_container.png");
+    private static final Identifier CREDIT_CONTAINER = WildfireGender.id("textures/gui/credits/credit_container.png");
+    private static final Identifier CREDIT_OUTLINE = WildfireGender.id("textures/gui/credits/credit_outline.png");
+    private static final Identifier BUTTON_CONTAINER = WildfireGender.id("textures/gui/credits/button_container.png");
+    private static final Identifier TAB_CONTAINER = WildfireGender.id("textures/gui/credits/tab_container.png");
 
     //General contributor list
     private final FakeGUIPlayer[] C_GENERAL = Contributors.getContributors().entrySet().stream()

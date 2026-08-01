@@ -58,7 +58,7 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
     private static final Component DISABLE_CLOUD_SYNCING = Component.translatable("wildfire_gender.first_time_setup.disable").withColor(TextColor.RED);
     //~}
 
-    private static final Identifier BACKGROUND = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/first_time_bg.png");
+    private static final Identifier BACKGROUND = WildfireGender.id("textures/gui/first_time_bg.png");
 
     private static final UUID keiraUUID = UUID.fromString("372271ab-28f2-44bd-b585-95f43e010c22");
 

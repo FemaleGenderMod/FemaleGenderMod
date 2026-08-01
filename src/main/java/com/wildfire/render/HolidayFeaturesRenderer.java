@@ -42,7 +42,7 @@ import net.minecraft.util.SpecialDates;
 
 @Environment(EnvType.CLIENT)
 public class HolidayFeaturesRenderer extends RenderLayer<AvatarRenderState, PlayerModel> {
-    private static final Identifier SANTA_HAT_TEXTURE = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/santa_hat.png");
+    private static final Identifier SANTA_HAT_TEXTURE = WildfireGender.id("textures/santa_hat.png");
     private static final HumanoidModel<AvatarRenderState> SANTA_HAT_MODEL = new SantaHatModel();
     private static final boolean christmas = SpecialDates.isExtendedChristmas();
 

@@ -43,7 +43,7 @@ import org.jspecify.annotations.Nullable;
 @Environment(EnvType.CLIENT)
 public class WildfireToast implements Toast, IFancyFontRenderer {
     private static final Identifier TEXTURE = Identifier.withDefaultNamespace("toast/advancement");
-    private static final Identifier ICON = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/bc_ribbon.png");
+    private static final Identifier ICON = WildfireGender.id("textures/bc_ribbon.png");
     private final List<FormattedCharSequence> text;
     private Visibility visibility = Visibility.SHOW;
 

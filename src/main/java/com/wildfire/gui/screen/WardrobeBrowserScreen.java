@@ -54,12 +54,12 @@ import org.jspecify.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public class WardrobeBrowserScreen extends BaseWildfireScreen {
-    private static final Identifier BACKGROUND_MALE = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/wardrobe_bg_male.png");
-    private static final Identifier BACKGROUND_FEMALE = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/wardrobe_bg_female.png");
-    private static final Identifier BACKGROUND_OTHER = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/wardrobe_bg_other.png");
+    private static final Identifier BACKGROUND_MALE = WildfireGender.id("textures/gui/wardrobe_bg_male.png");
+    private static final Identifier BACKGROUND_FEMALE = WildfireGender.id("textures/gui/wardrobe_bg_female.png");
+    private static final Identifier BACKGROUND_OTHER = WildfireGender.id("textures/gui/wardrobe_bg_other.png");
 
-    private static final Identifier TXTR_RIBBON = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/bc_ribbon.png");
-    private static final Identifier CLOUD_ICON = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/cloud.png");
+    private static final Identifier TXTR_RIBBON = WildfireGender.id("textures/bc_ribbon.png");
+    private static final Identifier CLOUD_ICON = WildfireGender.id("textures/cloud.png");
 
     private static final boolean isBreastCancerAwarenessMonth = Month.from(ZonedDateTime.now()) == Month.OCTOBER;
 
