@@ -53,10 +53,10 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
     private static final Component NOTICE = Component.translatable("wildfire_gender.first_time_setup.notice");
     private static final int SCREEN_WIDTH = 274;
 
-    //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
+    //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.' {
     private static final Component ENABLE_CLOUD_SYNCING = Component.translatable("wildfire_gender.first_time_setup.enable").withColor(TextColor.GREEN);
-    //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
     private static final Component DISABLE_CLOUD_SYNCING = Component.translatable("wildfire_gender.first_time_setup.disable").withColor(TextColor.RED);
+    //~}
 
     private static final Identifier BACKGROUND = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/first_time_bg.png");
 

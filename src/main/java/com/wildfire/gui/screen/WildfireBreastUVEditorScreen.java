@@ -264,12 +264,12 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
             drawScrollingString(graphics, Component.translatable("wildfire_gender.uv_editor.width"), positionBoxX - 35, 55 + 2 * 14, TextAlignment.LEFT, CommonColors.WHITE, 45, 0, false);
             drawScrollingString(graphics, Component.translatable("wildfire_gender.uv_editor.height"), positionBoxX - 35, 55 + 3 * 14, TextAlignment.LEFT, CommonColors.WHITE, 45, 0, false);
 
-            //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
+            //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.' {
             drawScaledScrollingString(graphics, Component.translatable("wildfire_gender.uv_editor.increment_tip.line1").withColor(TextColor.AQUA), positionBoxX - 40, 109,
                 TextAlignment.LEFT, CommonColors.WHITE, 80, 2, false, 0.75F);
-            //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
             drawScaledScrollingString(graphics, Component.translatable("wildfire_gender.uv_editor.increment_tip.line2").withColor(TextColor.BLUE), positionBoxX - 40, 119,
                 TextAlignment.LEFT, CommonColors.WHITE, 80, 2, false, 0.75F);
+            //~}
         }
 
         int modelScale = 120;
@@ -307,10 +307,10 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
                 if(mouseX >= rectX1 && mouseX <= rectX2 && mouseY >= rectY1 && mouseY <= rectY2) {
                     List<FormattedCharSequence> array = new ArrayList<>();
-                    //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
+                    //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.' {
                     array.add(direction.getDirectionText(selectedBreastIndex).append(" (").append(faceName).append(")").withColor(TextColor.GOLD).getVisualOrderText());
-                    //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
                     array.add(Component.literal("[" + quad.x1() + ", " + quad.y1() + ", " + quad.x2() + ", " + quad.y2() + "]").withColor(TextColor.AQUA).getVisualOrderText());
+                    //~}
                     graphics.setTooltipForNextFrame(array, mouseX, mouseY);
                 }
 
