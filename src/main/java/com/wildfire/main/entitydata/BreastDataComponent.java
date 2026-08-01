@@ -20,7 +20,6 @@ package com.wildfire.main.entitydata;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.config.Configuration;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.NbtOps;

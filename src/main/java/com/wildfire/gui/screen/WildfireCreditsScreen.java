@@ -41,8 +41,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.CommonColors;
 import org.jetbrains.annotations.UnknownNullability;
-import org.joml.Matrix3x2fStack;
-import org.joml.Vector2f;
 
 @Environment(EnvType.CLIENT)
 public class WildfireCreditsScreen extends BaseWildfireScreen {

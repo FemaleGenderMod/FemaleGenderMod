@@ -40,6 +40,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import org.jetbrains.annotations.UnknownNullability;
 
 @Environment(EnvType.CLIENT)
 public class WildfireCloudSyncScreen extends BaseWildfireScreen {
@@ -60,6 +61,7 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
 
         final var config = ClientConfig.INSTANCE;
         final var ref = new Object() {
+            @UnknownNullability
             WildfireButton btnSyncNow, btnDelete, btnAutomaticSync;
         };
 
@@ -157,6 +159,7 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
     @Override
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         extractTransparentBackground(graphics);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, BACKGROUND, (this.width - 172) / 2, (this.height - 124) / 2, 0, 0, 172, 144, 256, 256);
         graphics.blit(RenderPipelines.GUI_TEXTURED, BACKGROUND, (this.width - 172) / 2, (this.height - 124) / 2, 0, 0, 172, 144, 256, 256);
     }
 
