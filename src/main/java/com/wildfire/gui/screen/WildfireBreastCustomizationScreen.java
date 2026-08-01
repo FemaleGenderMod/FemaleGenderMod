@@ -68,6 +68,7 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
 
     @Override
     public void init() {
+        super.init();
         int y = this.height / 2 - 11;
 
         addButton(builder -> builder
@@ -352,7 +353,7 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
         }
 
         graphics.blit(RenderPipelines.GUI_TEXTURED, currentTab.background, this.width / 2 - 42, this.height / 2 - 43, 0, 0, 178, currentTab.backgroundHeight, 512, 512);
-        graphics.text(font, getTitle(), (width / 2) - font.width(getTitle()) / 2, (height / 2) - 82, CommonColors.WHITE, false);
+        drawScrollingString(graphics, getTitle(), 0, (height / 2) - 82, TextAlignment.CENTER, CommonColors.WHITE, graphics.guiWidth(), 5, false);
 
         renderPlayerInFrame(graphics, this.width / 2 - 90, this.height / 2 + 44, mouseX, mouseY);
     }

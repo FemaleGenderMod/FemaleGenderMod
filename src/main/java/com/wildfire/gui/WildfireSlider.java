@@ -26,8 +26,6 @@ import it.unimi.dsi.fastutil.floats.Float2ObjectFunction;
 import it.unimi.dsi.fastutil.floats.FloatConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
@@ -39,10 +37,11 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.CommonColors;
 import net.minecraft.util.Mth;
+import net.minecraft.util.Util;
 import org.jspecify.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
-public class WildfireSlider extends AbstractWidget {
+public class WildfireSlider extends AbstractWidget implements IFancyFontRenderer {
     private double value;
     private final double minValue;
     private final double maxValue;
@@ -50,6 +49,7 @@ public class WildfireSlider extends AbstractWidget {
     private final Float2ObjectFunction<Component> messageUpdate;
     private final FloatConsumer onSave;
 
+    private long lastMSInitialized;
     private float lastValue;
     private boolean changed;
     private boolean dragging;
@@ -156,15 +156,12 @@ public class WildfireSlider extends AbstractWidget {
             int xPos2 = this.getX() + 3 + (int) (this.value * (float) (this.width - 4));
             graphics.fill(xPos2 - 2, getY() + 1, xPos2, getY() + this.height - 1, ARGB.white(0x78));
         }
-        Font font = Minecraft.getInstance().font;
-        int i = this.getX() + 2;
-        int j = this.getX() + this.getWidth() - 2;
 
         int textColor = (isHoveredOrFocused()&&active) || changed ? CommonColors.SOFT_YELLOW : CommonColors.WHITE;
         if(!active) {
             textColor = 0xFF666666;
         }
-        GuiUtils.drawScrollableTextWithoutShadow(GuiUtils.Justify.CENTER, graphics, font, this.getMessage(), i, this.getY(), j, this.getY() + this.getHeight(), textColor);
+        drawScrollingString(graphics, getMessage(), getX(), getY(), TextAlignment.CENTER, textColor, getWidth(), getHeight(), 2, false);
 
         if(isHovered() || dragging) {
             if(!active) {
@@ -218,6 +215,21 @@ public class WildfireSlider extends AbstractWidget {
 
         applyValue();
         updateMessage();
+    }
+
+    public WildfireSlider setVisible(boolean visible) {
+        if (this.visible != visible) {
+            this.visible = visible;
+            if (visible) {
+                lastMSInitialized = Util.getMillis();
+            }
+        }
+        return this;
+    }
+
+    @Override
+    public long getTimeOpened() {
+        return lastMSInitialized;
     }
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "UnusedReturnValue"})
@@ -288,9 +300,10 @@ public class WildfireSlider extends AbstractWidget {
             return this;
         }
 
-        public WildfireSlider build() {
+        public WildfireSlider build(long msInitialized) {
             var built = new WildfireSlider(x, y, width, height, min, max, value, onUpdate, messageSupplier, onSave);
             built.active = active;
+            built.lastMSInitialized = msInitialized;
             if(step != null) {
                 built.setArrowKeyStep(step);
             }

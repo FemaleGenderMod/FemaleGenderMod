@@ -22,6 +22,7 @@ import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ARGB;
@@ -69,7 +70,7 @@ public enum UVDirection implements StringRepresentable {
         return new Vector3f(this.floatVector);
     }
 
-    public Component getDirectionText(BreastTypes type) {
+    public MutableComponent getDirectionText(BreastTypes type) {
         if(this == EAST || this == WEST) {
             String key = (type == BreastTypes.LEFT || type == BreastTypes.LEFT_OVERLAY)
                     ? "wildfire_gender.uv_editor.faces.inner"

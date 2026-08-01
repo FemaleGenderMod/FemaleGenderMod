@@ -18,7 +18,7 @@
 
 package com.wildfire.gui.screen;
 
-import com.wildfire.gui.GuiUtils;
+import com.wildfire.gui.IFancyFontRenderer;
 import com.wildfire.gui.WildfireButton;
 import com.wildfire.gui.WildfireSlider;
 import com.wildfire.main.WildfireGender;
@@ -33,13 +33,18 @@ import net.minecraft.network.chat.Component;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
+import net.minecraft.util.Util;
 import org.jspecify.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
-public abstract class BaseWildfireScreen extends Screen {
+public abstract class BaseWildfireScreen extends Screen implements IFancyFontRenderer {
+
+    protected static final float ENTITY_SCALE = 0.0625F;
 
     protected final UUID playerUUID;
     protected final @Nullable Screen parent;
+
+    private long lastMSInitialized;
 
     protected BaseWildfireScreen(Component title, @Nullable Screen parent, UUID uuid) {
         super(title);
@@ -50,14 +55,14 @@ public abstract class BaseWildfireScreen extends Screen {
     protected WildfireButton addButton(Consumer<WildfireButton.Builder> builder) {
         var buttonBuilder = new WildfireButton.Builder();
         builder.accept(buttonBuilder);
-        return addRenderableWidget(buttonBuilder.build());
+        return addRenderableWidget(buttonBuilder.build(lastMSInitialized));
     }
 
     protected WildfireSlider addSlider(Consumer<WildfireSlider.Builder> builder) {
         var sliderBuilder = new WildfireSlider.Builder();
         sliderBuilder.save(_ -> Objects.requireNonNull(getPlayer(), "getPlayer()").save());
         builder.accept(sliderBuilder);
-        return addRenderableWidget(sliderBuilder.build());
+        return addRenderableWidget(sliderBuilder.build(lastMSInitialized));
     }
 
     public @Nullable PlayerConfig getPlayer() {
@@ -70,8 +75,19 @@ public abstract class BaseWildfireScreen extends Screen {
         // This sucks. In order to position the player properly, we need to trick the player renderer into
         // thinking the area the player should be rendered is much taller than it actually is.
         graphics.enableScissor(xP - 38, yP - 79, xP + 38, yP + 9);
-        InventoryScreen.extractEntityInInventoryFollowsMouse(graphics, xP - 38, yP - 79, xP + 38, yP + 69, 70, GuiUtils.ENTITY_SCALE, mouseX, mouseY + 35, player);
+        InventoryScreen.extractEntityInInventoryFollowsMouse(graphics, xP - 38, yP - 79, xP + 38, yP + 69, 70, ENTITY_SCALE, mouseX, mouseY + 35, player);
         graphics.disableScissor();
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+        lastMSInitialized = Util.getMillis();
+    }
+
+    @Override
+    public long getTimeOpened() {
+        return lastMSInitialized;
     }
 
     @Override

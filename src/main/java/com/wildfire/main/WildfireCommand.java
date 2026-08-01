@@ -64,9 +64,9 @@ import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.argument;
 
 @Environment(EnvType.CLIENT)
 public class WildfireCommand {
-    private static final Component COMMAND_PREFIX = Component.empty()
+    private static final Component COMMAND_PREFIX =
             //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
-            .append(Component.literal("[").withColor(TextColor.GRAY))
+            Component.literal("[").withColor(TextColor.GRAY)
             //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
             .append(Component.literal("F").withColor(TextColor.LIGHT_PURPLE))
             //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
@@ -146,22 +146,22 @@ public class WildfireCommand {
     }
 
     public static void send(CommandContext<FabricClientCommandSource> ctx, String text) {
-        ctx.getSource().sendFeedback(Component.empty().append(COMMAND_PREFIX).append(text));
+        ctx.getSource().sendFeedback(COMMAND_PREFIX.copy().append(text));
     }
 
     public static void send(CommandContext<FabricClientCommandSource> ctx, Component text) {
-        ctx.getSource().sendFeedback(Component.empty().append(COMMAND_PREFIX).append(text));
+        ctx.getSource().sendFeedback(COMMAND_PREFIX.copy().append(text));
     }
 
     public static void sendHelp(CommandContext<FabricClientCommandSource> ctx, Component header, String... nameToDescription) {
         assert nameToDescription.length % 2 == 0;
         List<Component> lines = new ArrayList<>();
-        lines.add(Component.empty().append(COMMAND_PREFIX).append(header).withStyle(style -> style.withUnderlined(true)));
+        lines.add(COMMAND_PREFIX.copy().append(header).withStyle(style -> style.withUnderlined(true)));
 
         for(int i = 0; i < nameToDescription.length / 2; i++) {
             var name = nameToDescription[i * 2];
             var description = nameToDescription[(i * 2) + 1];
-            lines.add(Component.empty().append(COMMAND_PREFIX)
+            lines.add(COMMAND_PREFIX.copy()
                 //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
                 .append(Component.literal(name).withColor(TextColor.AQUA))
                 //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
@@ -246,8 +246,7 @@ public class WildfireCommand {
 
             var info = ComponentUtils.formatList(config.getDebugInfo(), Component.literal("\n"), Component::literal);
 
-            lines.add(Component.empty()
-                    .append(entity.getDisplayName())
+            lines.add(entity.getDisplayName().copy()
                     .append(" - ")
                     .append(config.getGender().getDisplayName())
                     .withStyle(style -> style.withHoverEvent(new HoverEvent.ShowText(info))));

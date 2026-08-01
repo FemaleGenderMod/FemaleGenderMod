@@ -18,7 +18,6 @@
 
 package com.wildfire.gui.screen;
 
-import com.wildfire.gui.GuiUtils;
 import com.wildfire.gui.SyncedPlayerList;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.cloud.CloudSync;
@@ -85,6 +84,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 
     @Override
     public void init() {
+        super.init();
         final var client = Objects.requireNonNull(this.minecraft, "client");
         int y = this.height / 2;
         PlayerConfig plr = Objects.requireNonNull(getPlayer(), "getPlayer()");
@@ -178,18 +178,19 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
         super.extractRenderState(graphics, mouseX, mouseY, delta);
         int x = this.width / 2;
         int y = this.height / 2;
-        graphics.text(font, getTitle(), x - font.width(getTitle()) / 2, y - 82, CommonColors.WHITE, false);
+        drawScrollingString(graphics, getTitle(), 0, y - 82, TextAlignment.CENTER, CommonColors.WHITE, graphics.guiWidth(), 5, false);
 
         drawCreatorContributorText(graphics, mouseX, mouseY, y + 65 + (isBreastCancerAwarenessMonth ? 30 : 0));
 
         if(isBreastCancerAwarenessMonth) {
             int bcaY = y - 45;
             graphics.fill(x - 159, bcaY + 106, x + 159, bcaY + 136, ARGB.black(0x55));
-            graphics.text(font, Component.translatable("wildfire_gender.cancer_awareness.title").withStyle(style -> style.withBold(true).withItalic(true)), this.width / 2 - 148, bcaY + 117, CommonColors.WHITE);
+            drawScrollingString(graphics, Component.translatable("wildfire_gender.cancer_awareness.title").withStyle(style -> style.withBold(true).withItalic(true)),
+                x - 153, bcaY + 117, TextAlignment.LEFT, CommonColors.WHITE, 283, 5, false);
             graphics.blit(RenderPipelines.GUI_TEXTURED, TXTR_RIBBON, x + 130, bcaY + 109, 0, 0, 26, 26, 20, 20, 20, 20);
         }
 
-        SyncedPlayerList.drawSyncedPlayers(graphics, font);
+        SyncedPlayerList.drawSyncedPlayers(this, graphics, 126, graphics.guiWidth());
     }
 
     private void drawCreatorContributorText(GuiGraphicsExtractor graphics, int mouseX, int mouseY, int creatorY) {
@@ -221,7 +222,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
         }
 
         int textWidth = font.width(text);
-        GuiUtils.drawCenteredTextWrapped(graphics, this.font, text, this.width / 2, creatorY, 300, 0xFFFF00FF);
+        drawCenteredTextWrapped(graphics, text, this.width / 2, creatorY, 300, 0xFFFF00FF);
 
         // Render a tooltip with the relevant player names when hovered over
         int lines = (int) Math.ceil(textWidth / 300.0);

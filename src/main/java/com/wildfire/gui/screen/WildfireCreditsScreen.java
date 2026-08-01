@@ -19,7 +19,6 @@
 package com.wildfire.gui.screen;
 
 import com.wildfire.gui.FakeGUIPlayer;
-import com.wildfire.gui.GuiUtils;
 import com.wildfire.main.GenderConfigs;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.contributors.Contributor;
@@ -89,6 +88,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
 
     @Override
     public void init() {
+        super.init();
         final var ref = new Object() {
             @UnknownNullability
             AbstractWidget prevPage, nextPage, generalTab, translatorTab;
@@ -182,12 +182,8 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
-        Matrix3x2fStack mStack = graphics.pose();
-
-        mStack.pushMatrix();
-        GuiUtils.drawCenteredText(graphics, font, Component.translatable("wildfire_gender.credits.title"), width / 2, height / 2 - 100, CommonColors.WHITE);
-        GuiUtils.drawCenteredText(graphics, font, Component.translatable("wildfire_gender.credits.description"), width / 2, height / 2 - 85, 0xFF888888);
-        mStack.popMatrix();
+        drawScrollingString(graphics, getTitle(), 0, height / 2 - 100, TextAlignment.CENTER, CommonColors.WHITE, graphics.guiWidth(), 5, false);
+        drawScrollingString(graphics, Component.translatable("wildfire_gender.credits.description"), 0, height / 2 - 85, TextAlignment.CENTER, 0xFF888888, graphics.guiWidth(), 5, false);
 
         graphics.blit(RenderPipelines.GUI_TEXTURED, BUTTON_CONTAINER, this.width / 2 - (190 / 2), navigationY, 0, 0, 190, 25, 190, 25);
         graphics.blit(RenderPipelines.GUI_TEXTURED, TAB_CONTAINER, this.width / 2 - (190 / 2), navigationY + 28, 0, 0, 190, 25, 190, 25);
@@ -217,29 +213,21 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
 
             graphics.blit(RenderPipelines.GUI_TEXTURED, CREDIT_CONTAINER, creditBoxX, creditBoxY, 0, 0, 52, 68, 52, 68);
 
-            graphics.pose().pushMatrix();
-            int color = ARGB.opaque(Objects.requireNonNull(creditBox.getRole()).getColor().getValue());
-            graphics.blit(RenderPipelines.GUI_TEXTURED, CREDIT_OUTLINE, creditBoxX + 3, creditBoxY + 3, 0, 0, 46, 53, 46, 53, color);
-            graphics.pose().popMatrix();
+            graphics.blit(RenderPipelines.GUI_TEXTURED, CREDIT_OUTLINE, creditBoxX + 3, creditBoxY + 3, 0, 0, 46, 53, 46, 53,
+                ARGB.opaque(Objects.requireNonNull(creditBox.getRole()).getColor().getValue()));
 
             int xP = creditBoxX + (52 / 2);
             int yP = creditBoxY + (68 / 2);
             graphics.enableScissor(xP - 21, yP - 79, xP + 21, yP + 20);
-            InventoryScreen.extractEntityInInventoryFollowsMouse(graphics, xP - 38, yP - 29, xP + 38, yP + 59, 40, GuiUtils.ENTITY_SCALE, mouseX, mouseY + 35, creditBox.getEntity());
+            InventoryScreen.extractEntityInInventoryFollowsMouse(graphics, xP - 38, yP - 29, xP + 38, yP + 59, 40, ENTITY_SCALE, mouseX, mouseY + 35, creditBox.getEntity());
             graphics.disableScissor();
 
-            mStack.pushMatrix();
-            mStack.translate(xP, yP + 47);
-            mStack.scale(new Vector2f(0.55f, 0.55f));
-            mStack.translate(-xP, -yP - 47);
-            GuiUtils.drawCenteredTextWrapped(graphics, font, Component.literal(creditBox.getName()), xP, yP + 7, (int) (50 * 1.45f), CommonColors.WHITE);
-            mStack.popMatrix();
+            drawScaledScrollingString(graphics, Component.literal(creditBox.getName()), creditBoxX + 3, yP + 23, TextAlignment.CENTER, CommonColors.WHITE, 46,  1, false, 0.55F);
 
             if (mouseX > xP - 24 && mouseX < xP + 23 && mouseY > yP + 22 && mouseY < yP + 31) {
                 List<Component> txtList = new ArrayList<>();
                 var role = creditBox.getRoleOrGeneric();
-                txtList.add(role.withColor(Component.empty()
-                        .append(creditBox.getName())
+                txtList.add(role.withColor(Component.literal(creditBox.getName())
                         //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
                         .append(Component.literal(" - ").withColor(TextColor.DARK_GRAY))
                         .append(role.shortName())));

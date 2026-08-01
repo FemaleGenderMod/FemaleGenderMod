@@ -193,14 +193,16 @@ public final class WildfireEventHandler {
     @Environment(EnvType.CLIENT)
     private static void renderHud(GuiGraphicsExtractor context, DeltaTracker tickCounter) {
         var client = Minecraft.getInstance();
-        var font = client.font;
         //~ if >=26.2 'client.screen' -> 'client.gui.screen()'
         if(client.gui.screen() instanceof WardrobeBrowserScreen) {
+            SyncedPlayerList.resetTimer();
             return;
         }
 
         if(ClientConfig.INSTANCE.get(ClientConfig.ALWAYS_SHOW_LIST).isVisible()) {
-            SyncedPlayerList.drawSyncedPlayers(context, font);
+            SyncedPlayerList.drawSyncedPlayers(context);
+        } else {
+            SyncedPlayerList.resetTimer();
         }
     }
 

@@ -18,14 +18,17 @@
 
 package com.wildfire.gui;
 
+import com.wildfire.gui.IFancyFontRenderer.TextAlignment;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.contributors.Contributors;
 import com.wildfire.main.entitydata.PlayerConfig;
+import com.wildfire.mixins.accessors.PlayerTabOverlayAccessor;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.PlayerTabOverlay;
+import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
@@ -33,7 +36,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import net.minecraft.network.chat.TextColor;
+import net.minecraft.network.chat.numbers.NumberFormat;
+import net.minecraft.network.chat.numbers.StyledFormat;
 import net.minecraft.util.CommonColors;
+import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.Util;
+import net.minecraft.world.scores.DisplaySlot;
+import net.minecraft.world.scores.Objective;
+import net.minecraft.world.scores.ReadOnlyScoreInfo;
+import net.minecraft.world.scores.ScoreHolder;
+import net.minecraft.world.scores.Scoreboard;
+import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
 public final class SyncedPlayerList {
     private SyncedPlayerList() {
@@ -43,27 +56,52 @@ public final class SyncedPlayerList {
     private static int ticks = 0;
     private static volatile List<SyncedPlayer> syncedPlayers = Collections.emptyList();
 
+    private static long TIME_STARTED = -1;
+    private static final IFancyFontRenderer FALLBACK_FONT_RENDERER = () -> TIME_STARTED;
+
     static {
         ClientTickEvents.END_CLIENT_TICK.register(SyncedPlayerList::onTick);
     }
 
-    public static void drawSyncedPlayers(GuiGraphicsExtractor context, Font font) {
+    public static void resetTimer() {
+        TIME_STARTED = -1;
+    }
+
+    public static void drawSyncedPlayers(GuiGraphicsExtractor graphics) {
+        if (TIME_STARTED == -1) {
+            TIME_STARTED = Util.getMillis();
+        }
+        int screenWidth = graphics.guiWidth();
+        int width = screenWidth;
+        var tabListAccessor = (PlayerTabOverlayAccessor) Minecraft.getInstance().gui.hud.getTabList();
+        if (tabListAccessor.isVisible()) {
+            //Where it starts drawing, given we start at 0, this works for calculating the width
+            int maxLineWidth = getTabOverlayMaxLineWidth(screenWidth);
+            if (maxLineWidth > 0) {
+                width = screenWidth / 2 - maxLineWidth / 2 - 1;
+                //TODO: If we really care, we could calculate the height of the list so that if we are rendering lots of synced players,
+                // then we can let later ones scroll further. For now I don't think it is worth it though
+            }
+        }
+        drawSyncedPlayers(FALLBACK_FONT_RENDERER, graphics, width, width);
+    }
+
+    public static void drawSyncedPlayers(IFancyFontRenderer fontRenderer, GuiGraphicsExtractor graphics, int titleWidth, int playerWidth) {
         if(syncedPlayers.isEmpty()) {
             return;
         }
 
         //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
         var header = Component.translatable("wildfire_gender.wardrobe.players_using_mod").withColor(TextColor.AQUA);
-        context.text(font, header, 5, 5, CommonColors.WHITE, true);
+        fontRenderer.drawScrollingString(graphics, header, 0, 5, TextAlignment.LEFT, CommonColors.WHITE, titleWidth, 5, false);
 
         int yPos = 18;
         for(var entry : syncedPlayers) {
-            var text = Component.empty()
-                    //~ if >=26.2 '.color().getValue()' -> '.color()'
-                    .append(Component.literal(entry.name()).withColor(entry.color()))
+            //~ if >=26.2 '.color().getValue()' -> '.color()'
+            Component text = Component.literal(entry.name()).withColor(entry.color())
                     .append(" - ")
                     .append(entry.gender().getDisplayName());
-            context.text(font, text, 10, yPos, CommonColors.WHITE, false);
+            fontRenderer.drawScrollingString(graphics, text, 5, yPos, TextAlignment.LEFT, CommonColors.WHITE, playerWidth - 5, 5, false);
             yPos += 10;
         }
     }
@@ -107,5 +145,73 @@ public final class SyncedPlayerList {
     }
 
     private record SyncedPlayer(String name, TextColor color, Gender gender) {
+    }
+
+    /// @implNote Trimmed down logic from [PlayerTabOverlay#extractRenderState]
+    private static int getTabOverlayMaxLineWidth(int screenWidth) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null) {
+            return 0;
+        }
+        PlayerTabOverlay tabList = mc.gui.hud.getTabList();
+        var tabListAccessor = (PlayerTabOverlayAccessor) tabList;
+
+        Scoreboard scoreboard = mc.level.getScoreboard();
+        Objective displayObjective = scoreboard.getDisplayObjective(DisplaySlot.LIST);
+
+        List<PlayerInfo> playerInfos = tabList.getPlayerInfos();
+        int spacerWidth = mc.font.width(" ");
+        int maxNameWidth = 0;
+        int maxScoreWidth = 0;
+
+        for (PlayerInfo info : playerInfos) {
+            maxNameWidth = Math.max(maxNameWidth, mc.font.width(tabList.getNameForDisplay(info)));
+            int playerScoreWidth = 0;
+            if (displayObjective != null && displayObjective.getRenderType() != ObjectiveCriteria.RenderType.HEARTS) {
+                ScoreHolder scoreHolder = ScoreHolder.fromGameProfile(info.getProfile());
+                ReadOnlyScoreInfo scoreInfo = scoreboard.getPlayerScoreInfo(scoreHolder, displayObjective);
+                if (scoreInfo != null) {
+                    NumberFormat objectiveDefaultFormat = displayObjective.numberFormatOrDefault(StyledFormat.PLAYER_LIST_DEFAULT);
+                    playerScoreWidth = mc.font.width(scoreInfo.formatValue(objectiveDefaultFormat));
+                }
+                maxScoreWidth = Math.max(maxScoreWidth, playerScoreWidth > 0 ? spacerWidth + playerScoreWidth : 0);
+            }
+        }
+
+        int slots = playerInfos.size();
+        int rows = slots;
+
+        int cols;
+        for (cols = 1; rows > PlayerTabOverlay.MAX_ROWS_PER_COL; rows = (slots + cols - 1) / cols) {
+            cols++;
+        }
+
+        boolean showHead = mc.getConnection().onlineMode();
+        int widthForScore;
+        if (displayObjective != null) {
+            if (displayObjective.getRenderType() == ObjectiveCriteria.RenderType.HEARTS) {
+                widthForScore = 90;
+            } else {
+                widthForScore = maxScoreWidth;
+            }
+        } else {
+            widthForScore = 0;
+        }
+
+        int slotWidth = Math.min(cols * ((showHead ? 9 : 0) + maxNameWidth + widthForScore + 13), screenWidth - 50) / cols;
+        int maxLineWidth = slotWidth * cols + (cols - 1) * 5;
+        Component header = tabListAccessor.getHeader();
+        if (header != null) {
+            for (FormattedCharSequence line : mc.font.split(header, screenWidth - 50)) {
+                maxLineWidth = Math.max(maxLineWidth, mc.font.width(line));
+            }
+        }
+        Component footer = tabListAccessor.getFooter();
+        if (footer != null) {
+            for (FormattedCharSequence line : mc.font.split(footer, screenWidth - 50)) {
+                maxLineWidth = Math.max(maxLineWidth, mc.font.width(line));
+            }
+        }
+        return maxLineWidth;
     }
 }

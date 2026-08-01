@@ -20,7 +20,6 @@ package com.wildfire.gui.screen;
 
 import com.google.common.base.Suppliers;
 import com.wildfire.gui.FakeGUIPlayer;
-import com.wildfire.gui.GuiUtils;
 import com.wildfire.gui.WildfireButton;
 import com.wildfire.main.GenderConfigs;
 import com.wildfire.main.WildfireGender;
@@ -39,7 +38,6 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.CommonColors;
 import org.jetbrains.annotations.UnknownNullability;
-import org.joml.Vector2f;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -51,9 +49,9 @@ import org.jspecify.annotations.Nullable;
 @Environment(EnvType.CLIENT)
 public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 
-    private static final Component TITLE = Component.translatable("wildfire_gender.first_time_setup.title").withStyle(style -> style.withUnderlined(true));
     private static final Component DESCRIPTION = Component.translatable("wildfire_gender.first_time_setup.description");
     private static final Component NOTICE = Component.translatable("wildfire_gender.first_time_setup.notice");
+    private static final int SCREEN_WIDTH = 274;
 
     //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
     private static final Component ENABLE_CLOUD_SYNCING = Component.translatable("wildfire_gender.first_time_setup.enable").withColor(TextColor.GREEN);
@@ -67,11 +65,12 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
     private final Supplier<FakeGUIPlayer> fakeKeira = Suppliers.memoize(() -> new FakeGUIPlayer("KeiaraFGM", keiraUUID, GenderConfigs.DEFAULT_FEMALE));
 
     public WildfireFirstTimeSetupScreen(@Nullable Screen parent, UUID uuid) {
-        super(Component.translatable("wildfire_gender.cloud_settings"), parent, uuid);
+        super(Component.translatable("wildfire_gender.first_time_setup.title").withStyle(style -> style.withUnderlined(true)), parent, uuid);
     }
 
     @Override
     public void init() {
+        super.init();
         int x = this.width / 2;
         int y = this.height / 2;
 
@@ -98,8 +97,7 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
                     //~ if >=26.2 'setScreen' -> 'gui.setScreen'
                     doInitialSync().thenRun(() -> minecraft.execute(() -> minecraft.gui.setScreen(nextScreen)));
                 })
-                .tooltip(Tooltip.create(Component.empty()
-                        .append(Component.translatable("wildfire_gender.first_time_setup.enable.tooltip.line1"))
+                .tooltip(Tooltip.create(Component.translatable("wildfire_gender.first_time_setup.enable.tooltip.line1")
                         .append("\n\n")
                         .append(Component.translatable("wildfire_gender.first_time_setup.enable.tooltip.line2")))));
 
@@ -107,7 +105,7 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
                 .message(() -> DISABLE_CLOUD_SYNCING)
                 .position(x - 131, y + 74)
                 .size(128, 20)
-                .onPress(button -> {
+                .onPress(_ -> {
                     config.set(ClientConfig.CLOUD_SYNC_ENABLED, false);
                     config.set(ClientConfig.AUTOMATIC_CLOUD_SYNC, false);
                     config.set(ClientConfig.FIRST_TIME_LOAD, false);
@@ -152,7 +150,7 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
     @Override
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         extractTransparentBackground(graphics);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, BACKGROUND, (this.width - 274) / 2, (this.height - 200) / 2, 0, 0, 274, 200, 512, 512);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, BACKGROUND, (this.width - SCREEN_WIDTH) / 2, (this.height - 200) / 2, 0, 0, SCREEN_WIDTH, 200, 512, 512);
     }
 
     @Override
@@ -164,28 +162,21 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         super.extractRenderState(graphics, mouseX, mouseY, delta);
 
-        var mStack = graphics.pose();
-
         int x = this.width / 2;
         int y = this.height / 2;
 
-        GuiUtils.drawCenteredText(graphics, font, TITLE, x, y - 24, CommonColors.DARK_GRAY);
+        drawScrollingString(graphics, getTitle(), x - (SCREEN_WIDTH / 2), y - 24, TextAlignment.CENTER, CommonColors.DARK_GRAY, SCREEN_WIDTH, 6, false);
 
         //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
-        GuiUtils.drawCenteredTextWrapped(graphics, font, Component.literal("Keira Emberlyn:").withColor(TextColor.LIGHT_PURPLE), x + 32, y - 10, 256 - 65, CommonColors.WHITE);
+        drawScrollingString(graphics, Component.literal("Keira Emberlyn:").withColor(TextColor.LIGHT_PURPLE), x - 63, y - 10, TextAlignment.CENTER, CommonColors.WHITE, 191, 0, false);
 
         //TODO: Vertical scroll bar for longer text?
-        GuiUtils.drawCenteredTextWrapped(graphics, font, DESCRIPTION, x + 32, y + 2, 256 - 65, CommonColors.WHITE);
+        drawCenteredTextWrapped(graphics, DESCRIPTION, x + 32, y + 2, 256 - 65, CommonColors.WHITE);
 
-        mStack.pushMatrix();
-        mStack.translate(x, y + 47);
-        mStack.scale(new Vector2f(0.8f, 0.8f));
-        mStack.translate(-x, -y - 47);
-        GuiUtils.drawCenteredTextWrapped(graphics, font, NOTICE, x, y + 68, (int) ((256-10) * 1.2f), CommonColors.DARK_GRAY);
-        mStack.popMatrix();
+        drawScaledScrollingString(graphics, NOTICE, x - (SCREEN_WIDTH / 2), y + 63, TextAlignment.CENTER, CommonColors.DARK_GRAY, SCREEN_WIDTH, 6, false, 0.8F);
 
         var fakeKeira = this.fakeKeira.get().getEntity();
-        InventoryScreen.extractEntityInInventoryFollowsMouse(graphics, x - 132, y - 13, x - 75, y + 60, 50, GuiUtils.ENTITY_SCALE + 0.4f, mouseX, mouseY, fakeKeira);
+        InventoryScreen.extractEntityInInventoryFollowsMouse(graphics, x - 132, y - 13, x - 75, y + 60, 50, ENTITY_SCALE + 0.4f, mouseX, mouseY, fakeKeira);
     }
 
     @Override
