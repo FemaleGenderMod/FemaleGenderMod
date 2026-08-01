@@ -73,6 +73,7 @@ public final class SyncedPlayerList {
         }
         int screenWidth = graphics.guiWidth();
         int width = screenWidth;
+        //~ if >=26.2 'getTabList' -> 'hud.getTabList'
         var tabListAccessor = (PlayerTabOverlayAccessor) Minecraft.getInstance().gui.hud.getTabList();
         if (tabListAccessor.isVisible()) {
             //Where it starts drawing, given we start at 0, this works for calculating the width
@@ -153,6 +154,7 @@ public final class SyncedPlayerList {
         if (mc.level == null) {
             return 0;
         }
+        //~ if >=26.2 'getTabList' -> 'hud.getTabList'
         PlayerTabOverlay tabList = mc.gui.hud.getTabList();
         var tabListAccessor = (PlayerTabOverlayAccessor) tabList;
 
@@ -186,6 +188,7 @@ public final class SyncedPlayerList {
             cols++;
         }
 
+        //~ if >=26.2 'mc.isLocalServer() || mc.getConnection().getConnection().isEncrypted()' -> 'mc.getConnection().onlineMode()'
         boolean showHead = mc.getConnection().onlineMode();
         int widthForScore;
         if (displayObjective != null) {
