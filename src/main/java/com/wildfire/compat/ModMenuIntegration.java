@@ -21,6 +21,7 @@ package com.wildfire.compat;
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 import com.wildfire.gui.screen.WardrobeBrowserScreen;
+import com.wildfire.main.WildfireLang;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.layouts.LinearLayout;
@@ -54,9 +55,9 @@ public class ModMenuIntegration implements ModMenuApi {
             super(
                 //~ if >=26.2 'setScreen' -> 'gui.setScreen'
                 _ -> client.gui.setScreen(parent),
-                //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
-                Component.translatable("wildfire_gender.not_in_world.title").withColor(TextColor.RED),
-                Component.translatable("wildfire_gender.not_in_world")
+                //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor'
+                WildfireLang.NOT_IN_WORLD_TITLE.translateColored(TextColor.RED),
+                WildfireLang.NOT_IN_WORLD.translate()
             );
             this.parent = parent;
         }

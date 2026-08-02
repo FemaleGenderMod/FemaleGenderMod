@@ -21,6 +21,7 @@ package com.wildfire.gui.screen;
 import com.wildfire.gui.FakeGUIPlayer;
 import com.wildfire.main.GenderConfigs;
 import com.wildfire.main.WildfireGender;
+import com.wildfire.main.WildfireLang;
 import com.wildfire.main.contributors.Contributor;
 import com.wildfire.main.contributors.Contributors;
 import java.util.ArrayList;
@@ -79,7 +80,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
     private int creditsPage = 0;
 
     public WildfireCreditsScreen(Screen parent, UUID uuid) {
-        super(Component.translatable("wildfire_gender.credits.title"), parent, uuid);
+        super(WildfireLang.CREDITS_TITLE.translate(), parent, uuid);
     }
 
     private int navigationY;
@@ -96,7 +97,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
 
         //category tab
         ref.generalTab = addButton(builder -> builder
-                .message(() -> Component.translatable("wildfire_gender.credits.general"))
+                .message(WildfireLang.CREDITS_GENERAL::translate)
                 .position(this.width / 2 - 89, navigationY + 34)
                 .size(87, 13)
                 .active(categoryTab == Category.TRANSLATORS)
@@ -111,7 +112,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
                 }));
 
         ref.translatorTab = addButton(builder -> builder
-                .message(() -> Component.translatable("wildfire_gender.credits.translators"))
+                .message(WildfireLang.CREDITS_TRANSLATORS::translate)
                 .position(this.width / 2 + 2, navigationY + 34)
                 .size(87, 13)
                 .active(categoryTab == Category.GENERAL)
@@ -126,13 +127,13 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
 
         //page tab
         addButton(builder -> builder
-                .message(() -> Component.translatable("wildfire_gender.details.go_back"))
+                .message(WildfireLang.DETAILS_BACK::translate)
                 .position(this.width / 2 - 25, navigationY + 6)
                 .size(50, 13)
                 .onPress(_ -> onClose()));
 
         ref.nextPage = addButton(builder -> builder
-                .message(() -> Component.translatable("wildfire_gender.details.next_page"))
+                .message(WildfireLang.DETAILS_NEXT_PAGE::translate)
                 .position(this.width / 2 + 29, navigationY + 6)
                 .size(60, 13)
                 .active(creditsPage < getTotalPages()-1)
@@ -145,7 +146,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
                 }));
 
         ref.prevPage = addButton(builder -> builder
-                .message(() -> Component.translatable("wildfire_gender.details.prev_page"))
+                .message(WildfireLang.DETAILS_PREV_PAGE::translate)
                 .position(this.width / 2 - 89, navigationY + 6)
                 .size(60, 13)
                 .active(creditsPage != 0)
@@ -181,7 +182,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         drawScrollingString(graphics, getTitle(), 0, height / 2 - 100, TextAlignment.CENTER, CommonColors.WHITE, graphics.guiWidth(), 5, false);
-        drawScrollingString(graphics, Component.translatable("wildfire_gender.credits.description"), 0, height / 2 - 85, TextAlignment.CENTER, 0xFF888888, graphics.guiWidth(), 5, false);
+        drawScrollingString(graphics, WildfireLang.CREDITS_DESCRIPTION.translate(), 0, height / 2 - 85, TextAlignment.CENTER, 0xFF888888, graphics.guiWidth(), 5, false);
 
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, BUTTON_CONTAINER, this.width / 2 - (190 / 2), navigationY, 190, 25);
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, TAB_CONTAINER, this.width / 2 - (190 / 2), navigationY + 28, 190, 25);
@@ -225,14 +226,15 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
             if (mouseX > xP - 24 && mouseX < xP + 23 && mouseY > yP + 22 && mouseY < yP + 31) {
                 List<Component> txtList = new ArrayList<>();
                 var role = creditBox.getRoleOrGeneric();
-                //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.' {
-                txtList.add(role.withColor(Component.literal(creditBox.getName())
-                        .append(Component.literal(" - ").withColor(TextColor.DARK_GRAY))
-                        .append(role.shortName())));
+                //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor'
+                txtList.add(WildfireLang.GENERIC_DASH_EXPLANATION.translateColored(TextColor.DARK_GRAY,
+                    role.withColor(Component.literal(creditBox.getName())),
+                    role.withColor(role.shortName()))
+                );
                 if (creditBox.getDescription() != null && !creditBox.getDescription().isEmpty()) {
+                    //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
                     txtList.add(Component.literal(creditBox.getDescription()).withColor(TextColor.GRAY));
                 }
-                //~}
                 graphics.setComponentTooltipForNextFrame(font, txtList, mouseX, mouseY);
             }
         }

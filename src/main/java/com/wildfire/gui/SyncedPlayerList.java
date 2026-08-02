@@ -20,6 +20,7 @@ package com.wildfire.gui;
 
 import com.wildfire.gui.IFancyFontRenderer.TextAlignment;
 import com.wildfire.main.WildfireGender;
+import com.wildfire.main.WildfireLang;
 import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.contributors.Contributors;
 import com.wildfire.main.entitydata.PlayerConfig;
@@ -92,16 +93,13 @@ public final class SyncedPlayerList {
             return;
         }
 
-        //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
-        var header = Component.translatable("wildfire_gender.wardrobe.players_using_mod").withColor(TextColor.AQUA);
+        //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor'
+        var header = WildfireLang.WARDROBE_PLAYERS_USING.translateColored(TextColor.AQUA);
         fontRenderer.drawScrollingString(graphics, header, 0, 5, TextAlignment.LEFT, CommonColors.WHITE, titleWidth, 5, false);
 
         int yPos = 18;
         for(var entry : syncedPlayers) {
-            //~ if >=26.2 '.color().getValue()' -> '.color()'
-            Component text = Component.literal(entry.name()).withColor(entry.color())
-                    .append(" - ")
-                    .append(entry.gender().getDisplayName());
+            Component text = WildfireLang.GENERIC_DASH_EXPLANATION.translate(entry.coloredName(), entry.gender().getDisplayName());
             fontRenderer.drawScrollingString(graphics, text, 5, yPos, TextAlignment.LEFT, CommonColors.WHITE, playerWidth - 5, 5, false);
             yPos += 10;
         }
@@ -146,6 +144,11 @@ public final class SyncedPlayerList {
     }
 
     private record SyncedPlayer(String name, TextColor color, Gender gender) {
+
+        public Component coloredName() {
+            //~ if >=26.2 'color.getValue()' -> 'color'
+            return Component.literal(name).withColor(color);
+        }
     }
 
     /// @implNote Trimmed down logic from [PlayerTabOverlay#extractRenderState]

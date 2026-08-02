@@ -19,31 +19,29 @@
 package com.wildfire.datagen;
 
 import com.wildfire.main.WildfireGender;
+import com.wildfire.main.WildfireLang;
 import com.wildfire.main.WildfireSounds;
 import net.fabricmc.fabric.api.client.datagen.v1.builder.SoundTypeBuilder;
+import net.fabricmc.fabric.api.client.datagen.v1.builder.SoundTypeBuilder.RegistrationBuilder;
 import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricSoundsProvider;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.PackOutput;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.concurrent.CompletableFuture;
 
 @ApiStatus.Internal
 class WildfireSoundsProvider extends FabricSoundsProvider {
-	public WildfireSoundsProvider(FabricDataOutput dataOutput, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookup) {
-		super(dataOutput, registryLookup);
+	public WildfireSoundsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+		super(output, registries);
 	}
 
 	@Override
-	protected void configure(RegistryWrapper.WrapperLookup registryLookup, SoundExporter exporter) {
-		exporter.add(
-				WildfireSounds.FEMALE_HURT,
-				SoundTypeBuilder.of()
-						.category(SoundCategory.PLAYERS)
-						.sound(SoundTypeBuilder.EntryBuilder.ofFile(Identifier.of(WildfireGender.MODID, "female_damage")))
-						.sound(SoundTypeBuilder.EntryBuilder.ofFile(Identifier.of(WildfireGender.MODID, "female_damage2")))
+	protected void configure(HolderLookup.Provider registryLookup, SoundExporter exporter) {
+		exporter.add(WildfireSounds.FEMALE_HURT, SoundTypeBuilder.of()
+            .subtitle(WildfireLang.HURT_SOUND_SUBTITLE.getTranslationKey())
+            .sound(RegistrationBuilder.ofFile(WildfireGender.id("female_damage")))
+            .sound(RegistrationBuilder.ofFile(WildfireGender.id("female_damage2")))
 		);
 	}
 

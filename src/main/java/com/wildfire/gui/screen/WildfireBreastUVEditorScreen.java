@@ -19,6 +19,7 @@
 package com.wildfire.gui.screen;
 
 import com.wildfire.main.WildfireGender;
+import com.wildfire.main.WildfireLang;
 import com.wildfire.main.config.Configuration;
 import com.wildfire.main.uvs.BreastTypes;
 import com.wildfire.main.uvs.UVDirection;
@@ -66,7 +67,7 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
     private static final float uvWindowScaleFactor = textureDrawWidth / (float) textureSourceWidth;
 
     public WildfireBreastUVEditorScreen(Screen parent, UUID uuid) {
-        super(Component.translatable("wildfire_gender.uv_editor"), parent, uuid);
+        super(WildfireLang.UV_EDITOR.translate(), parent, uuid);
     }
 
     @Override
@@ -79,7 +80,7 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
         int y = 0;
 
         addButton(builder -> builder
-                .message(() -> Component.translatable("wildfire_gender.uv_editor.reset_defaults_all"))
+                .message(WildfireLang.UV_EDITOR_RESET_ALL::translate)
                 .position(x + 5, y + 5)
                 .size(this.width - x - 10, 20)
                 .onPress(_ -> {
@@ -95,28 +96,28 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
                 }));
 
         addButton(builder -> builder
-                .message(() -> Component.translatable("wildfire_gender.uv_editor.selection.left_breast"))
+                .message(WildfireLang.UV_EDITOR_LB::translate)
                 .position(winElementPos.x(), winElementPos.y() + 13)
                 .size(sidebarWidth / 4 - 5, 15)
                 .active(selectedBreastIndex != BreastTypes.LEFT)
                 .onPress(_ -> selectBreastUVMap(BreastTypes.LEFT)));
 
         addButton(builder -> builder
-                .message(() -> Component.translatable("wildfire_gender.uv_editor.selection.right_breast"))
+                .message(WildfireLang.UV_EDITOR_RB::translate)
                 .position(winElementPos.x() + sidebarWidth / 4 - 3, winElementPos.y() + 13)
                 .size(sidebarWidth / 4 - 6, 15)
                 .active(selectedBreastIndex != BreastTypes.RIGHT)
                 .onPress(_ -> selectBreastUVMap(BreastTypes.RIGHT)));
 
         addButton(builder -> builder
-                .message(() -> Component.translatable("wildfire_gender.uv_editor.selection.left_breast_overlay"))
+                .message(WildfireLang.UV_EDITOR_LB_OVERLAY::translate)
                 .position(winElementPos.x(), winElementPos.y() + 44)
                 .size(sidebarWidth / 4 - 5, 15)
                 .active(selectedBreastIndex != BreastTypes.LEFT_OVERLAY)
                 .onPress(_ -> selectBreastUVMap(BreastTypes.LEFT_OVERLAY)));
 
         addButton(builder -> builder
-                .message(() -> Component.translatable("wildfire_gender.uv_editor.selection.right_breast_overlay"))
+                .message(WildfireLang.UV_EDITOR_RB_OVERLAY::translate)
                 .position(winElementPos.x() + sidebarWidth / 4 - 3, winElementPos.y() + 44)
                 .size(sidebarWidth / 4 - 6, 15)
                 .active(selectedBreastIndex != BreastTypes.RIGHT_OVERLAY)
@@ -154,7 +155,7 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
                                 6,6,
                                     ARGB.opaque(color));
                         })
-                        .message(() -> isAdd ? Component.translatable("wildfire_gender.uv_editor.add") : Component.translatable("wildfire_gender.uv_editor.remove"))
+                        .message((isAdd ? WildfireLang.UV_EDITOR_ADD : WildfireLang.UV_EDITOR_REMOVE)::translate)
                         .position(uvPositionWindowX + xOffset, y + buttonArrayY + yOffset)
                         .size(12, 12)
                         .onPress(_ -> {
@@ -244,30 +245,30 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
             drawFaceBorders(graphics, selectedUVs, mouseX, mouseY, false);
         }
 
-        drawScrollingString(graphics, Component.translatable("wildfire_gender.uv_editor.selection.layer_body"), winElementPos.x(), winElementPos.y() + 2,
-            TextAlignment.CENTER, CommonColors.WHITE, sidebarWidth / 2 - 9, 0, false);
-        drawScrollingString(graphics, Component.translatable("wildfire_gender.uv_editor.selection.layer_jacket"), winElementPos.x(), winElementPos.y() + 32,
-            TextAlignment.CENTER, CommonColors.WHITE, sidebarWidth / 2 - 9, 0, false);
+        drawScrollingString(graphics, WildfireLang.UV_EDITOR_BODY_LAYER.translate(), winElementPos.x(), winElementPos.y() + 2, TextAlignment.CENTER, CommonColors.WHITE,
+            sidebarWidth / 2 - 9, 0, false);
+        drawScrollingString(graphics, WildfireLang.UV_EDITOR_JACKET_LAYER.translate(), winElementPos.x(), winElementPos.y() + 32, TextAlignment.CENTER, CommonColors.WHITE,
+            sidebarWidth / 2 - 9, 0, false);
 
         int positionBoxX = this.width - sidebarWidth / 4;
 
         //Coordinate selector
         if(selectedDirection == null) {
-            drawCenteredTextWrapped(graphics, Component.translatable("wildfire_gender.uv_editor.no_face_selected"), positionBoxX, 60, 70, 0xFF888888);
+            drawCenteredTextWrapped(graphics, WildfireLang.UV_EDITOR_NO_FACE.translate(), positionBoxX, 60, 70, 0xFF888888);
         } else {
             //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
             drawScrollingString(graphics, selectedDirection.getDirectionText(selectedBreastIndex).withColor(TextColor.GOLD), positionBoxX - 40, 37,
                 TextAlignment.CENTER, CommonColors.WHITE, 80, 2, false);
 
-            drawScrollingString(graphics, Component.translatable("wildfire_gender.uv_editor.xpos"), positionBoxX - 35, 55, TextAlignment.LEFT, CommonColors.WHITE, 45, 0, false);
-            drawScrollingString(graphics, Component.translatable("wildfire_gender.uv_editor.ypos"), positionBoxX - 35, 55 + 14, TextAlignment.LEFT, CommonColors.WHITE, 45, 0, false);
-            drawScrollingString(graphics, Component.translatable("wildfire_gender.uv_editor.width"), positionBoxX - 35, 55 + 2 * 14, TextAlignment.LEFT, CommonColors.WHITE, 45, 0, false);
-            drawScrollingString(graphics, Component.translatable("wildfire_gender.uv_editor.height"), positionBoxX - 35, 55 + 3 * 14, TextAlignment.LEFT, CommonColors.WHITE, 45, 0, false);
+            drawScrollingString(graphics, WildfireLang.UV_EDITOR_X_POS.translate(), positionBoxX - 35, 55, TextAlignment.LEFT, CommonColors.WHITE, 45, 0, false);
+            drawScrollingString(graphics, WildfireLang.UV_EDITOR_Y_POS.translate(), positionBoxX - 35, 55 + 14, TextAlignment.LEFT, CommonColors.WHITE, 45, 0, false);
+            drawScrollingString(graphics, WildfireLang.UV_EDITOR_WIDTH.translate(), positionBoxX - 35, 55 + 2 * 14, TextAlignment.LEFT, CommonColors.WHITE, 45, 0, false);
+            drawScrollingString(graphics, WildfireLang.UV_EDITOR_HEIGHT.translate(), positionBoxX - 35, 55 + 3 * 14, TextAlignment.LEFT, CommonColors.WHITE, 45, 0, false);
 
             //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.' {
-            drawScaledScrollingString(graphics, Component.translatable("wildfire_gender.uv_editor.increment_tip.line1").withColor(TextColor.AQUA), positionBoxX - 40, 109,
+            drawScaledScrollingString(graphics, WildfireLang.UV_EDITOR_INCREMENT.line(1).withColor(TextColor.AQUA), positionBoxX - 40, 109,
                 TextAlignment.LEFT, CommonColors.WHITE, 80, 2, false, 0.75F);
-            drawScaledScrollingString(graphics, Component.translatable("wildfire_gender.uv_editor.increment_tip.line2").withColor(TextColor.BLUE), positionBoxX - 40, 119,
+            drawScaledScrollingString(graphics, WildfireLang.UV_EDITOR_INCREMENT.line(2).withColor(TextColor.BLUE), positionBoxX - 40, 119,
                 TextAlignment.LEFT, CommonColors.WHITE, 80, 2, false, 0.75F);
             //~}
         }
@@ -307,9 +308,9 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
                 if(mouseX >= rectX1 && mouseX <= rectX2 && mouseY >= rectY1 && mouseY <= rectY2) {
                     List<FormattedCharSequence> array = new ArrayList<>();
-                    //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.' {
-                    array.add(direction.getDirectionText(selectedBreastIndex).append(" (").append(faceName).append(")").withColor(TextColor.GOLD).getVisualOrderText());
-                    array.add(Component.literal("[" + quad.x1() + ", " + quad.y1() + ", " + quad.x2() + ", " + quad.y2() + "]").withColor(TextColor.AQUA).getVisualOrderText());
+                    //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor' {
+                    array.add(WildfireLang.UV_SELECTED_DIRECTION.translateColored(TextColor.GOLD, direction.getDirectionText(selectedBreastIndex), faceName).getVisualOrderText());
+                    array.add(WildfireLang.UV_QUAD.translateColored(TextColor.AQUA, quad.x1(), quad.y1(), quad.x2(), quad.y2()).getVisualOrderText());
                     //~}
                     graphics.setTooltipForNextFrame(array, mouseX, mouseY);
                 }

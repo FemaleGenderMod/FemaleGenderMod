@@ -20,28 +20,30 @@ package com.wildfire.datagen;
 
 import com.wildfire.api.IGenderArmor;
 import com.wildfire.api.impl.GenderArmor;
-import com.wildfire.datagen.provider.GenderArmorProvider;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.minecraft.item.equipment.EquipmentAssetKeys;
-import net.minecraft.registry.RegistryWrapper;
+import com.wildfire.api.data.GenderArmorProvider;
+import com.wildfire.main.WildfireGender;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.PackOutput;
+import net.minecraft.world.item.equipment.EquipmentAssets;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.concurrent.CompletableFuture;
 
 @ApiStatus.Internal
 class WildfireGenderArmorProvider extends GenderArmorProvider {
-	public WildfireGenderArmorProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookup) {
-		super(output, registryLookup);
+	public WildfireGenderArmorProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+		super(output, registries, WildfireGender.MODID);
 	}
 
 	@Override
-	protected void addDefaults(RegistryWrapper.WrapperLookup lookupProvider) {
-		add(EquipmentAssetKeys.LEATHER, new GenderArmor(0.3f, 0.5f));
-		add(EquipmentAssetKeys.CHAINMAIL, new GenderArmor(0.5f, 0.2f));
-		add(EquipmentAssetKeys.GOLD, new GenderArmor(0.85f, 0, true));
-		add(EquipmentAssetKeys.IRON, new GenderArmor(1, 0));
-		add(EquipmentAssetKeys.DIAMOND, new GenderArmor(1, 0));
-		add(EquipmentAssetKeys.NETHERITE, new GenderArmor(1, 0));
-		add(EquipmentAssetKeys.ELYTRA, IGenderArmor.EMPTY);
+	protected void addDefaults(HolderLookup.Provider lookupProvider) {
+        add(EquipmentAssets.CHAINMAIL, new GenderArmor(0.5F, 0.2F));
+        add(EquipmentAssets.COPPER, new GenderArmor(1, 0));
+        add(EquipmentAssets.DIAMOND, new GenderArmor(1, 0));
+        add(EquipmentAssets.ELYTRA, IGenderArmor.EMPTY);
+		add(EquipmentAssets.GOLD, new GenderArmor(0.85f, 0, true));
+		add(EquipmentAssets.IRON, new GenderArmor(1, 0));
+        add(EquipmentAssets.LEATHER, new GenderArmor(0.3F, 0.5F));
+		add(EquipmentAssets.NETHERITE, new GenderArmor(1, 0));
 	}
 }

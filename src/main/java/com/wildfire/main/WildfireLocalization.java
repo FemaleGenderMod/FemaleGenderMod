@@ -22,25 +22,25 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
 
 public class WildfireLocalization {
-    //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.' {
-    public static final Component ENABLED = Component.translatable("wildfire_gender.label.enabled").withColor(TextColor.GREEN);
-    public static final Component DISABLED = Component.translatable("wildfire_gender.label.disabled").withColor(TextColor.RED);
+    //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor' {
+    public static final Component ENABLED = WildfireLang.LABEL_ENABLED.translateColored(TextColor.GREEN);
+    public static final Component DISABLED = WildfireLang.LABEL_DISABLED.translateColored(TextColor.RED);
     //~}
-    public static final Component OFF = Component.translatable("wildfire_gender.label.off");
+    public static final Component OFF = WildfireLang.LABEL_OFF.translate();
 
-    public static final Component SYNC_LOG_AUTHENTICATING_MOJANG = Component.translatable("wildfire_gender.sync_log.authenticating_mojang");
-    public static final Component SYNC_LOG_AUTHENTICATING_CLOUD_SYNC = Component.translatable("wildfire_gender.sync_log.authenticating_sync");
-    public static final Component SYNC_LOG_AUTHENTICATION_FAILED = Component.translatable("wildfire_gender.sync_log.authentication_failed");
-    public static final Component SYNC_LOG_REAUTHENTICATING = Component.translatable("wildfire_gender.sync_log.reauthenticating");
-    public static final Component SYNC_LOG_ATTEMPTING_SYNC = Component.translatable("wildfire_gender.sync_log.attempting_sync");
-    public static final Component SYNC_LOG_SYNC_SUCCESS = Component.translatable("wildfire_gender.sync_log.sync_success");
-    public static final Component SYNC_LOG_SYNC_TOO_FREQUENTLY = Component.translatable("wildfire_gender.sync_log.sync_too_frequently");
-    public static final Component SYNC_LOG_FAILED_TO_SYNC_DATA = Component.translatable("wildfire_gender.sync_log.failed_to_sync_data");
+    public static final Component SYNC_LOG_AUTHENTICATING_MOJANG = WildfireLang.SYNC_LOG_AUTH_MOJANG.translate();
+    public static final Component SYNC_LOG_AUTHENTICATING_CLOUD_SYNC = WildfireLang.SYNC_LOG_AUTH_SYNC.translate();
+    public static final Component SYNC_LOG_AUTHENTICATION_FAILED = WildfireLang.SYNC_LOG_AUTH_FAILED.translate();
+    public static final Component SYNC_LOG_REAUTHENTICATING = WildfireLang.SYNC_LOG_REAUTH.translate();
+    public static final Component SYNC_LOG_ATTEMPTING_SYNC = WildfireLang.SYNC_LOG_START.translate();
+    public static final Component SYNC_LOG_SYNC_SUCCESS = WildfireLang.SYNC_LOG_SUCCESS.translate();
+    public static final Component SYNC_LOG_SYNC_TOO_FREQUENTLY = WildfireLang.SYNC_LOG_TOO_FREQUENT.translate();
+    public static final Component SYNC_LOG_FAILED_TO_SYNC_DATA = WildfireLang.SYNC_LOG_FAILED.translate();
 
-    public static final Component SYNC_LOG_DELETED = Component.translatable("wildfire_gender.sync_log.data_deleted");
-    public static final Component SYNC_LOG_DELETION_FAILED = Component.translatable("wildfire_gender.sync_log.data_deletion_failed");
-    public static final Component SYNC_LOG_NO_PROFILE_TO_DELETE = Component.translatable("wildfire_gender.sync_log.no_data_to_delete");
+    public static final Component SYNC_LOG_DELETED = WildfireLang.SYNC_LOG_PROFILE_DELETED.translate();
+    public static final Component SYNC_LOG_DELETION_FAILED = WildfireLang.SYNC_LOG_PROFILE_DELETION_FAILED.translate();
+    public static final Component SYNC_LOG_NO_PROFILE_TO_DELETE = WildfireLang.SYNC_LOG_NO_PROFILE.translate();
 
-    public static final Component SYNC_LOG_GET_SINGLE_PROFILE = Component.translatable("wildfire_gender.sync_log.get_single_profile");
-    public static final Component SYNC_LOG_GET_MULTIPLE_PROFILES = Component.translatable("wildfire_gender.sync_log.get_multiple_profiles");
+    public static final Component SYNC_LOG_GET_SINGLE_PROFILE = WildfireLang.SYNC_LOG_SINGLE_PROFILE.translate();
+    public static final Component SYNC_LOG_GET_MULTIPLE_PROFILES = WildfireLang.SYNC_LOG_MULTIPLE_PROFILES.translate();
 }

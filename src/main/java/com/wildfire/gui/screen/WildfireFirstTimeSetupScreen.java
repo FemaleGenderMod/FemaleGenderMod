@@ -24,6 +24,7 @@ import com.wildfire.gui.WildfireButton;
 import com.wildfire.main.GenderConfigs;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireGenderClient;
+import com.wildfire.main.WildfireLang;
 import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
 import net.fabricmc.api.EnvType;
@@ -49,13 +50,13 @@ import org.jspecify.annotations.Nullable;
 @Environment(EnvType.CLIENT)
 public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 
-    private static final Component DESCRIPTION = Component.translatable("wildfire_gender.first_time_setup.description");
-    private static final Component NOTICE = Component.translatable("wildfire_gender.first_time_setup.notice");
+    private static final Component DESCRIPTION = WildfireLang.FIRST_TIME_DESCRIPTION.translate();
+    private static final Component NOTICE = WildfireLang.FIRST_TIME_NOTICE.translate();
     private static final int SCREEN_WIDTH = 274;
 
-    //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.' {
-    private static final Component ENABLE_CLOUD_SYNCING = Component.translatable("wildfire_gender.first_time_setup.enable").withColor(TextColor.GREEN);
-    private static final Component DISABLE_CLOUD_SYNCING = Component.translatable("wildfire_gender.first_time_setup.disable").withColor(TextColor.RED);
+    //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor' {
+    private static final Component ENABLE_CLOUD_SYNCING = WildfireLang.FIRST_TIME_ENABLE.translateColored(TextColor.GREEN);
+    private static final Component DISABLE_CLOUD_SYNCING = WildfireLang.FIRST_TIME_DISABLE.translateColored(TextColor.RED);
     //~}
 
     private static final Identifier BACKGROUND = WildfireGender.id("textures/gui/first_time_bg.png");
@@ -65,7 +66,7 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
     private final Supplier<FakeGUIPlayer> fakeKeira = Suppliers.memoize(() -> new FakeGUIPlayer("KeiaraFGM", keiraUUID, GenderConfigs.DEFAULT_FEMALE));
 
     public WildfireFirstTimeSetupScreen(@Nullable Screen parent, UUID uuid) {
-        super(Component.translatable("wildfire_gender.first_time_setup.title").withStyle(style -> style.withUnderlined(true)), parent, uuid);
+        super(WildfireLang.FIRST_TIME_TITLE.translate().withStyle(style -> style.withUnderlined(true)), parent, uuid);
     }
 
     @Override
@@ -90,16 +91,16 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
                     config.set(ClientConfig.FIRST_TIME_LOAD, false);
 
                     button.active = false;
-                    button.setMessage(Component.literal("..."));
+                    button.setMessage(WildfireLang.GENERIC_ELLIPSIS.translate());
                     ref.no.setActive(false);
 
                     final var nextScreen = new WardrobeBrowserScreen(null, playerUUID);
                     //~ if >=26.2 'setScreen' -> 'gui.setScreen'
                     doInitialSync().thenRun(() -> minecraft.execute(() -> minecraft.gui.setScreen(nextScreen)));
                 })
-                .tooltip(Tooltip.create(Component.translatable("wildfire_gender.first_time_setup.enable.tooltip.line1")
+                .tooltip(Tooltip.create(WildfireLang.FIRST_TIME_ENABLE_TOOLTIP.line(1)
                         .append("\n\n")
-                        .append(Component.translatable("wildfire_gender.first_time_setup.enable.tooltip.line2")))));
+                        .append(WildfireLang.FIRST_TIME_ENABLE_TOOLTIP.line(2)))));
 
         ref.no = addButton(builder -> builder
                 .message(() -> DISABLE_CLOUD_SYNCING)
@@ -167,8 +168,8 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 
         drawScrollingString(graphics, getTitle(), x - (SCREEN_WIDTH / 2), y - 24, TextAlignment.CENTER, CommonColors.DARK_GRAY, SCREEN_WIDTH, 6, false);
 
-        //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
-        drawScrollingString(graphics, Component.literal("Keira Emberlyn:").withColor(TextColor.LIGHT_PURPLE), x - 63, y - 10, TextAlignment.CENTER, CommonColors.WHITE, 191, 0, false);
+        //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor'
+        drawScrollingString(graphics, WildfireLang.KEIRA.translateColored(TextColor.LIGHT_PURPLE), x - 63, y - 10, TextAlignment.CENTER, CommonColors.WHITE, 191, 0, false);
 
         //TODO: Vertical scroll bar for longer text?
         drawCenteredTextWrapped(graphics, DESCRIPTION, x + 32, y + 2, 256 - 65, CommonColors.WHITE);

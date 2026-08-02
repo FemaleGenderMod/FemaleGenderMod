@@ -185,8 +185,8 @@ public final class WildfireEventHandler {
         if(!config.coversBreasts() || config.physicsResistance() == 0f) return;
 
         var formatted = WildfireHelper.toFormattedPercent(config.physicsResistance()) + "%";
-        //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
-        tooltipAppender.accept(Component.translatable("wildfire_gender.armor.tooltip", formatted).withColor(TextColor.LIGHT_PURPLE));
+        //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor'
+        tooltipAppender.accept(WildfireLang.ARMOR_TOOLTIP.translateColored(TextColor.LIGHT_PURPLE, formatted));
     }
 
     @Environment(EnvType.CLIENT)
@@ -273,7 +273,7 @@ public final class WildfireEventHandler {
             var button = CONFIG_KEYBIND.getTranslatedKeyMessage();
             //~ if >=26.2 'client.getToastManager()' -> 'client.gui.toastManager()'
             ToastManager toastManager = client.gui.toastManager();
-            toastManager.addToast(new WildfireToast(Minecraft.getInstance().font, Component.translatable("wildfire_gender.player_list.title"), Component.translatable("toast.wildfire_gender.get_started", button)));
+            toastManager.addToast(new WildfireToast(Minecraft.getInstance().font, WildfireLang.PLAYER_LIST_TITLE.translate(), WildfireLang.TOAST_GET_STARTED.translate(button)));
         }
     }
 

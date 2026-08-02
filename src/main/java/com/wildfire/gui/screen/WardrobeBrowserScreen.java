@@ -20,6 +20,7 @@ package com.wildfire.gui.screen;
 
 import com.wildfire.gui.SyncedPlayerList;
 import com.wildfire.main.WildfireGender;
+import com.wildfire.main.WildfireLang;
 import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.contributors.Contributors;
@@ -66,7 +67,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
     private final WidgetTooltipHolder contribTooltip = new WidgetTooltipHolder();
 
     public WardrobeBrowserScreen(@Nullable Screen parent, UUID uuid) {
-        super(Component.translatable("wildfire_gender.wardrobe.title"), parent, uuid);
+        super(WildfireLang.WARDROBE_TITLE.translate(), parent, uuid);
     }
 
     public static BaseWildfireScreen create(LocalPlayer player, @Nullable Screen parent) {
@@ -90,7 +91,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
         PlayerConfig plr = Objects.requireNonNull(getPlayer(), "getPlayer()");
 
         addButton(builder -> builder
-                .message(() -> Component.translatable("wildfire_gender.always_show_list", ClientConfig.INSTANCE.get(ClientConfig.ALWAYS_SHOW_LIST).text()))
+                .message(() -> WildfireLang.PLAYER_LIST_MODE.translate(ClientConfig.INSTANCE.get(ClientConfig.ALWAYS_SHOW_LIST).text()))
                 .tooltip(ClientConfig.INSTANCE.get(ClientConfig.ALWAYS_SHOW_LIST).tooltip())
                 .position(126, 4)
                 .size(185, 10)
@@ -114,7 +115,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
                 }));
 
         addButton(builder -> builder
-                .message(() -> Component.translatable("wildfire_gender.appearance_settings.title").append("..."))
+                .message(() -> WildfireLang.GENERIC_ELLIPSIS_SUFFIX.translate(WildfireLang.APPEARANCE_SETTINGS_TITLE.translate()))
                 .position(this.width / 2 - 36, this.height / 2 - 63)
                 .size(157, 20)
                 .onPress(_ -> {
@@ -124,7 +125,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
                 .active(plr.getGender().canHaveBreasts()));
 
         addButton(builder -> {
-            builder.message(() -> Component.translatable("wildfire_gender.cloud_settings"));
+            builder.message(WildfireLang.CLOUD_SETTINGS::translate);
             builder.position(this.width / 2 - 36, y + 30);
             builder.size(24, 18);
             builder.renderer((button, ctx, _, _, _) ->
@@ -139,12 +140,12 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
                 builder.tooltip(Tooltip.create(cloudUnavailable.text()));
                 builder.active(false);
             } else {
-                builder.tooltip(Tooltip.create(Component.translatable("wildfire_gender.cloud.tooltip")));
+                builder.tooltip(Tooltip.create(WildfireLang.CLOUD_TOOLTIP.translate()));
             }
         });
 
         addButton(builder -> builder
-                .message(() -> Component.translatable("wildfire_gender.credits.title").append("..."))
+                .message(() -> WildfireLang.GENERIC_ELLIPSIS_SUFFIX.translate(WildfireLang.CREDITS_TITLE.translate()))
                 .position(this.width / 2 + 2, this.height / 2 + 33)
                 .size(78, 15)
                 .onPress(_ -> {
@@ -185,7 +186,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
         if(isBreastCancerAwarenessMonth) {
             int bcaY = y - 45;
             graphics.fill(x - 159, bcaY + 106, x + 159, bcaY + 136, ARGB.black(0x55));
-            drawScrollingString(graphics, Component.translatable("wildfire_gender.cancer_awareness.title").withStyle(style -> style.withBold(true).withItalic(true)),
+            drawScrollingString(graphics, WildfireLang.CANCER_AWARENESS_TITLE.translate().withStyle(style -> style.withBold(true).withItalic(true)),
                 x - 153, bcaY + 117, TextAlignment.LEFT, CommonColors.WHITE, 283, 5, false);
             graphics.blitSprite(RenderPipelines.GUI_TEXTURED, TXTR_RIBBON, x + 130, bcaY + 109, 26, 26);
         }
@@ -213,12 +214,12 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
         final Component text;
         final var toList = new ArrayList<>(foundContributors);
         if(withCreator && !foundContributors.isEmpty()) {
-            text = Component.translatable("wildfire_gender.label.with_both");
+            text = WildfireLang.LABEL_WITH_BOTH.translate();
             toList.addFirst(entries.get(Contributors.CREATOR_UUID));
         } else if(withCreator) {
-            text = Component.translatable("wildfire_gender.label.with_creator");
+            text = WildfireLang.LABEL_WITH_CREATOR.translate();
         } else {
-            text = Component.translatable("wildfire_gender.label.with_contributor");
+            text = WildfireLang.LABEL_WITH_CONTRIBUTOR.translate();
         }
 
         int textWidth = font.width(text);

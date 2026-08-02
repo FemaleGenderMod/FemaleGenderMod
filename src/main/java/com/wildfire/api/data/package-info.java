@@ -16,20 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.datagen;
+@NullMarked
+package com.wildfire.api.data;
 
-import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
-import org.jetbrains.annotations.ApiStatus;
-
-@ApiStatus.Internal // TODO does fabric support splitting this into its own compile time-only module?
-public class WildfireGenderDataGenerator implements DataGeneratorEntrypoint {
-	@Override
-	public void onInitializeDataGenerator(FabricDataGenerator dataGen) {
-        //TODO: Move modeldata generation to being generated, but that should be part of the config rework where it becomes a codec
-		var pack = dataGen.createPack();
-		pack.addProvider(WildfireLangProvider::new);
-		pack.addProvider(WildfireSoundsProvider::new);
-		pack.addProvider(WildfireGenderArmorProvider::new);
-	}
-}
+import org.jspecify.annotations.NullMarked;
