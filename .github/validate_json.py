@@ -36,10 +36,10 @@ for file in jsons:
 if should_fail:
     exit(1)
 
-with open("src/main/generated/assets/wildfire_gender/lang/en_us.json") as f:
+with open("versions/26.2/src/main/generated/assets/wildfire_gender/lang/en_us.json") as f:
     root_translations = json.load(f)
 
-for translation in glob("src/main/resources/assets/wildfire_gender/lang/*.json"):
+for translation in glob("**/**/src/main/resources/assets/wildfire_gender/lang/*.json"):
     file = Path(translation)
     if file.name == "en_us.json":
         continue
