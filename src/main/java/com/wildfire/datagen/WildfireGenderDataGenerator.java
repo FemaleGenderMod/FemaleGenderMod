@@ -18,6 +18,7 @@
 
 package com.wildfire.datagen;
 
+import com.wildfire.datagen.lang.WildfireLangProvider;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import org.jetbrains.annotations.ApiStatus;

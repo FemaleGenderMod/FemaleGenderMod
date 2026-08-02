@@ -16,36 +16,69 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.datagen;
+package com.wildfire.datagen.lang;
 
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireLang;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.data.CachedOutput;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-class WildfireLangProvider extends FabricLanguageProvider {
+public class WildfireLangProvider extends FabricLanguageProvider {
 
-    protected WildfireLangProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+    private final ConvertibleLanguageProvider[] altProviders;
+
+    public WildfireLangProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
         super(output, registries);
-        //TODO: Similar to mek add automatic support for en variants including en_ud
+        altProviders = new ConvertibleLanguageProvider[]{
+            new UpsideDownLanguageProvider(),
+            new NonAmericanLanguageProvider("en_au"),
+            new NonAmericanLanguageProvider("en_gb"),
+            new NonAmericanLanguageProvider("en_ca")
+        };
+    }
+
+    private void add(TranslationBuilder builder, String key, String value) {
+        if (value.contains("%s")) {
+            throw new IllegalArgumentException("Values containing substitutions should use explicit numbered indices: " + key + " - " + value);
+        }
+        builder.add(key, value);
+        if (altProviders.length > 0) {
+            List<FormatSplitter.Component> splitEnglish = FormatSplitter.split(value);
+            for (ConvertibleLanguageProvider provider : altProviders) {
+                provider.convert(key, value, splitEnglish);
+            }
+        }
+    }
+
+    @Override
+    public CompletableFuture<?> run(CachedOutput cache) {
+        return super.run(cache).thenCompose(_ -> {
+            CompletableFuture<?>[] futures = new CompletableFuture[altProviders.length];
+            for (int i = 0; i < altProviders.length; i++) {
+                futures[i] = altProviders[i].save(cache, this::getLangFilePath);
+            }
+            return CompletableFuture.allOf(futures);
+        });
     }
 
     private void add(TranslationBuilder builder, WildfireLang lang, String translation) {
-        builder.add(lang.getTranslationKey(), translation);
+        add(builder, lang.getTranslationKey(), translation);
     }
 
     private void addCompact(TranslationBuilder builder, WildfireLang lang, String translation, String shortTranslation) {
         add(builder, lang, translation);
-        builder.add(lang.getTranslationKey() + ".short", shortTranslation);
+        add(builder, lang.getTranslationKey() + ".short", shortTranslation);
     }
 
     private void addCommand(TranslationBuilder builder, WildfireLang lang, String usage, String description) {
         add(builder, lang, usage);
-        builder.add(lang.getTranslationKey() + ".description", description);
+        add(builder, lang.getTranslationKey() + ".description", description);
     }
 
     private void add(TranslationBuilder builder, WildfireLang lang, String... translations) {
@@ -57,7 +90,7 @@ class WildfireLangProvider extends FabricLanguageProvider {
         }
         int index = 1;
         for (String translation : translations) {
-            builder.add(translationKey + ".line" + index++, translation);
+            add(builder, translationKey + ".line" + index++, translation);
         }
     }
 
