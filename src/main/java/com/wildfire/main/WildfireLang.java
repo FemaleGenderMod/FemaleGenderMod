@@ -122,8 +122,6 @@ public enum WildfireLang {
     LABEL_DISABLED("label", "disabled"),
     LABEL_ON("label", "on"),
     LABEL_OFF("label", "off"),
-    LABEL_YES("label", "yes"),
-    LABEL_NO("label", "no"),
     LABEL_WITH_CREATOR("label", "with_creator"),
     LABEL_WITH_CONTRIBUTOR("label", "with_contributor"),
     LABEL_WITH_BOTH("label", "with_both"),
@@ -183,12 +181,13 @@ public enum WildfireLang {
     CONTRIBUTOR_ROLE_GENERIC("contributor", "role.generic"),
 
     GENERIC_BRACKETS("generic", "brackets"),
-    GENERIC_ELLIPSIS("generic", "ellipsis"),
     GENERIC_ELLIPSIS_SUFFIX("generic", "ellipsis.suffix"),
     GENERIC_SPACE("generic", "space"),
     GENERIC_DASH_EXPLANATION("generic", "dash_explanation"),
 
     KEIRA("misc", "keira_emberlyn"),
+    MISC_F("misc", "f"),
+    MISC_GM("misc", "gm"),
     HOLIDAY_THEMES("misc", "holiday_themes"),
     HOLIDAY_THEMES_TOOLTIP("tooltip", "holiday_themes"),
 

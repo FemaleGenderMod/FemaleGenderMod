@@ -42,6 +42,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.resources.Identifier;
@@ -235,7 +236,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
                     .map(entry -> PlayerTeam.formatNameForTeam(entry.getTeam(), Component.literal(entry.getProfile().name())))
                     .toList();
 
-            contribTooltip.set(Tooltip.create(ComponentUtils.formatList(contributorNames, Component.literal("\n"))));
+            contribTooltip.set(Tooltip.create(ComponentUtils.formatList(contributorNames, CommonComponents.NEW_LINE)));
             contribTooltip.refreshTooltipForNextRenderPass(graphics, mouseX, mouseY, true, true, ScreenRectangle.empty());
         }
     }

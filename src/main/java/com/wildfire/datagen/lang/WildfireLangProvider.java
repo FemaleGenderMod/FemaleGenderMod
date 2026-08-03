@@ -196,8 +196,6 @@ public class WildfireLangProvider extends FabricLanguageProvider {
         add(builder, WildfireLang.LABEL_DISABLED, "Disabled");
         add(builder, WildfireLang.LABEL_ON, "On");
         add(builder, WildfireLang.LABEL_OFF, "Off");
-        add(builder, WildfireLang.LABEL_YES, "Yes");
-        add(builder, WildfireLang.LABEL_NO, "No");
         add(builder, WildfireLang.LABEL_WITH_CREATOR, "You are playing on a server with the creator of this mod!");
         add(builder, WildfireLang.LABEL_WITH_CONTRIBUTOR, "You are playing on a server with a contributor of this mod!");
         add(builder, WildfireLang.LABEL_WITH_BOTH, "You are playing on a server with the creator and a contributor of this mod!");
@@ -269,12 +267,13 @@ public class WildfireLangProvider extends FabricLanguageProvider {
         addCompact(builder, WildfireLang.CONTRIBUTOR_ROLE_GENERIC, "Female Gender Mod Contributor", "Contributor");
 
         add(builder, WildfireLang.GENERIC_BRACKETS, "[%1$s]");
-        add(builder, WildfireLang.GENERIC_ELLIPSIS, "...");
         add(builder, WildfireLang.GENERIC_ELLIPSIS_SUFFIX, "%1$s...");
         add(builder, WildfireLang.GENERIC_SPACE, "%1$s %2$s");
         add(builder, WildfireLang.GENERIC_DASH_EXPLANATION, "%1$s - %2$s");
 
         add(builder, WildfireLang.KEIRA, "Keira Emberlyn:");
+        add(builder, WildfireLang.MISC_F, "F");
+        add(builder, WildfireLang.MISC_GM, "GM");
         add(builder, WildfireLang.HOLIDAY_THEMES, "Holiday Themes: %1$s");
         //TODO: This is like this to support the legacy translation key of one line. But maybe we should change it?
         add(builder, WildfireLang.HOLIDAY_THEMES_TOOLTIP, new String[]{"When enabled, this feature automatically showcases cosmetics like Santa hats and other holiday-themed items during their respective holidays."});

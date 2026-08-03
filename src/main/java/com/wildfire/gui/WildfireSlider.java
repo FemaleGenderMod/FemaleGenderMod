@@ -32,6 +32,7 @@ import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.ARGB;
@@ -59,7 +60,7 @@ public class WildfireSlider extends AbstractWidget implements IFancyFontRenderer
 
     private WildfireSlider(int xPos, int yPos, int width, int height, double minVal, double maxVal, double currentVal, FloatConsumer valueUpdate,
                           Float2ObjectFunction<Component> messageUpdate, FloatConsumer onSave) {
-        super(xPos, yPos, width, height, Component.empty());
+        super(xPos, yPos, width, height, CommonComponents.EMPTY);
         this.minValue = minVal;
         this.maxValue = maxVal;
         this.valueUpdate = valueUpdate;

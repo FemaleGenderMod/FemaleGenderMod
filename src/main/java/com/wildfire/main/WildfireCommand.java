@@ -39,6 +39,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.HoverEvent;
@@ -65,13 +66,12 @@ import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.argument;
 @Environment(EnvType.CLIENT)
 public class WildfireCommand {
 
-    //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor'
+    //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor' {
     private static final Component COMMAND_PREFIX = WildfireLang.GENERIC_BRACKETS.translateColored(TextColor.GRAY,
-        //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.' {
-        Component.literal("F").withColor(TextColor.LIGHT_PURPLE)
-            .append(Component.literal("GM").withColor(TextColor.WHITE))
-        //~}
+        WildfireLang.MISC_F.translateColored(TextColor.LIGHT_PURPLE)
+            .append(WildfireLang.MISC_GM.translateColored(TextColor.WHITE))
     );
+    //~}
 
     static void init() {
         ClientCommandRegistrationCallback.EVENT.register(WildfireCommand::register);
@@ -89,7 +89,7 @@ public class WildfireCommand {
                         WildfireLang.COMMAND_FIRST_TIME,
                         WildfireLang.COMMAND_SYNC_VERBOSITY
                     );
-                    ctx.getSource().sendFeedback(Component.empty());
+                    ctx.getSource().sendFeedback(CommonComponents.EMPTY);
                     sendHelp(ctx, WildfireLang.SINGLE_PLAYER_COMMAND,
                         WildfireLang.COMMAND_TRIM,
                         WildfireLang.COMMAND_ARMOR_STAND
@@ -165,7 +165,7 @@ public class WildfireCommand {
 
         }
 
-        ctx.getSource().sendFeedback(ComponentUtils.formatList(lines, Component.literal("\n")));
+        ctx.getSource().sendFeedback(ComponentUtils.formatList(lines, CommonComponents.NEW_LINE));
     }
 
     private static int openConfig(CommandContext<FabricClientCommandSource> ctx) {
@@ -240,7 +240,7 @@ public class WildfireCommand {
             var entity = world.getEntity(uuid);
             if(entity == null) continue;
 
-            var info = ComponentUtils.formatList(config.getDebugInfo(), Component.literal("\n"), Component::literal);
+            var info = ComponentUtils.formatList(config.getDebugInfo(), CommonComponents.NEW_LINE, Component::literal);
 
             lines.add(WildfireLang.GENERIC_DASH_EXPLANATION.translate(entity.getDisplayName(), config.getGender().getDisplayName())
                     .withStyle(style -> style.withHoverEvent(new HoverEvent.ShowText(info))));

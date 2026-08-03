@@ -34,6 +34,7 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.Identifier;
@@ -91,7 +92,7 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
                     config.set(ClientConfig.FIRST_TIME_LOAD, false);
 
                     button.active = false;
-                    button.setMessage(WildfireLang.GENERIC_ELLIPSIS.translate());
+                    button.setMessage(CommonComponents.ELLIPSIS);
                     ref.no.setActive(false);
 
                     final var nextScreen = new WardrobeBrowserScreen(null, playerUUID);
