@@ -116,7 +116,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
                 }));
 
         addButton(builder -> builder
-                .message(() -> WildfireLang.GENERIC_ELLIPSIS_SUFFIX.translate(WildfireLang.APPEARANCE_SETTINGS_TITLE.translate()))
+                .message(() -> WildfireLang.GENERIC_ELLIPSIS_SUFFIX.translate(WildfireLang.APPEARANCE_SETTINGS_TITLE))
                 .position(this.width / 2 - 36, this.height / 2 - 63)
                 .size(157, 20)
                 .onPress(_ -> {
@@ -146,7 +146,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
         });
 
         addButton(builder -> builder
-                .message(() -> WildfireLang.GENERIC_ELLIPSIS_SUFFIX.translate(WildfireLang.CREDITS_TITLE.translate()))
+                .message(() -> WildfireLang.GENERIC_ELLIPSIS_SUFFIX.translate(WildfireLang.CREDITS_TITLE))
                 .position(this.width / 2 + 2, this.height / 2 + 33)
                 .size(78, 15)
                 .onPress(_ -> {

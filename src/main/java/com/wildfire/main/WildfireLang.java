@@ -18,6 +18,7 @@
 
 package com.wildfire.main;
 
+import java.util.Arrays;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -265,7 +266,8 @@ public enum WildfireLang {
     }
 
     public MutableComponent translate(Object... args) {
-        return Component.translatable(translationKey, args);
+        //Simple filter to auto translate any sub lang entries
+        return Component.translatable(translationKey, Arrays.stream(args).map(arg -> arg instanceof WildfireLang lang ? lang.translate() : arg).toArray());
     }
 
     public MutableComponent line(int line) {
