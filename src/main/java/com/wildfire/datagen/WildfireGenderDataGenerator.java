@@ -27,7 +27,6 @@ import org.jetbrains.annotations.ApiStatus;
 public class WildfireGenderDataGenerator implements DataGeneratorEntrypoint {
 	@Override
 	public void onInitializeDataGenerator(FabricDataGenerator dataGen) {
-        //TODO: Move modeldata generation to being generated, but that should be part of the config rework where it becomes a codec
 		var pack = dataGen.createPack();
 		pack.addProvider(WildfireLangProvider::new);
 		pack.addProvider(WildfireSoundsProvider::new);

@@ -4,6 +4,6 @@
       "wildfire_gender:female_damage",
       "wildfire_gender:female_damage2"
     ],
-    "subtitle": "wildfire_gender.hurt.female"
+    "subtitle": "hurt.wildfire_gender.female"
   }
 }

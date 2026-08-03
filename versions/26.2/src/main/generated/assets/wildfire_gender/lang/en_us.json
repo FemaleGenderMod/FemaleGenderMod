@@ -1,4 +1,5 @@
 {
+  "hurt.wildfire_gender.female": "Female Player Hurt",
   "key.category.wildfire_gender.generic": "Female Gender Mod",
   "key.wildfire_gender.gender_menu": "Female Gender Menu",
   "key.wildfire_gender.toggle": "Toggle Breast Rendering",
@@ -107,7 +108,6 @@
   "wildfire_gender.generic.dash_explanation": "%1$s - %2$s",
   "wildfire_gender.generic.ellipsis.suffix": "%1$s...",
   "wildfire_gender.generic.space": "%1$s %2$s",
-  "wildfire_gender.hurt.female": "Female Player Hurt",
   "wildfire_gender.label.disabled": "Disabled",
   "wildfire_gender.label.enabled": "Enabled",
   "wildfire_gender.label.female": "Female",

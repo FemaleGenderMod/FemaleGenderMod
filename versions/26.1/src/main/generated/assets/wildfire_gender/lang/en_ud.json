@@ -1,4 +1,5 @@
 {
+  "hurt.wildfire_gender.female": "ʇɹnH ɹǝʎɐꞁԀ ǝꞁɐɯǝℲ",
   "key.category.wildfire_gender.generic": "poW ɹǝpuǝ⅁ ǝꞁɐɯǝℲ",
   "key.wildfire_gender.gender_menu": "nuǝW ɹǝpuǝ⅁ ǝꞁɐɯǝℲ",
   "key.wildfire_gender.toggle": "ᵷuᴉɹǝpuǝᴚ ʇsɐǝɹᗺ ǝꞁᵷᵷo⟘",
@@ -107,7 +108,6 @@
   "wildfire_gender.generic.dash_explanation": "%2$s - %1$s",
   "wildfire_gender.generic.ellipsis.suffix": "˙˙˙%s",
   "wildfire_gender.generic.space": "%2$s %1$s",
-  "wildfire_gender.hurt.female": "ʇɹnH ɹǝʎɐꞁԀ ǝꞁɐɯǝℲ",
   "wildfire_gender.label.disabled": "pǝꞁqɐsᴉᗡ",
   "wildfire_gender.label.enabled": "pǝꞁqɐuƎ",
   "wildfire_gender.label.female": "ǝꞁɐɯǝℲ",
