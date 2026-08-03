@@ -33,6 +33,7 @@ import java.util.function.Supplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.ClientMannequin;
 import net.minecraft.client.renderer.PlayerSkinRenderCache;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.level.Level;
 import org.jspecify.annotations.Nullable;
@@ -42,9 +43,9 @@ public class FakeGUIPlayer {
     private final String name;
     private final UUID uuid;
     private final Supplier<GUIMannequin> entity;
-    private final @Nullable String description;
+    private final @Nullable Component description;
 
-    public FakeGUIPlayer(String name, UUID uuid, @Nullable String description, @Nullable JsonObject defaultGenderSettings) {
+    public FakeGUIPlayer(String name, UUID uuid, @Nullable Component description, @Nullable JsonObject defaultGenderSettings) {
         this.name = name;
         this.uuid = uuid;
         this.entity = createPlayerSupplier(uuid, defaultGenderSettings);
@@ -76,7 +77,7 @@ public class FakeGUIPlayer {
         return role == null ? Contributor.Role.GENERIC : role;
     }
 
-    public @Nullable String getDescription() {
+    public @Nullable Component getDescription() {
         return description;
     }
 

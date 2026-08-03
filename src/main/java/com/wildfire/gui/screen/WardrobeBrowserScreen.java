@@ -231,7 +231,8 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
                 && mouseX > this.width / 2 - textWidth / 2 && mouseX < this.width / 2 + textWidth / 2
                 && mouseY > creatorY - 2 && mouseY < creatorY + (9 * lines)) {
             var contributorNames = toList.stream()
-                    .map(entry -> PlayerTeam.formatNameForTeam(entry.getTeam(), Component.nullToEmpty(entry.getProfile().name())))
+                    //Copy of Player#getDisplayName creates the component for a player
+                    .map(entry -> PlayerTeam.formatNameForTeam(entry.getTeam(), Component.literal(entry.getProfile().name())))
                     .toList();
 
             contribTooltip.set(Tooltip.create(ComponentUtils.formatList(contributorNames, Component.literal("\n"))));

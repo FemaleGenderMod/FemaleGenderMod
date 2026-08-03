@@ -298,7 +298,7 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
             int borderColor = (selectedDirection == direction && !faded) ? CommonColors.WHITE : direction.getFaceColor(faded);
 
-            final String faceName = direction.getShortName();
+            final Component faceName = direction.getShortName();
 
             if(!(quad.x1() == 0 && quad.y1() == 0 && quad.x2() == 0 && quad.y2() == 0)) {
                 int rectX1 = (int) (uvWindowPos.x() + quad.x1() * uvWindowScaleFactor);
@@ -322,7 +322,7 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
                 graphics.fill(rectX2 - borderThickness, rectY1, rectX2, rectY2, borderColor);
 
                 //TODO: Improve the usability of the UI by not rendering face names if there is a face in front of them that is in the active layer?
-                drawScaledScrollingString(graphics, Component.literal(faceName), rectX1 + borderThickness, rectY1 + borderThickness, rectX2 - borderThickness, rectY2 - borderThickness,
+                drawScaledScrollingString(graphics, faceName, rectX1 + borderThickness, rectY1 + borderThickness, rectX2 - borderThickness, rectY2 - borderThickness,
                     TextAlignment.CENTER, CommonColors.WHITE, true, 0.6F);
             }
         }

@@ -123,6 +123,11 @@ public class WildfireLangProvider extends FabricLanguageProvider {
         add(builder, WildfireLang.UV_EDITOR_FACE_TOP, "Top Face");
         add(builder, WildfireLang.UV_EDITOR_FACE_BOTTOM, "Bottom Face");
         add(builder, WildfireLang.UV_EDITOR_FACE_FRONT, "Front Face");
+        add(builder, WildfireLang.UV_DIRECTION_EAST, "E");
+        add(builder, WildfireLang.UV_DIRECTION_WEST, "W");
+        add(builder, WildfireLang.UV_DIRECTION_DOWN, "D");
+        add(builder, WildfireLang.UV_DIRECTION_UP, "U");
+        add(builder, WildfireLang.UV_DIRECTION_NORTH, "N");
 
         add(builder, WildfireLang.UV_SELECTED_DIRECTION, "%1$s (%2$s)");
         add(builder, WildfireLang.UV_QUAD, "[%1$s, %2$s, %3$s, %4$s]");

@@ -21,9 +21,8 @@ package com.wildfire.datagen;
 import com.wildfire.api.IGenderArmor;
 import com.wildfire.api.impl.GenderArmor;
 import com.wildfire.api.data.GenderArmorProvider;
-import com.wildfire.main.WildfireGender;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.data.PackOutput;
 import net.minecraft.world.item.equipment.EquipmentAssets;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -31,8 +30,8 @@ import java.util.concurrent.CompletableFuture;
 
 @ApiStatus.Internal
 class WildfireGenderArmorProvider extends GenderArmorProvider {
-	public WildfireGenderArmorProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
-		super(output, registries, WildfireGender.MODID);
+	public WildfireGenderArmorProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+		super(output, registries);
 	}
 
 	@Override

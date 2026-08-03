@@ -23,6 +23,7 @@ import com.wildfire.main.WildfireLang;
 import io.netty.buffer.ByteBuf;
 import java.util.Objects;
 import net.minecraft.core.Vec3i;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -36,15 +37,15 @@ import java.util.function.IntFunction;
 import org.jspecify.annotations.Nullable;
 
 public enum UVDirection implements StringRepresentable {
-    EAST("east", null, "E", CommonColors.RED, new Vec3i(1, 0, 0)),
-    WEST("west", null, "W", CommonColors.GREEN, new Vec3i(-1, 0, 0)),
-    DOWN("down", WildfireLang.UV_EDITOR_FACE_BOTTOM, "D", CommonColors.BLUE, new Vec3i(0, -1, 0)),
-    UP("up", WildfireLang.UV_EDITOR_FACE_TOP, "U", 0xFF00FFFF, new Vec3i(0, 1, 0)),
-    NORTH("north", WildfireLang.UV_EDITOR_FACE_FRONT, "N", 0xFFFF00FF, new Vec3i(0, 0, -1));
+    EAST("east", null, WildfireLang.UV_DIRECTION_EAST, CommonColors.RED, new Vec3i(1, 0, 0)),
+    WEST("west", null, WildfireLang.UV_DIRECTION_WEST, CommonColors.GREEN, new Vec3i(-1, 0, 0)),
+    DOWN("down", WildfireLang.UV_EDITOR_FACE_BOTTOM, WildfireLang.UV_DIRECTION_DOWN, CommonColors.BLUE, new Vec3i(0, -1, 0)),
+    UP("up", WildfireLang.UV_EDITOR_FACE_TOP, WildfireLang.UV_DIRECTION_UP, 0xFF00FFFF, new Vec3i(0, 1, 0)),
+    NORTH("north", WildfireLang.UV_EDITOR_FACE_FRONT, WildfireLang.UV_DIRECTION_NORTH, 0xFFFF00FF, new Vec3i(0, 0, -1));
 
     @Nullable
     private final WildfireLang name;
-    private final String shortName;
+    private final WildfireLang shortName;
     private final String saveName;
     private final int baseColor;
     private final Vector3fc floatVector;
@@ -53,7 +54,7 @@ public enum UVDirection implements StringRepresentable {
     public static final Codec<UVDirection> NAME_CODEC = StringRepresentable.fromEnum(UVDirection::values);
     public static final StreamCodec<ByteBuf, UVDirection> PACKET_CODEC = ByteBufCodecs.idMapper(BY_ID, UVDirection::ordinal);
 
-    UVDirection(String saveName, @Nullable WildfireLang name, String shortName, int baseColor, Vec3i vector) {
+    UVDirection(String saveName, @Nullable WildfireLang name, WildfireLang shortName, int baseColor, Vec3i vector) {
         this.name = name;
         this.saveName = saveName;
         this.shortName = shortName;
@@ -85,8 +86,8 @@ public enum UVDirection implements StringRepresentable {
         return saveName;
     }
 
-    public String getShortName() {
-        return shortName;
+    public Component getShortName() {
+        return shortName.translate();
     }
 
     @Override
