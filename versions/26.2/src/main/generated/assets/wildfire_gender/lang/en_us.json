@@ -97,6 +97,7 @@
   "first_time_setup.wildfire_gender.notice": "You can always change this setting later in the mod menu.",
   "first_time_setup.wildfire_gender.title": "Welcome to the Female Gender Mod!",
   "generic.wildfire_gender.brackets": "[%1$s]",
+  "generic.wildfire_gender.concat": "%1$s%2$s",
   "generic.wildfire_gender.dash_explanation": "%1$s - %2$s",
   "generic.wildfire_gender.ellipsis.suffix": "%1$s...",
   "generic.wildfire_gender.space": "%1$s %2$s",

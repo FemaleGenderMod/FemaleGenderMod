@@ -182,6 +182,7 @@ public enum WildfireLang {
 
     GENERIC_BRACKETS("generic", "brackets"),
     GENERIC_ELLIPSIS_SUFFIX("generic", "ellipsis.suffix"),
+    GENERIC_CONCAT("generic", "concat"),
     GENERIC_SPACE("generic", "space"),
     GENERIC_DASH_EXPLANATION("generic", "dash_explanation"),
 

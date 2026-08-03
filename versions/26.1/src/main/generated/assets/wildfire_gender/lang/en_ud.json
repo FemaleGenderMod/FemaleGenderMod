@@ -97,6 +97,7 @@
   "first_time_setup.wildfire_gender.notice": "˙nuǝɯ poɯ ǝɥʇ uᴉ ɹǝʇɐꞁ ᵷuᴉʇʇǝs sᴉɥʇ ǝᵷuɐɥɔ sʎɐʍꞁɐ uɐɔ no⅄",
   "first_time_setup.wildfire_gender.title": "¡poW ɹǝpuǝ⅁ ǝꞁɐɯǝℲ ǝɥʇ oʇ ǝɯoɔꞁǝM",
   "generic.wildfire_gender.brackets": "[%s]",
+  "generic.wildfire_gender.concat": "%2$s%1$s",
   "generic.wildfire_gender.dash_explanation": "%2$s - %1$s",
   "generic.wildfire_gender.ellipsis.suffix": "˙˙˙%s",
   "generic.wildfire_gender.space": "%2$s %1$s",

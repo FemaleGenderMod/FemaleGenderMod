@@ -268,6 +268,7 @@ public class WildfireLangProvider extends FabricLanguageProvider {
 
         add(builder, WildfireLang.GENERIC_BRACKETS, "[%1$s]");
         add(builder, WildfireLang.GENERIC_ELLIPSIS_SUFFIX, "%1$s...");
+        add(builder, WildfireLang.GENERIC_CONCAT, "%1$s%2$s");
         add(builder, WildfireLang.GENERIC_SPACE, "%1$s %2$s");
         add(builder, WildfireLang.GENERIC_DASH_EXPLANATION, "%1$s - %2$s");
 

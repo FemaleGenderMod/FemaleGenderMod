@@ -67,10 +67,10 @@ import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.argument;
 public class WildfireCommand {
 
     //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor' {
-    private static final Component COMMAND_PREFIX = WildfireLang.GENERIC_BRACKETS.translateColored(TextColor.GRAY,
-        WildfireLang.MISC_F.translateColored(TextColor.LIGHT_PURPLE)
-            .append(WildfireLang.MISC_GM.translateColored(TextColor.WHITE))
-    );
+    private static final Component COMMAND_PREFIX = WildfireLang.GENERIC_BRACKETS.translateColored(TextColor.GRAY, WildfireLang.GENERIC_CONCAT.translate(
+        WildfireLang.MISC_F.translateColored(TextColor.LIGHT_PURPLE),
+        WildfireLang.MISC_GM.translateColored(TextColor.WHITE)
+    ));
     //~}
 
     static void init() {
