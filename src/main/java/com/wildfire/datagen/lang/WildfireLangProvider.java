@@ -180,7 +180,7 @@ public class WildfireLangProvider extends FabricLanguageProvider {
         add(builder, WildfireLang.CHAR_SETTINGS_HIDE_IN_ARMOR, "Hide In Armor: %1$s");
         add(builder, WildfireLang.CHAR_SETTINGS_ARMOR_STAT, "Show Armor Tooltip: %1$s");
         add(builder, WildfireLang.CHAR_SETTINGS_HURT_SOUNDS, "Female Hurt Sounds: %1$s");
-        add(builder, WildfireLang.CHAR_SETTINGS_HURT_SOUNDS_TOOLTIP, "Your character will play a female hurt sound when taking damage if your gender is set to either Female or Other ");
+        add(builder, WildfireLang.CHAR_SETTINGS_HURT_SOUNDS_TOOLTIP, "Your character will play a female hurt sound when taking damage if your gender is set to either Female or Other");
         add(builder, WildfireLang.CHAR_SETTINGS_OVERRIDE_PHYSICS, "Armor Physics: %1$s");
         add(builder, WildfireLang.CHAR_SETTINGS_OVERRIDE_PHYSICS_TOOLTIP,
             "Breast physics will no longer be reduced/suppressed by any worn armor while enabled; this is primarily intended for use with resource packs that hide armor.",

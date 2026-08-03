@@ -231,7 +231,10 @@ public enum WildfireLang {
     private final String translationKey;
 
     WildfireLang(String type, @Nullable String path) {
-        this(path == null ? WildfireGender.MODID + "." + type : WildfireGender.id(path).toLanguageKey(type));
+        String base = WildfireGender.MODID + "." + type;
+        this(path == null ? base : base + "." + path);
+        //TODO: Evaluate changing lang key paths to actually using mojang's toLanguageKey helpers
+        //this(path == null ? WildfireGender.MODID + "." + type : WildfireGender.id(path).toLanguageKey(type));
     }
 
     WildfireLang(String translationKey) {
