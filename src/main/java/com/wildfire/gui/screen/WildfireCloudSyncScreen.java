@@ -21,7 +21,6 @@ package com.wildfire.gui.screen;
 import com.wildfire.gui.WildfireButton;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireLang;
-import com.wildfire.main.WildfireLocalization;
 import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.cloud.SyncLog;
 import com.wildfire.main.cloud.SyncingTooFrequentlyException;
@@ -48,6 +47,11 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
 
     private static final Identifier BACKGROUND = WildfireGender.id("textures/gui/sync_bg_v2.png");
 
+    //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor' {
+    private static final Component ENABLED = WildfireLang.LABEL_ENABLED.translateColored(TextColor.GREEN);
+    private static final Component DISABLED = WildfireLang.LABEL_DISABLED.translateColored(TextColor.RED);
+    //~}
+
     protected WildfireCloudSyncScreen(Screen parent, UUID uuid) {
         super(WildfireLang.CLOUD_SETTINGS.translate(), parent, uuid);
     }
@@ -67,7 +71,7 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
         };
 
         addButton(builder -> builder
-                .message(() -> WildfireLang.CLOUD_STATUS.translate(CloudSync.isEnabled() ? WildfireLocalization.ENABLED : WildfireLocalization.DISABLED))
+                .message(() -> WildfireLang.CLOUD_STATUS.translate(CloudSync.isEnabled() ? ENABLED : DISABLED))
                 .position(xPos, yPos)
                 .size(157, 20)
                 .onPress(button -> {
@@ -82,7 +86,7 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
                 }));
 
         ref.btnAutomaticSync = addButton(builder -> builder
-                .message(() -> WildfireLang.CLOUD_AUTOMATIC.translate(CloudSync.isEnabled() ? (ClientConfig.INSTANCE.get(ClientConfig.AUTOMATIC_CLOUD_SYNC) ? WildfireLocalization.ENABLED : WildfireLocalization.DISABLED) : WildfireLocalization.OFF))
+                .message(() -> WildfireLang.CLOUD_AUTOMATIC.translate(CloudSync.isEnabled() ? (ClientConfig.INSTANCE.get(ClientConfig.AUTOMATIC_CLOUD_SYNC) ? ENABLED : DISABLED) : WildfireLang.LABEL_OFF.translate()))
                 .position(xPos, yPos + 20)
                 .size(157, 20)
                 .onPress(button -> {
@@ -135,7 +139,7 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
                 var actualException = e instanceof CompletionException ce ? ce.getCause() : e;
                 if(actualException instanceof SyncingTooFrequentlyException) {
                     WildfireGender.LOGGER.warn("Failed to sync settings as we've already synced too recently");
-                    SyncLog.add(WildfireLocalization.SYNC_LOG_SYNC_TOO_FREQUENTLY);
+                    SyncLog.add(WildfireLang.SYNC_LOG_TOO_FREQUENT);
                 } else {
                     WildfireGender.LOGGER.error("Failed to sync settings", actualException);
                 }
