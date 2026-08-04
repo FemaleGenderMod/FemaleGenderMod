@@ -20,6 +20,7 @@ package com.wildfire.main.entitydata;
 
 import com.mojang.datafixers.Products.P11;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Mu;
@@ -47,9 +48,10 @@ public class EntityConfig {
         return entity instanceof Avatar || entity instanceof ArmorStand;
     }
 
-    public static final Codec<EntityConfig> CODEC = RecordCodecBuilder.create(instance -> codecGroup(instance)
+    protected static final MapCodec<EntityConfig> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> codecGroup(instance)
         .apply(instance, EntityConfig::new)
     );
+    public static final Codec<EntityConfig> CODEC = MAP_CODEC.codec();
 
     //TODO: What of these can be moved to the player config codec
     protected static <CONFIG extends EntityConfig> P11<Mu<CONFIG>, Gender, Float, Float, Breasts, Boolean, Float, Float, UVLayout, UVLayout, UVLayout, UVLayout> codecGroup(Instance<CONFIG> instance) {

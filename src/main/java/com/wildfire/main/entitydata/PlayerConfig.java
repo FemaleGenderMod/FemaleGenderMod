@@ -41,14 +41,16 @@ public class PlayerConfig extends EntityConfig {
     //?}
     //? if <26.2 {
     private static Codec<PlayerConfig> oldMcCodec() {
-        return RecordCodecBuilder.create(instance -> {
-            var p11 = (com.wildfire.mixins.accessors.ProductsAccessor<RecordCodecBuilder.Mu<PlayerConfig>, Gender, Float, Float, Breasts, Boolean, Float, Float, UVLayout, UVLayout, UVLayout, UVLayout>) (Object) codecGroup(instance);
-            return new com.mojang.datafixers.Products.P14<>(p11.t1(), p11.t2(), p11.t3(), p11.t4(), p11.t5(), p11.t6(), p11.t7(), p11.t8(), p11.t9(), p11.t10(), p11.t11(),
-                    Configuration.SHOW_IN_ARMOR.codecOrDefault().forGetter(EntityConfig::showBreastsInArmor),
-                    Configuration.HOLIDAY_THEMES.codecOrDefault().forGetter(PlayerConfig::hasHolidayThemes),
-                    Configuration.HURT_SOUNDS.codecOrDefault().forGetter(PlayerConfig::hasHurtSounds)
-            ).apply(instance, PlayerConfig::new);
-        });
+        return RecordCodecBuilder.create(instance -> instance.group(
+            EntityConfig.MAP_CODEC.forGetter(config -> config),
+            Configuration.SHOW_IN_ARMOR.codecOrDefault().forGetter(EntityConfig::showBreastsInArmor),
+            Configuration.HOLIDAY_THEMES.codecOrDefault().forGetter(PlayerConfig::hasHolidayThemes),
+            Configuration.HURT_SOUNDS.codecOrDefault().forGetter(PlayerConfig::hasHurtSounds)
+        ).apply(instance, (entityCfg, hurtSounds, showBreastsInArmor, holidayThemes) -> new PlayerConfig(
+            entityCfg.getGender(), entityCfg.getBustSize(), entityCfg.getVoicePitch(), entityCfg.getBreasts(), entityCfg.hasBreastPhysics(), entityCfg.getBounceMultiplier(),
+            entityCfg.getFloppiness(), entityCfg.getLeftBreastUVLayout(), entityCfg.getRightBreastUVLayout(), entityCfg.getLeftBreastOverlayUVLayout(), entityCfg.getRightBreastOverlayUVLayout(),
+            hurtSounds, showBreastsInArmor, holidayThemes
+        )));
     }
     //?}
 
