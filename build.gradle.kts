@@ -1,4 +1,5 @@
 import me.modmuss50.mpp.ReleaseType
+import neoforge.GeneratePackageInfos
 
 plugins {
     // plugin versions are defined in stonecutter.gradle.kts
@@ -92,6 +93,14 @@ tasks.jar {
     from("LICENSE") {
         rename { "${it}_${project.property("archives_base_name")}" }
     }
+}
+
+tasks.register<GeneratePackageInfos>("generatePackageInfos") {
+    files.from(sourceSets.main.get().java.srcDirTrees)
+}
+
+tasks.named("test").configure {//Ensure validateJson has to be ran in order for build to pass
+    dependsOn(project.rootProject.tasks.named("validateJson"))
 }
 
 publishMods {

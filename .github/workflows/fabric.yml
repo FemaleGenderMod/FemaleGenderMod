@@ -26,8 +26,6 @@ jobs:
         distribution: 'temurin'
         java-version: 25
         check-latest: true
-    - name: Validate JSON files
-      run: python3 .github/validate_json.py
     - name: Build with Gradle
       run: ./gradlew build
     - name: Upload compiled artifacts
