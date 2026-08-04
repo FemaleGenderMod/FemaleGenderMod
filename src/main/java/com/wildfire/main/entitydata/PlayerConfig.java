@@ -35,6 +35,7 @@ public class PlayerConfig extends EntityConfig {
     private static Codec<PlayerConfig> codec() {
         return RecordCodecBuilder.create(instance -> codecGroup(instance)
             .and(Configuration.HURT_SOUNDS.codecOrDefault().forGetter(config -> config.hurtSounds.get()))
+            .and(Configuration.VOICE_PITCH.codecOrDefault().forGetter(config -> config.voicePitch.get()))
             .and(Configuration.HOLIDAY_THEMES.codecOrDefault().forGetter(config -> config.holidayThemes.get()))
             .and(Configuration.SHOW_IN_ARMOR.codecOrDefault().forGetter(config -> config.showBreastsInArmor.get()))
             .apply(instance, PlayerConfig::new));
@@ -45,28 +46,33 @@ public class PlayerConfig extends EntityConfig {
         return RecordCodecBuilder.create(instance -> instance.group(
             EntityConfig.MAP_CODEC.forGetter(config -> config),
             Configuration.HURT_SOUNDS.codecOrDefault().forGetter(config -> config.hurtSounds.get()),
+            Configuration.VOICE_PITCH.codecOrDefault().forGetter(config -> config.voicePitch.get()),
             Configuration.HOLIDAY_THEMES.codecOrDefault().forGetter(config -> config.holidayThemes.get()),
             Configuration.SHOW_IN_ARMOR.codecOrDefault().forGetter(config -> config.showBreastsInArmor.get())
         ).apply(instance, PlayerConfig::new));
     }
-    private PlayerConfig(EntityConfig cfg, boolean hurtSounds, boolean holidayThemes, boolean showBreastsInArmor) {
+    private PlayerConfig(EntityConfig cfg, boolean hurtSounds, float voicePitch, boolean holidayThemes, boolean showBreastsInArmor) {
         super(cfg);
         this.hurtSounds = Configuration.HURT_SOUNDS.createValueHandler(hurtSounds);
+        this.voicePitch = Configuration.VOICE_PITCH.createValueHandler(voicePitch);
         this.holidayThemes = Configuration.HOLIDAY_THEMES.createValueHandler(holidayThemes);
         this.showBreastsInArmor = Configuration.SHOW_IN_ARMOR.createValueHandler(showBreastsInArmor);
     }
     //?}
 
     public final ConfigValue<Boolean> hurtSounds;
+    public final ConfigValue<Float> voicePitch;//TODO: Why is this here if it is dependent on hurt sound?
+
     public final ConfigValue<Boolean> holidayThemes;
     public final ConfigValue<Boolean> showBreastsInArmor;
 
-    public PlayerConfig(Gender gender, float bustSize, float voicePitch, Breasts breasts, boolean breastPhysics, float bounceMultiplier , float floppyMultiplier,
+    protected PlayerConfig(Gender gender, float bustSize, Breasts breasts, boolean breastPhysics, float bounceMultiplier , float floppyMultiplier,
         UVLayout leftBreastUVLayout, UVLayout rightBreastUVLayout, UVLayout leftBreastOverlayUVLayout, UVLayout rightBreastOverlayUVLayout,
-        boolean hurtSounds, boolean holidayThemes, boolean showBreastsInArmor) {
-        super(gender, bustSize, voicePitch, breasts, breastPhysics, bounceMultiplier, floppyMultiplier, leftBreastUVLayout, rightBreastUVLayout,
+        boolean hurtSounds, float voicePitch, boolean holidayThemes, boolean showBreastsInArmor) {
+        super(gender, bustSize, breasts, breastPhysics, bounceMultiplier, floppyMultiplier, leftBreastUVLayout, rightBreastUVLayout,
             leftBreastOverlayUVLayout, rightBreastOverlayUVLayout);
         this.hurtSounds = Configuration.HURT_SOUNDS.createValueHandler(hurtSounds);
+        this.voicePitch = Configuration.VOICE_PITCH.createValueHandler(voicePitch);
         this.holidayThemes = Configuration.HOLIDAY_THEMES.createValueHandler(holidayThemes);
         this.showBreastsInArmor = Configuration.SHOW_IN_ARMOR.createValueHandler(showBreastsInArmor);
     }

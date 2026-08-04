@@ -84,12 +84,11 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
                 .position(x + 5, y + 5)
                 .size(this.width - x - 10, 20)
                 .onPress(_ -> {
-                    var playerHolder = Objects.requireNonNull(getPlayer(), "getPlayer()");
-                    var player = playerHolder.config();
+                    var player = Objects.requireNonNull(getPlayer(), "getPlayer()");
 
                     //Note: Intentionally uses bitwise or operators so that it runs on all, but we only have to save if at least one of them updated
-                    if (player.leftBreastUVLayout.reset() | player.rightBreastUVLayout.reset() | player.leftBreastOverlayUVLayout.reset() | player.rightBreastOverlayUVLayout.reset()) {
-                        playerHolder.save();
+                    if (player.leftBreastUVLayout().reset() | player.rightBreastUVLayout().reset() | player.leftBreastOverlayUVLayout().reset() | player.rightBreastOverlayUVLayout().reset()) {
+                        player.save();
                     }
                 }));
 
@@ -204,15 +203,14 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
     @Override
     public void tick() {
-        var playerHolder = getPlayer();
-        if(playerHolder == null) return;
-        var player = playerHolder.config();
+        var player = getPlayer();
+        if(player == null) return;
 
         selectedUVs = switch (selectedBreastIndex) {
-            case RIGHT -> player.rightBreastUVLayout.get();
-            case LEFT_OVERLAY -> player.leftBreastOverlayUVLayout.get();
-            case RIGHT_OVERLAY -> player.rightBreastOverlayUVLayout.get();
-            default -> player.leftBreastUVLayout.get();
+            case RIGHT -> player.rightBreastUVLayout().get();
+            case LEFT_OVERLAY -> player.leftBreastOverlayUVLayout().get();
+            case RIGHT_OVERLAY -> player.rightBreastOverlayUVLayout().get();
+            default -> player.leftBreastUVLayout().get();
         };
     }
 
@@ -220,22 +218,21 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         if(minecraft.level == null || minecraft.player == null) return;
-        var playerHolder = getPlayer();
+        var player = getPlayer();
 
-        if(playerHolder != null && selectedUVs != null) {
+        if(player != null && selectedUVs != null) {
 
             //noinspection SuspiciousNameCombination
             graphics.blit(RenderPipelines.GUI_TEXTURED, minecraft.player.getSkin().body().texturePath(),
                     uvWindowPos.x(), uvWindowPos.y(),
                     0, 0, textureDrawWidth, textureDrawWidth, textureDrawWidth, textureDrawWidth);
 
-            var player = playerHolder.config();
             //Other faces
             UVLayout[] ALL_UVS = {
-                    player.leftBreastUVLayout.get(),
-                    player.rightBreastUVLayout.get(),
-                    player.leftBreastOverlayUVLayout.get(),
-                    player.rightBreastOverlayUVLayout.get()
+                player.leftBreastUVLayout().get(),
+                player.rightBreastUVLayout().get(),
+                player.leftBreastOverlayUVLayout().get(),
+                player.rightBreastOverlayUVLayout().get()
             };
 
             for(UVLayout eachBreast : ALL_UVS) {

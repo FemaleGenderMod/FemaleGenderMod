@@ -71,12 +71,12 @@ public record BreastDataComponent(float breastSize, float cleavage, Vector3fc of
         return configKey.codecOrDefault();
     }
 
-    public static @Nullable BreastDataComponent fromPlayer(Player player, PlayerConfig config) {
-        if(!config.gender.get().canHaveBreasts() || !config.showBreastsInArmor.get()) {
+    public static @Nullable BreastDataComponent fromPlayer(Player player, PlayerConfigHolder config) {
+        if(!config.gender().get().canHaveBreasts() || !config.showBreastsInArmor().get()) {
             return null;
         }
 
-        return new BreastDataComponent(config.bustSize.get(), config.breasts.cleavage.get(), config.breasts.getOffsets(),
+        return new BreastDataComponent(config.bustSize().get(), config.breasts().cleavage.get(), config.breasts().getOffsets(),
                 player.isModelPartShown(PlayerModelPart.JACKET), null);
     }
 

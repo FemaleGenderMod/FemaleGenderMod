@@ -93,8 +93,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
         super.init();
         final var client = Objects.requireNonNull(this.minecraft, "client");
         int y = this.height / 2;
-        PlayerConfigHolder plrHolder = Objects.requireNonNull(getPlayer(), "getPlayer()");
-        PlayerConfig plr = plrHolder.config();
+        var plr = Objects.requireNonNull(getPlayer(), "getPlayer()");
 
         addButton(builder -> builder
                 .message(() -> WildfireLang.PLAYER_LIST_MODE.translate(ClientConfigHolder.alwaysShowList().text()))
@@ -110,12 +109,12 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
                 }));
 
         addButton(builder -> builder
-                .message(() -> plr.gender.get().getDisplayName())
+                .message(() -> plr.gender().get().getDisplayName())
                 .position(this.width / 2 - 130, this.height / 2 + 33)
                 .size(80, 15)
                 .onPress(_ -> {
-                    if (plr.gender.update(Gender::next)) {
-                        plrHolder.save();
+                    if (plr.gender().update(Gender::next)) {
+                        plr.save();
                         rebuildWidgets();
                     }
                 }));
@@ -128,7 +127,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
                     //~ if >=26.2 'setScreen' -> 'gui.setScreen'
                     client.gui.setScreen(new WildfireBreastCustomizationScreen(this, this.playerUUID));
                 })
-                .active(plr.gender.get().canHaveBreasts()));
+                .active(plr.gender().get().canHaveBreasts()));
 
         addButton(builder -> {
             builder.message(WildfireLang.CLOUD_SETTINGS::translate);
@@ -169,7 +168,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 
         var plr = getPlayer();
         if(plr == null) return;
-        Identifier backgroundTexture = switch(plr.getGender()) {
+        Identifier backgroundTexture = switch(plr.gender().get()) {
             case MALE -> BACKGROUND_MALE;
             case FEMALE -> BACKGROUND_FEMALE;
             case OTHER -> BACKGROUND_OTHER;

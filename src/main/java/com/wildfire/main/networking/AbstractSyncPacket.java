@@ -72,21 +72,19 @@ abstract class AbstractSyncPacket {
         this.uvLayouts = uvLayouts;
     }
 
-    protected AbstractSyncPacket(PlayerConfigHolder plrHolder) {
-        PlayerConfig plr = plrHolder.config();
-        this(plrHolder.uuid, plr.gender.get(), plr.bustSize.get(), plr.hurtSounds.get(), plr.voicePitch.get(), new BreastPhysics(plr), plr.breasts, UVLayouts.from(plr));
+    protected AbstractSyncPacket(PlayerConfigHolder plr) {
+        this(plr.uuid, plr.gender().get(), plr.bustSize().get(), plr.hurtSounds().get(), plr.voicePitch().get(), new BreastPhysics(plr), plr.breasts(), UVLayouts.from(plr));
     }
 
     // TODO add support for mannequins?
-    protected void updatePlayerFromPacket(PlayerConfigHolder plrHolder) {
+    protected void updatePlayerFromPacket(PlayerConfigHolder plr) {
         //TODO: Make the stream codecs create a config, and then update the corresponding holder's stored config?
-        PlayerConfig plr = plrHolder.config();
-        plr.gender.update(gender);
-        plr.bustSize.update(bustSize);
-        plr.hurtSounds.update(hurtSounds);
-        plr.voicePitch.update(voicePitch);
+        plr.gender().update(gender);
+        plr.bustSize().update(bustSize);
+        plr.hurtSounds().update(hurtSounds);
+        plr.voicePitch().update(voicePitch);
         physics.applyTo(plr);
-        plr.breasts.copyFrom(breasts);
+        plr.breasts().copyFrom(breasts);
         uvLayouts.applyTo(plr);
     }
 
@@ -100,15 +98,15 @@ abstract class AbstractSyncPacket {
                 BreastPhysics::new
         );
 
-        private BreastPhysics(PlayerConfig plr) {
-            this(plr.breastPhysics.get(), plr.showBreastsInArmor.get(), plr.bounceMultiplier.get(), plr.floppiness.get());
+        private BreastPhysics(PlayerConfigHolder plr) {
+            this(plr.breastPhysics().get(), plr.showBreastsInArmor().get(), plr.bounceMultiplier().get(), plr.floppiness().get());
         }
 
-        private void applyTo(PlayerConfig plr) {
-            plr.breastPhysics.update(physics);
-            plr.showBreastsInArmor.update(showInArmor);
-            plr.bounceMultiplier.update(bounceMultiplier);
-            plr.floppiness.update(floppiness);
+        private void applyTo(PlayerConfigHolder plr) {
+            plr.breastPhysics().update(physics);
+            plr.showBreastsInArmor().update(showInArmor);
+            plr.bounceMultiplier().update(bounceMultiplier);
+            plr.floppiness().update(floppiness);
         }
     }
 
@@ -117,18 +115,18 @@ abstract class AbstractSyncPacket {
     }
 
     public record UVLayouts(Layer skin, Layer overlay) {
-        public static UVLayouts from(PlayerConfig plr) {
+        public static UVLayouts from(PlayerConfigHolder plr) {
             return new UVLayouts(
-                    /*skin = */ new Layer(plr.leftBreastUVLayout.get().copy(), plr.rightBreastUVLayout.get().copy()),
-                    /*overlay = */ new Layer(plr.leftBreastOverlayUVLayout.get().copy(), plr.rightBreastOverlayUVLayout.get().copy())
+                    /*skin = */ new Layer(plr.leftBreastUVLayout().get().copy(), plr.rightBreastUVLayout().get().copy()),
+                    /*overlay = */ new Layer(plr.leftBreastOverlayUVLayout().get().copy(), plr.rightBreastOverlayUVLayout().get().copy())
             );
         }
 
-        private void applyTo(PlayerConfig plr) {
-            plr.leftBreastUVLayout.update(skin.left);
-            plr.rightBreastUVLayout.update(skin.right);
-            plr.leftBreastOverlayUVLayout.update(overlay.left);
-            plr.rightBreastOverlayUVLayout.update(overlay.right);
+        private void applyTo(PlayerConfigHolder plr) {
+            plr.leftBreastUVLayout().update(skin.left);
+            plr.rightBreastUVLayout().update(skin.right);
+            plr.leftBreastOverlayUVLayout().update(overlay.left);
+            plr.rightBreastOverlayUVLayout().update(overlay.right);
         }
 
         public record Layer(UVLayout left, UVLayout right) {

@@ -29,6 +29,7 @@ import com.wildfire.main.cloud.SyncLog;
 import com.wildfire.main.config.ClientConfigHolder;
 import com.wildfire.main.config.Configuration;
 import com.wildfire.main.config.value.ConfigKey;
+import com.wildfire.main.config.value.ConfigValue;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -157,9 +158,24 @@ public class PlayerConfigHolder extends EntityConfigHolder<PlayerConfig> {
     public List<String> getDebugInfo() {
         List<String> lines = super.getDebugInfo();
         lines.add(1, "Sync status: " + getSyncStatus());
-        lines.add("Female hurt sounds: " + config.hurtSounds);
-        lines.add("Show in armor: " + config.showBreastsInArmor);
+        lines.add("Female hurt sounds: " + hurtSounds());
+        lines.add("Show in armor: " + showBreastsInArmor());
         return lines;
+    }
+
+    // Bouncer methods for config values that act upon the current config instance
+
+    public final ConfigValue<Boolean> hurtSounds() {
+        return config.hurtSounds;
+    }
+    public final ConfigValue<Float> voicePitch() {
+        return config.voicePitch;
+    }
+    public final ConfigValue<Boolean> holidayThemes() {
+        return config.holidayThemes;
+    }
+    public final ConfigValue<Boolean> showBreastsInArmor() {
+        return config.showBreastsInArmor;
     }
 
     public enum SyncStatus {

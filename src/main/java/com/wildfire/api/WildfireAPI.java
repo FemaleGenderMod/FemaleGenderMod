@@ -70,6 +70,6 @@ public final class WildfireAPI {
     public static Gender getPlayerGender(UUID uuid) {
         PlayerConfigHolder cfg = WildfireGender.getPlayerById(uuid);
         if(cfg == null) return Configuration.GENDER.defaultValue();
-        return cfg.getGender();
+        return cfg.gender().get();
     }
 }

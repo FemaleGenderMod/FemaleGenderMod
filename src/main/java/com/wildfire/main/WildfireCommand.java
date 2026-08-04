@@ -244,7 +244,7 @@ public class WildfireCommand {
 
             var info = ComponentUtils.formatList(config.getDebugInfo(), CommonComponents.NEW_LINE, Component::literal);
 
-            lines.add(WildfireLang.GENERIC_DASH_EXPLANATION.translate(entity.getDisplayName(), config.getGender().getDisplayName())
+            lines.add(WildfireLang.GENERIC_DASH_EXPLANATION.translate(entity.getDisplayName(), config.gender().get().getDisplayName())
                     .withStyle(style -> style.withHoverEvent(new HoverEvent.ShowText(info))));
         }
         return lines;
@@ -288,7 +288,7 @@ public class WildfireCommand {
 
         var item = new ItemStack(Items.IRON_CHESTPLATE);
         var config = WildfireGender.getOrAddPlayerById(player.getUUID());
-        var component = BreastDataComponent.fromPlayer(player, config.config());
+        var component = BreastDataComponent.fromPlayer(player, config);
         if(component == null) {
             ctx.getSource().sendError(WildfireLang.COMMAND_ARMOR_STAND_NO_COMPONENT.translate());
             return 0;

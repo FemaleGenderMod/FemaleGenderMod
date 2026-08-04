@@ -29,7 +29,6 @@ import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
 /// Data class representing an entity's breast appearance settings
-@SuppressWarnings("UnusedReturnValue")
 public final class Breasts {
 
     public static final MapCodec<Breasts> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(

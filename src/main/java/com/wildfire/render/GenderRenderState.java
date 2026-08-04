@@ -84,29 +84,28 @@ public class GenderRenderState {
     public final boolean isBreathing;
     public final @Nullable Component nametag;
 
-    private GenderRenderState(EntityConfigHolder<?> entityConfigHolder, LivingEntity entity, float partialTicks) {
-        EntityConfig entityConfig = entityConfigHolder.config();
-        this.breasts = new BreastState(entityConfig.breasts);
-        this.leftBreastPhysics = new BreastPhysicsState(entityConfigHolder.getLeftBreastPhysics());
-        this.rightBreastPhysics = new BreastPhysicsState(entityConfigHolder.getRightBreastPhysics());
+    private GenderRenderState(EntityConfigHolder<?> entityConfig, LivingEntity entity, float partialTicks) {
+        this.breasts = new BreastState(entityConfig.breasts());
+        this.leftBreastPhysics = new BreastPhysicsState(entityConfig.getLeftBreastPhysics());
+        this.rightBreastPhysics = new BreastPhysicsState(entityConfig.getRightBreastPhysics());
 
         this.partialTicks = partialTicks;
 
-        this.gender = entityConfig.gender.get();
-        this.bustSize = entityConfig.bustSize.get();
-        this.hasBreastPhysics = entityConfig.breastPhysics.get();
-        this.bounceMultiplier = entityConfig.bounceMultiplier.get();
-        this.floppyMultiplier = entityConfig.floppiness.get();
+        this.gender = entityConfig.gender().get();
+        this.bustSize = entityConfig.bustSize().get();
+        this.hasBreastPhysics = entityConfig.breastPhysics().get();
+        this.bounceMultiplier = entityConfig.bounceMultiplier().get();
+        this.floppyMultiplier = entityConfig.floppiness().get();
 
         if(entity instanceof Avatar playerLikeEntity) {
             this.hasJacketLayer = playerLikeEntity.isModelPartShown(PlayerModelPart.JACKET);
         } else {
-            this.hasJacketLayer = entityConfigHolder instanceof PlayerConfigHolder || entityConfigHolder.hasJacketLayer();
+            this.hasJacketLayer = entityConfig.config() instanceof PlayerConfig || entityConfig.hasJacketLayer();
         }
 
-        if(entityConfig instanceof PlayerConfig playerConfig) {
+        if(entityConfig.config() instanceof PlayerConfig playerConfig) {
             this.showBreastsInArmor = playerConfig.showBreastsInArmor.get();
-            if (entityConfigHolder.uuid.version() == 4) {
+            if (entityConfig.uuid.version() == 4) {
                 // Real players always have a UUID of version 4; if this isn't the case, then this is undeniably
                 // an NPC player entity.
                 this.hasHolidayThemes = playerConfig.holidayThemes.get();
@@ -118,10 +117,10 @@ public class GenderRenderState {
             this.hasHolidayThemes = false;
         }
 
-        this.leftBreastUVLayout = entityConfig.leftBreastUVLayout.get().copy();
-        this.rightBreastUVLayout = entityConfig.rightBreastUVLayout.get().copy();
-        this.leftBreastOverlayUVLayout = entityConfig.leftBreastOverlayUVLayout.get().copy();
-        this.rightBreastOverlayUVLayout = entityConfig.rightBreastOverlayUVLayout.get().copy();
+        this.leftBreastUVLayout = entityConfig.leftBreastUVLayout().get().copy();
+        this.rightBreastUVLayout = entityConfig.rightBreastUVLayout().get().copy();
+        this.leftBreastOverlayUVLayout = entityConfig.leftBreastOverlayUVLayout().get().copy();
+        this.rightBreastOverlayUVLayout = entityConfig.rightBreastOverlayUVLayout().get().copy();
         this.armor = WildfireHelper.getArmorConfig(entity.getItemBySlot(EquipmentSlot.CHEST));
 
         this.isBreathing = !entity.isUnderWater() || MobEffectUtil.hasWaterBreathing(entity) ||

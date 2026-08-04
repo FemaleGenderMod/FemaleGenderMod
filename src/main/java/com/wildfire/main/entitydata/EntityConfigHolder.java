@@ -26,6 +26,8 @@ import com.wildfire.api.IGenderArmor;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.config.enums.Gender;
+import com.wildfire.main.config.value.ConfigValue;
+import com.wildfire.main.uvs.UVLayout;
 import com.wildfire.physics.BreastPhysics;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -93,10 +95,6 @@ public class EntityConfigHolder<CONFIG extends EntityConfig> {
         return config;
     }
 
-    public final Gender getGender() {
-        return config.gender.get();
-    }
-
     /// Copy gender settings included in the given [`item NBT`][ItemStack] to the current entity
     ///
     /// @see BreastDataComponent
@@ -104,7 +102,7 @@ public class EntityConfigHolder<CONFIG extends EntityConfig> {
         CustomData component = chestplate.get(DataComponents.CUSTOM_DATA);
         if (chestplate.isEmpty() || component == null) {
             this.fromComponent = null;
-            config.gender.update(Gender.MALE);
+            gender().update(Gender.MALE);
             return;
         } else if(fromComponent != null && Objects.equals(component, fromComponent.nbtComponent())) {
             // nothing's changed since the last time we checked, so there's no need to read from the
@@ -114,15 +112,15 @@ public class EntityConfigHolder<CONFIG extends EntityConfig> {
 
         fromComponent = BreastDataComponent.fromComponent(component);
         if (fromComponent == null) {
-            config.gender.update(Gender.MALE);
+            gender().update(Gender.MALE);
             return;
         }
 
-        config.breastPhysics.update(false);
-        config.bustSize.update(fromComponent.breastSize());
-        config.gender.update(config.bustSize.get() >= 0.02f ? Gender.FEMALE : Gender.MALE);
-        config.breasts.cleavage.update(fromComponent.cleavage());
-        config.breasts.updateOffsets(fromComponent.offsets());
+        breastPhysics().update(false);
+        bustSize().update(fromComponent.breastSize());
+        gender().update(bustSize().get() >= 0.02f ? Gender.FEMALE : Gender.MALE);
+        breasts().cleavage.update(fromComponent.cleavage());
+        breasts().updateOffsets(fromComponent.offsets());
         this.jacketLayer = fromComponent.jacket();
     }
 
@@ -151,21 +149,55 @@ public class EntityConfigHolder<CONFIG extends EntityConfig> {
     public List<String> getDebugInfo() {
         List<String> info = new ArrayList<>();
 
-        info.add("Gender: " + switch(getGender()) {
+        info.add("Gender: " + switch(gender().get()) {
             case FEMALE -> ChatFormatting.LIGHT_PURPLE + "Female";
             case MALE -> ChatFormatting.BLUE + "Male";
             case OTHER -> ChatFormatting.GREEN + "Other";
         });
-        info.add("Breast size: " + config.bustSize);
-        info.add("Physics enabled: " + config.breastPhysics);
-        info.add("Uniboob: " + config.breasts.uniboob);
-        info.add("Cleavage: " + config.breasts.cleavage);
-        info.add("Offsets: " + config.breasts.getOffsets());//TODO: Validate this converts it to string as expected
+        info.add("Breast size: " + bustSize());
+        info.add("Physics enabled: " + breastPhysics());
+        Breasts breasts = breasts();
+        info.add("Uniboob: " + breasts.uniboob);
+        info.add("Cleavage: " + breasts.cleavage);
+        info.add("Offsets: " + breasts.getOffsets());//TODO: Validate this converts it to string as expected
         return info;
     }
 
     @Override
     public String toString() {
-        return "%s(uuid=%s, gender=%s)".formatted(getClass().getCanonicalName(), uuid, config.gender);
+        return "%s(uuid=%s, gender=%s)".formatted(getClass().getCanonicalName(), uuid, gender());
+    }
+
+    // Bouncer methods for config values that act upon the current config instance
+
+    public Breasts breasts() {
+        return config.breasts;
+    }
+    public final ConfigValue<Gender> gender() {
+        return config.gender;
+    }
+    public final ConfigValue<Float> bustSize() {
+        return config.bustSize;
+    }
+    public final ConfigValue<Boolean> breastPhysics() {
+        return config.breastPhysics;
+    }
+    public final ConfigValue<Float> bounceMultiplier() {
+        return config.bounceMultiplier;
+    }
+    public final ConfigValue<Float> floppiness() {
+        return config.floppiness;
+    }
+    public final ConfigValue<UVLayout> leftBreastUVLayout() {
+        return config.leftBreastUVLayout;
+    }
+    public final ConfigValue<UVLayout> rightBreastUVLayout() {
+        return config.rightBreastUVLayout;
+    }
+    public final ConfigValue<UVLayout> leftBreastOverlayUVLayout() {
+        return config.leftBreastOverlayUVLayout;
+    }
+    public final ConfigValue<UVLayout> rightBreastOverlayUVLayout() {
+        return config.rightBreastOverlayUVLayout;
     }
 }

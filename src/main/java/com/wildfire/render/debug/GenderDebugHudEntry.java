@@ -74,12 +74,12 @@ public class GenderDebugHudEntry implements DebugScreenEntry {
         info.add(PREFIX + " Gender Data");
         info.add("UUID: " + target.getUUID());
         info.addAll(config.getDebugInfo());
-        addEquippedChestplate(info, config.config(), living);
+        addEquippedChestplate(info, config, living);
 
         lines.addToGroup(id, info);
     }
 
-    private void addEquippedChestplate(List<String> lines, EntityConfig config, LivingEntity entity) {
+    private void addEquippedChestplate(List<String> lines, EntityConfigHolder<?> config, LivingEntity entity) {
         var equippedChestplate = entity.getItemBySlot(EquipmentSlot.CHEST);
         var equippable = equippedChestplate.get(DataComponents.EQUIPPABLE);
         // null is perfectly valid to return here
@@ -104,7 +104,7 @@ public class GenderDebugHudEntry implements DebugScreenEntry {
         lines.add("Tightness: " + armorConfig.tightness());
         lines.add("Armor stands copy: " + armorConfig.armorStandsCopySettings());
         if(armorConfig.tightness() > 0) {
-            float renderedSize = config.bustSize.get() * (1 - BreastPhysics.TIGHTNESS_REDUCTION_FACTOR * armorConfig.tightness());
+            float renderedSize = config.bustSize().get() * (1 - BreastPhysics.TIGHTNESS_REDUCTION_FACTOR * armorConfig.tightness());
             lines.add("Rendered breast size: " + renderedSize);
         }
     }

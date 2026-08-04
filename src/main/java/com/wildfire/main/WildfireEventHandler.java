@@ -177,7 +177,7 @@ public final class WildfireEventHandler {
         if(ClientConfigHolder.armorPhysicsOverride()) return;
 
         var playerConfig = WildfireGender.getPlayerById(player.getUUID());
-        if(playerConfig == null || !playerConfig.getGender().canHaveBreasts()) return;
+        if(playerConfig == null || !playerConfig.gender().get().canHaveBreasts()) return;
 
         var equippableComponent = item.get(DataComponents.EQUIPPABLE);
         if(equippableComponent == null || equippableComponent.slot() != EquipmentSlot.CHEST) return;
@@ -306,12 +306,12 @@ public final class WildfireEventHandler {
         if(!(entity instanceof Player player) || !player.level().isClientSide()) return;
 
         PlayerConfigHolder genderPlayer = WildfireGender.getPlayerById(player.getUUID());
-        if(genderPlayer == null || !genderPlayer.config().hurtSounds.get()) return;
+        if(genderPlayer == null || !genderPlayer.hurtSounds().get()) return;
 
-        SoundEvent hurtSound = genderPlayer.getGender().getHurtSound();
+        SoundEvent hurtSound = genderPlayer.gender().get().getHurtSound();
         if(hurtSound != null) {
             float pitchVariation = (player.getRandom().nextFloat() - player.getRandom().nextFloat()) * 0.2F;
-            player.playSound(hurtSound, 1f, pitchVariation + genderPlayer.config().voicePitch.get());
+            player.playSound(hurtSound, 1f, pitchVariation + genderPlayer.voicePitch().get());
         }
     }
 
@@ -341,7 +341,7 @@ public final class WildfireEventHandler {
 
         // Note that we always attach player data to the item stack as a server has no concept of resource packs,
         // making it impossible to compare against any armor data that isn't registered through the mod API.
-        BreastDataComponent component = BreastDataComponent.fromPlayer(player, playerConfig.config());
+        BreastDataComponent component = BreastDataComponent.fromPlayer(player, playerConfig);
         if(component != null) {
             component.write(item);
         }

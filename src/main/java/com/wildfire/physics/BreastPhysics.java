@@ -21,7 +21,6 @@ package com.wildfire.physics;
 import com.wildfire.api.IGenderArmor;
 import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.config.ClientConfigHolder;
-import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.main.entitydata.EntityConfigHolder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -59,12 +58,12 @@ public class BreastPhysics {
     private int lastSwingDuration = 6, lastSwingTick = 0;
     private @Nullable Vec3 prePos;
 
-    private final EntityConfigHolder<?> entityConfigHolder;
+    private final EntityConfigHolder<?> entityConfig;
     private int randomB = 1;
     private double lastVerticalMoveVelocity;
 
-    public BreastPhysics(EntityConfigHolder<?> entityConfigHolder) {
-        this.entityConfigHolder = entityConfigHolder;
+    public BreastPhysics(EntityConfigHolder<?> entityConfig) {
+        this.entityConfig = entityConfig;
     }
 
     private static boolean vehicleSuppressesRotation(Entity vehicle) {
@@ -112,10 +111,9 @@ public class BreastPhysics {
     // as such, the best we can get here is marking this method as such.
     @Environment(EnvType.CLIENT)
     public void update(LivingEntity entity, IGenderArmor armor) {
-        EntityConfig entityConfig = entityConfigHolder.config();
         // always suppress the full physics calculations on armor stands
-        if(entity instanceof ArmorStand || entityConfigHolder.forceSimplifiedPhysics) {
-            simplifiedTick(entityConfig, armor);
+        if(entity instanceof ArmorStand || entityConfig.forceSimplifiedPhysics) {
+            simplifiedTick(armor);
             return;
         }
 
@@ -129,10 +127,10 @@ public class BreastPhysics {
             return;
         }
 
-        float targetBreastSize = entityConfig.bustSize.get();
+        float targetBreastSize = entityConfig.bustSize().get();
         float breastWeight = targetBreastSize * 1.25f;
 
-        if (!entityConfig.gender.get().canHaveBreasts()) {
+        if (!entityConfig.gender().get().canHaveBreasts()) {
             targetBreastSize = 0;
         } else {
             float tightness = Mth.clamp(armor.tightness(), 0, 1);
@@ -146,14 +144,14 @@ public class BreastPhysics {
         Vec3 motion = entity.position().subtract(this.prePos);
         this.prePos = entity.position();
 
-        float bounceIntensity = targetBreastSize * 3f * Math.round(entityConfig.bounceMultiplier.get() * 3 * 100) / 100f;
+        float bounceIntensity = targetBreastSize * 3f * Math.round(entityConfig.bounceMultiplier().get() * 3 * 100) / 100f;
         float resistance = Mth.clamp(armor.physicsResistance(), 0, 1);
         if(ClientConfigHolder.armorPhysicsOverride()) resistance = 0; //override resistance
 
         //Adjust bounce intensity by physics resistance of the worn armor
         bounceIntensity *= 1 - resistance;
 
-        if(!entityConfig.breasts.uniboob.get()) {
+        if(!entityConfig.breasts().uniboob.get()) {
             bounceIntensity = bounceIntensity * WildfireHelper.randFloat(0.5f, 1.5f);
         }
 
@@ -161,12 +159,12 @@ public class BreastPhysics {
         tickPose(entity, bounceIntensity);
         tickVehicle(entity, bounceIntensity, breastWeight);
         tickArmSwing(entity, bounceIntensity);
-        finishTick(entityConfig);
+        finishTick();
     }
 
-    private void simplifiedTick(EntityConfig entityConfig, IGenderArmor armor) {
-        if(entityConfig.gender.get().canHaveBreasts()) {
-            this.breastSize = entityConfig.bustSize.get();
+    private void simplifiedTick(IGenderArmor armor) {
+        if(entityConfig.gender().get().canHaveBreasts()) {
+            this.breastSize = entityConfig.bustSize().get();
             if(!ClientConfigHolder.armorPhysicsOverride()) {
                 float tightness = Mth.clamp(armor.tightness(), 0, 1);
                 this.breastSize *= 1 - TIGHTNESS_REDUCTION_FACTOR * tightness;
@@ -307,8 +305,8 @@ public class BreastPhysics {
         lastSwingDuration = Math.max(swingDuration, 1);
     }
 
-    private void finishTick(EntityConfig entityConfig) {
-        float percent = entityConfig.floppiness.get();
+    private void finishTick() {
+        float percent = entityConfig.floppiness().get();
         float bounceAmount = 0.45f * (1f - percent) + 0.15f;
         bounceAmount = Mth.clamp(bounceAmount, 0.15f, 0.6f);
         float delta = 2.25f - bounceAmount;

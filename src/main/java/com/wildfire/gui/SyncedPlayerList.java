@@ -133,7 +133,7 @@ public final class SyncedPlayerList {
 
             var color = Contributors.getColor(entry.getProfile().id());
             //~ if >=26.2 'fromRgb(0xFFFFFF)' -> 'WHITE'
-            list.add(new SyncedPlayer(entry.getProfile().name(), color == null ? TextColor.WHITE : color, config.getGender()));
+            list.add(new SyncedPlayer(entry.getProfile().name(), color == null ? TextColor.WHITE : color, config.gender().get()));
 
             if(list.size() >= 40) {
                 break;
