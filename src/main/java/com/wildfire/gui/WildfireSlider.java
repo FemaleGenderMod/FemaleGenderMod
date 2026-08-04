@@ -21,9 +21,11 @@ package com.wildfire.gui;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import com.wildfire.main.WildfireHelper;
-import com.wildfire.main.config.types.FloatConfigKey;
+import com.wildfire.main.config.types.ConfigKey;
+import com.wildfire.main.config.types.ConfigRange;
 import it.unimi.dsi.fastutil.floats.Float2ObjectFunction;
 import it.unimi.dsi.fastutil.floats.FloatConsumer;
+import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -271,8 +273,9 @@ public class WildfireSlider extends AbstractWidget implements IFancyFontRenderer
             return this;
         }
 
-        public Builder range(FloatConfigKey key) {
-            return range(key.getMinInclusive(), key.getMaxInclusive());
+        public Builder range(ConfigKey<Float> key) {
+            ConfigRange<Float> range = Objects.requireNonNull(key.range(), "No range defined for config key");
+            return range(range.minInclusive(), range.maxInclusive());
         }
 
         public Builder range(float min, float max) {

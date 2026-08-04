@@ -18,18 +18,18 @@
 
 package com.wildfire.main.config;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonWriter;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.config.types.BooleanConfigKey;
-import com.wildfire.main.config.types.ConfigKey;
 import java.nio.charset.StandardCharsets;
+import java.util.Comparator;
+import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
-import org.jetbrains.annotations.ApiStatus;
+import net.minecraft.util.GsonHelper;
 
 import java.io.File;
 import java.io.FileReader;
@@ -37,15 +37,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Map;
-import org.jspecify.annotations.Nullable;
 
-public abstract class AbstractConfiguration {
-
-    private static final TypeAdapter<JsonObject> ADAPTER = new Gson().getAdapter(JsonObject.class);
+public class AbstractConfiguration {
 
     private final File cfgFile;
-    private final JsonObject saveValues = new JsonObject();
 
     protected AbstractConfiguration(String directory, String cfgName) {
         Path saveDir = FabricLoader.getInstance().getConfigDir().resolve(directory);
@@ -63,67 +58,33 @@ public abstract class AbstractConfiguration {
         return FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER;
     }
 
-    public <TYPE> void set(ConfigKey<TYPE> key, TYPE value) {
-        key.save(saveValues, value);
-    }
-
-    public <TYPE> TYPE get(ConfigKey<TYPE> key) {
-        return key.read(saveValues);
-    }
-
-    public boolean toggle(BooleanConfigKey key) {
-        var newValue = !get(key);
-        set(key, newValue);
-        return newValue;
-    }
-
-    @ApiStatus.Internal
-    public @Nullable JsonElement get(String key) {
-        return saveValues.get(key);
-    }
-
-    @ApiStatus.Internal
-    public void set(String key, JsonElement element) {
-        saveValues.add(key, element);
-    }
-
-    public <TYPE> void setDefault(ConfigKey<TYPE> key) {
-        if(!saveValues.has(key.getKey())) {
-            set(key, key.getDefault());
-        }
-    }
-
-    public void removeParameter(ConfigKey<?> key) {
-        removeParameter(key.getKey());
-    }
-
-    public void removeParameter(String key) {
-        saveValues.remove(key);
-    }
-
     public boolean exists() {
         return cfgFile.exists();
     }
 
-    public void save() {
-        if(!supportsSaving()) return;
-        try(FileWriter writer = new FileWriter(cfgFile, StandardCharsets.UTF_8); JsonWriter jsonWriter = new JsonWriter(writer)) {
-            jsonWriter.setIndent("\t");
-            ADAPTER.write(jsonWriter, saveValues);
-        } catch (IOException e) {
-            WildfireGender.LOGGER.error("Failed to save config file", e);
+    public <TYPE> void save(Codec<TYPE> codec, TYPE value) {
+        if (supportsSaving()) {
+            //TODO: Do we want to log if it fails to encode?
+            Optional<JsonElement> result = codec.encodeStart(JsonOps.INSTANCE, value).resultOrPartial();
+            if (result.isPresent()) {
+                try (FileWriter writer = new FileWriter(cfgFile, StandardCharsets.UTF_8); JsonWriter jsonWriter = new JsonWriter(writer)) {
+                    jsonWriter.setIndent("\t");
+                    GsonHelper.writeValue(jsonWriter, result.get(), Comparator.naturalOrder());
+                } catch (IOException e) {
+                    WildfireGender.LOGGER.error("Failed to save config file", e);
+                }
+            }
         }
     }
 
-    public void load() {
-        if(!supportsSaving() || !cfgFile.exists()) return;
-        try(FileReader configurationFile = new FileReader(cfgFile, StandardCharsets.UTF_8)) {
-            JsonObject obj = new Gson().fromJson(configurationFile, JsonObject.class);
-            for(Map.Entry<String, JsonElement> entry : obj.entrySet()) {
-                saveValues.add(entry.getKey(), entry.getValue());
+    public JsonObject read() {
+        if (supportsSaving() && cfgFile.exists()) {
+            try (FileReader configurationFile = new FileReader(cfgFile, StandardCharsets.UTF_8)) {
+                return GsonHelper.parse(configurationFile);
+            } catch (IOException e) {
+                WildfireGender.LOGGER.error("Failed to load config file", e);
             }
-        } catch(IOException e) {
-            WildfireGender.LOGGER.error("Failed to load config file", e);
         }
+        return new JsonObject();
     }
 }

@@ -20,7 +20,9 @@ package com.wildfire.physics;
 
 import com.wildfire.api.IGenderArmor;
 import com.wildfire.main.WildfireHelper;
+import com.wildfire.main.config.ClientConfigHolder;
 import com.wildfire.main.entitydata.EntityConfig;
+import com.wildfire.main.entitydata.EntityConfigHolder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.Mth;
@@ -57,12 +59,12 @@ public class BreastPhysics {
     private int lastSwingDuration = 6, lastSwingTick = 0;
     private @Nullable Vec3 prePos;
 
-    private final EntityConfig entityConfig;
+    private final EntityConfigHolder<?> entityConfigHolder;
     private int randomB = 1;
     private double lastVerticalMoveVelocity;
 
-    public BreastPhysics(EntityConfig entityConfig) {
-        this.entityConfig = entityConfig;
+    public BreastPhysics(EntityConfigHolder<?> entityConfigHolder) {
+        this.entityConfigHolder = entityConfigHolder;
     }
 
     private static boolean vehicleSuppressesRotation(Entity vehicle) {
@@ -110,9 +112,10 @@ public class BreastPhysics {
     // as such, the best we can get here is marking this method as such.
     @Environment(EnvType.CLIENT)
     public void update(LivingEntity entity, IGenderArmor armor) {
+        EntityConfig entityConfig = entityConfigHolder.config();
         // always suppress the full physics calculations on armor stands
-        if(entity instanceof ArmorStand || entityConfig.forceSimplifiedPhysics) {
-            simplifiedTick(armor);
+        if(entity instanceof ArmorStand || entityConfigHolder.forceSimplifiedPhysics) {
+            simplifiedTick(entityConfig, armor);
             return;
         }
 
@@ -133,7 +136,7 @@ public class BreastPhysics {
             targetBreastSize = 0;
         } else {
             float tightness = Mth.clamp(armor.tightness(), 0, 1);
-            if(entityConfig.getArmorPhysicsOverride()) tightness = 0; //override resistance
+            if(ClientConfigHolder.armorPhysicsOverride()) tightness = 0; //override resistance
             //Scale breast size by how tight the armor is, clamping at a max adjustment of shrinking by 0.15
             targetBreastSize *= 1 - TIGHTNESS_REDUCTION_FACTOR * tightness;
         }
@@ -145,7 +148,7 @@ public class BreastPhysics {
 
         float bounceIntensity = targetBreastSize * 3f * Math.round(entityConfig.getBounceMultiplier() * 3 * 100) / 100f;
         float resistance = Mth.clamp(armor.physicsResistance(), 0, 1);
-        if(entityConfig.getArmorPhysicsOverride()) resistance = 0; //override resistance
+        if(ClientConfigHolder.armorPhysicsOverride()) resistance = 0; //override resistance
 
         //Adjust bounce intensity by physics resistance of the worn armor
         bounceIntensity *= 1 - resistance;
@@ -158,13 +161,13 @@ public class BreastPhysics {
         tickPose(entity, bounceIntensity);
         tickVehicle(entity, bounceIntensity, breastWeight);
         tickArmSwing(entity, bounceIntensity);
-        finishTick();
+        finishTick(entityConfig);
     }
 
-    private void simplifiedTick(IGenderArmor armor) {
+    private void simplifiedTick(EntityConfig entityConfig, IGenderArmor armor) {
         if(entityConfig.getGender().canHaveBreasts()) {
             this.breastSize = entityConfig.getBustSize();
-            if(!entityConfig.getArmorPhysicsOverride()) {
+            if(!ClientConfigHolder.armorPhysicsOverride()) {
                 float tightness = Mth.clamp(armor.tightness(), 0, 1);
                 this.breastSize *= 1 - TIGHTNESS_REDUCTION_FACTOR * tightness;
             }
@@ -304,7 +307,7 @@ public class BreastPhysics {
         lastSwingDuration = Math.max(swingDuration, 1);
     }
 
-    private void finishTick() {
+    private void finishTick(EntityConfig entityConfig) {
         float percent = entityConfig.getFloppiness();
         float bounceAmount = 0.45f * (1f - percent) + 0.15f;
         bounceAmount = Mth.clamp(bounceAmount, 0.15f, 0.6f);

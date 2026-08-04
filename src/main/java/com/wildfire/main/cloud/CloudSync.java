@@ -30,10 +30,10 @@ import com.mojang.util.InstantTypeAdapter;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.WildfireLang;
-import com.wildfire.main.config.ClientConfig;
+import com.wildfire.main.config.ClientConfigHolder;
 import com.wildfire.main.config.enums.SyncVerbosity;
 import com.wildfire.main.contributors.Contributor;
-import com.wildfire.main.entitydata.PlayerConfig;
+import com.wildfire.main.entitydata.PlayerConfigHolder;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.net.HttpURLConnection;
@@ -112,7 +112,7 @@ public final class CloudSync {
     private static final String DEFAULT_CLOUD_URL = "https://wfgm.celestialfault.dev";
     private static final Duration SYNC_COOLDOWN = Duration.ofSeconds(10);
 
-    /// @return `true` if the last [`sync`][#sync(PlayerConfig)] was within the last 10 seconds
+    /// @return `true` if the last [`sync`][#sync(PlayerConfigHolder)] was within the last 10 seconds
     public static boolean syncOnCooldown() {
         return lastSync.plus(SYNC_COOLDOWN).isAfter(Instant.now());
     }
@@ -150,12 +150,12 @@ public final class CloudSync {
 
     /// @return `true` if syncing is enabled; this will always return `false` if [`syncing is unavailable`][#isAvailable()].
     public static boolean isEnabled() {
-        return isAvailable() && ClientConfig.INSTANCE.get(ClientConfig.CLOUD_SYNC_ENABLED);
+        return isAvailable() && ClientConfigHolder.cloudSyncEnabled();
     }
 
     /// @return The URL of the sync server currently being used
     public static String getCloudServer() {
-        var url = ClientConfig.INSTANCE.get(ClientConfig.CLOUD_SERVER);
+        var url = ClientConfigHolder.cloudServer();
         return url.isBlank() ? DEFAULT_CLOUD_URL : url;
     }
 
@@ -272,7 +272,7 @@ public final class CloudSync {
     ///
     /// @return A [CompletableFuture] indicating when the process has finished, or with an exception if
     ///         syncing failed.
-    public static CompletableFuture<Void> sync(PlayerConfig config) {
+    public static CompletableFuture<Void> sync(PlayerConfigHolder config) {
         if(!isEnabled()) {
             return CompletableFuture.completedFuture(null);
         }
@@ -290,7 +290,7 @@ public final class CloudSync {
         return syncInternal(config, false);
     }
 
-    private static CompletableFuture<Void> syncInternal(PlayerConfig config, boolean resyncing) {
+    private static CompletableFuture<Void> syncInternal(PlayerConfigHolder config, boolean resyncing) {
         return CompletableFuture.runAsync(() -> {
             var token = getAuthToken();
             var url = URI.create(getCloudServer() + "/" + config.uuid);
@@ -324,7 +324,7 @@ public final class CloudSync {
     ///
     /// @return A [CompletableFuture] indicating when the process has finished, or with an exception if
     ///         the request failed.
-    public static CompletableFuture<Void> deleteProfile(PlayerConfig config) {
+    public static CompletableFuture<Void> deleteProfile(PlayerConfigHolder config) {
         return CompletableFuture.runAsync(() -> {
             var token = getAuthToken();
             var url = URI.create(getCloudServer() + "/" + config.uuid);

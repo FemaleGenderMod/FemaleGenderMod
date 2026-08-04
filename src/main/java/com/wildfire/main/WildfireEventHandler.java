@@ -30,9 +30,11 @@ import com.wildfire.gui.WildfireToast;
 import com.wildfire.gui.screen.WardrobeBrowserScreen;
 import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.config.ClientConfig;
+import com.wildfire.main.config.ClientConfigHolder;
 import com.wildfire.main.entitydata.BreastDataComponent;
 import com.wildfire.main.entitydata.EntityConfig;
-import com.wildfire.main.entitydata.PlayerConfig;
+import com.wildfire.main.entitydata.EntityConfigHolder;
+import com.wildfire.main.entitydata.PlayerConfigHolder;
 import com.wildfire.main.networking.ServerboundSyncPacket;
 import com.wildfire.main.networking.WildfireSync;
 import com.wildfire.render.GenderArmorLayer;
@@ -171,8 +173,8 @@ public final class WildfireEventHandler {
 
     @Environment(EnvType.CLIENT)
     private static void renderTooltip(ItemStack item, Consumer<Component> tooltipAppender, @Nullable Player player) {
-        if(player == null || !ClientConfig.INSTANCE.get(ClientConfig.ARMOR_STAT)) return;
-        if(ClientConfig.INSTANCE.get(ClientConfig.ARMOR_PHYSICS_OVERRIDE)) return;
+        if(player == null || !ClientConfigHolder.armorStat()) return;
+        if(ClientConfigHolder.armorPhysicsOverride()) return;
 
         var playerConfig = WildfireGender.getPlayerById(player.getUUID());
         if(playerConfig == null || !playerConfig.getGender().canHaveBreasts()) return;
@@ -198,7 +200,7 @@ public final class WildfireEventHandler {
             return;
         }
 
-        if(ClientConfig.INSTANCE.get(ClientConfig.ALWAYS_SHOW_LIST).isVisible()) {
+        if(ClientConfigHolder.alwaysShowList().isVisible()) {
             SyncedPlayerList.drawSyncedPlayers(context);
         } else {
             SyncedPlayerList.resetTimer();
@@ -224,7 +226,7 @@ public final class WildfireEventHandler {
     private static void onEntityUnload(Entity entity, Level world) {
         // note that we don't attempt to unload players; they're instead only ever unloaded once we leave a world,
         // or once they disconnect
-        EntityConfig.CACHE.invalidate(entity.getUUID());
+        EntityConfigHolder.CACHE.invalidate(entity.getUUID());
     }
 
     /// Perform various actions that should happen once per client tick, such as syncing client player settings
@@ -233,7 +235,7 @@ public final class WildfireEventHandler {
     private static void onClientTick(Minecraft client) {
         if(client.level == null || client.player == null) return;
 
-        PlayerConfig clientConfig = WildfireGender.getPlayerById(client.player.getUUID());
+        PlayerConfigHolder clientConfig = WildfireGender.getPlayerById(client.player.getUUID());
         timer++;
 
         // Only attempt to sync if the server will accept the packet, and only once every 5 ticks, or around 4 times a second
@@ -262,14 +264,14 @@ public final class WildfireEventHandler {
     @Environment(EnvType.CLIENT)
     private static void clientDisconnect(ClientPacketListener networkHandler, Minecraft client) {
         WildfireGender.CACHE.invalidateAll();
-        EntityConfig.CACHE.invalidateAll();
+        EntityConfigHolder.CACHE.invalidateAll();
     }
 
     @Environment(EnvType.CLIENT)
     private static void clientJoin(ClientPacketListener var1, PacketSender var2, Minecraft client) {
         if (client.player == null) return;
 
-        if (ClientConfig.INSTANCE.get(ClientConfig.SHOW_TOAST)) {
+        if (ClientConfigHolder.showToast()) {
             var button = CONFIG_KEYBIND.getTranslatedKeyMessage();
             //~ if >=26.2 'client.getToastManager()' -> 'client.gui.toastManager()'
             ToastManager toastManager = client.gui.toastManager();
@@ -285,7 +287,7 @@ public final class WildfireEventHandler {
     /// Send a sync packet when a player enters the render distance of another player
     private static void onBeginTracking(Entity tracked, ServerPlayer syncTo) {
         if(tracked instanceof Player toSync) {
-            PlayerConfig genderToSync = WildfireGender.getPlayerById(toSync.getUUID());
+            PlayerConfigHolder genderToSync = WildfireGender.getPlayerById(toSync.getUUID());
             if(genderToSync == null) return;
             // Note that we intentionally don't check if we've previously synced a player with this code path;
             // because we use entity tracking to sync, it's entirely possible that one player would leave the
@@ -303,13 +305,13 @@ public final class WildfireEventHandler {
         if(client.player == null || client.level == null) return;
         if(!(entity instanceof Player player) || !player.level().isClientSide()) return;
 
-        PlayerConfig genderPlayer = WildfireGender.getPlayerById(player.getUUID());
-        if(genderPlayer == null || !genderPlayer.hasHurtSounds()) return;
+        PlayerConfigHolder genderPlayer = WildfireGender.getPlayerById(player.getUUID());
+        if(genderPlayer == null || !genderPlayer.config().hasHurtSounds()) return;
 
         SoundEvent hurtSound = genderPlayer.getGender().getHurtSound();
         if(hurtSound != null) {
             float pitchVariation = (player.getRandom().nextFloat() - player.getRandom().nextFloat()) * 0.2F;
-            player.playSound(hurtSound, 1f, pitchVariation + genderPlayer.getVoicePitch());
+            player.playSound(hurtSound, 1f, pitchVariation + genderPlayer.config().getVoicePitch());
         }
     }
 
@@ -317,7 +319,7 @@ public final class WildfireEventHandler {
     @Environment(EnvType.CLIENT)
     private static void onEntityTick(LivingEntity entity) {
         if(EntityConfig.isSupportedEntity(entity)) {
-            EntityConfig cfg = EntityConfig.getEntity(entity);
+            EntityConfigHolder<?> cfg = EntityConfigHolder.getEntity(entity);
             if(entity instanceof ArmorStand) {
                 cfg.readFromStack(entity.getItemBySlot(EquipmentSlot.CHEST));
             }
@@ -327,7 +329,7 @@ public final class WildfireEventHandler {
 
     /// Apply player settings to chestplates equipped onto armor stands
     private static void onEquipArmorStand(Player player, ItemStack item) {
-        PlayerConfig playerConfig = WildfireGender.getPlayerById(player.getUUID());
+        PlayerConfigHolder playerConfig = WildfireGender.getPlayerById(player.getUUID());
         if(playerConfig == null) {
             // while we shouldn't have our tag on the stack still, we're still checking to catch any armor
             // that may still have the tag from older versions, or from potential cross-mod interactions
@@ -339,7 +341,7 @@ public final class WildfireEventHandler {
 
         // Note that we always attach player data to the item stack as a server has no concept of resource packs,
         // making it impossible to compare against any armor data that isn't registered through the mod API.
-        BreastDataComponent component = BreastDataComponent.fromPlayer(player, playerConfig);
+        BreastDataComponent component = BreastDataComponent.fromPlayer(player, playerConfig.config());
         if(component != null) {
             component.write(item);
         }

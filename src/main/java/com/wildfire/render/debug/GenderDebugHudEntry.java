@@ -21,6 +21,7 @@ package com.wildfire.render.debug;
 import com.wildfire.api.IGenderArmor;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.entitydata.EntityConfig;
+import com.wildfire.main.entitydata.EntityConfigHolder;
 import com.wildfire.physics.BreastPhysics;
 import com.wildfire.resources.GenderArmorResourceManager;
 import net.minecraft.ChatFormatting;
@@ -67,13 +68,13 @@ public class GenderDebugHudEntry implements DebugScreenEntry {
             return;
         }
 
-        var config = EntityConfig.getEntity(living);
+        var config = EntityConfigHolder.getEntity(living);
         List<String> info = new ArrayList<>();
 
         info.add(PREFIX + " Gender Data");
         info.add("UUID: " + target.getUUID());
         info.addAll(config.getDebugInfo());
-        addEquippedChestplate(info, config, living);
+        addEquippedChestplate(info, config.config(), living);
 
         lines.addToGroup(id, info);
     }

@@ -21,7 +21,7 @@ package com.wildfire.main.networking;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.entitydata.Breasts;
-import com.wildfire.main.entitydata.PlayerConfig;
+import com.wildfire.main.entitydata.PlayerConfigHolder;
 import io.netty.buffer.ByteBuf;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -38,7 +38,7 @@ public final class ServerboundSyncPacket extends AbstractSyncPacket implements C
     public static final Type<ServerboundSyncPacket> ID = new CustomPacketPayload.Type<>(WildfireGender.id("send_gender_info"));
     public static final StreamCodec<ByteBuf, ServerboundSyncPacket> CODEC = codec(ServerboundSyncPacket::new);
 
-    public ServerboundSyncPacket(PlayerConfig plr) {
+    public ServerboundSyncPacket(PlayerConfigHolder plr) {
         super(plr);
     }
 
@@ -58,7 +58,7 @@ public final class ServerboundSyncPacket extends AbstractSyncPacket implements C
 
     public void handle(ServerPlayNetworking.Context context) {
         ServerPlayer player = context.player();
-        PlayerConfig plr = WildfireGender.getOrAddPlayerById(player.getUUID());
+        PlayerConfigHolder plr = WildfireGender.getOrAddPlayerById(player.getUUID());
         updatePlayerFromPacket(plr);
         WildfireSync.sendToAllClients(player, plr);
     }

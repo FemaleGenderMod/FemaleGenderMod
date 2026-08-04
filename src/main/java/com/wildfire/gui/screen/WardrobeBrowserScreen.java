@@ -23,8 +23,10 @@ import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireLang;
 import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.config.ClientConfig;
+import com.wildfire.main.config.ClientConfigHolder;
 import com.wildfire.main.contributors.Contributors;
 import com.wildfire.main.entitydata.PlayerConfig;
+import com.wildfire.main.entitydata.PlayerConfigHolder;
 import java.time.Month;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -72,7 +74,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
     }
 
     public static BaseWildfireScreen create(LocalPlayer player, @Nullable Screen parent) {
-        if(ClientConfig.INSTANCE.get(ClientConfig.FIRST_TIME_LOAD) && CloudSync.isAvailable()) {
+        if(ClientConfigHolder.firstTimeLoad() && CloudSync.isAvailable()) {
             return new WildfireFirstTimeSetupScreen(parent, player.getUUID());
         } else {
             return new WardrobeBrowserScreen(parent, player.getUUID());
@@ -89,18 +91,18 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
         super.init();
         final var client = Objects.requireNonNull(this.minecraft, "client");
         int y = this.height / 2;
-        PlayerConfig plr = Objects.requireNonNull(getPlayer(), "getPlayer()");
+        PlayerConfigHolder plrHolder = Objects.requireNonNull(getPlayer(), "getPlayer()");
+        PlayerConfig plr = plrHolder.config();
 
         addButton(builder -> builder
-                .message(() -> WildfireLang.PLAYER_LIST_MODE.translate(ClientConfig.INSTANCE.get(ClientConfig.ALWAYS_SHOW_LIST).text()))
-                .tooltip(ClientConfig.INSTANCE.get(ClientConfig.ALWAYS_SHOW_LIST).tooltip())
+                .message(() -> WildfireLang.PLAYER_LIST_MODE.translate(ClientConfigHolder.alwaysShowList().text()))
+                .tooltip(ClientConfigHolder.alwaysShowList().tooltip())
                 .position(126, 4)
                 .size(185, 10)
                 .onPress(button -> {
-                    var config = ClientConfig.INSTANCE;
-                    var newVal = config.get(ClientConfig.ALWAYS_SHOW_LIST).next();
-                    config.set(ClientConfig.ALWAYS_SHOW_LIST, newVal);
-                    config.save();
+                    var newVal = ClientConfigHolder.alwaysShowList().next();
+                    ClientConfigHolder.INSTANCE.config().alwaysShowList = newVal;
+                    ClientConfigHolder.INSTANCE.save();
                     button.updateMessage();
                     button.setTooltip(newVal.tooltip());
                 }));
@@ -111,7 +113,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
                 .size(80, 15)
                 .onPress(_ -> {
                     plr.updateGender(plr.getGender().next());
-                    plr.save();
+                    plrHolder.save();
                     rebuildWidgets();
                 }));
 
@@ -162,7 +164,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         extractTransparentBackground(graphics);
 
-        PlayerConfig plr = getPlayer();
+        var plr = getPlayer();
         if(plr == null) return;
         Identifier backgroundTexture = switch(plr.getGender()) {
             case MALE -> BACKGROUND_MALE;

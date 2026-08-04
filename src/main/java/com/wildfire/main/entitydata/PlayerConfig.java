@@ -18,74 +18,52 @@
 
 package com.wildfire.main.entitydata;
 
-import com.google.gson.JsonObject;
-import com.wildfire.gui.screen.BaseWildfireScreen;
-import com.wildfire.main.WildfireGender;
-import com.wildfire.main.WildfireLang;
-import com.wildfire.main.cloud.CloudSync;
-import com.wildfire.main.cloud.SyncLog;
-import com.wildfire.main.config.ClientConfig;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.wildfire.main.config.Configuration;
 import com.wildfire.main.config.enums.Gender;
-import com.wildfire.main.config.types.ConfigKey;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
-import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.ApiStatus;
-
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
+import com.wildfire.main.uvs.UVLayout;
 
 /// A version of [EntityConfig] backed by a [Configuration] for use with players
 public class PlayerConfig extends EntityConfig {
 
-    /// `true` if this config should be synced to the connected server on the next attempt
-    ///
-    /// This only has an effect for the client player.
-    public boolean needsSync;
+    //~ if >=26.2 'oldMcCodec()' -> 'codec()'
+    public static final Codec<PlayerConfig> CODEC = codec();
 
-    /// `true` if this config should be synced to the [`cloud sync server`][CloudSync] on the next attempt
-    ///
-    /// This only has an effect for the client player.
-    public boolean needsCloudSync;
-
-    /// The current sync status of this player config
-    ///
-    /// @see #needsSync
-    /// @see SyncStatus
-    public SyncStatus syncStatus = SyncStatus.UNKNOWN;
-
-    private final Configuration cfg;
-    protected boolean hurtSounds = Configuration.HURT_SOUNDS.getDefault();
-    protected boolean holidayThemes = Configuration.HOLIDAY_THEMES.getDefault();
-    protected boolean showBreastsInArmor = Configuration.SHOW_IN_ARMOR.getDefault();
-
-    /// @deprecated Use [#updateGender(Gender)] instead
-    @Deprecated
-    public PlayerConfig(UUID uuid, Gender gender) {
-        this(uuid);
-        updateGender(gender);
+    //? if >=26.2 {
+    private static Codec<PlayerConfig> codec() {
+        return RecordCodecBuilder.create(instance -> codecGroup(instance)
+            .and(Configuration.HURT_SOUNDS.codecOrDefault().forGetter(PlayerConfig::hasHurtSounds))
+            .and(Configuration.SHOW_IN_ARMOR.codecOrDefault().forGetter(EntityConfig::showBreastsInArmor))
+            .and(Configuration.HOLIDAY_THEMES.codecOrDefault().forGetter(PlayerConfig::hasHolidayThemes))
+            .apply(instance, PlayerConfig::new));
     }
-
-    public PlayerConfig(UUID uuid) {
-        super(uuid);
-        cfg = new Configuration(uuid.toString());
-        cfg.setDefaults();
-
-        // Real players always have a UUID of version 4; if this isn't the case, then this is undeniably
-        // an NPC player entity.
-        if(uuid.version() != 4) holidayThemes = false;
+    //?}
+    //? if <26.2 {
+    private static Codec<PlayerConfig> oldMcCodec() {
+        return RecordCodecBuilder.create(instance -> {
+            var p11 = (com.wildfire.mixins.accessors.ProductsAccessor<RecordCodecBuilder.Mu<PlayerConfig>, Gender, Float, Float, Breasts, Boolean, Float, Float, UVLayout, UVLayout, UVLayout, UVLayout>) (Object) codecGroup(instance);
+            return new com.mojang.datafixers.Products.P14<>(p11.t1(), p11.t2(), p11.t3(), p11.t4(), p11.t5(), p11.t6(), p11.t7(), p11.t8(), p11.t9(), p11.t10(), p11.t11(),
+                    Configuration.SHOW_IN_ARMOR.codecOrDefault().forGetter(EntityConfig::showBreastsInArmor),
+                    Configuration.HOLIDAY_THEMES.codecOrDefault().forGetter(PlayerConfig::hasHolidayThemes),
+                    Configuration.HURT_SOUNDS.codecOrDefault().forGetter(PlayerConfig::hasHurtSounds)
+            ).apply(instance, PlayerConfig::new);
+        });
     }
+    //?}
 
-    // these shouldn't ever be called on players, but just to be safe, override with a noop.
-    @Override
-    public void readFromStack(ItemStack chestplate) {
-    }
+    protected boolean hurtSounds;
+    protected boolean holidayThemes;
+    protected boolean showBreastsInArmor;
 
-    public Configuration getConfig() {
-        return cfg;
+    public PlayerConfig(Gender gender, float bustSize, float voicePitch, Breasts breasts, boolean breastPhysics, float bounceMultiplier , float floppyMultiplier,
+        UVLayout leftBreastUVLayout, UVLayout rightBreastUVLayout, UVLayout leftBreastOverlayUVLayout, UVLayout rightBreastOverlayUVLayout,
+        boolean hurtSounds, boolean showBreastsInArmor, boolean holidayThemes) {
+        super(gender, bustSize, voicePitch, breasts, breastPhysics, bounceMultiplier, floppyMultiplier, leftBreastUVLayout, rightBreastUVLayout,
+            leftBreastOverlayUVLayout, rightBreastOverlayUVLayout);
+        this.hurtSounds = hurtSounds;
+        this.holidayThemes = holidayThemes;
+        this.showBreastsInArmor = showBreastsInArmor;
     }
 
     public boolean updateGender(Gender value) {
@@ -93,7 +71,7 @@ public class PlayerConfig extends EntityConfig {
     }
 
     public boolean updateBustSize(float value) {
-        return updateValue(Configuration.BUST_SIZE, value, v -> this.pBustSize = v);
+        return updateValue(Configuration.BUST_SIZE, value, v -> this.bustSize = v);
     }
 
 
@@ -104,7 +82,6 @@ public class PlayerConfig extends EntityConfig {
     public boolean updateHolidayThemes(boolean value) {
         return updateValue(Configuration.HOLIDAY_THEMES, value, v -> this.holidayThemes = v);
     }
-
 
     public boolean hasHurtSounds() {
         return hurtSounds;
@@ -122,15 +99,6 @@ public class PlayerConfig extends EntityConfig {
         return updateValue(Configuration.BREAST_PHYSICS, value, v -> this.breastPhysics = v);
     }
 
-    /// @apiNote The value this method returns has been moved to [ClientConfig], and this method is only
-    /// 			retained for compatibility with mods that use this as a mixin target.
-    @Override
-    @ApiStatus.Obsolete
-    @Environment(EnvType.CLIENT)
-    public boolean getArmorPhysicsOverride() {
-        return ClientConfig.INSTANCE.get(ClientConfig.ARMOR_PHYSICS_OVERRIDE);
-    }
-
     @Override
     public boolean showBreastsInArmor() {
         return showBreastsInArmor;
@@ -146,134 +114,5 @@ public class PlayerConfig extends EntityConfig {
 
     public boolean updateFloppiness(float value) {
         return updateValue(Configuration.FLOPPY_MULTIPLIER, value, v -> this.floppyMultiplier = v);
-    }
-
-    public SyncStatus getSyncStatus() {
-        return this.syncStatus;
-    }
-
-    /// Returns a copy of the player's current configuration; the stored values are guaranteed to be valid for
-    /// the associated [ConfigKey], and does not include any unrecognized keys.
-    ///
-    /// @return A new copy of the player's [`saved config values`][JsonObject]
-    public JsonObject toJson() {
-        var json = new JsonObject();
-        Configuration.KEYS.forEach(key -> key.dump(this, json));
-        return json;
-    }
-
-    /// @return `true` if the current player [`has a local config file`][Configuration#exists()]
-    public boolean hasLocalConfig() {
-        return cfg.exists();
-    }
-
-    /// Loads the current player's settings from a file on disk
-    ///
-    /// @param markForSync`true` if [#needsSync] should be set to true
-    public void loadFromDisk(boolean markForSync) {
-        this.syncStatus = SyncStatus.CACHED;
-        cfg.load();
-        loadFromConfig(markForSync);
-    }
-
-    /// Loads the current player's settings from the local [Configuration]
-    ///
-    /// @param markForSync`true` if [#needsSync] should be set to true
-    public void loadFromConfig(boolean markForSync) {
-        Configuration.KEYS.forEach(key -> key.writeToPlayer(this));
-        if(markForSync) {
-            this.needsSync = true;
-        }
-    }
-
-    /// Write all known [ConfigKey]s from this [PlayerConfig] to the underlying [Configuration]
-    public void writeToConfig() {
-        Configuration.KEYS.forEach(key -> key.writeToConfig(this));
-    }
-
-    /// Saves the settings stored in this [PlayerConfig] to the underlying [Configuration],
-    /// and then attempts to [`save to disk`][Configuration#save()].
-    public void save() {
-        writeToConfig();
-        getConfig().save();
-        needsSync = true;
-        needsCloudSync = true;
-    }
-
-    /// @deprecated Use `plr.save()` instead
-    @Deprecated(forRemoval = true)
-    @ApiStatus.ScheduledForRemoval(inVersion = "First release of 26.1")
-    public static void saveGenderInfo(PlayerConfig plr) {
-        plr.save();
-    }
-
-    @Override
-    public boolean hasJacketLayer() {
-        throw new UnsupportedOperationException("PlayerConfig does not support #hasJacketLayer(); use Player#isModelPartShown instead");
-    }
-
-    @ApiStatus.Internal
-    public void attemptCloudSync() {
-        var client = Minecraft.getInstance();
-        if(client.player == null || !this.uuid.equals(client.player.getUUID())) return;
-        if(!needsCloudSync) return;
-        //~ if >=26.2 'client.screen' -> 'client.gui.screen()'
-        if(client.gui.screen() instanceof BaseWildfireScreen) return;
-        if(!ClientConfig.INSTANCE.get(ClientConfig.AUTOMATIC_CLOUD_SYNC)) return;
-        if(CloudSync.syncOnCooldown()) return;
-
-        CompletableFuture.runAsync(() -> {
-            try {
-                CloudSync.sync(this).join();
-                WildfireGender.LOGGER.info("Synced player data to the cloud");
-            } catch(Exception e) {
-                WildfireGender.LOGGER.error("Failed to sync player data", e);
-                SyncLog.add(WildfireLang.SYNC_LOG_FAILED);
-            }
-        });
-        needsCloudSync = false;
-    }
-
-    /// Update player data from the provided [JsonObject]
-    ///
-    /// @apiNote This method will set the player's [`sync status`][#getSyncStatus()] to [SyncStatus#SYNCED],
-    ///          as it's expected that this method is only used in such cases where this would be applicable.
-    ///
-    /// @param json The [JsonObject] to merge with the existing config for this player
-    public void updateFromJson(JsonObject json) {
-        json.asMap().forEach(this.cfg::set);
-        loadFromConfig(false);
-        this.syncStatus = SyncStatus.SYNCED;
-    }
-
-    @Override
-    public List<String> getDebugInfo() {
-        var lines = super.getDebugInfo();
-        lines.add(1, "Sync status: " + getSyncStatus());
-        lines.add("Female hurt sounds: " + hasHurtSounds());
-        lines.add("Show in armor: " + showBreastsInArmor());
-        return lines;
-    }
-
-    public enum SyncStatus {
-        /// Indicates that the relevant configuration has had its data loaded from a file on disk.
-        ///
-        /// This is only applicable on a client, as dedicated servers do not read player data from
-        /// configuration files.
-        CACHED,
-
-        /// Indicates that the relevant configuration has had its data loaded from a sync packet,
-        /// or from a profile retrieved from [`the cloud sync server`][CloudSync].
-        ///
-        /// This is currently only set on the client.
-        // TODO this should be set on dedicated servers if/when the player config cache is split
-        //		into separate server-sided & client-sided caches
-        SYNCED,
-
-        /// Indicates that this configuration has an unknown sync state.
-        ///
-        /// This is the default sync state for new configuration instances, and on dedicated servers is
-        /// the only sync state.
-        UNKNOWN,
     }
 }

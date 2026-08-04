@@ -24,8 +24,8 @@ import com.wildfire.main.WildfireGender;
 import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.contributors.Contributor;
 import com.wildfire.main.contributors.Contributors;
-import com.wildfire.main.entitydata.EntityConfig;
-import com.wildfire.main.entitydata.PlayerConfig;
+import com.wildfire.main.entitydata.EntityConfigHolder;
+import com.wildfire.main.entitydata.PlayerConfigHolder;
 import com.wildfire.mixins.accessors.ClientMannequinAccessor;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -84,7 +84,7 @@ public class FakeGUIPlayer {
     public void tick() {
         entity.get().applyLoadedSkin();
         entity.get().tickCount++; // This allows for playing the breathing animation
-        EntityConfig.getEntity(getEntity()).tickBreastPhysics(getEntity());
+        EntityConfigHolder.getEntity(getEntity()).tickBreastPhysics(getEntity());
     }
 
     private static Supplier<GUIMannequin> createPlayerSupplier(final UUID uuid, final @Nullable JsonObject defaultGenderData) {
@@ -94,10 +94,10 @@ public class FakeGUIPlayer {
 
             var entity = new GUIMannequin(client.level, client.playerSkinRenderCache(), ResolvableProfile.createUnresolved(uuid));
 
-            PlayerConfig config;
+            PlayerConfigHolder config;
             try {
                 // while we don't have proper support for mannequins right now, we can most certainly fake it
-                config = (PlayerConfig) EntityConfig.CACHE.get(entity.getUUID(), () -> new PlayerConfig(entity.getUUID()));
+                config = (PlayerConfigHolder) EntityConfigHolder.CACHE.get(entity.getUUID(), () -> new PlayerConfigHolder(entity.getUUID()));
             } catch(ExecutionException | ClassCastException _) {
                 return entity;
             }

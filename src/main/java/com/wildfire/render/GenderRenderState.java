@@ -24,7 +24,9 @@ import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.entitydata.Breasts;
 import com.wildfire.main.entitydata.EntityConfig;
+import com.wildfire.main.entitydata.EntityConfigHolder;
 import com.wildfire.main.entitydata.PlayerConfig;
+import com.wildfire.main.entitydata.PlayerConfigHolder;
 import com.wildfire.main.uvs.UVLayout;
 import com.wildfire.physics.BreastPhysics;
 import net.fabricmc.api.EnvType;
@@ -49,7 +51,7 @@ public class GenderRenderState {
 
     public static void update(LivingEntity entity, EntityRenderState state, float partialTicks) {
         if(EntityConfig.isSupportedEntity(entity)) {
-            var config = EntityConfig.getEntity(entity);
+            var config = EntityConfigHolder.getEntity(entity);
             state.setData(STATE, new GenderRenderState(config, entity, partialTicks));
         }
     }
@@ -69,7 +71,6 @@ public class GenderRenderState {
     public final boolean hasBreastPhysics;
     public final float bounceMultiplier;
     public final float floppyMultiplier;
-    public final boolean armorPhysicsOverride;
     public final boolean showBreastsInArmor;
     public final boolean hasJacketLayer;
     public final boolean hasHolidayThemes;
@@ -83,10 +84,11 @@ public class GenderRenderState {
     public final boolean isBreathing;
     public final @Nullable Component nametag;
 
-    private GenderRenderState(EntityConfig entityConfig, LivingEntity entity, float partialTicks) {
+    private GenderRenderState(EntityConfigHolder<?> entityConfigHolder, LivingEntity entity, float partialTicks) {
+        EntityConfig entityConfig = entityConfigHolder.config();
         this.breasts = new BreastState(entityConfig.getBreasts());
-        this.leftBreastPhysics = new BreastPhysicsState(entityConfig.getLeftBreastPhysics());
-        this.rightBreastPhysics = new BreastPhysicsState(entityConfig.getRightBreastPhysics());
+        this.leftBreastPhysics = new BreastPhysicsState(entityConfigHolder.getLeftBreastPhysics());
+        this.rightBreastPhysics = new BreastPhysicsState(entityConfigHolder.getRightBreastPhysics());
 
         this.partialTicks = partialTicks;
 
@@ -95,16 +97,17 @@ public class GenderRenderState {
         this.hasBreastPhysics = entityConfig.hasBreastPhysics();
         this.bounceMultiplier = entityConfig.getBounceMultiplier();
         this.floppyMultiplier = entityConfig.getFloppiness();
-        this.armorPhysicsOverride = entityConfig.getArmorPhysicsOverride();
         this.showBreastsInArmor = entityConfig.showBreastsInArmor();
 
         if(entity instanceof Avatar playerLikeEntity) {
             this.hasJacketLayer = playerLikeEntity.isModelPartShown(PlayerModelPart.JACKET);
         } else {
-            this.hasJacketLayer = entityConfig instanceof PlayerConfig || entityConfig.hasJacketLayer();
+            this.hasJacketLayer = entityConfigHolder instanceof PlayerConfigHolder || entityConfigHolder.hasJacketLayer();
         }
 
-        if(entityConfig instanceof PlayerConfig playerConfig) {
+        if(entityConfig instanceof PlayerConfig playerConfig && entityConfigHolder.uuid.version() == 4) {
+            // Real players always have a UUID of version 4; if this isn't the case, then this is undeniably
+            // an NPC player entity.
             this.hasHolidayThemes = playerConfig.hasHolidayThemes();
         } else {
             this.hasHolidayThemes = false;

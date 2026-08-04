@@ -16,17 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.main.config.functions;
+package com.wildfire.main.config.types;
 
-import com.wildfire.main.entitydata.Breasts;
-import com.wildfire.main.entitydata.PlayerConfig;
+import java.util.Comparator;
+import java.util.Objects;
 
-@FunctionalInterface
-public interface BreastGetter<T> extends PlayerGetter<T> {
-    T get(Breasts player);
+public record ConfigRange<TYPE>(TYPE minInclusive, TYPE maxInclusive, Comparator<? super TYPE> comparator) {
 
-    @Override
-    default T get(PlayerConfig player) {
-        return get(player.getBreasts());
+    public boolean validate(TYPE value) {
+        return Objects.compare(value, minInclusive, comparator) >= 0 && Objects.compare(value, maxInclusive, comparator) <= 0;
     }
 }

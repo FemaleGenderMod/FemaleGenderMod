@@ -21,7 +21,7 @@ package com.wildfire.main.networking;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.entitydata.Breasts;
-import com.wildfire.main.entitydata.PlayerConfig;
+import com.wildfire.main.entitydata.PlayerConfigHolder;
 import io.netty.buffer.ByteBuf;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -38,7 +38,7 @@ public final class ClientboundSyncPacket extends AbstractSyncPacket implements C
     public static final Type<ClientboundSyncPacket> ID = new CustomPacketPayload.Type<>(WildfireGender.id("sync"));
     public static final StreamCodec<ByteBuf, ClientboundSyncPacket> CODEC = codec(ClientboundSyncPacket::new);
 
-    public ClientboundSyncPacket(PlayerConfig plr) {
+    public ClientboundSyncPacket(PlayerConfigHolder plr) {
         super(plr);
     }
 
@@ -62,8 +62,8 @@ public final class ClientboundSyncPacket extends AbstractSyncPacket implements C
             return;
         }
 
-        PlayerConfig plr = WildfireGender.getOrAddPlayerById(uuid);
+        PlayerConfigHolder plr = WildfireGender.getOrAddPlayerById(uuid);
         updatePlayerFromPacket(plr);
-        plr.syncStatus = PlayerConfig.SyncStatus.SYNCED;
+        plr.syncStatus = PlayerConfigHolder.SyncStatus.SYNCED;
     }
 }

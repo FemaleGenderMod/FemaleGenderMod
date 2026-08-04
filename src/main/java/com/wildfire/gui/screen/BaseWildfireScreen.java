@@ -22,7 +22,7 @@ import com.wildfire.gui.IFancyFontRenderer;
 import com.wildfire.gui.WildfireButton;
 import com.wildfire.gui.WildfireSlider;
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.entitydata.PlayerConfig;
+import com.wildfire.main.entitydata.PlayerConfigHolder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -65,7 +65,7 @@ public abstract class BaseWildfireScreen extends Screen implements IFancyFontRen
         return addRenderableWidget(sliderBuilder.build(lastMSInitialized));
     }
 
-    public @Nullable PlayerConfig getPlayer() {
+    public @Nullable PlayerConfigHolder getPlayer() {
         return WildfireGender.getPlayerById(this.playerUUID);
     }
 

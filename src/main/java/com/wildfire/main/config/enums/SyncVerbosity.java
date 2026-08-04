@@ -18,8 +18,11 @@
 
 package com.wildfire.main.config.enums;
 
+import com.mojang.serialization.Codec;
+import java.util.Locale;
 import net.minecraft.commands.arguments.StringRepresentableArgument;
 import net.minecraft.util.ByIdMap;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.StringRepresentable;
 
 import java.util.function.IntFunction;
@@ -29,10 +32,18 @@ public enum SyncVerbosity implements StringRepresentable {
     SHOW_FETCHES;
 
     public static final IntFunction<SyncVerbosity> BY_ID = ByIdMap.continuous(SyncVerbosity::ordinal, values(), ByIdMap.OutOfBoundsStrategy.CLAMP);
+    public static final Codec<SyncVerbosity> CODEC = StringRepresentable.fromEnum(SyncVerbosity::values);
+    public static final Codec<SyncVerbosity> CODEC_OR_LEGACY = CODEC.withAlternative(ExtraCodecs.idResolverCodec(SyncVerbosity::ordinal, BY_ID, 0));
+
+    private final String saveName;
+
+    SyncVerbosity() {
+        this.saveName = name().toLowerCase(Locale.ROOT);
+    }
 
     @Override
     public String getSerializedName() {
-        return toString();
+        return this.saveName;
     }
 
     public static class SyncVerbosityArgumentType extends StringRepresentableArgument<SyncVerbosity> {

@@ -30,6 +30,8 @@ import org.jspecify.annotations.Nullable;
 public class UVLayout {
     /// @apiNote Any layouts returned from this codec are [`immutable`][Immutable]
     public static final Codec<UVLayout> CODEC = Codec.unboundedMap(UVDirection.NAME_CODEC, UVQuad.CODEC).xmap(UVLayout::createImmutable, UVLayout::getQuads);
+    //TODO: Test this
+    public static final Codec<UVLayout> MUTABLE_CONFIG_CODEC = Codec.unboundedMap(UVDirection.NAME_CODEC, UVQuad.OR_LEGACY).xmap(UVLayout::new, UVLayout::getQuads);
 
     private final EnumMap<UVDirection, @Nullable UVQuad> quads = new EnumMap<>(UVDirection.class);
 

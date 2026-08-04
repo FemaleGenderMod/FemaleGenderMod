@@ -18,6 +18,8 @@
 
 package com.wildfire.main.entitydata;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.wildfire.main.config.Configuration;
 import com.wildfire.main.config.types.ConfigKey;
 import io.netty.buffer.ByteBuf;
@@ -31,28 +33,33 @@ import java.util.function.Consumer;
 @SuppressWarnings("UnusedReturnValue")
 public final class Breasts {
 
-    public static final StreamCodec<ByteBuf, Breasts> CODEC = StreamCodec.composite(
-            ByteBufCodecs.FLOAT, Breasts::getXOffset,
-            ByteBufCodecs.FLOAT, Breasts::getYOffset,
-            ByteBufCodecs.FLOAT, Breasts::getZOffset,
-            ByteBufCodecs.BOOL, Breasts::isUniboob,
-            ByteBufCodecs.FLOAT, Breasts::getCleavage,
-            (x, y, z, uniboob, cleavage) -> {
-                Breasts breasts = new Breasts();
-                breasts.xOffset = x;
-                breasts.yOffset = y;
-                breasts.zOffset = z;
-                breasts.cleavage = cleavage;
-                breasts.uniboob = uniboob;
-                return breasts;
-            }
+    public static final MapCodec<Breasts> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+        Configuration.BREASTS_OFFSET_X.codecOrDefault().forGetter(Breasts::getXOffset),
+        Configuration.BREASTS_OFFSET_Y.codecOrDefault().forGetter(Breasts::getYOffset),
+        Configuration.BREASTS_OFFSET_Z.codecOrDefault().forGetter(Breasts::getZOffset),
+        Configuration.BREASTS_UNIBOOB.codecOrDefault().forGetter(Breasts::isUniboob),
+        Configuration.BREASTS_CLEAVAGE.codecOrDefault().forGetter(Breasts::getCleavage)
+    ).apply(instance, Breasts::new));
+    public static final StreamCodec<ByteBuf, Breasts> STREAM_CODEC = StreamCodec.composite(
+        ByteBufCodecs.FLOAT, Breasts::getXOffset,
+        ByteBufCodecs.FLOAT, Breasts::getYOffset,
+        ByteBufCodecs.FLOAT, Breasts::getZOffset,
+        ByteBufCodecs.BOOL, Breasts::isUniboob,
+        ByteBufCodecs.FLOAT, Breasts::getCleavage,
+        Breasts::new
     );
 
-    private float xOffset = Configuration.BREASTS_OFFSET_X.getDefault(),
-            yOffset = Configuration.BREASTS_OFFSET_Y.getDefault(),
-            zOffset = Configuration.BREASTS_OFFSET_Z.getDefault();
-    private float cleavage = Configuration.BREASTS_CLEAVAGE.getDefault();
-    private boolean uniboob = Configuration.BREASTS_UNIBOOB.getDefault();
+    private float xOffset, yOffset, zOffset;
+    private float cleavage;
+    private boolean uniboob;
+
+    private Breasts(float xOffset, float yOffset, float zOffset, boolean uniboob, float cleavage) {
+        this.xOffset = xOffset;
+        this.yOffset = yOffset;
+        this.zOffset = zOffset;
+        this.uniboob = uniboob;
+        this.cleavage = cleavage;
+    }
 
     private <VALUE> boolean updateValue(ConfigKey<VALUE> key, VALUE value, Consumer<VALUE> setter) {
         if (key.validate(value)) {

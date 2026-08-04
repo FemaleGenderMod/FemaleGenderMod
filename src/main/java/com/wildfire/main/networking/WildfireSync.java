@@ -20,6 +20,7 @@ package com.wildfire.main.networking;
 
 import com.mojang.logging.LogUtils;
 import com.wildfire.main.entitydata.PlayerConfig;
+import com.wildfire.main.entitydata.PlayerConfigHolder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
@@ -79,8 +80,8 @@ public final class WildfireSync {
     /// Sync a player's configuration to all nearby connected players
     ///
     /// @param toSync       The [`player`][ServerPlayer] to sync
-    /// @param playerConfig The [`configuration`][PlayerConfig] for the target player
-    public static void sendToAllClients(ServerPlayer toSync, PlayerConfig playerConfig) {
+    /// @param playerConfig The [`configuration`][PlayerConfigHolder] for the target player
+    public static void sendToAllClients(ServerPlayer toSync, PlayerConfigHolder playerConfig) {
         PlayerLookup.tracking(toSync).stream()
                 .filter(player -> !player.equals(toSync))
                 .filter(ClientboundSyncPacket::canSend)
@@ -91,7 +92,7 @@ public final class WildfireSync {
     ///
     /// @param sendTo The [`player`][ServerPlayer] to send the sync to
     /// @param toSync The [`configuration`][PlayerConfig] for the player being synced
-    public static void sendToClient(ServerPlayer sendTo, PlayerConfig toSync) {
+    public static void sendToClient(ServerPlayer sendTo, PlayerConfigHolder toSync) {
         if(ClientboundSyncPacket.canSend(sendTo)) {
             ServerPlayNetworking.send(sendTo, new ClientboundSyncPacket(toSync));
         }
@@ -101,7 +102,7 @@ public final class WildfireSync {
     ///
     /// @param plr The [`configuration`][PlayerConfig] for the client player
     @Environment(EnvType.CLIENT)
-    public static void sendToServer(PlayerConfig plr) {
+    public static void sendToServer(PlayerConfigHolder plr) {
         if(!plr.needsSync || !ServerboundSyncPacket.canSend()) return;
 
         ClientPlayNetworking.send(new ServerboundSyncPacket(plr));

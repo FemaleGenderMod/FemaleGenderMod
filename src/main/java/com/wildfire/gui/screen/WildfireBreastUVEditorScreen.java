@@ -84,15 +84,16 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
                 .position(x + 5, y + 5)
                 .size(this.width - x - 10, 20)
                 .onPress(_ -> {
-                    var player = Objects.requireNonNull(getPlayer(), "getPlayer()");
+                    var playerHolder = Objects.requireNonNull(getPlayer(), "getPlayer()");
+                    var player = playerHolder.config();
 
-                    player.updateLeftBreastUVLayout(Configuration.LEFT_BREAST_UV_LAYOUT.getDefault());
-                    player.updateRightBreastUVLayout(Configuration.RIGHT_BREAST_UV_LAYOUT.getDefault());
+                    player.updateLeftBreastUVLayout(Configuration.LEFT_BREAST_UV_LAYOUT.defaultValue());
+                    player.updateRightBreastUVLayout(Configuration.RIGHT_BREAST_UV_LAYOUT.defaultValue());
 
-                    player.updateLeftBreastOverlayUVLayout(Configuration.LEFT_BREAST_OVERLAY_UV_LAYOUT.getDefault());
-                    player.updateRightBreastOverlayUVLayout(Configuration.RIGHT_BREAST_OVERLAY_UV_LAYOUT.getDefault());
+                    player.updateLeftBreastOverlayUVLayout(Configuration.LEFT_BREAST_OVERLAY_UV_LAYOUT.defaultValue());
+                    player.updateRightBreastOverlayUVLayout(Configuration.RIGHT_BREAST_OVERLAY_UV_LAYOUT.defaultValue());
 
-                    player.save();
+                    playerHolder.save();
                 }));
 
         addButton(builder -> builder
@@ -206,8 +207,9 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
     @Override
     public void tick() {
-        var player = getPlayer();
-        if(player == null) return;
+        var playerHolder = getPlayer();
+        if(playerHolder == null) return;
+        var player = playerHolder.config();
 
         selectedUVs = switch (selectedBreastIndex) {
             case RIGHT -> player.getRightBreastUVLayout();
@@ -221,15 +223,16 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         if(minecraft.level == null || minecraft.player == null) return;
-        var player = getPlayer();
+        var playerHolder = getPlayer();
 
-        if(player != null && selectedUVs != null) {
+        if(playerHolder != null && selectedUVs != null) {
 
             //noinspection SuspiciousNameCombination
             graphics.blit(RenderPipelines.GUI_TEXTURED, minecraft.player.getSkin().body().texturePath(),
                     uvWindowPos.x(), uvWindowPos.y(),
                     0, 0, textureDrawWidth, textureDrawWidth, textureDrawWidth, textureDrawWidth);
 
+            var player = playerHolder.config();
             //Other faces
             UVLayout[] ALL_UVS = {
                     player.getLeftBreastUVLayout(),

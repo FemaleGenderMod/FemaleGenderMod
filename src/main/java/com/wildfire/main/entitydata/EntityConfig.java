@@ -18,37 +18,19 @@
 
 package com.wildfire.main.entitydata;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.wildfire.api.IGenderArmor;
-import com.wildfire.main.WildfireGender;
-import com.wildfire.main.WildfireHelper;
+import com.mojang.datafixers.Products.P11;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
+import com.mojang.serialization.codecs.RecordCodecBuilder.Mu;
 import com.wildfire.main.config.Configuration;
 import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.config.types.ConfigKey;
 import com.wildfire.main.uvs.UVLayout;
-import com.wildfire.physics.BreastPhysics;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormatting;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.Avatar;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
-import org.jetbrains.annotations.ApiStatus;
-
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
 import java.util.function.Consumer;
-import org.jspecify.annotations.Nullable;
 
 /// A stripped down version of a [`player's config`][PlayerConfig], intended for use with non-player entities.
 ///
@@ -56,76 +38,6 @@ import org.jspecify.annotations.Nullable;
 ///
 /// Currently only used for [`armor stands`][ArmorStand], and as a superclass for [`player configs`][PlayerConfig].
 public class EntityConfig {
-
-    public static final LoadingCache<UUID, EntityConfig> CACHE = CacheBuilder.newBuilder()
-            .expireAfterAccess(Duration.ofMinutes(5))
-            .build(CacheLoader.from(EntityConfig::new));
-
-    public final UUID uuid;
-    protected Gender gender = Configuration.GENDER.getDefault();
-    protected float pBustSize = Configuration.BUST_SIZE.getDefault();
-    protected boolean breastPhysics = Configuration.BREAST_PHYSICS.getDefault();
-    protected float bounceMultiplier = Configuration.BOUNCE_MULTIPLIER.getDefault();
-    protected float floppyMultiplier = Configuration.FLOPPY_MULTIPLIER.getDefault();
-
-    protected UVLayout leftBreastUVLayout = Configuration.LEFT_BREAST_UV_LAYOUT.getDefault();
-    protected UVLayout rightBreastUVLayout = Configuration.RIGHT_BREAST_UV_LAYOUT.getDefault();
-
-    protected UVLayout leftBreastOverlayUVLayout = Configuration.LEFT_BREAST_OVERLAY_UV_LAYOUT.getDefault();
-    protected UVLayout rightBreastOverlayUVLayout = Configuration.RIGHT_BREAST_OVERLAY_UV_LAYOUT.getDefault();
-
-    protected float voicePitch = Configuration.VOICE_PITCH.getDefault();
-
-    // note: hurt sounds, armor physics override, and show in armor are not defined here, as they have no relevance
-    // to entities, and are instead entirely in PlayerConfig
-
-    // TODO ideally these physics objects would be made entirely client-sided, but this class is
-    //      used on both the client and server (primarily through PlayerConfig), making it very
-    //      difficult to do so without some major changes to split this up further into a common class
-    //      with a client extension class (e.g. the PlayerEntity & AbstractClientPlayerEntity classes)
-    protected final BreastPhysics lBreastPhysics, rBreastPhysics;
-    protected final Breasts breasts;
-    protected boolean jacketLayer = true;
-    protected @Nullable BreastDataComponent fromComponent;
-
-    @ApiStatus.Internal
-    public boolean forceSimplifiedPhysics = false;
-
-    protected EntityConfig(UUID uuid) {
-        this.uuid = uuid;
-        this.breasts = new Breasts();
-        lBreastPhysics = new BreastPhysics(this);
-        rBreastPhysics = new BreastPhysics(this);
-    }
-
-    /// Copy gender settings included in the given [`item NBT`][ItemStack] to the current entity
-    ///
-    /// @see BreastDataComponent
-    public void readFromStack(ItemStack chestplate) {
-        CustomData component = chestplate.get(DataComponents.CUSTOM_DATA);
-        if(chestplate.isEmpty() || component == null) {
-            this.fromComponent = null;
-            this.gender = Gender.MALE;
-            return;
-        } else if(fromComponent != null && Objects.equals(component, fromComponent.nbtComponent())) {
-            // nothing's changed since the last time we checked, so there's no need to read from the
-            // underlying nbt tag again
-            return;
-        }
-
-        fromComponent = BreastDataComponent.fromComponent(component);
-        if(fromComponent == null) {
-            this.gender = Gender.MALE;
-            return;
-        }
-
-        breastPhysics = false;
-        pBustSize = fromComponent.breastSize();
-        gender = pBustSize >= 0.02f ? Gender.FEMALE : Gender.MALE;
-        breasts.updateCleavage(fromComponent.cleavage());
-        breasts.updateOffsets(fromComponent.offsets());
-        this.jacketLayer = fromComponent.jacket();
-    }
 
     /// @return `true` if the mod has support for the provided entity
     public static boolean isSupportedEntity(LivingEntity entity) {
@@ -135,18 +47,63 @@ public class EntityConfig {
         return entity instanceof Avatar || entity instanceof ArmorStand;
     }
 
-    /// Get the configuration for a given entity
-    ///
-    /// @apiNote Configuration settings for [PlayerConfig]s may not be immediately available upon being
-    ///          returned, and may take several seconds to be populated if loaded from the
-    ///          [`cloud sync server`][com.wildfire.main.cloud.CloudSync].
-    ///
-    /// @return The relevant [EntityConfig], or [PlayerConfig] if given a [`player`][Player]
-    public static EntityConfig getEntity(LivingEntity entity) {
-        if(entity instanceof Player) {
-            return WildfireGender.getOrAddPlayerById(entity.getUUID());
-        }
-        return CACHE.getUnchecked(entity.getUUID());
+    public static final Codec<EntityConfig> CODEC = RecordCodecBuilder.create(instance -> codecGroup(instance)
+        .apply(instance, EntityConfig::new)
+    );
+
+    //TODO: What of these can be moved to the player config codec
+    protected static <CONFIG extends EntityConfig> P11<Mu<CONFIG>, Gender, Float, Float, Breasts, Boolean, Float, Float, UVLayout, UVLayout, UVLayout, UVLayout> codecGroup(Instance<CONFIG> instance) {
+        return instance.group(
+            Configuration.GENDER.codecOrDefault().forGetter(EntityConfig::getGender),
+            Configuration.BUST_SIZE.codecOrDefault().forGetter(EntityConfig::getBustSize),
+            Configuration.VOICE_PITCH.codecOrDefault().forGetter(EntityConfig::getVoicePitch),
+
+            Breasts.CODEC.forGetter(EntityConfig::getBreasts),
+
+            Configuration.BREAST_PHYSICS.codecOrDefault().forGetter(EntityConfig::hasBreastPhysics),
+            Configuration.BOUNCE_MULTIPLIER.codecOrDefault().forGetter(EntityConfig::getBounceMultiplier),
+            Configuration.FLOPPY_MULTIPLIER.codecOrDefault().forGetter(EntityConfig::getFloppiness),
+
+            Configuration.LEFT_BREAST_UV_LAYOUT.codecOrDefault().forGetter(EntityConfig::getLeftBreastUVLayout),
+            Configuration.RIGHT_BREAST_UV_LAYOUT.codecOrDefault().forGetter(EntityConfig::getRightBreastUVLayout),
+
+            Configuration.LEFT_BREAST_OVERLAY_UV_LAYOUT.codecOrDefault().forGetter(EntityConfig::getLeftBreastOverlayUVLayout),
+            Configuration.RIGHT_BREAST_OVERLAY_UV_LAYOUT.codecOrDefault().forGetter(EntityConfig::getRightBreastOverlayUVLayout)
+        );
+    }
+
+    protected final Breasts breasts;
+
+    protected Gender gender;
+    protected float bustSize;
+    protected boolean breastPhysics;
+    protected float bounceMultiplier;
+    protected float floppyMultiplier;
+
+    protected UVLayout leftBreastUVLayout;
+    protected UVLayout rightBreastUVLayout;
+
+    protected UVLayout leftBreastOverlayUVLayout;
+    protected UVLayout rightBreastOverlayUVLayout;
+
+    protected float voicePitch;
+
+    // note: hurt sounds, armor physics override, and show in armor are not defined here, as they have no relevance
+    // to entities, and are instead entirely in PlayerConfig
+
+    protected EntityConfig(Gender gender, float bustSize, float voicePitch, Breasts breasts, boolean breastPhysics, float bounceMultiplier , float floppyMultiplier,
+        UVLayout leftBreastUVLayout, UVLayout rightBreastUVLayout, UVLayout leftBreastOverlayUVLayout, UVLayout rightBreastOverlayUVLayout) {
+        this.gender = gender;
+        this.bustSize = bustSize;
+        this.voicePitch = voicePitch;
+        this.breasts = breasts;
+        this.breastPhysics = breastPhysics;
+        this.bounceMultiplier = bounceMultiplier;
+        this.floppyMultiplier = floppyMultiplier;
+        this.leftBreastUVLayout = leftBreastUVLayout;
+        this.rightBreastUVLayout = rightBreastUVLayout;
+        this.leftBreastOverlayUVLayout = leftBreastOverlayUVLayout;
+        this.rightBreastOverlayUVLayout = rightBreastOverlayUVLayout;
     }
 
     public Gender getGender() {
@@ -158,18 +115,11 @@ public class EntityConfig {
     }
 
     public float getBustSize() {
-        return pBustSize;
+        return bustSize;
     }
 
     public boolean hasBreastPhysics() {
         return breastPhysics;
-    }
-
-    /// @apiNote See [PlayerConfig#getArmorPhysicsOverride()] for the reasoning behind this being [`@Obsolete`][ApiStatus.Obsolete]
-    @ApiStatus.Obsolete
-    @Environment(EnvType.CLIENT)
-    public boolean getArmorPhysicsOverride() {
-        return false;
     }
 
     public boolean showBreastsInArmor() {
@@ -186,13 +136,6 @@ public class EntityConfig {
 
     public float getVoicePitch() {
         return this.voicePitch;
-    }
-
-    public BreastPhysics getLeftBreastPhysics() {
-        return lBreastPhysics;
-    }
-    public BreastPhysics getRightBreastPhysics() {
-        return rBreastPhysics;
     }
 
     // FIXME these update methods should match the rest and be in PlayerConfig instead of here
@@ -238,40 +181,8 @@ public class EntityConfig {
         return false;
     }
 
-    /// Only used in the case of [`armor stands`][ArmorStand]; returns `true` if the player who equipped
-    /// the armor stand's chestplate has their jacket layer visible.
-    public boolean hasJacketLayer() {
-        return jacketLayer;
-    }
-
-    @Environment(EnvType.CLIENT)
-    public void tickBreastPhysics(LivingEntity entity) {
-        IGenderArmor armor = WildfireHelper.getArmorConfig(entity.getItemBySlot(EquipmentSlot.CHEST));
-
-        getLeftBreastPhysics().update(entity, armor);
-        getRightBreastPhysics().update(entity, armor);
-    }
-
     @Override
     public String toString() {
-        return "%s(uuid=%s, gender=%s)".formatted(getClass().getCanonicalName(), uuid, gender);
-    }
-
-    public List<String> getDebugInfo() {
-        List<String> info = new ArrayList<>();
-
-        info.add("Gender: " + switch(getGender()) {
-            case FEMALE -> ChatFormatting.LIGHT_PURPLE + "Female";
-            case MALE -> ChatFormatting.BLUE + "Male";
-            case OTHER -> ChatFormatting.GREEN + "Other";
-        });
-        info.add("Breast size: " + getBustSize());
-        info.add("Physics enabled: " + hasBreastPhysics());
-        var breasts = getBreasts();
-        info.add("Uniboob: " + breasts.isUniboob());
-        info.add("Cleavage: " + breasts.getCleavage());
-        info.add("Offsets: (" + breasts.getXOffset() + ", " + breasts.getYOffset() + ", " + breasts.getZOffset() + ")");
-
-        return info;
+        return "%s(gender=%s)".formatted(getClass().getCanonicalName(), gender);
     }
 }

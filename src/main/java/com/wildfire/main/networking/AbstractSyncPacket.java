@@ -22,6 +22,7 @@ import com.mojang.datafixers.util.Function8;
 import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.entitydata.Breasts;
 import com.wildfire.main.entitydata.PlayerConfig;
+import com.wildfire.main.entitydata.PlayerConfigHolder;
 import com.wildfire.main.uvs.UVDirection;
 import com.wildfire.main.uvs.UVLayout;
 import com.wildfire.main.uvs.UVQuad;
@@ -40,12 +41,12 @@ abstract class AbstractSyncPacket {
     protected static <T extends AbstractSyncPacket> StreamCodec<ByteBuf, T> codec(SyncPacketConstructor<T> constructor) {
         return StreamCodec.composite(
                 UUIDUtil.STREAM_CODEC, p -> p.uuid,
-                Gender.CODEC, p -> p.gender,
+                Gender.STREAM_CODEC, p -> p.gender,
                 ByteBufCodecs.FLOAT, p -> p.bustSize,
                 ByteBufCodecs.BOOL, p -> p.hurtSounds,
                 ByteBufCodecs.FLOAT, p -> p.voicePitch,
                 BreastPhysics.CODEC, p -> p.physics,
-                Breasts.CODEC, p -> p.breasts,
+                Breasts.STREAM_CODEC, p -> p.breasts,
                 UV_LAYOUTS_CODEC, p -> p.uvLayouts,
                 constructor
         );
@@ -71,12 +72,14 @@ abstract class AbstractSyncPacket {
         this.uvLayouts = uvLayouts;
     }
 
-    protected AbstractSyncPacket(PlayerConfig plr) {
-        this(plr.uuid, plr.getGender(), plr.getBustSize(), plr.hasHurtSounds(), plr.getVoicePitch(), new BreastPhysics(plr), plr.getBreasts(), UVLayouts.from(plr));
+    protected AbstractSyncPacket(PlayerConfigHolder plrHolder) {
+        PlayerConfig plr = plrHolder.config();
+        this(plrHolder.uuid, plr.getGender(), plr.getBustSize(), plr.hasHurtSounds(), plr.getVoicePitch(), new BreastPhysics(plr), plr.getBreasts(), UVLayouts.from(plr));
     }
 
     // TODO add support for mannequins?
-    protected void updatePlayerFromPacket(PlayerConfig plr) {
+    protected void updatePlayerFromPacket(PlayerConfigHolder plrHolder) {
+        PlayerConfig plr = plrHolder.config();
         plr.updateGender(gender);
         plr.updateBustSize(bustSize);
         plr.updateHurtSounds(hurtSounds);

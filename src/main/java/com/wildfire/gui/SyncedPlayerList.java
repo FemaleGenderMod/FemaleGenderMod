@@ -23,7 +23,7 @@ import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireLang;
 import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.contributors.Contributors;
-import com.wildfire.main.entitydata.PlayerConfig;
+import com.wildfire.main.entitydata.PlayerConfigHolder;
 import com.wildfire.mixins.accessors.PlayerTabOverlayAccessor;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
@@ -127,7 +127,7 @@ public final class SyncedPlayerList {
             }
 
             var config = WildfireGender.getPlayerById(entry.getProfile().id());
-            if(config == null || config.syncStatus == PlayerConfig.SyncStatus.UNKNOWN) {
+            if(config == null || config.syncStatus == PlayerConfigHolder.SyncStatus.UNKNOWN) {
                 continue;
             }
 

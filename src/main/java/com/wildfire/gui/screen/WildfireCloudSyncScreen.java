@@ -25,6 +25,7 @@ import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.cloud.SyncLog;
 import com.wildfire.main.cloud.SyncingTooFrequentlyException;
 import com.wildfire.main.config.ClientConfig;
+import com.wildfire.main.config.ClientConfigHolder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -64,7 +65,6 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
         int yPos = y - 47;
         int xPos = x - 156 / 2 - 1;
 
-        final var config = ClientConfig.INSTANCE;
         final var ref = new Object() {
             @UnknownNullability
             WildfireButton btnSyncNow, btnDelete, btnAutomaticSync;
@@ -75,7 +75,8 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
                 .position(xPos, yPos)
                 .size(157, 20)
                 .onPress(button -> {
-                    boolean enabled = config.toggle(ClientConfig.CLOUD_SYNC_ENABLED);
+                    boolean enabled = !ClientConfigHolder.cloudSyncEnabled();
+                    ClientConfigHolder.INSTANCE.config().cloudSyncEnabled = enabled;
                     boolean available = CloudSync.isAvailable();
 
                     button.updateMessage();
@@ -86,12 +87,11 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
                 }));
 
         ref.btnAutomaticSync = addButton(builder -> builder
-                .message(() -> WildfireLang.CLOUD_AUTOMATIC.translate(CloudSync.isEnabled() ? (ClientConfig.INSTANCE.get(ClientConfig.AUTOMATIC_CLOUD_SYNC) ? ENABLED : DISABLED) : WildfireLang.LABEL_OFF.translate()))
+                .message(() -> WildfireLang.CLOUD_AUTOMATIC.translate(CloudSync.isEnabled() ? (ClientConfigHolder.automaticCloudSync() ? ENABLED : DISABLED) : WildfireLang.LABEL_OFF.translate()))
                 .position(xPos, yPos + 20)
                 .size(157, 20)
                 .onPress(button -> {
-                    var newVal = !config.get(ClientConfig.AUTOMATIC_CLOUD_SYNC);
-                    config.set(ClientConfig.AUTOMATIC_CLOUD_SYNC, newVal);
+                    ClientConfigHolder.INSTANCE.config().automaticCloudSync = !ClientConfigHolder.automaticCloudSync();
                     button.updateMessage();
                 })
                 .tooltip(Tooltip.create(WildfireLang.CLOUD_AUTOMATIC_TOOLTIP.line(1)
@@ -193,7 +193,7 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
 
     @Override
     public void onClose() {
-        ClientConfig.INSTANCE.save();
+        ClientConfigHolder.INSTANCE.save();
         super.onClose();
     }
 }

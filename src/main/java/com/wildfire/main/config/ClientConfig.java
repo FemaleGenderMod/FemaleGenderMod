@@ -18,59 +18,74 @@
 
 package com.wildfire.main.config;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.wildfire.main.config.enums.ShowPlayerListMode;
 import com.wildfire.main.config.enums.SyncVerbosity;
-import com.wildfire.main.config.types.BooleanConfigKey;
-import com.wildfire.main.config.types.EnumConfigKey;
-import com.wildfire.main.config.types.StringConfigKey;
-import com.wildfire.main.config.types.TriStateConfigKey;
+import com.wildfire.main.config.types.ConfigKey;
+import net.minecraft.util.TriState;
 
-public class ClientConfig extends AbstractConfiguration {
-    public static final ClientConfig INSTANCE = new ClientConfig();
-
-    private ClientConfig() {
-        super(".", "female_gender_mod");
-    }
+public class ClientConfig {
 
     // note: this option is not intended to be saved in any persistent manner
     public static boolean RENDER_BREASTS = true;
-
-    public static final BooleanConfigKey ARMOR_PHYSICS_OVERRIDE = new BooleanConfigKey("armor_physics_override", false);
-
-    public static final BooleanConfigKey FIRST_TIME_LOAD = new BooleanConfigKey("firstTimeLoad", true);
-    public static final BooleanConfigKey SHOW_TOAST = new BooleanConfigKey("showToast", true);
-    public static final BooleanConfigKey CLOUD_SYNC_ENABLED = new BooleanConfigKey("cloud_sync", false);
-    public static final BooleanConfigKey AUTOMATIC_CLOUD_SYNC = new BooleanConfigKey("sync_player_data", false);
-    // see CloudSync#DEFAULT_CLOUD_URL for the actual default
-    public static final StringConfigKey CLOUD_SERVER = new StringConfigKey("cloud_server", "");
-    public static final EnumConfigKey<SyncVerbosity> SYNC_VERBOSITY = new EnumConfigKey<>("sync_log_verbosity", SyncVerbosity.DEFAULT, SyncVerbosity.BY_ID);
-
-    public static final EnumConfigKey<ShowPlayerListMode> ALWAYS_SHOW_LIST = new EnumConfigKey<>("alwaysShowList", ShowPlayerListMode.MOD_UI_ONLY, ShowPlayerListMode.BY_ID);
-
-    public static final BooleanConfigKey ARMOR_STAT = new BooleanConfigKey("armor_stat", true);
-
-    public static final BooleanConfigKey HIDE_OWN_CONTRIBUTOR_TAG = new BooleanConfigKey("hide_own_contributor_nametag", false);
-
     // region Debug options
-    public static final TriStateConfigKey HOLIDAY_COSMETICS = new TriStateConfigKey("holiday_cosmetics");
-    public static final BooleanConfigKey DISPLAY_OWN_NAMETAG = new BooleanConfigKey("display_own_nametag", false);
+    public static TriState HOLIDAY_COSMETICS = TriState.DEFAULT;
+    public static boolean DISPLAY_OWN_NAMETAG = false;
     // endregion
 
-    static {
-        INSTANCE.setDefault(ARMOR_PHYSICS_OVERRIDE);
-        INSTANCE.setDefault(FIRST_TIME_LOAD);
-        INSTANCE.setDefault(CLOUD_SYNC_ENABLED);
-        INSTANCE.setDefault(AUTOMATIC_CLOUD_SYNC);
-        INSTANCE.setDefault(CLOUD_SERVER);
-        INSTANCE.setDefault(SYNC_VERBOSITY);
-        INSTANCE.setDefault(ALWAYS_SHOW_LIST);
-        INSTANCE.setDefault(ARMOR_STAT);
-        INSTANCE.setDefault(HIDE_OWN_CONTRIBUTOR_TAG);
-        INSTANCE.setDefault(SHOW_TOAST);
-        // HOLIDAY_COSMETICS is intentionally omitted
-        // DISPLAY_OWN_NAMETAG is intentionally omitted
-        if(!INSTANCE.exists()) {
-            INSTANCE.save();
-        }
+    public static final ConfigKey<Boolean> ARMOR_PHYSICS_OVERRIDE = ConfigKey.create("armor_physics_override", false);
+
+    public static final ConfigKey<Boolean> FIRST_TIME_LOAD = ConfigKey.create("firstTimeLoad", true);
+    public static final ConfigKey<Boolean> SHOW_TOAST = ConfigKey.create("showToast", true);
+    public static final ConfigKey<Boolean> CLOUD_SYNC_ENABLED = ConfigKey.create("cloud_sync", false);
+    public static final ConfigKey<Boolean> AUTOMATIC_CLOUD_SYNC = ConfigKey.create("sync_player_data", false);
+    /// @see com.wildfire.main.cloud.CloudSync#DEFAULT_CLOUD_URL for the actual default
+    public static final ConfigKey<String> CLOUD_SERVER = ConfigKey.create("cloud_server", "", Codec.STRING);
+    public static final ConfigKey<SyncVerbosity> SYNC_VERBOSITY = ConfigKey.create("sync_log_verbosity", SyncVerbosity.DEFAULT, SyncVerbosity.CODEC_OR_LEGACY);
+
+    public static final ConfigKey<ShowPlayerListMode> ALWAYS_SHOW_LIST = ConfigKey.create("alwaysShowList", ShowPlayerListMode.MOD_UI_ONLY, ShowPlayerListMode.CODEC_OR_LEGACY);
+
+    public static final ConfigKey<Boolean> ARMOR_STAT = ConfigKey.create("armor_stat", true);
+
+    public static final ConfigKey<Boolean> HIDE_OWN_CONTRIBUTOR_TAG = ConfigKey.create("hide_own_contributor_nametag", false);
+
+    public static final Codec<ClientConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        ARMOR_PHYSICS_OVERRIDE.codecOrDefault().forGetter(config -> config.armorPhysicsOverride),
+        FIRST_TIME_LOAD.codecOrDefault().forGetter(config -> config.firstTimeLoad),
+        CLOUD_SYNC_ENABLED.codecOrDefault().forGetter(config -> config.cloudSyncEnabled),
+        AUTOMATIC_CLOUD_SYNC.codecOrDefault().forGetter(config -> config.automaticCloudSync),
+        CLOUD_SERVER.codecOrDefault().forGetter(config -> config.cloudServer),
+        SYNC_VERBOSITY.codecOrDefault().forGetter(config -> config.syncVerbosity),
+        ALWAYS_SHOW_LIST.codecOrDefault().forGetter(config -> config.alwaysShowList),
+        ARMOR_STAT.codecOrDefault().forGetter(config -> config.armorStat),
+        HIDE_OWN_CONTRIBUTOR_TAG.codecOrDefault().forGetter(config -> config.hideOwnContributorTag),
+        SHOW_TOAST.codecOrDefault().forGetter(config -> config.showToast)
+    ).apply(instance, ClientConfig::new));
+
+    //TODO: Do we need setters for any of these to validate their values?
+    public boolean armorPhysicsOverride;
+    public boolean firstTimeLoad;
+    public boolean cloudSyncEnabled;
+    public boolean automaticCloudSync;
+    public String cloudServer;
+    public SyncVerbosity syncVerbosity;
+    public ShowPlayerListMode alwaysShowList;
+    public boolean armorStat;
+    public boolean hideOwnContributorTag;
+    public boolean showToast;
+
+    private ClientConfig(boolean armorPhysicsOverride, boolean firstTimeLoad, boolean cloudSyncEnabled, boolean automaticCloudSync, String cloudServer,
+        SyncVerbosity syncVerbosity, ShowPlayerListMode alwaysShowList, boolean armorStat, boolean hideOwnContributorTag, boolean showToast) {
+        this.armorPhysicsOverride = armorPhysicsOverride;
+        this.firstTimeLoad = firstTimeLoad;
+        this.cloudSyncEnabled = cloudSyncEnabled;
+        this.automaticCloudSync = automaticCloudSync;
+        this.cloudServer = cloudServer;
+        this.syncVerbosity = syncVerbosity;
+        this.alwaysShowList = alwaysShowList;
+        this.armorStat = armorStat;
+        this.hideOwnContributorTag = hideOwnContributorTag;
+        this.showToast = showToast;
     }
 }
