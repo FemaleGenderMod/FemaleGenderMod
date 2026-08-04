@@ -22,7 +22,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.wildfire.main.config.enums.ShowPlayerListMode;
 import com.wildfire.main.config.enums.SyncVerbosity;
-import com.wildfire.main.config.types.ConfigKey;
+import com.wildfire.main.config.value.ConfigKey;
+import com.wildfire.main.config.value.ConfigValue;
 import net.minecraft.util.TriState;
 
 public class ClientConfig {
@@ -51,41 +52,40 @@ public class ClientConfig {
     public static final ConfigKey<Boolean> HIDE_OWN_CONTRIBUTOR_TAG = ConfigKey.create("hide_own_contributor_nametag", false);
 
     public static final Codec<ClientConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-        ARMOR_PHYSICS_OVERRIDE.codecOrDefault().forGetter(config -> config.armorPhysicsOverride),
-        FIRST_TIME_LOAD.codecOrDefault().forGetter(config -> config.firstTimeLoad),
-        CLOUD_SYNC_ENABLED.codecOrDefault().forGetter(config -> config.cloudSyncEnabled),
-        AUTOMATIC_CLOUD_SYNC.codecOrDefault().forGetter(config -> config.automaticCloudSync),
-        CLOUD_SERVER.codecOrDefault().forGetter(config -> config.cloudServer),
-        SYNC_VERBOSITY.codecOrDefault().forGetter(config -> config.syncVerbosity),
-        ALWAYS_SHOW_LIST.codecOrDefault().forGetter(config -> config.alwaysShowList),
-        ARMOR_STAT.codecOrDefault().forGetter(config -> config.armorStat),
-        HIDE_OWN_CONTRIBUTOR_TAG.codecOrDefault().forGetter(config -> config.hideOwnContributorTag),
-        SHOW_TOAST.codecOrDefault().forGetter(config -> config.showToast)
+        ARMOR_PHYSICS_OVERRIDE.codecOrDefault().forGetter(config -> config.armorPhysicsOverride.get()),
+        FIRST_TIME_LOAD.codecOrDefault().forGetter(config -> config.firstTimeLoad.get()),
+        CLOUD_SYNC_ENABLED.codecOrDefault().forGetter(config -> config.cloudSyncEnabled.get()),
+        AUTOMATIC_CLOUD_SYNC.codecOrDefault().forGetter(config -> config.automaticCloudSync.get()),
+        CLOUD_SERVER.codecOrDefault().forGetter(config -> config.cloudServer.get()),
+        SYNC_VERBOSITY.codecOrDefault().forGetter(config -> config.syncVerbosity.get()),
+        ALWAYS_SHOW_LIST.codecOrDefault().forGetter(config -> config.alwaysShowList.get()),
+        ARMOR_STAT.codecOrDefault().forGetter(config -> config.armorStat.get()),
+        HIDE_OWN_CONTRIBUTOR_TAG.codecOrDefault().forGetter(config -> config.hideOwnContributorTag.get()),
+        SHOW_TOAST.codecOrDefault().forGetter(config -> config.showToast.get())
     ).apply(instance, ClientConfig::new));
 
-    //TODO: Do we need setters for any of these to validate their values?
-    public boolean armorPhysicsOverride;
-    public boolean firstTimeLoad;
-    public boolean cloudSyncEnabled;
-    public boolean automaticCloudSync;
-    public String cloudServer;
-    public SyncVerbosity syncVerbosity;
-    public ShowPlayerListMode alwaysShowList;
-    public boolean armorStat;
-    public boolean hideOwnContributorTag;
-    public boolean showToast;
+    public final ConfigValue<Boolean> armorPhysicsOverride;
+    public final ConfigValue<Boolean> firstTimeLoad;
+    public final ConfigValue<Boolean> cloudSyncEnabled;
+    public final ConfigValue<Boolean> automaticCloudSync;
+    public final ConfigValue<String> cloudServer;
+    public final ConfigValue<SyncVerbosity> syncVerbosity;
+    public final ConfigValue<ShowPlayerListMode> alwaysShowList;
+    public final ConfigValue<Boolean> armorStat;
+    public final ConfigValue<Boolean> hideOwnContributorTag;
+    public final ConfigValue<Boolean> showToast;
 
     private ClientConfig(boolean armorPhysicsOverride, boolean firstTimeLoad, boolean cloudSyncEnabled, boolean automaticCloudSync, String cloudServer,
         SyncVerbosity syncVerbosity, ShowPlayerListMode alwaysShowList, boolean armorStat, boolean hideOwnContributorTag, boolean showToast) {
-        this.armorPhysicsOverride = armorPhysicsOverride;
-        this.firstTimeLoad = firstTimeLoad;
-        this.cloudSyncEnabled = cloudSyncEnabled;
-        this.automaticCloudSync = automaticCloudSync;
-        this.cloudServer = cloudServer;
-        this.syncVerbosity = syncVerbosity;
-        this.alwaysShowList = alwaysShowList;
-        this.armorStat = armorStat;
-        this.hideOwnContributorTag = hideOwnContributorTag;
-        this.showToast = showToast;
+        this.armorPhysicsOverride = ARMOR_PHYSICS_OVERRIDE.createValueHandler(armorPhysicsOverride);
+        this.firstTimeLoad = FIRST_TIME_LOAD.createValueHandler(firstTimeLoad);
+        this.cloudSyncEnabled = CLOUD_SYNC_ENABLED.createValueHandler(cloudSyncEnabled);
+        this.automaticCloudSync = AUTOMATIC_CLOUD_SYNC.createValueHandler(automaticCloudSync);
+        this.cloudServer = CLOUD_SERVER.createValueHandler(cloudServer);
+        this.syncVerbosity = SYNC_VERBOSITY.createValueHandler(syncVerbosity);
+        this.alwaysShowList = ALWAYS_SHOW_LIST.createValueHandler(alwaysShowList);
+        this.armorStat = ARMOR_STAT.createValueHandler(armorStat);
+        this.hideOwnContributorTag = HIDE_OWN_CONTRIBUTOR_TAG.createValueHandler(hideOwnContributorTag);
+        this.showToast = SHOW_TOAST.createValueHandler(showToast);
     }
 }

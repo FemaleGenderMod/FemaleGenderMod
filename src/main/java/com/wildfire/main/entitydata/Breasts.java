@@ -21,134 +21,80 @@ package com.wildfire.main.entitydata;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.wildfire.main.config.Configuration;
-import com.wildfire.main.config.types.ConfigKey;
+import com.wildfire.main.config.value.ConfigValue;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import org.joml.Vector3f;
-
-import java.util.function.Consumer;
+import org.joml.Vector3fc;
 
 /// Data class representing an entity's breast appearance settings
 @SuppressWarnings("UnusedReturnValue")
 public final class Breasts {
 
     public static final MapCodec<Breasts> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-        Configuration.BREASTS_OFFSET_X.codecOrDefault().forGetter(Breasts::getXOffset),
-        Configuration.BREASTS_OFFSET_Y.codecOrDefault().forGetter(Breasts::getYOffset),
-        Configuration.BREASTS_OFFSET_Z.codecOrDefault().forGetter(Breasts::getZOffset),
-        Configuration.BREASTS_UNIBOOB.codecOrDefault().forGetter(Breasts::isUniboob),
-        Configuration.BREASTS_CLEAVAGE.codecOrDefault().forGetter(Breasts::getCleavage)
+        Configuration.BREASTS_OFFSET_X.codecOrDefault().forGetter(breasts -> breasts.xOffset.get()),
+        Configuration.BREASTS_OFFSET_Y.codecOrDefault().forGetter(breasts -> breasts.yOffset.get()),
+        Configuration.BREASTS_OFFSET_Z.codecOrDefault().forGetter(breasts -> breasts.zOffset.get()),
+        Configuration.BREASTS_UNIBOOB.codecOrDefault().forGetter(breasts -> breasts.uniboob.get()),
+        Configuration.BREASTS_CLEAVAGE.codecOrDefault().forGetter(breasts -> breasts.cleavage.get())
     ).apply(instance, Breasts::new));
     public static final StreamCodec<ByteBuf, Breasts> STREAM_CODEC = StreamCodec.composite(
-        ByteBufCodecs.FLOAT, Breasts::getXOffset,
-        ByteBufCodecs.FLOAT, Breasts::getYOffset,
-        ByteBufCodecs.FLOAT, Breasts::getZOffset,
-        ByteBufCodecs.BOOL, Breasts::isUniboob,
-        ByteBufCodecs.FLOAT, Breasts::getCleavage,
+        ByteBufCodecs.FLOAT, breasts -> breasts.xOffset.get(),
+        ByteBufCodecs.FLOAT, breasts -> breasts.yOffset.get(),
+        ByteBufCodecs.FLOAT, breasts -> breasts.zOffset.get(),
+        ByteBufCodecs.BOOL, breasts -> breasts.uniboob.get(),
+        ByteBufCodecs.FLOAT, breasts -> breasts.cleavage.get(),
         Breasts::new
     );
-
-    private float xOffset, yOffset, zOffset;
-    private float cleavage;
-    private boolean uniboob;
-
-    private Breasts(float xOffset, float yOffset, float zOffset, boolean uniboob, float cleavage) {
-        this.xOffset = xOffset;
-        this.yOffset = yOffset;
-        this.zOffset = zOffset;
-        this.uniboob = uniboob;
-        this.cleavage = cleavage;
-    }
-
-    private <VALUE> boolean updateValue(ConfigKey<VALUE> key, VALUE value, Consumer<VALUE> setter) {
-        if (key.validate(value)) {
-            setter.accept(value);
-            return true;
-        }
-        return false;
-    }
-
-    public Vector3f getOffsets() {
-        return new Vector3f(xOffset, yOffset, zOffset);
-    }
-
-    public void updateOffsets(Vector3f offsets) {
-        updateXOffset(offsets.x);
-        updateYOffset(offsets.y);
-        updateZOffset(offsets.z);
-    }
 
     /// How far apart the player's breasts should be rendered from each other, also referred to as Separation in the UI
     ///
     /// @implNote Negative float values renders the breasts further apart, while positive values renders them closer together
     ///
     /// @return  A `float` between `-1f` and `1f`
-    public float getXOffset() {
-        return xOffset;
-    }
-
-    /// @see #getXOffset()
-    public boolean updateXOffset(float value) {
-        return updateValue(Configuration.BREASTS_OFFSET_X, value, v -> this.xOffset = v);
-    }
-
+    public final ConfigValue<Float> xOffset;
     /// How far up or down the player's breasts should be rendered, also referred to as Height in the UI
     ///
     /// @implNote Negative values renders the breasts lower down, while positive values renders them higher up
     ///
     /// @return  A `float` between `-1f` and `1f`
-    public float getYOffset() {
-        return yOffset;
-    }
-
-    /// @see #getYOffset()
-    public boolean updateYOffset(float value) {
-        return updateValue(Configuration.BREASTS_OFFSET_Y, value, v -> this.yOffset = v);
-    }
-
+    public final ConfigValue<Float> yOffset;
     /// How far back the player's breasts should be rendered, also referred to as Depth in the UI
     ///
     /// @return  A `float` between `0f` and `1f`
-    public float getZOffset() {
-        return zOffset;
-    }
-
-    /// @see #getZOffset()
-    public boolean updateZOffset(float value) {
-        return updateValue(Configuration.BREASTS_OFFSET_Z, value, v -> this.zOffset = v);
-    }
-
+    public final ConfigValue<Float> zOffset;
     /// How much rotation outward there should be on each of the player's breasts
     ///
     /// @return  A `float` between `0f` and `0.1f`
-    public float getCleavage() {
-        return cleavage;
-    }
-
-    /// @see #getCleavage()
-    public boolean updateCleavage(float value) {
-        return updateValue(Configuration.BREASTS_CLEAVAGE, value, v -> this.cleavage = v);
-    }
-
+    public final ConfigValue<Float> cleavage;
     /// Determines if breast physics should be independent of each other; also referred to as Dual-Physics in the UI
     ///
     /// @return `false` if physics should be independent on each breast, `true` if both should use the same physics
-    public boolean isUniboob() {
-        return uniboob;
+    public final ConfigValue<Boolean> uniboob;
+
+    private Breasts(float xOffset, float yOffset, float zOffset, boolean uniboob, float cleavage) {
+        this.xOffset = Configuration.BREASTS_OFFSET_X.createValueHandler(xOffset);
+        this.yOffset = Configuration.BREASTS_OFFSET_Y.createValueHandler(yOffset);
+        this.zOffset = Configuration.BREASTS_OFFSET_Z.createValueHandler(zOffset);
+        this.uniboob = Configuration.BREASTS_UNIBOOB.createValueHandler(uniboob);
+        this.cleavage = Configuration.BREASTS_CLEAVAGE.createValueHandler(cleavage);
     }
 
-    /// @see #isUniboob()
-    public boolean updateUniboob(boolean value) {
-        return updateValue(Configuration.BREASTS_UNIBOOB, value, v -> this.uniboob = v);
+    public Vector3f getOffsets() {
+        return new Vector3f(xOffset.get(), yOffset.get(), zOffset.get());
+    }
+
+    public void updateOffsets(Vector3fc offsets) {
+        xOffset.update(offsets.x());
+        yOffset.update(offsets.y());
+        zOffset.update(offsets.z());
     }
 
     /// Copy settings from the provided [`breasts data`][Breasts] onto the current instance
     public void copyFrom(Breasts breasts) {
-        this.xOffset = breasts.xOffset;
-        this.yOffset = breasts.yOffset;
-        this.zOffset = breasts.zOffset;
-        this.cleavage = breasts.cleavage;
-        this.uniboob = breasts.uniboob;
+        updateOffsets(breasts.getOffsets());
+        this.cleavage.update(breasts.cleavage.get());
+        this.uniboob.update(breasts.uniboob.get());
     }
 }

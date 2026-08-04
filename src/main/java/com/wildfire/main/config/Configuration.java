@@ -19,7 +19,7 @@
 package com.wildfire.main.config;
 
 import com.wildfire.main.config.enums.Gender;
-import com.wildfire.main.config.types.ConfigKey;
+import com.wildfire.main.config.value.ConfigKey;
 import com.wildfire.main.uvs.UVLayout;
 import com.wildfire.main.uvs.UVQuad;
 

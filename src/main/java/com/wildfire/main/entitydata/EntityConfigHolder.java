@@ -94,7 +94,7 @@ public class EntityConfigHolder<CONFIG extends EntityConfig> {
     }
 
     public final Gender getGender() {
-        return config.getGender();
+        return config.gender.get();
     }
 
     /// Copy gender settings included in the given [`item NBT`][ItemStack] to the current entity
@@ -104,7 +104,7 @@ public class EntityConfigHolder<CONFIG extends EntityConfig> {
         CustomData component = chestplate.get(DataComponents.CUSTOM_DATA);
         if (chestplate.isEmpty() || component == null) {
             this.fromComponent = null;
-            config.gender = Gender.MALE;
+            config.gender.update(Gender.MALE);
             return;
         } else if(fromComponent != null && Objects.equals(component, fromComponent.nbtComponent())) {
             // nothing's changed since the last time we checked, so there's no need to read from the
@@ -114,14 +114,14 @@ public class EntityConfigHolder<CONFIG extends EntityConfig> {
 
         fromComponent = BreastDataComponent.fromComponent(component);
         if (fromComponent == null) {
-            config.gender = Gender.MALE;
+            config.gender.update(Gender.MALE);
             return;
         }
 
-        config.breastPhysics = false;
-        config.bustSize = fromComponent.breastSize();
-        config.gender = config.bustSize >= 0.02f ? Gender.FEMALE : Gender.MALE;
-        config.breasts.updateCleavage(fromComponent.cleavage());
+        config.breastPhysics.update(false);
+        config.bustSize.update(fromComponent.breastSize());
+        config.gender.update(config.bustSize.get() >= 0.02f ? Gender.FEMALE : Gender.MALE);
+        config.breasts.cleavage.update(fromComponent.cleavage());
         config.breasts.updateOffsets(fromComponent.offsets());
         this.jacketLayer = fromComponent.jacket();
     }
@@ -151,17 +151,16 @@ public class EntityConfigHolder<CONFIG extends EntityConfig> {
     public List<String> getDebugInfo() {
         List<String> info = new ArrayList<>();
 
-        info.add("Gender: " + switch(config.getGender()) {
+        info.add("Gender: " + switch(getGender()) {
             case FEMALE -> ChatFormatting.LIGHT_PURPLE + "Female";
             case MALE -> ChatFormatting.BLUE + "Male";
             case OTHER -> ChatFormatting.GREEN + "Other";
         });
-        info.add("Breast size: " + config.getBustSize());
-        info.add("Physics enabled: " + config.hasBreastPhysics());
-        Breasts breasts = config.getBreasts();
-        info.add("Uniboob: " + breasts.isUniboob());
-        info.add("Cleavage: " + breasts.getCleavage());
-        info.add("Offsets: (" + breasts.getXOffset() + ", " + breasts.getYOffset() + ", " + breasts.getZOffset() + ")");
+        info.add("Breast size: " + config.bustSize);
+        info.add("Physics enabled: " + config.breastPhysics);
+        info.add("Uniboob: " + config.breasts.uniboob);
+        info.add("Cleavage: " + config.breasts.cleavage);
+        info.add("Offsets: " + config.breasts.getOffsets());//TODO: Validate this converts it to string as expected
         return info;
     }
 

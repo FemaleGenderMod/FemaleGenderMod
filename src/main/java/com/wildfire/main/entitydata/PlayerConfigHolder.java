@@ -28,7 +28,7 @@ import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.cloud.SyncLog;
 import com.wildfire.main.config.ClientConfigHolder;
 import com.wildfire.main.config.Configuration;
-import com.wildfire.main.config.types.ConfigKey;
+import com.wildfire.main.config.value.ConfigKey;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -157,8 +157,8 @@ public class PlayerConfigHolder extends EntityConfigHolder<PlayerConfig> {
     public List<String> getDebugInfo() {
         List<String> lines = super.getDebugInfo();
         lines.add(1, "Sync status: " + getSyncStatus());
-        lines.add("Female hurt sounds: " + config.hasHurtSounds());
-        lines.add("Show in armor: " + config.showBreastsInArmor());
+        lines.add("Female hurt sounds: " + config.hurtSounds);
+        lines.add("Show in armor: " + config.showBreastsInArmor);
         return lines;
     }
 

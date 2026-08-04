@@ -24,71 +24,70 @@ import com.wildfire.main.config.enums.SyncVerbosity;
 
 public class ClientConfigHolder {
 
-    public static final ClientConfigHolder INSTANCE = new ClientConfigHolder();
-
-    private final AbstractConfiguration cfgFile = new AbstractConfiguration(".", "female_gender_mod");
-
-    private ClientConfig config;
-
     private ClientConfigHolder() {
-        //TODO - 26.2: Should this actually be using JsonOps.INSTANCE.empty() and then let the orDefault handle it all instead of trying to read from the config during construction
-        config = ClientConfig.CODEC.parse(JsonOps.INSTANCE, JsonOps.INSTANCE.emptyMap()).getOrThrow();
+    }
+
+    private static final AbstractConfiguration cfgFile = new AbstractConfiguration(".", "female_gender_mod");
+
+    //TODO - 26.2: Should this actually be using JsonOps.INSTANCE.empty() and then let the orDefault handle it all instead of trying to read from the config during construction
+    private static ClientConfig config = ClientConfig.CODEC.parse(JsonOps.INSTANCE, JsonOps.INSTANCE.emptyMap()).getOrThrow();
+    static {
         if (!cfgFile.exists()) {
             save();
         }
     }
 
-    public ClientConfig config() {
-        return INSTANCE.config;
+    public static ClientConfig config() {
+        return config;
     }
 
-    public void load() {
+    public static void load() {
         //TODO: If empty bc not able to read such as on server, should this try to load or skip?
         //TODO: If not success do we want to log it failed? Can it even fail? Given the fact everything has orDefault
         ClientConfig.CODEC.parse(JsonOps.INSTANCE, cfgFile.read()).ifSuccess(parsed -> config = parsed);
     }
 
-    public void save() {
+    public static void save() {
         cfgFile.save(ClientConfig.CODEC, config);
     }
 
     public static boolean armorPhysicsOverride() {
-        return INSTANCE.config.armorPhysicsOverride;
+        return config.armorPhysicsOverride.get();
     }
 
     public static boolean firstTimeLoad() {
-        return INSTANCE.config.firstTimeLoad;
+        return config.firstTimeLoad.get();
     }
 
     public static boolean cloudSyncEnabled() {
-        return INSTANCE.config.cloudSyncEnabled;
+        return config.cloudSyncEnabled.get();
     }
 
     public static boolean automaticCloudSync() {
-        return INSTANCE.config.automaticCloudSync;
+        return config.automaticCloudSync.get();
     }
 
     public static String cloudServer() {
-        return INSTANCE.config.cloudServer;
+        return config.cloudServer.get();
     }
 
     public static SyncVerbosity syncVerbosity() {
-        return INSTANCE.config.syncVerbosity;
+        return config.syncVerbosity.get();
     }
 
     public static ShowPlayerListMode alwaysShowList() {
-        return INSTANCE.config.alwaysShowList;
+        return config.alwaysShowList.get();
     }
 
     public static boolean armorStat() {
-        return INSTANCE.config.armorStat;
+        return config.armorStat.get();
     }
 
     public static boolean hideOwnContributorTag() {
-        return INSTANCE.config.hideOwnContributorTag;
+        return config.hideOwnContributorTag.get();
     }
 
     public static boolean showToast() {
-        return INSTANCE.config.showToast;
+        return config.showToast.get();
     }
 }

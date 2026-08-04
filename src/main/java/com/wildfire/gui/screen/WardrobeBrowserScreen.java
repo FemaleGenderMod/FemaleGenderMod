@@ -24,6 +24,8 @@ import com.wildfire.main.WildfireLang;
 import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.config.ClientConfigHolder;
+import com.wildfire.main.config.enums.Gender;
+import com.wildfire.main.config.enums.ShowPlayerListMode;
 import com.wildfire.main.contributors.Contributors;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.entitydata.PlayerConfigHolder;
@@ -100,21 +102,22 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
                 .position(126, 4)
                 .size(185, 10)
                 .onPress(button -> {
-                    var newVal = ClientConfigHolder.alwaysShowList().next();
-                    ClientConfigHolder.INSTANCE.config().alwaysShowList = newVal;
-                    ClientConfigHolder.INSTANCE.save();
-                    button.updateMessage();
-                    button.setTooltip(newVal.tooltip());
+                    if (ClientConfigHolder.config().alwaysShowList.update(ShowPlayerListMode::next)) {
+                        ClientConfigHolder.save();
+                        button.updateMessage();
+                        button.setTooltip(ClientConfigHolder.alwaysShowList().tooltip());
+                    }
                 }));
 
         addButton(builder -> builder
-                .message(() -> plr.getGender().getDisplayName())
+                .message(() -> plr.gender.get().getDisplayName())
                 .position(this.width / 2 - 130, this.height / 2 + 33)
                 .size(80, 15)
                 .onPress(_ -> {
-                    plr.updateGender(plr.getGender().next());
-                    plrHolder.save();
-                    rebuildWidgets();
+                    if (plr.gender.update(Gender::next)) {
+                        plrHolder.save();
+                        rebuildWidgets();
+                    }
                 }));
 
         addButton(builder -> builder
@@ -125,7 +128,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
                     //~ if >=26.2 'setScreen' -> 'gui.setScreen'
                     client.gui.setScreen(new WildfireBreastCustomizationScreen(this, this.playerUUID));
                 })
-                .active(plr.getGender().canHaveBreasts()));
+                .active(plr.gender.get().canHaveBreasts()));
 
         addButton(builder -> {
             builder.message(WildfireLang.CLOUD_SETTINGS::translate);

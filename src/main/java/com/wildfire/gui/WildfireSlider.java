@@ -20,12 +20,15 @@ package com.wildfire.gui;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
+import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireHelper;
-import com.wildfire.main.config.types.ConfigKey;
-import com.wildfire.main.config.types.ConfigRange;
+import com.wildfire.main.config.value.ConfigKey;
+import com.wildfire.main.config.validator.ConfigRange;
+import com.wildfire.main.config.value.ConfigValue;
 import it.unimi.dsi.fastutil.floats.Float2ObjectFunction;
 import it.unimi.dsi.fastutil.floats.FloatConsumer;
-import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -48,7 +51,7 @@ public class WildfireSlider extends AbstractWidget implements IFancyFontRenderer
     private double value;
     private final double minValue;
     private final double maxValue;
-    private final FloatConsumer valueUpdate;
+    private final Consumer<Float> valueUpdate;
     private final Float2ObjectFunction<Component> messageUpdate;
     private final FloatConsumer onSave;
 
@@ -60,7 +63,7 @@ public class WildfireSlider extends AbstractWidget implements IFancyFontRenderer
     private double mouseStep = 0;
     private double arrowKeyStep = 0.05;
 
-    private WildfireSlider(int xPos, int yPos, int width, int height, double minVal, double maxVal, double currentVal, FloatConsumer valueUpdate,
+    private WildfireSlider(int xPos, int yPos, int width, int height, double minVal, double maxVal, double currentVal, Consumer<Float> valueUpdate,
                           Float2ObjectFunction<Component> messageUpdate, FloatConsumer onSave) {
         super(xPos, yPos, width, height, CommonComponents.EMPTY);
         this.minValue = minVal;
@@ -244,7 +247,8 @@ public class WildfireSlider extends AbstractWidget implements IFancyFontRenderer
         private @Nullable Double mouseStep = null;
         private boolean active = true;
         private Float2ObjectFunction<Component> messageSupplier;
-        private FloatConsumer onUpdate, onSave;
+        private Consumer<Float> onUpdate;
+        private FloatConsumer onSave;
 
         public Builder message(Float2ObjectFunction<Component> messageSupplier) {
             this.messageSupplier = messageSupplier;
@@ -263,7 +267,7 @@ public class WildfireSlider extends AbstractWidget implements IFancyFontRenderer
             return this;
         }
 
-        public Builder update(FloatConsumer onUpdate) {
+        public Builder update(Consumer<Float> onUpdate) {
             this.onUpdate = onUpdate;
             return this;
         }
@@ -274,8 +278,11 @@ public class WildfireSlider extends AbstractWidget implements IFancyFontRenderer
         }
 
         public Builder range(ConfigKey<Float> key) {
-            ConfigRange<Float> range = Objects.requireNonNull(key.range(), "No range defined for config key");
-            return range(range.minInclusive(), range.maxInclusive());
+            if (key.validator() instanceof ConfigRange<Float>(Float minInclusive, Float maxInclusive)) {
+                return range(minInclusive, maxInclusive);
+            }
+            WildfireGender.LOGGER.warn("No range available for {}", key.key());
+            return this;
         }
 
         public Builder range(float min, float max) {
@@ -287,6 +294,16 @@ public class WildfireSlider extends AbstractWidget implements IFancyFontRenderer
         public Builder current(double value) {
             this.value = value;
             return this;
+        }
+
+        public Builder forConfig(ConfigValue<Float> configValue) {
+            return range(configValue.key())
+                .current(configValue.get())
+                .update(configValue);
+        }
+
+        public Builder active(Supplier<Boolean> activeSupplier) {
+            return active(activeSupplier.get());
         }
 
         public Builder active(boolean active) {

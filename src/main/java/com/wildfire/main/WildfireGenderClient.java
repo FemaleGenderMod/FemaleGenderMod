@@ -56,7 +56,7 @@ public class WildfireGenderClient implements ClientModInitializer {
         tryMigrate("WildfireGender", Configuration.CONFIG_DIR);
         tryMigrate("wildfire_gender.json", "female_gender_mod.json");
 
-        ClientConfigHolder.INSTANCE.load();
+        ClientConfigHolder.load();
         WildfireSounds.register();
         WildfireSync.registerClient();
         WildfireEventHandler.registerClientEvents();

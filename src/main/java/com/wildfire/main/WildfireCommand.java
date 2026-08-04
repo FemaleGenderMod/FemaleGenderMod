@@ -194,11 +194,13 @@ public class WildfireCommand {
     public static int setLogLevel(CommandContext<FabricClientCommandSource> ctx) {
         SyncVerbosity level = ctx.getArgument("level", SyncVerbosity.class);
 
-        ClientConfigHolder.INSTANCE.config().syncVerbosity = level;
-        ClientConfigHolder.INSTANCE.save();
+        if (ClientConfigHolder.config().syncVerbosity.update(level)) {//Should always be true
+            ClientConfigHolder.save();
 
-        send(ctx, WildfireLang.COMMAND_LOG_LEVEL.translate(level));
-        return Command.SINGLE_SUCCESS;
+            send(ctx, WildfireLang.COMMAND_LOG_LEVEL.translate(level));
+            return Command.SINGLE_SUCCESS;
+        }
+        return 0;
     }
 
     private static int getUsers(CommandContext<FabricClientCommandSource> ctx) {

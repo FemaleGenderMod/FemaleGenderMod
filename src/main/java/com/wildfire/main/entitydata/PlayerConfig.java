@@ -22,6 +22,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.wildfire.main.config.Configuration;
 import com.wildfire.main.config.enums.Gender;
+import com.wildfire.main.config.value.ConfigValue;
 import com.wildfire.main.uvs.UVLayout;
 
 /// A version of [EntityConfig] backed by a [Configuration] for use with players
@@ -33,9 +34,9 @@ public class PlayerConfig extends EntityConfig {
     //? if >=26.2 {
     private static Codec<PlayerConfig> codec() {
         return RecordCodecBuilder.create(instance -> codecGroup(instance)
-            .and(Configuration.HURT_SOUNDS.codecOrDefault().forGetter(PlayerConfig::hasHurtSounds))
-            .and(Configuration.SHOW_IN_ARMOR.codecOrDefault().forGetter(EntityConfig::showBreastsInArmor))
-            .and(Configuration.HOLIDAY_THEMES.codecOrDefault().forGetter(PlayerConfig::hasHolidayThemes))
+            .and(Configuration.HURT_SOUNDS.codecOrDefault().forGetter(config -> config.hurtSounds.get()))
+            .and(Configuration.HOLIDAY_THEMES.codecOrDefault().forGetter(config -> config.holidayThemes.get()))
+            .and(Configuration.SHOW_IN_ARMOR.codecOrDefault().forGetter(config -> config.showBreastsInArmor.get()))
             .apply(instance, PlayerConfig::new));
     }
     //?}
@@ -43,78 +44,30 @@ public class PlayerConfig extends EntityConfig {
     private static Codec<PlayerConfig> oldMcCodec() {
         return RecordCodecBuilder.create(instance -> instance.group(
             EntityConfig.MAP_CODEC.forGetter(config -> config),
-            Configuration.SHOW_IN_ARMOR.codecOrDefault().forGetter(EntityConfig::showBreastsInArmor),
-            Configuration.HOLIDAY_THEMES.codecOrDefault().forGetter(PlayerConfig::hasHolidayThemes),
-            Configuration.HURT_SOUNDS.codecOrDefault().forGetter(PlayerConfig::hasHurtSounds)
-        ).apply(instance, (entityCfg, hurtSounds, showBreastsInArmor, holidayThemes) -> new PlayerConfig(
-            entityCfg.getGender(), entityCfg.getBustSize(), entityCfg.getVoicePitch(), entityCfg.getBreasts(), entityCfg.hasBreastPhysics(), entityCfg.getBounceMultiplier(),
-            entityCfg.getFloppiness(), entityCfg.getLeftBreastUVLayout(), entityCfg.getRightBreastUVLayout(), entityCfg.getLeftBreastOverlayUVLayout(), entityCfg.getRightBreastOverlayUVLayout(),
-            hurtSounds, showBreastsInArmor, holidayThemes
-        )));
+            Configuration.HURT_SOUNDS.codecOrDefault().forGetter(config -> config.hurtSounds.get()),
+            Configuration.HOLIDAY_THEMES.codecOrDefault().forGetter(config -> config.holidayThemes.get()),
+            Configuration.SHOW_IN_ARMOR.codecOrDefault().forGetter(config -> config.showBreastsInArmor.get())
+        ).apply(instance, PlayerConfig::new));
+    }
+    private PlayerConfig(EntityConfig cfg, boolean hurtSounds, boolean holidayThemes, boolean showBreastsInArmor) {
+        super(cfg);
+        this.hurtSounds = Configuration.HURT_SOUNDS.createValueHandler(hurtSounds);
+        this.holidayThemes = Configuration.HOLIDAY_THEMES.createValueHandler(holidayThemes);
+        this.showBreastsInArmor = Configuration.SHOW_IN_ARMOR.createValueHandler(showBreastsInArmor);
     }
     //?}
 
-    protected boolean hurtSounds;
-    protected boolean holidayThemes;
-    protected boolean showBreastsInArmor;
+    public final ConfigValue<Boolean> hurtSounds;
+    public final ConfigValue<Boolean> holidayThemes;
+    public final ConfigValue<Boolean> showBreastsInArmor;
 
     public PlayerConfig(Gender gender, float bustSize, float voicePitch, Breasts breasts, boolean breastPhysics, float bounceMultiplier , float floppyMultiplier,
         UVLayout leftBreastUVLayout, UVLayout rightBreastUVLayout, UVLayout leftBreastOverlayUVLayout, UVLayout rightBreastOverlayUVLayout,
-        boolean hurtSounds, boolean showBreastsInArmor, boolean holidayThemes) {
+        boolean hurtSounds, boolean holidayThemes, boolean showBreastsInArmor) {
         super(gender, bustSize, voicePitch, breasts, breastPhysics, bounceMultiplier, floppyMultiplier, leftBreastUVLayout, rightBreastUVLayout,
             leftBreastOverlayUVLayout, rightBreastOverlayUVLayout);
-        this.hurtSounds = hurtSounds;
-        this.holidayThemes = holidayThemes;
-        this.showBreastsInArmor = showBreastsInArmor;
-    }
-
-    public boolean updateGender(Gender value) {
-        return updateValue(Configuration.GENDER, value, v -> this.gender = v);
-    }
-
-    public boolean updateBustSize(float value) {
-        return updateValue(Configuration.BUST_SIZE, value, v -> this.bustSize = v);
-    }
-
-
-    public boolean hasHolidayThemes() {
-        return holidayThemes;
-    }
-
-    public boolean updateHolidayThemes(boolean value) {
-        return updateValue(Configuration.HOLIDAY_THEMES, value, v -> this.holidayThemes = v);
-    }
-
-    public boolean hasHurtSounds() {
-        return hurtSounds;
-    }
-
-    public boolean updateVoicePitch(float value) {
-        return updateValue(Configuration.VOICE_PITCH, value, v -> this.voicePitch = v);
-    }
-
-    public boolean updateHurtSounds(boolean value) {
-        return updateValue(Configuration.HURT_SOUNDS, value, v -> this.hurtSounds = v);
-    }
-
-    public boolean updateBreastPhysics(boolean value) {
-        return updateValue(Configuration.BREAST_PHYSICS, value, v -> this.breastPhysics = v);
-    }
-
-    @Override
-    public boolean showBreastsInArmor() {
-        return showBreastsInArmor;
-    }
-
-    public boolean updateShowBreastsInArmor(boolean value) {
-        return updateValue(Configuration.SHOW_IN_ARMOR, value, v -> this.showBreastsInArmor = v);
-    }
-
-    public boolean updateBounceMultiplier(float value) {
-        return updateValue(Configuration.BOUNCE_MULTIPLIER, value, v -> this.bounceMultiplier = v);
-    }
-
-    public boolean updateFloppiness(float value) {
-        return updateValue(Configuration.FLOPPY_MULTIPLIER, value, v -> this.floppyMultiplier = v);
+        this.hurtSounds = Configuration.HURT_SOUNDS.createValueHandler(hurtSounds);
+        this.holidayThemes = Configuration.HOLIDAY_THEMES.createValueHandler(holidayThemes);
+        this.showBreastsInArmor = Configuration.SHOW_IN_ARMOR.createValueHandler(showBreastsInArmor);
     }
 }

@@ -22,10 +22,10 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.wildfire.main.WildfireGender;
 import com.wildfire.main.config.Configuration;
-import com.wildfire.main.config.types.ConfigKey;
-import com.wildfire.main.config.types.ConfigRange;
-import java.util.Objects;
+import com.wildfire.main.config.value.ConfigKey;
+import com.wildfire.main.config.validator.ConfigRange;
 import java.util.function.Function;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.NbtOps;
@@ -35,6 +35,7 @@ import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 import org.jspecify.annotations.Nullable;
 
 /// Data component-like class for storing player breast settings on armor equipped onto armor stands
@@ -42,37 +43,40 @@ import org.jspecify.annotations.Nullable;
 /// Note that while this is treated similarly to any other [`data component`][DataComponents] for performance reasons,
 /// this is never written as its own component on item stacks, but instead uses the [`custom NBT data component`][DataComponents#CUSTOM_DATA]
 /// (under the `WildfireGender` key) for compatibility with vanilla clients on servers.
-public record BreastDataComponent(float breastSize, float cleavage, Vector3f offsets, boolean jacket, @Nullable CustomData nbtComponent) {
+public record BreastDataComponent(float breastSize, float cleavage, Vector3fc offsets, boolean jacket, @Nullable CustomData nbtComponent) {
 
     private static final String KEY = "WildfireGender";
     private static final Codec<BreastDataComponent> CODEC = RecordCodecBuilder.create(instance -> instance.group(
         orLegacy(Configuration.BUST_SIZE, "BreastSize").forGetter(BreastDataComponent::breastSize),
         orLegacy(Configuration.BREASTS_CLEAVAGE, "Cleavage").forGetter(BreastDataComponent::cleavage),
         Codec.BOOL.optionalFieldOf("Jacket", true).forGetter(BreastDataComponent::jacket),
-        orLegacy(Configuration.BREASTS_OFFSET_X, "XOffset").forGetter(component -> component.offsets.x),
-        orLegacy(Configuration.BREASTS_OFFSET_Y, "YOffset").forGetter(component -> component.offsets.y),
-        orLegacy(Configuration.BREASTS_OFFSET_Z, "ZOffset").forGetter(component -> component.offsets.y)
+        orLegacy(Configuration.BREASTS_OFFSET_X, "XOffset").forGetter(component -> component.offsets.x()),
+        orLegacy(Configuration.BREASTS_OFFSET_Y, "YOffset").forGetter(component -> component.offsets.y()),
+        orLegacy(Configuration.BREASTS_OFFSET_Z, "ZOffset").forGetter(component -> component.offsets.y())
         ).apply(instance, (breastSize, cleavage, jacket, x, y, z) -> new BreastDataComponent(breastSize, cleavage, new Vector3f(x, y, z), jacket, null))
     );
 
     private static MapCodec<Float> orLegacy(ConfigKey<Float> configKey, String legacyKey) {
-        ConfigRange<Float> range = Objects.requireNonNull(configKey.range(), "No range defined for config key");
-        //TODO: Technically this means newer servers will save it in a way that older clients don't know about. We could switch what alternative codec is first
-        // to serialize it the corresponding way, but I think that is a net negative, unless we use stonecutter to only apply that change for 26.3
-        return Codec.mapEither(
-            //Don't use the default here so we can try loading via the legacy way
-            configKey.codec(),
-            //Note: We make this be lenient so that if it failed to deserialize either with this or the new codec, then it falls back to the default value
-            ExtraCodecs.floatRange(range.minInclusive(), range.maxInclusive()).lenientOptionalFieldOf(legacyKey, configKey.defaultValue())
-        ).xmap(either -> either.map(Function.identity(), Function.identity()), Either::left);
+        if (configKey.validator() instanceof ConfigRange<Float>(Float minInclusive, Float maxInclusive)) {
+            //TODO: Technically this means newer servers will save it in a way that older clients don't know about. We could switch what alternative codec is first
+            // to serialize it the corresponding way, but I think that is a net negative, unless we use stonecutter to only apply that change for 26.3
+            return Codec.mapEither(
+                //Don't use the default here so we can try loading via the legacy way
+                configKey.codec(),
+                //Note: We make this be lenient so that if it failed to deserialize either with this or the new codec, then it falls back to the default value
+                ExtraCodecs.floatRange(minInclusive, maxInclusive).lenientOptionalFieldOf(legacyKey, configKey.defaultValue())
+            ).xmap(either -> either.map(Function.identity(), Function.identity()), Either::left);
+        }
+        WildfireGender.LOGGER.warn("No range defined for config key: {}", configKey.key());
+        return configKey.codecOrDefault();
     }
 
     public static @Nullable BreastDataComponent fromPlayer(Player player, PlayerConfig config) {
-        if(!config.getGender().canHaveBreasts() || !config.showBreastsInArmor()) {
+        if(!config.gender.get().canHaveBreasts() || !config.showBreastsInArmor.get()) {
             return null;
         }
 
-        return new BreastDataComponent(config.getBustSize(), config.getBreasts().getCleavage(), config.getBreasts().getOffsets(),
+        return new BreastDataComponent(config.bustSize.get(), config.breasts.cleavage.get(), config.breasts.getOffsets(),
                 player.isModelPartShown(PlayerModelPart.JACKET), null);
     }
 

@@ -87,13 +87,10 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
                     var playerHolder = Objects.requireNonNull(getPlayer(), "getPlayer()");
                     var player = playerHolder.config();
 
-                    player.updateLeftBreastUVLayout(Configuration.LEFT_BREAST_UV_LAYOUT.defaultValue());
-                    player.updateRightBreastUVLayout(Configuration.RIGHT_BREAST_UV_LAYOUT.defaultValue());
-
-                    player.updateLeftBreastOverlayUVLayout(Configuration.LEFT_BREAST_OVERLAY_UV_LAYOUT.defaultValue());
-                    player.updateRightBreastOverlayUVLayout(Configuration.RIGHT_BREAST_OVERLAY_UV_LAYOUT.defaultValue());
-
-                    playerHolder.save();
+                    //Note: Intentionally uses bitwise or operators so that it runs on all, but we only have to save if at least one of them updated
+                    if (player.leftBreastUVLayout.reset() | player.rightBreastUVLayout.reset() | player.leftBreastOverlayUVLayout.reset() | player.rightBreastOverlayUVLayout.reset()) {
+                        playerHolder.save();
+                    }
                 }));
 
         addButton(builder -> builder
@@ -212,10 +209,10 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
         var player = playerHolder.config();
 
         selectedUVs = switch (selectedBreastIndex) {
-            case RIGHT -> player.getRightBreastUVLayout();
-            case LEFT_OVERLAY -> player.getLeftBreastOverlayUVLayout();
-            case RIGHT_OVERLAY -> player.getRightBreastOverlayUVLayout();
-            default -> player.getLeftBreastUVLayout();
+            case RIGHT -> player.rightBreastUVLayout.get();
+            case LEFT_OVERLAY -> player.leftBreastOverlayUVLayout.get();
+            case RIGHT_OVERLAY -> player.rightBreastOverlayUVLayout.get();
+            default -> player.leftBreastUVLayout.get();
         };
     }
 
@@ -235,10 +232,10 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
             var player = playerHolder.config();
             //Other faces
             UVLayout[] ALL_UVS = {
-                    player.getLeftBreastUVLayout(),
-                    player.getRightBreastUVLayout(),
-                    player.getLeftBreastOverlayUVLayout(),
-                    player.getRightBreastOverlayUVLayout()
+                    player.leftBreastUVLayout.get(),
+                    player.rightBreastUVLayout.get(),
+                    player.leftBreastOverlayUVLayout.get(),
+                    player.rightBreastOverlayUVLayout.get()
             };
 
             for(UVLayout eachBreast : ALL_UVS) {

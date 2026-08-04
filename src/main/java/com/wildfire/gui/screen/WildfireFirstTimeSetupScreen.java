@@ -76,7 +76,7 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
         int x = this.width / 2;
         int y = this.height / 2;
 
-        final var config = ClientConfigHolder.INSTANCE.config();
+        final var config = ClientConfigHolder.config();
         final var ref = new Object() {
             @UnknownNullability
             WildfireButton no;
@@ -87,9 +87,9 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
                 .position(x + 3, y + 74)
                 .size(128, 20)
                 .onPress(button -> {
-                    config.cloudSyncEnabled = true;
-                    config.automaticCloudSync = true;
-                    config.firstTimeLoad = false;
+                    config.cloudSyncEnabled.update(true);
+                    config.automaticCloudSync.update(true);
+                    config.firstTimeLoad.update(false);
 
                     button.active = false;
                     button.setMessage(CommonComponents.ELLIPSIS);
@@ -108,9 +108,9 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
                 .position(x - 131, y + 74)
                 .size(128, 20)
                 .onPress(_ -> {
-                    config.cloudSyncEnabled = false;
-                    config.automaticCloudSync = false;
-                    config.firstTimeLoad = false;
+                    config.cloudSyncEnabled.update(false);
+                    config.automaticCloudSync.update(false);
+                    config.firstTimeLoad.update(false);
 
                     //~ if >=26.2 'minecraft.setScreen' -> 'minecraft.gui.setScreen'
                     minecraft.gui.setScreen(new WardrobeBrowserScreen(null, playerUUID));
@@ -183,6 +183,6 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 
     @Override
     public void removed() {
-        ClientConfigHolder.INSTANCE.save();
+        ClientConfigHolder.save();
     }
 }

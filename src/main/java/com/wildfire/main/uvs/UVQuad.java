@@ -39,7 +39,7 @@ public record UVQuad(int x1, int y1, int x2, int y2) {
     ).apply(instance, UVQuad::new));
     public static final Codec<UVQuad> OR_LEGACY = CODEC.withAlternative(LEGACY_CONFIG_CODEC);
 
-    public static final StreamCodec<ByteBuf, UVQuad> PACKET_CODEC = StreamCodec.composite(
+    public static final StreamCodec<ByteBuf, UVQuad> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT, UVQuad::x1,
             ByteBufCodecs.VAR_INT, UVQuad::y1,
             ByteBufCodecs.VAR_INT, UVQuad::x2,

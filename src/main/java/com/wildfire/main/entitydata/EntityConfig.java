@@ -26,12 +26,11 @@ import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Mu;
 import com.wildfire.main.config.Configuration;
 import com.wildfire.main.config.enums.Gender;
-import com.wildfire.main.config.types.ConfigKey;
+import com.wildfire.main.config.value.ConfigValue;
 import com.wildfire.main.uvs.UVLayout;
 import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
-import java.util.function.Consumer;
 
 /// A stripped down version of a [`player's config`][PlayerConfig], intended for use with non-player entities.
 ///
@@ -56,131 +55,75 @@ public class EntityConfig {
     //TODO: What of these can be moved to the player config codec
     protected static <CONFIG extends EntityConfig> P11<Mu<CONFIG>, Gender, Float, Float, Breasts, Boolean, Float, Float, UVLayout, UVLayout, UVLayout, UVLayout> codecGroup(Instance<CONFIG> instance) {
         return instance.group(
-            Configuration.GENDER.codecOrDefault().forGetter(EntityConfig::getGender),
-            Configuration.BUST_SIZE.codecOrDefault().forGetter(EntityConfig::getBustSize),
-            Configuration.VOICE_PITCH.codecOrDefault().forGetter(EntityConfig::getVoicePitch),
+            Configuration.GENDER.codecOrDefault().forGetter(config -> config.gender.get()),
+            Configuration.BUST_SIZE.codecOrDefault().forGetter(config -> config.bustSize.get()),
+            Configuration.VOICE_PITCH.codecOrDefault().forGetter(config -> config.voicePitch.get()),
 
-            Breasts.CODEC.forGetter(EntityConfig::getBreasts),
+            Breasts.CODEC.forGetter(config -> config.breasts),
 
-            Configuration.BREAST_PHYSICS.codecOrDefault().forGetter(EntityConfig::hasBreastPhysics),
-            Configuration.BOUNCE_MULTIPLIER.codecOrDefault().forGetter(EntityConfig::getBounceMultiplier),
-            Configuration.FLOPPY_MULTIPLIER.codecOrDefault().forGetter(EntityConfig::getFloppiness),
+            Configuration.BREAST_PHYSICS.codecOrDefault().forGetter(config -> config.breastPhysics.get()),
+            Configuration.BOUNCE_MULTIPLIER.codecOrDefault().forGetter(config -> config.bounceMultiplier.get()),
+            Configuration.FLOPPY_MULTIPLIER.codecOrDefault().forGetter(config -> config.floppiness.get()),
 
-            Configuration.LEFT_BREAST_UV_LAYOUT.codecOrDefault().forGetter(EntityConfig::getLeftBreastUVLayout),
-            Configuration.RIGHT_BREAST_UV_LAYOUT.codecOrDefault().forGetter(EntityConfig::getRightBreastUVLayout),
+            Configuration.LEFT_BREAST_UV_LAYOUT.codecOrDefault().forGetter(config -> config.leftBreastUVLayout.get()),
+            Configuration.RIGHT_BREAST_UV_LAYOUT.codecOrDefault().forGetter(config -> config.rightBreastUVLayout.get()),
 
-            Configuration.LEFT_BREAST_OVERLAY_UV_LAYOUT.codecOrDefault().forGetter(EntityConfig::getLeftBreastOverlayUVLayout),
-            Configuration.RIGHT_BREAST_OVERLAY_UV_LAYOUT.codecOrDefault().forGetter(EntityConfig::getRightBreastOverlayUVLayout)
+            Configuration.LEFT_BREAST_OVERLAY_UV_LAYOUT.codecOrDefault().forGetter(config -> config.leftBreastOverlayUVLayout.get()),
+            Configuration.RIGHT_BREAST_OVERLAY_UV_LAYOUT.codecOrDefault().forGetter(config -> config.rightBreastOverlayUVLayout.get())
         );
     }
 
-    protected final Breasts breasts;
+    public final Breasts breasts;
 
-    protected Gender gender;
-    protected float bustSize;
-    protected boolean breastPhysics;
-    protected float bounceMultiplier;
-    protected float floppyMultiplier;
+    public final ConfigValue<Gender> gender;
+    //TODO: Primitive value types?
+    public final ConfigValue<Float> bustSize;
+    public final ConfigValue<Boolean> breastPhysics;
+    public final ConfigValue<Float> bounceMultiplier;
+    public final ConfigValue<Float> floppiness;
 
-    protected UVLayout leftBreastUVLayout;
-    protected UVLayout rightBreastUVLayout;
+    // FIXME this should really be redesigned to not have multiple methods with very similar names;
+    //		ideally something like `getUVs().skin().left()` etc.
+    public final ConfigValue<UVLayout> leftBreastUVLayout;
+    public final ConfigValue<UVLayout> rightBreastUVLayout;
 
-    protected UVLayout leftBreastOverlayUVLayout;
-    protected UVLayout rightBreastOverlayUVLayout;
+    public final ConfigValue<UVLayout> leftBreastOverlayUVLayout;
+    public final ConfigValue<UVLayout> rightBreastOverlayUVLayout;
 
-    protected float voicePitch;
+    public final ConfigValue<Float> voicePitch;
 
     // note: hurt sounds, armor physics override, and show in armor are not defined here, as they have no relevance
     // to entities, and are instead entirely in PlayerConfig
 
-    protected EntityConfig(Gender gender, float bustSize, float voicePitch, Breasts breasts, boolean breastPhysics, float bounceMultiplier , float floppyMultiplier,
+    //? if <26.2 {
+    EntityConfig(EntityConfig cfg) {//Handling for old MC, just copy the intermediary created values as we can just take over the objects
+        this.gender = cfg.gender;
+        this.bustSize = cfg.bustSize;
+        this.voicePitch = cfg.voicePitch;
+        this.breasts = cfg.breasts;
+        this.breastPhysics = cfg.breastPhysics;
+        this.bounceMultiplier = cfg.bounceMultiplier;
+        this.floppiness = cfg.floppiness;
+        this.leftBreastUVLayout = cfg.leftBreastUVLayout;
+        this.rightBreastUVLayout = cfg.rightBreastUVLayout;
+        this.leftBreastOverlayUVLayout = cfg.leftBreastOverlayUVLayout;
+        this.rightBreastOverlayUVLayout = cfg.rightBreastOverlayUVLayout;
+    }
+    //~}
+
+    protected EntityConfig(Gender gender, float bustSize, float voicePitch, Breasts breasts, boolean breastPhysics, float bounceMultiplier, float floppiness,
         UVLayout leftBreastUVLayout, UVLayout rightBreastUVLayout, UVLayout leftBreastOverlayUVLayout, UVLayout rightBreastOverlayUVLayout) {
-        this.gender = gender;
-        this.bustSize = bustSize;
-        this.voicePitch = voicePitch;
+        this.gender = Configuration.GENDER.createValueHandler(gender);
+        this.bustSize = Configuration.BUST_SIZE.createValueHandler(bustSize);
+        this.voicePitch = Configuration.VOICE_PITCH.createValueHandler(voicePitch);
         this.breasts = breasts;
-        this.breastPhysics = breastPhysics;
-        this.bounceMultiplier = bounceMultiplier;
-        this.floppyMultiplier = floppyMultiplier;
-        this.leftBreastUVLayout = leftBreastUVLayout;
-        this.rightBreastUVLayout = rightBreastUVLayout;
-        this.leftBreastOverlayUVLayout = leftBreastOverlayUVLayout;
-        this.rightBreastOverlayUVLayout = rightBreastOverlayUVLayout;
-    }
-
-    public Gender getGender() {
-        return gender;
-    }
-
-    public Breasts getBreasts() {
-        return breasts;
-    }
-
-    public float getBustSize() {
-        return bustSize;
-    }
-
-    public boolean hasBreastPhysics() {
-        return breastPhysics;
-    }
-
-    public boolean showBreastsInArmor() {
-        return true;
-    }
-
-    public float getBounceMultiplier() {
-        return bounceMultiplier;
-    }
-
-    public float getFloppiness() {
-        return this.floppyMultiplier;
-    }
-
-    public float getVoicePitch() {
-        return this.voicePitch;
-    }
-
-    // FIXME these update methods should match the rest and be in PlayerConfig instead of here
-    // FIXME this should really be redesigned to not have multiple methods with very similar names;
-    //		ideally something like `getUVs().skin().left()` etc.
-    public UVLayout getLeftBreastUVLayout() {
-        return this.leftBreastUVLayout;
-    }
-
-    public boolean updateLeftBreastUVLayout(UVLayout layout) {
-        return updateValue(Configuration.LEFT_BREAST_UV_LAYOUT, layout, v -> this.leftBreastUVLayout = v);
-    }
-
-    public UVLayout getRightBreastUVLayout() {
-        return this.rightBreastUVLayout;
-    }
-
-    public boolean updateRightBreastUVLayout(UVLayout layout) {
-        return updateValue(Configuration.RIGHT_BREAST_UV_LAYOUT, layout, v -> this.rightBreastUVLayout = v);
-    }
-
-    public UVLayout getLeftBreastOverlayUVLayout() {
-        return this.leftBreastOverlayUVLayout;
-    }
-
-    public boolean updateLeftBreastOverlayUVLayout(UVLayout layout) {
-        return updateValue(Configuration.LEFT_BREAST_OVERLAY_UV_LAYOUT, layout, v -> this.leftBreastOverlayUVLayout = v);
-    }
-
-    public UVLayout getRightBreastOverlayUVLayout() {
-        return this.rightBreastOverlayUVLayout;
-    }
-
-    public boolean updateRightBreastOverlayUVLayout(UVLayout layout) {
-        return updateValue(Configuration.RIGHT_BREAST_OVERLAY_UV_LAYOUT, layout, v -> this.rightBreastOverlayUVLayout = v);
-    }
-
-    protected <VALUE> boolean updateValue(ConfigKey<VALUE> key, VALUE value, Consumer<VALUE> setter) {
-        if (key.validate(value)) {
-            setter.accept(value);
-            return true;
-        }
-        return false;
+        this.breastPhysics = Configuration.BREAST_PHYSICS.createValueHandler(breastPhysics);
+        this.bounceMultiplier = Configuration.BOUNCE_MULTIPLIER.createValueHandler(bounceMultiplier);
+        this.floppiness = Configuration.FLOPPY_MULTIPLIER.createValueHandler(floppiness);
+        this.leftBreastUVLayout = Configuration.LEFT_BREAST_UV_LAYOUT.createValueHandler(leftBreastUVLayout);
+        this.rightBreastUVLayout = Configuration.RIGHT_BREAST_UV_LAYOUT.createValueHandler(rightBreastUVLayout);
+        this.leftBreastOverlayUVLayout = Configuration.LEFT_BREAST_OVERLAY_UV_LAYOUT.createValueHandler(leftBreastOverlayUVLayout);
+        this.rightBreastOverlayUVLayout = Configuration.RIGHT_BREAST_OVERLAY_UV_LAYOUT.createValueHandler(rightBreastOverlayUVLayout);
     }
 
     @Override

@@ -74,40 +74,41 @@ abstract class AbstractSyncPacket {
 
     protected AbstractSyncPacket(PlayerConfigHolder plrHolder) {
         PlayerConfig plr = plrHolder.config();
-        this(plrHolder.uuid, plr.getGender(), plr.getBustSize(), plr.hasHurtSounds(), plr.getVoicePitch(), new BreastPhysics(plr), plr.getBreasts(), UVLayouts.from(plr));
+        this(plrHolder.uuid, plr.gender.get(), plr.bustSize.get(), plr.hurtSounds.get(), plr.voicePitch.get(), new BreastPhysics(plr), plr.breasts, UVLayouts.from(plr));
     }
 
     // TODO add support for mannequins?
     protected void updatePlayerFromPacket(PlayerConfigHolder plrHolder) {
+        //TODO: Make the stream codecs create a config, and then update the corresponding holder's stored config?
         PlayerConfig plr = plrHolder.config();
-        plr.updateGender(gender);
-        plr.updateBustSize(bustSize);
-        plr.updateHurtSounds(hurtSounds);
-        plr.updateVoicePitch(voicePitch);
+        plr.gender.update(gender);
+        plr.bustSize.update(bustSize);
+        plr.hurtSounds.update(hurtSounds);
+        plr.voicePitch.update(voicePitch);
         physics.applyTo(plr);
-        plr.getBreasts().copyFrom(breasts);
+        plr.breasts.copyFrom(breasts);
         uvLayouts.applyTo(plr);
     }
 
-    protected record BreastPhysics(boolean physics, boolean showInArmor, float bounceMultiplier, float floppyMultiplier) {
+    protected record BreastPhysics(boolean physics, boolean showInArmor, float bounceMultiplier, float floppiness) {
 
         public static final StreamCodec<ByteBuf, BreastPhysics> CODEC = StreamCodec.composite(
                 ByteBufCodecs.BOOL, BreastPhysics::physics,
                 ByteBufCodecs.BOOL, BreastPhysics::showInArmor,
                 ByteBufCodecs.FLOAT, BreastPhysics::bounceMultiplier,
-                ByteBufCodecs.FLOAT, BreastPhysics::floppyMultiplier,
+                ByteBufCodecs.FLOAT, BreastPhysics::floppiness,
                 BreastPhysics::new
         );
 
         private BreastPhysics(PlayerConfig plr) {
-            this(plr.hasBreastPhysics(), plr.showBreastsInArmor(), plr.getBounceMultiplier(), plr.getFloppiness());
+            this(plr.breastPhysics.get(), plr.showBreastsInArmor.get(), plr.bounceMultiplier.get(), plr.floppiness.get());
         }
 
         private void applyTo(PlayerConfig plr) {
-            plr.updateBreastPhysics(physics);
-            plr.updateShowBreastsInArmor(showInArmor);
-            plr.updateBounceMultiplier(bounceMultiplier);
-            plr.updateFloppiness(floppyMultiplier);
+            plr.breastPhysics.update(physics);
+            plr.showBreastsInArmor.update(showInArmor);
+            plr.bounceMultiplier.update(bounceMultiplier);
+            plr.floppiness.update(floppiness);
         }
     }
 
@@ -118,16 +119,16 @@ abstract class AbstractSyncPacket {
     public record UVLayouts(Layer skin, Layer overlay) {
         public static UVLayouts from(PlayerConfig plr) {
             return new UVLayouts(
-                    /*skin = */ new Layer(plr.getLeftBreastUVLayout().copy(), plr.getRightBreastUVLayout().copy()),
-                    /*overlay = */ new Layer(plr.getLeftBreastOverlayUVLayout().copy(), plr.getRightBreastOverlayUVLayout().copy())
+                    /*skin = */ new Layer(plr.leftBreastUVLayout.get().copy(), plr.rightBreastUVLayout.get().copy()),
+                    /*overlay = */ new Layer(plr.leftBreastOverlayUVLayout.get().copy(), plr.rightBreastOverlayUVLayout.get().copy())
             );
         }
 
         private void applyTo(PlayerConfig plr) {
-            plr.updateLeftBreastUVLayout(skin.left);
-            plr.updateRightBreastUVLayout(skin.right);
-            plr.updateLeftBreastOverlayUVLayout(overlay.left);
-            plr.updateRightBreastOverlayUVLayout(overlay.right);
+            plr.leftBreastUVLayout.update(skin.left);
+            plr.rightBreastUVLayout.update(skin.right);
+            plr.leftBreastOverlayUVLayout.update(overlay.left);
+            plr.rightBreastOverlayUVLayout.update(overlay.right);
         }
 
         public record Layer(UVLayout left, UVLayout right) {
@@ -136,8 +137,8 @@ abstract class AbstractSyncPacket {
 
     static final StreamCodec<ByteBuf, UVLayout> UV_CODEC = ByteBufCodecs.map(
             _ -> new EnumMap<>(UVDirection.class),
-            UVDirection.PACKET_CODEC,
-            UVQuad.PACKET_CODEC,
+            UVDirection.STREAM_CODEC,
+            UVQuad.STREAM_CODEC,
             UVDirection.values().length
     ).map(UVLayout::new, UVLayout::getQuads);
 

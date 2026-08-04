@@ -16,14 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.main.config.types;
+@NullMarked
+package com.wildfire.main.config.validator;
 
-import java.util.Comparator;
-import java.util.Objects;
-
-public record ConfigRange<TYPE>(TYPE minInclusive, TYPE maxInclusive, Comparator<? super TYPE> comparator) {
-
-    public boolean validate(TYPE value) {
-        return Objects.compare(value, minInclusive, comparator) >= 0 && Objects.compare(value, maxInclusive, comparator) <= 0;
-    }
-}
+import org.jspecify.annotations.NullMarked;

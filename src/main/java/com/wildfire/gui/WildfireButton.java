@@ -19,6 +19,7 @@
 package com.wildfire.gui;
 
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
+import com.wildfire.gui.WildfireSlider.Builder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -137,6 +138,10 @@ public class WildfireButton extends Button implements IFancyFontRenderer {
         public Builder tooltip(@Nullable Tooltip tooltip) {
             this.tooltip = tooltip;
             return this;
+        }
+
+        public Builder active(Supplier<Boolean> activeSupplier) {
+            return active(activeSupplier.get());
         }
 
         public Builder active(boolean active) {

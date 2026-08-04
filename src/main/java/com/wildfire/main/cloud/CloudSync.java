@@ -155,7 +155,7 @@ public final class CloudSync {
 
     /// @return The URL of the sync server currently being used
     public static String getCloudServer() {
-        var url = ClientConfigHolder.cloudServer();
+        String url = ClientConfigHolder.cloudServer();
         return url.isBlank() ? DEFAULT_CLOUD_URL : url;
     }
 

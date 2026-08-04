@@ -129,10 +129,10 @@ public class BreastPhysics {
             return;
         }
 
-        float breastWeight = entityConfig.getBustSize() * 1.25f;
-        float targetBreastSize = entityConfig.getBustSize();
+        float targetBreastSize = entityConfig.bustSize.get();
+        float breastWeight = targetBreastSize * 1.25f;
 
-        if (!entityConfig.getGender().canHaveBreasts()) {
+        if (!entityConfig.gender.get().canHaveBreasts()) {
             targetBreastSize = 0;
         } else {
             float tightness = Mth.clamp(armor.tightness(), 0, 1);
@@ -146,14 +146,14 @@ public class BreastPhysics {
         Vec3 motion = entity.position().subtract(this.prePos);
         this.prePos = entity.position();
 
-        float bounceIntensity = targetBreastSize * 3f * Math.round(entityConfig.getBounceMultiplier() * 3 * 100) / 100f;
+        float bounceIntensity = targetBreastSize * 3f * Math.round(entityConfig.bounceMultiplier.get() * 3 * 100) / 100f;
         float resistance = Mth.clamp(armor.physicsResistance(), 0, 1);
         if(ClientConfigHolder.armorPhysicsOverride()) resistance = 0; //override resistance
 
         //Adjust bounce intensity by physics resistance of the worn armor
         bounceIntensity *= 1 - resistance;
 
-        if(!entityConfig.getBreasts().isUniboob()) {
+        if(!entityConfig.breasts.uniboob.get()) {
             bounceIntensity = bounceIntensity * WildfireHelper.randFloat(0.5f, 1.5f);
         }
 
@@ -165,8 +165,8 @@ public class BreastPhysics {
     }
 
     private void simplifiedTick(EntityConfig entityConfig, IGenderArmor armor) {
-        if(entityConfig.getGender().canHaveBreasts()) {
-            this.breastSize = entityConfig.getBustSize();
+        if(entityConfig.gender.get().canHaveBreasts()) {
+            this.breastSize = entityConfig.bustSize.get();
             if(!ClientConfigHolder.armorPhysicsOverride()) {
                 float tightness = Mth.clamp(armor.tightness(), 0, 1);
                 this.breastSize *= 1 - TIGHTNESS_REDUCTION_FACTOR * tightness;
@@ -308,7 +308,7 @@ public class BreastPhysics {
     }
 
     private void finishTick(EntityConfig entityConfig) {
-        float percent = entityConfig.getFloppiness();
+        float percent = entityConfig.floppiness.get();
         float bounceAmount = 0.45f * (1f - percent) + 0.15f;
         bounceAmount = Mth.clamp(bounceAmount, 0.15f, 0.6f);
         float delta = 2.25f - bounceAmount;

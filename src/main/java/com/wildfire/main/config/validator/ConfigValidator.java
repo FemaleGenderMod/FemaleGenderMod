@@ -16,7 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-@NullMarked
-package com.wildfire.main.config.types;
+package com.wildfire.main.config.validator;
 
-import org.jspecify.annotations.NullMarked;
+@FunctionalInterface
+public interface ConfigValidator<TYPE> {
+
+    boolean validate(TYPE value);
+}

@@ -86,18 +86,17 @@ public class GenderRenderState {
 
     private GenderRenderState(EntityConfigHolder<?> entityConfigHolder, LivingEntity entity, float partialTicks) {
         EntityConfig entityConfig = entityConfigHolder.config();
-        this.breasts = new BreastState(entityConfig.getBreasts());
+        this.breasts = new BreastState(entityConfig.breasts);
         this.leftBreastPhysics = new BreastPhysicsState(entityConfigHolder.getLeftBreastPhysics());
         this.rightBreastPhysics = new BreastPhysicsState(entityConfigHolder.getRightBreastPhysics());
 
         this.partialTicks = partialTicks;
 
-        this.gender = entityConfig.getGender();
-        this.bustSize = entityConfig.getBustSize();
-        this.hasBreastPhysics = entityConfig.hasBreastPhysics();
-        this.bounceMultiplier = entityConfig.getBounceMultiplier();
-        this.floppyMultiplier = entityConfig.getFloppiness();
-        this.showBreastsInArmor = entityConfig.showBreastsInArmor();
+        this.gender = entityConfig.gender.get();
+        this.bustSize = entityConfig.bustSize.get();
+        this.hasBreastPhysics = entityConfig.breastPhysics.get();
+        this.bounceMultiplier = entityConfig.bounceMultiplier.get();
+        this.floppyMultiplier = entityConfig.floppiness.get();
 
         if(entity instanceof Avatar playerLikeEntity) {
             this.hasJacketLayer = playerLikeEntity.isModelPartShown(PlayerModelPart.JACKET);
@@ -105,18 +104,24 @@ public class GenderRenderState {
             this.hasJacketLayer = entityConfigHolder instanceof PlayerConfigHolder || entityConfigHolder.hasJacketLayer();
         }
 
-        if(entityConfig instanceof PlayerConfig playerConfig && entityConfigHolder.uuid.version() == 4) {
-            // Real players always have a UUID of version 4; if this isn't the case, then this is undeniably
-            // an NPC player entity.
-            this.hasHolidayThemes = playerConfig.hasHolidayThemes();
+        if(entityConfig instanceof PlayerConfig playerConfig) {
+            this.showBreastsInArmor = playerConfig.showBreastsInArmor.get();
+            if (entityConfigHolder.uuid.version() == 4) {
+                // Real players always have a UUID of version 4; if this isn't the case, then this is undeniably
+                // an NPC player entity.
+                this.hasHolidayThemes = playerConfig.holidayThemes.get();
+            } else {
+                this.hasHolidayThemes = false;
+            }
         } else {
+            this.showBreastsInArmor = true;
             this.hasHolidayThemes = false;
         }
 
-        this.leftBreastUVLayout = entityConfig.getLeftBreastUVLayout().copy();
-        this.rightBreastUVLayout = entityConfig.getRightBreastUVLayout().copy();
-        this.leftBreastOverlayUVLayout = entityConfig.getLeftBreastOverlayUVLayout().copy();
-        this.rightBreastOverlayUVLayout = entityConfig.getRightBreastOverlayUVLayout().copy();
+        this.leftBreastUVLayout = entityConfig.leftBreastUVLayout.get().copy();
+        this.rightBreastUVLayout = entityConfig.rightBreastUVLayout.get().copy();
+        this.leftBreastOverlayUVLayout = entityConfig.leftBreastOverlayUVLayout.get().copy();
+        this.rightBreastOverlayUVLayout = entityConfig.rightBreastOverlayUVLayout.get().copy();
         this.armor = WildfireHelper.getArmorConfig(entity.getItemBySlot(EquipmentSlot.CHEST));
 
         this.isBreathing = !entity.isUnderWater() || MobEffectUtil.hasWaterBreathing(entity) ||
@@ -132,11 +137,11 @@ public class GenderRenderState {
         public final boolean uniboob;
 
         private BreastState(Breasts breasts) {
-            this.xOffset = breasts.getXOffset();
-            this.yOffset = breasts.getYOffset();
-            this.zOffset = breasts.getZOffset();
-            this.cleavage = breasts.getCleavage();
-            this.uniboob = breasts.isUniboob();
+            this.xOffset = breasts.xOffset.get();
+            this.yOffset = breasts.yOffset.get();
+            this.zOffset = breasts.zOffset.get();
+            this.cleavage = breasts.cleavage.get();
+            this.uniboob = breasts.uniboob.get();
         }
     }
 

@@ -64,8 +64,9 @@ public class WildfireToast implements Toast, IFancyFontRenderer {
     public void update(ToastManager manager, long time) {
         if(shouldHide()) {
             hide();
-            ClientConfigHolder.INSTANCE.config().showToast = false;
-            CompletableFuture.runAsync(ClientConfigHolder.INSTANCE::save);
+            if (ClientConfigHolder.config().showToast.update(false)) {
+                CompletableFuture.runAsync(ClientConfigHolder::save);
+            }
         }
     }
 
