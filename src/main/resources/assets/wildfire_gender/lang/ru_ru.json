@@ -97,8 +97,6 @@
     "wildfire_gender.label.disabled": "Выкл",
     "wildfire_gender.label.on": "Вкл.",
     "wildfire_gender.label.off": "Выкл.",
-    "wildfire_gender.label.yes": "Да",
-    "wildfire_gender.label.no": "Нет",
     "wildfire_gender.label.with_creator": "Вы играете на одном сервере с создателем этого мода!",
     "wildfire_gender.label.with_contributor": "Вы играете на сервере с разработчиком этого мода!",
     "wildfire_gender.label.with_both": "Вы играете на сервере с создателем и разработчиком этого мода!",

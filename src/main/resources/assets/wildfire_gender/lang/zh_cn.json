@@ -34,8 +34,6 @@
 
     "wildfire_gender.label.enabled": "启用",
     "wildfire_gender.label.disabled": "禁用",
-    "wildfire_gender.label.yes": "是",
-    "wildfire_gender.label.no": "否",
     "wildfire_gender.label.with_creator": "您正在与该模组的作者一起在服务器上玩！",
 
     "wildfire_gender.slider.bounce": "弹跳强度：%s%%",
