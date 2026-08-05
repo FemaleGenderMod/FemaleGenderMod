@@ -66,7 +66,6 @@ public class ClientConfig {
     ).apply(instance, ClientConfig::new));
 
     private static final Configuration<ClientConfig> cfgFile = new Configuration<>(".", "female_gender_mod", CODEC);
-    //TODO - 26.2: Should this actually be using JsonOps.INSTANCE.emptyMap() and then let the orDefault handle it all instead of trying to read from the config during construction
     private static ClientConfig config = CODEC.parse(JsonOps.INSTANCE, JsonOps.INSTANCE.emptyMap()).getOrThrow();
     static {
         if (!cfgFile.exists()) {

@@ -58,18 +58,16 @@ public record ConfigKey<TYPE>(String key, Either<TYPE, Supplier<TYPE>> defaultVa
 
     public static <TYPE> ConfigKey<TYPE> create(String key, TYPE defaultValue, Codec<TYPE> baseCodec, ConfigValidator<TYPE> range) {
         MapCodec<TYPE> codec = baseCodec.fieldOf(key);
-        return new ConfigKey<>(key, Either.left(defaultValue), codec, codec.orElse(error -> {
-            //TODO: Test this logging message (if we want it), also do we want the promote partial to be here instead of just for floats??
-            //WildfireGender.LOGGER.warn("{}. Falling back to default value: {}", error, defaultValue);
-        }, defaultValue), range);
+        //Note: We don't do any logging for when we fall back to the default values, as this is also the path used for constructing the default config objects
+        //TODO: Do we want the promote partial to be here instead of just for floats??
+        return new ConfigKey<>(key, Either.left(defaultValue), codec, codec.orElse(defaultValue), range);
     }
 
     public static <TYPE> ConfigKey<TYPE> create(String key, Supplier<TYPE> defaultValueSupplier, Codec<TYPE> baseCodec, ConfigValidator<TYPE> range) {
         MapCodec<TYPE> codec = baseCodec.fieldOf(key);
-        return new ConfigKey<>(key, Either.right(defaultValueSupplier), codec, codec.orElseGet(error -> {
-            //TODO: Test this logging message (if we want it), also do we want the promote partial to be here instead of just for floats??
-            //WildfireGender.LOGGER.warn("{}. Falling back to default value: {}", error, defaultValueSupplier.get());
-        }, defaultValueSupplier), range);
+        //Note: We don't do any logging for when we fall back to the default values, as this is also the path used for constructing the default config objects
+        //TODO: Do we want the promote partial to be here instead of just for floats??
+        return new ConfigKey<>(key, Either.right(defaultValueSupplier), codec, codec.orElseGet(defaultValueSupplier), range);
     }
 
     public static ConfigKey<UVLayout> create(String key, Supplier<UVLayout> defaultValueSupplier) {

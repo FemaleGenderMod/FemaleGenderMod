@@ -21,7 +21,6 @@ package com.wildfire.gui.screen;
 import com.google.common.base.Suppliers;
 import com.wildfire.gui.FakeGUIPlayer;
 import com.wildfire.gui.WildfireButton;
-import com.wildfire.main.GenderConfigs;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireGenderClient;
 import com.wildfire.main.config.ClientConfig;
@@ -64,7 +63,7 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 
     private static final UUID keiraUUID = UUID.fromString("372271ab-28f2-44bd-b585-95f43e010c22");
 
-    private final Supplier<FakeGUIPlayer> fakeKeira = Suppliers.memoize(() -> new FakeGUIPlayer("KeiaraFGM", keiraUUID, GenderConfigs.DEFAULT_FEMALE));
+    private final Supplier<FakeGUIPlayer> fakeKeira = Suppliers.memoize(() -> new FakeGUIPlayer("KeiaraFGM", keiraUUID, FakeGUIPlayer.FEMALE_CHANGES));
 
     public WildfireFirstTimeSetupScreen(@Nullable Screen parent, UUID uuid) {
         super(WildfireLang.FIRST_TIME_TITLE.translate().withStyle(style -> style.withUnderlined(true)), parent, uuid);

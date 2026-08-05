@@ -59,9 +59,7 @@ public class PlayerConfigHolder extends EntityConfigHolder<PlayerConfig> {
 
     public PlayerConfigHolder(UUID uuid) {
         cfgFile = new Configuration<>(uuid.toString(), PlayerConfig.CODEC);
-        //TODO: If not success do we want to log it failed? Can it even fail? Given the fact everything has orDefault
-        //TODO - 26.2: Should this actually be using JsonOps.INSTANCE.empty() and then let the orDefault handle it all instead of trying to read from the config during construction
-        super(uuid, PlayerConfig.CODEC.parse(JsonOps.INSTANCE, JsonOps.INSTANCE.emptyMap()).getOrThrow());
+        super(uuid, PlayerConfig.createDefault());
     }
 
     // these shouldn't ever be called on players, but just to be safe, override with a noop.

@@ -127,9 +127,11 @@ public class WildfireGenderClient implements ClientModInitializer {
     }
 
     public static @Nullable Component getNametag(UUID uuid) {
-        var clientPlayer = Minecraft.getInstance().player;
-        if(ClientConfig.config().hideOwnContributorTag.get() && clientPlayer != null && uuid.equals(clientPlayer.getUUID())) {
-            return null;
+        if (ClientConfig.config().hideOwnContributorTag.get()) {
+            var clientPlayer = Minecraft.getInstance().player;
+            if (clientPlayer != null && uuid.equals(clientPlayer.getUUID())) {
+                return null;
+            }
         }
 
         return Contributors.getNametag(uuid);

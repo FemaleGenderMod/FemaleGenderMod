@@ -19,6 +19,7 @@
 package com.wildfire.main.entitydata;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.wildfire.main.config.Configuration;
 import com.wildfire.main.config.enums.Gender;
@@ -45,6 +46,7 @@ public class PlayerConfig extends EntityConfig {
     public static final StreamCodec<ByteBuf, PlayerConfig> STREAM_CODEC = StreamCodec.composite(
         //From EntityConfig
         Gender.STREAM_CODEC, config -> config.gender.get(),
+        //TODO: Technically if the gender is male, none of this other stuff needs to be synced
         Breasts.STREAM_CODEC, config -> config.breasts,
         UVs.STREAM_CODEC, config -> config.uvs,
         //From PlayerConfig
@@ -53,6 +55,12 @@ public class PlayerConfig extends EntityConfig {
         ByteBufCodecs.BOOL, config -> config.holidayThemes.get(),
         PlayerConfig::new
     );
+
+    public static PlayerConfig createDefault() {
+        //TODO: Re-evaluate this? I think it is the thing that makes the most sense
+        //TODO: If not success do we want to log it failed? Can it even fail? Given the fact everything has orDefault
+        return CODEC.parse(JsonOps.INSTANCE, JsonOps.INSTANCE.emptyMap()).getOrThrow();
+    }
 
     public final ConfigValue<Boolean> showBreastsInArmor;
     public final ConfigValue<Boolean> holidayThemes;

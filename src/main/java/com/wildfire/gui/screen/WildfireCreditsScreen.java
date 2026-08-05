@@ -19,7 +19,6 @@
 package com.wildfire.gui.screen;
 
 import com.wildfire.gui.FakeGUIPlayer;
-import com.wildfire.main.GenderConfigs;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireLang;
 import com.wildfire.main.contributors.Contributor;
@@ -58,7 +57,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
             .filter(it -> it.getValue().getRole() != Contributor.Role.TRANSLATOR) // exclude translators
             .sorted(Comparator.comparing(it -> it.getValue().name()))
             .sorted(Comparator.comparing(it -> it.getValue().getRole()))
-            .map(it -> new FakeGUIPlayer(it.getValue().name(), it.getKey(), GenderConfigs.DEFAULT_FEMALE))
+            .map(it -> new FakeGUIPlayer(it.getValue().name(), it.getKey(), FakeGUIPlayer.FEMALE_CHANGES))
             .toArray(FakeGUIPlayer[]::new);
 
     //Translator list
@@ -68,7 +67,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
             .filter(it -> it.getValue().getRole() == Contributor.Role.TRANSLATOR) // only have translators
             .sorted(Comparator.comparing(it -> it.getValue().name()))
             .sorted(Comparator.comparing(it -> it.getValue().getRole()))
-            .map(it -> new FakeGUIPlayer(it.getValue().name(), it.getKey(), GenderConfigs.DEFAULT_FEMALE))
+            .map(it -> new FakeGUIPlayer(it.getValue().name(), it.getKey(), FakeGUIPlayer.FEMALE_CHANGES))
             .toArray(FakeGUIPlayer[]::new);
 
     private static final int boxesPerPage = 12;
