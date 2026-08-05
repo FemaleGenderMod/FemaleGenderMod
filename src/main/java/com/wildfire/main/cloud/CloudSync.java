@@ -26,6 +26,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.authlib.HttpAuthenticationService;
 import com.mojang.authlib.exceptions.AuthenticationException;
+import com.mojang.serialization.JsonOps;
 import com.mojang.util.InstantTypeAdapter;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireHelper;
@@ -33,6 +34,7 @@ import com.wildfire.main.WildfireLang;
 import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.config.enums.SyncVerbosity;
 import com.wildfire.main.contributors.Contributor;
+import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.main.entitydata.PlayerConfigHolder;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -294,7 +296,14 @@ public final class CloudSync {
         return CompletableFuture.runAsync(() -> {
             var token = getAuthToken();
             var url = URI.create(getCloudServer() + "/" + config.uuid);
-            var json = config.toJson().toString();
+            var json = Util.make(config.toJson(), jsonElement -> {
+                //TODO: Remove this hacky way of enforcing encoding the gender as the ordinal, by changing the serialization out once the cloud server can support doing it on its side
+                if (jsonElement.isJsonObject()) {
+                    EntityConfig.GENDER.codec().codec().parse(JsonOps.INSTANCE, jsonElement).ifSuccess(gender ->
+                        jsonElement.getAsJsonObject().addProperty(EntityConfig.GENDER.key(), gender.ordinal())
+                    );
+                }
+            }).toString();
 
             SyncLog.add(WildfireLang.SYNC_LOG_START);
 
