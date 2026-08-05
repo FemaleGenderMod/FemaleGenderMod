@@ -103,9 +103,9 @@ public final class WildfireSync {
     /// @param plr The [`configuration`][PlayerConfig] for the client player
     @Environment(EnvType.CLIENT)
     public static void sendToServer(PlayerConfigHolder plr) {
-        if(!plr.needsSync || !ServerboundSyncPacket.canSend()) return;
-
-        ClientPlayNetworking.send(new ServerboundSyncPacket(plr.config()));
-        plr.needsSync = false;
+        if (plr.needsSync && ServerboundSyncPacket.canSend()) {
+            ClientPlayNetworking.send(new ServerboundSyncPacket(plr.config()));
+            plr.needsSync = false;
+        }
     }
 }

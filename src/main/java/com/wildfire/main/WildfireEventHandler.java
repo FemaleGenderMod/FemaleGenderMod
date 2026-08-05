@@ -233,20 +233,20 @@ public final class WildfireEventHandler {
     @Environment(EnvType.CLIENT)
     private static void onClientTick(Minecraft client) {
         if(client.level == null || client.player == null) return;
-
-        PlayerConfigHolder clientConfig = WildfireGender.getPlayerById(client.player.getUUID());
         timer++;
 
-        // Only attempt to sync if the server will accept the packet, and only once every 5 ticks, or around 4 times a second
-        if(ServerboundSyncPacket.canSend() && timer % 5 == 0) {
-            // sendToServer will only actually send a packet if any changes have been made that need to be synced,
-            // or if we haven't synced before.
-            if(clientConfig != null) WildfireSync.sendToServer(clientConfig);
-        }
-
-        if(timer % 40 == 0) {
-            CloudSync.sendNextQueueBatch();
-            if(clientConfig != null) clientConfig.attemptCloudSync();
+        if (timer % 5 == 0) {
+            PlayerConfigHolder clientConfig = WildfireGender.getPlayerById(client.player.getUUID());
+            // Only attempt to sync if the server will accept the packet, and only once every 5 ticks, or around 4 times a second
+            if (client.isMultiplayerServer() && clientConfig != null) {
+                // sendToServer will only actually send a packet if any changes have been made that need to be synced, or if we haven't synced before.
+                WildfireSync.sendToServer(clientConfig);
+            }
+            if (timer % 40 == 0) {//All timers that are divisible by 40 will be divisible by 5, so we may as well put it within the outer if statement
+                CloudSync.sendNextQueueBatch();
+                if (clientConfig != null)
+                    clientConfig.attemptCloudSync();
+            }
         }
 
         //~ if >=26.2 'client.screen' -> 'client.gui.screen()' {

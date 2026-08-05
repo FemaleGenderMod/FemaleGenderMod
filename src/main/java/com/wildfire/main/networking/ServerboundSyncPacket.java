@@ -49,7 +49,12 @@ public record ServerboundSyncPacket(PlayerConfig config) implements CustomPacket
     public void handle(ServerPlayNetworking.Context context) {
         ServerPlayer player = context.player();
         PlayerConfigHolder plr = WildfireGender.getOrAddPlayerById(player.getUUID());
-        plr.updateFromPacket(config, false);
+        if (!context.server().isSingleplayerOwner(player.nameAndId())) {
+            //Note: We skip bothering to update the config if the server is an integrated server hosted by the player who sent it
+            // In that case the actual backing config will have already been updated because of it being stored in a static field
+            // which has the side effect of reaching across logical sides and updating both the server and client at once.
+            plr.updateFromPacket(config, false);
+        }
         WildfireSync.sendToAllClients(player, plr);
     }
 }
