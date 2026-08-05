@@ -22,6 +22,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.wildfire.main.config.Configuration;
 import com.wildfire.main.config.enums.Gender;
+import com.wildfire.main.config.value.ConfigKey;
 import com.wildfire.main.config.value.ConfigValue;
 import com.wildfire.main.uvs.UVs;
 import io.netty.buffer.ByteBuf;
@@ -31,10 +32,13 @@ import net.minecraft.network.codec.StreamCodec;
 /// A version of [EntityConfig] backed by a [Configuration] for use with players
 public class PlayerConfig extends EntityConfig {
 
+    private static final ConfigKey<Boolean> SHOW_IN_ARMOR = ConfigKey.create("show_in_armor", true);
+    private static final ConfigKey<Boolean> HOLIDAY_THEMES = ConfigKey.create("holiday_themes", true);
+
     public static final Codec<PlayerConfig> CODEC = RecordCodecBuilder.create(instance -> codecGroup(instance)
         .and(Sounds.CODEC.forGetter(config -> config.sounds))
-        .and(Configuration.SHOW_IN_ARMOR.codecOrDefault().forGetter(config -> config.showBreastsInArmor.get()))
-        .and(Configuration.HOLIDAY_THEMES.codecOrDefault().forGetter(config -> config.holidayThemes.get()))
+        .and(SHOW_IN_ARMOR.codecOrDefault().forGetter(config -> config.showBreastsInArmor.get()))
+        .and(HOLIDAY_THEMES.codecOrDefault().forGetter(config -> config.holidayThemes.get()))
         .apply(instance, PlayerConfig::new));
     // remember to update SyncHelloPacket.VERSION when modifying this codec if the changes result in a change
     // to the underlying packet structure
@@ -56,8 +60,8 @@ public class PlayerConfig extends EntityConfig {
 
     private PlayerConfig(Gender gender, Breasts breasts, UVs uvs, Sounds sounds, boolean showBreastsInArmor, boolean holidayThemes) {
         this.sounds = sounds;
-        this.showBreastsInArmor = Configuration.SHOW_IN_ARMOR.createValueHandler(showBreastsInArmor);
-        this.holidayThemes = Configuration.HOLIDAY_THEMES.createValueHandler(holidayThemes);
+        this.showBreastsInArmor = SHOW_IN_ARMOR.createValueHandler(showBreastsInArmor);
+        this.holidayThemes = HOLIDAY_THEMES.createValueHandler(holidayThemes);
         super(gender, breasts, uvs);
     }
 }

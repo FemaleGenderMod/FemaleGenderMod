@@ -18,71 +18,87 @@
 
 package com.wildfire.main.config;
 
-import com.wildfire.main.config.enums.Gender;
-import com.wildfire.main.config.value.ConfigKey;
-import com.wildfire.main.uvs.UVLayout;
-import com.wildfire.main.uvs.UVQuad;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.stream.JsonWriter;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
+import com.wildfire.main.WildfireGender;
+import java.nio.charset.StandardCharsets;
+import java.util.Comparator;
+import java.util.Optional;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.util.GsonHelper;
 
-public class Configuration extends AbstractConfiguration {
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+public class Configuration<TYPE> {
 
     public static final String CONFIG_DIR = "FemaleGenderMod";
 
-    public static final ConfigKey<Gender> GENDER = ConfigKey.create("gender", Gender.MALE, Gender.CODEC_OR_LEGACY);
-    public static final ConfigKey<Float> BUST_SIZE = ConfigKey.create("bust_size", 0.6F, 0, 0.8f);
-    public static final ConfigKey<Boolean> HURT_SOUNDS = ConfigKey.create("hurt_sounds", true);
-    public static final ConfigKey<Float> VOICE_PITCH = ConfigKey.create("voice_pitch", 1F, 0.8f, 1.2f);
+    private final Codec<TYPE> codec;
+    private final File cfgFile;
 
-    public static final ConfigKey<Float> BREASTS_OFFSET_X = ConfigKey.create("breasts_xOffset", 0.0F, -1, 1);
-    public static final ConfigKey<Float> BREASTS_OFFSET_Y = ConfigKey.create("breasts_yOffset", 0.0F, -1, 1);
-    public static final ConfigKey<Float> BREASTS_OFFSET_Z = ConfigKey.create("breasts_zOffset", 0.0F, -1, 0);
-    public static final ConfigKey<Boolean> BREASTS_UNIBOOB = ConfigKey.create("breasts_uniboob", true);
-    public static final ConfigKey<Float> BREASTS_CLEAVAGE = ConfigKey.create("breasts_cleavage", 0, 0, 0.1F);
+    public Configuration(String cfgName, Codec<TYPE> codec) {
+        this(CONFIG_DIR, cfgName, codec);
+    }
 
-    public static final ConfigKey<Boolean> BREAST_PHYSICS = ConfigKey.create("breast_physics", true);
-    public static final ConfigKey<Boolean> SHOW_IN_ARMOR = ConfigKey.create("show_in_armor", true);
-    public static final ConfigKey<Float> BOUNCE_MULTIPLIER = ConfigKey.create("bounce_multiplier", 0.333F, 0, 0.5f);
-    public static final ConfigKey<Float> FLOPPY_MULTIPLIER = ConfigKey.create("floppy_multiplier", 0.75F, 0.25f, 1);
+    protected Configuration(String directory, String cfgName, Codec<TYPE> codec) {
+        this.codec = codec;
+        Path saveDir = FabricLoader.getInstance().getConfigDir().resolve(directory);
+        if(supportsSaving() && !Files.isDirectory(saveDir)) {
+            try {
+                Files.createDirectory(saveDir);
+            } catch(IOException e) {
+                WildfireGender.LOGGER.error("Failed to create config directory", e);
+            }
+        }
+        cfgFile = saveDir.resolve(cfgName + ".json").toFile();
+    }
 
-    public static final ConfigKey<Boolean> HOLIDAY_THEMES = ConfigKey.create("holiday_themes", true);
+    public static boolean supportsSaving() {
+        return FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER;
+    }
 
-    // TODO change these UVLayout entries to use UVMap objects?
-    //        would probably require adding some form of migration capability to AbstractConfiguration
+    public boolean exists() {
+        return cfgFile.exists();
+    }
 
-    // Base breasts
-    public static final ConfigKey<UVLayout> LEFT_BREAST_UV_LAYOUT = ConfigKey.create("leftBreastUVLayout", new UVLayout(
-        new UVQuad(24, 21, 27, 26),  // EAST
-        new UVQuad(16, 21, 20, 26),  // WEST
-        new UVQuad(20, 17, 24, 21),  // DOWN
-        new UVQuad(20, 25, 24, 27),  // UP
-        new UVQuad(20, 21, 24, 26)   // NORTH
-    )::copy);
+    public void save(TYPE value) {
+        if (supportsSaving()) {
+            //TODO: Do we want to log if it fails to encode?
+            Optional<JsonElement> result = codec.encodeStart(JsonOps.INSTANCE, value).resultOrPartial();
+            if (result.isPresent()) {
+                try (FileWriter writer = new FileWriter(cfgFile, StandardCharsets.UTF_8); JsonWriter jsonWriter = new JsonWriter(writer)) {
+                    jsonWriter.setIndent("\t");
+                    GsonHelper.writeValue(jsonWriter, result.get(), Comparator.naturalOrder());
+                } catch (IOException e) {
+                    WildfireGender.LOGGER.error("Failed to save config file", e);
+                }
+            }
+        }
+    }
 
-    public static final ConfigKey<UVLayout> RIGHT_BREAST_UV_LAYOUT = ConfigKey.create("rightBreastUVLayout", new UVLayout(
-        new UVQuad(28, 21, 32, 26),  // EAST
-        new UVQuad(21, 21, 24, 26),  // WEST
-        new UVQuad(24, 17, 28, 21),  // DOWN
-        new UVQuad(24, 25, 28, 27),  // UP
-        new UVQuad(24, 21, 28, 26)   // NORTH
-    )::copy);
+    public TYPE load() {
+        //TODO: If empty bc not able to read such as on server, should this try to load or skip?
+        //TODO: If not success do we want to log it failed? Can it even fail? Given the fact everything has orDefault
+        return codec.parse(JsonOps.INSTANCE, read()).getOrThrow();
+    }
 
-    // Overlay breasts
-    public static final ConfigKey<UVLayout> LEFT_BREAST_OVERLAY_UV_LAYOUT = ConfigKey.create("leftBreastOverlayUVLayout", new UVLayout(
-        UVQuad.UNUSED,                              // EAST
-        new UVQuad(17, 37, 20, 42),  // WEST
-        new UVQuad(20, 34, 24, 37),  // DOWN
-        new UVQuad(20, 41, 24, 44),  // UP
-        new UVQuad(20, 37, 24, 42)   // NORTH
-    )::copy);
-
-    public static final ConfigKey<UVLayout> RIGHT_BREAST_OVERLAY_UV_LAYOUT = ConfigKey.create("rightBreastOverlayUVLayout", new UVLayout(
-        new UVQuad(28, 37, 31, 42),  // EAST
-        UVQuad.UNUSED,                              // WEST
-        new UVQuad(24, 34, 28, 37),  // DOWN
-        new UVQuad(24, 41, 28, 44),  // UP
-        new UVQuad(24, 37, 28, 42)   // NORTH
-    )::copy);
-
-    public Configuration(String cfgName) {
-        super(CONFIG_DIR, cfgName);
+    private JsonObject read() {
+        if (supportsSaving() && cfgFile.exists()) {
+            try (FileReader configurationFile = new FileReader(cfgFile, StandardCharsets.UTF_8)) {
+                return GsonHelper.parse(configurationFile);
+            } catch (IOException e) {
+                WildfireGender.LOGGER.error("Failed to load config file", e);
+            }
+        }
+        return new JsonObject();
     }
 }

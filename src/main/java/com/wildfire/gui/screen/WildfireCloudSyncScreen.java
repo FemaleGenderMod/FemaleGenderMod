@@ -25,7 +25,6 @@ import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.cloud.SyncLog;
 import com.wildfire.main.cloud.SyncingTooFrequentlyException;
 import com.wildfire.main.config.ClientConfig;
-import com.wildfire.main.config.ClientConfigHolder;
 import com.wildfire.main.config.value.ConfigValue;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -76,9 +75,9 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
                 .position(xPos, yPos)
                 .size(157, 20)
                 .onPress(button -> {
-                    if (ClientConfigHolder.config().cloudSyncEnabled.update(ConfigValue.TOGGLE)) {
+                    if (ClientConfig.config().cloudSyncEnabled.update(ConfigValue.TOGGLE)) {
                         boolean available = CloudSync.isAvailable();
-                        boolean enabled = ClientConfigHolder.cloudSyncEnabled();
+                        boolean enabled = ClientConfig.config().cloudSyncEnabled.get();
                         button.updateMessage();
                         ref.btnAutomaticSync.setActive(enabled);
                         ref.btnSyncNow.setVisible(enabled && available);
@@ -88,11 +87,11 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
                 }));
 
         ref.btnAutomaticSync = addButton(builder -> builder
-                .message(() -> WildfireLang.CLOUD_AUTOMATIC.translate(CloudSync.isEnabled() ? (ClientConfigHolder.automaticCloudSync() ? ENABLED : DISABLED) : WildfireLang.LABEL_OFF.translate()))
+                .message(() -> WildfireLang.CLOUD_AUTOMATIC.translate(CloudSync.isEnabled() ? (ClientConfig.config().automaticCloudSync.get() ? ENABLED : DISABLED) : WildfireLang.LABEL_OFF.translate()))
                 .position(xPos, yPos + 20)
                 .size(157, 20)
                 .onPress(button -> {
-                    if (ClientConfigHolder.config().automaticCloudSync.update(ConfigValue.TOGGLE)) {
+                    if (ClientConfig.config().automaticCloudSync.update(ConfigValue.TOGGLE)) {
                         button.updateMessage();
                     }
                 })
@@ -195,7 +194,7 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
 
     @Override
     public void onClose() {
-        ClientConfigHolder.save();
+        ClientConfig.save();
         super.onClose();
     }
 }

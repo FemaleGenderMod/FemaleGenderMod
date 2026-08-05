@@ -20,7 +20,7 @@ package com.wildfire.main;
 
 import com.google.gson.JsonObject;
 import com.wildfire.main.cloud.CloudSync;
-import com.wildfire.main.config.ClientConfigHolder;
+import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.config.Configuration;
 import com.wildfire.main.contributors.Contributors;
 import com.wildfire.main.entitydata.PlayerConfigHolder;
@@ -56,7 +56,7 @@ public class WildfireGenderClient implements ClientModInitializer {
         tryMigrate("WildfireGender", Configuration.CONFIG_DIR);
         tryMigrate("wildfire_gender.json", "female_gender_mod.json");
 
-        ClientConfigHolder.load();
+        ClientConfig.load();
         WildfireSounds.register();
         WildfireSync.registerClient();
         WildfireEventHandler.registerClientEvents();
@@ -128,7 +128,7 @@ public class WildfireGenderClient implements ClientModInitializer {
 
     public static @Nullable Component getNametag(UUID uuid) {
         var clientPlayer = Minecraft.getInstance().player;
-        if(ClientConfigHolder.hideOwnContributorTag() && clientPlayer != null && uuid.equals(clientPlayer.getUUID())) {
+        if(ClientConfig.config().hideOwnContributorTag.get() && clientPlayer != null && uuid.equals(clientPlayer.getUUID())) {
             return null;
         }
 

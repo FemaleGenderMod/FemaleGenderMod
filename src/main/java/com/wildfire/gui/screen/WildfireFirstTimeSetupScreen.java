@@ -24,7 +24,7 @@ import com.wildfire.gui.WildfireButton;
 import com.wildfire.main.GenderConfigs;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireGenderClient;
-import com.wildfire.main.config.ClientConfigHolder;
+import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.WildfireLang;
 import com.wildfire.main.entitydata.PlayerConfigHolder;
 import net.fabricmc.api.EnvType;
@@ -76,7 +76,7 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
         int x = this.width / 2;
         int y = this.height / 2;
 
-        final var config = ClientConfigHolder.config();
+        final var config = ClientConfig.config();
         final var ref = new Object() {
             @UnknownNullability
             WildfireButton no;
@@ -183,6 +183,6 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 
     @Override
     public void removed() {
-        ClientConfigHolder.save();
+        ClientConfig.save();
     }
 }

@@ -23,8 +23,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Mu;
-import com.wildfire.main.config.Configuration;
 import com.wildfire.main.config.enums.Gender;
+import com.wildfire.main.config.value.ConfigKey;
 import com.wildfire.main.config.value.ConfigValue;
 import com.wildfire.main.uvs.UVs;
 import net.minecraft.world.entity.Avatar;
@@ -37,6 +37,8 @@ import net.minecraft.world.entity.decoration.ArmorStand;
 ///
 /// Currently only used for [`armor stands`][ArmorStand], and as a superclass for [`player configs`][PlayerConfig].
 public class EntityConfig  {
+
+    public static final ConfigKey<Gender> GENDER = ConfigKey.create("gender", Gender.MALE, Gender.CODEC_OR_LEGACY);
 
     /// @return `true` if the mod has support for the provided entity
     public static boolean isSupportedEntity(LivingEntity entity) {
@@ -52,7 +54,7 @@ public class EntityConfig  {
 
     protected static <CONFIG extends EntityConfig> P3<Mu<CONFIG>, Gender, Breasts, UVs> codecGroup(Instance<CONFIG> instance) {
         return instance.group(
-            Configuration.GENDER.codecOrDefault().forGetter(config -> config.gender.get()),
+            GENDER.codecOrDefault().forGetter(config -> config.gender.get()),
             Breasts.CODEC.forGetter(config -> config.breasts),
             //TODO: Should UVs be in player, or maybe avatar once that intermediary exists?
             UVs.CODEC.forGetter(config -> config.uvs)
@@ -67,7 +69,7 @@ public class EntityConfig  {
     // to entities, and are instead entirely in PlayerConfig
 
     protected EntityConfig(Gender gender, Breasts breasts, UVs uvs) {
-        this.gender = Configuration.GENDER.createValueHandler(gender);
+        this.gender = GENDER.createValueHandler(gender);
         this.breasts = breasts;
         this.uvs = uvs;
     }

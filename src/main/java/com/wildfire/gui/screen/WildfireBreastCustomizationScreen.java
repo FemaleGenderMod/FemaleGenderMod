@@ -21,7 +21,7 @@ package com.wildfire.gui.screen;
 import com.wildfire.events.EntityHurtSoundEvent;
 import com.wildfire.gui.WildfireSlider;
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.config.ClientConfigHolder;
+import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.WildfireLang;
 import com.wildfire.main.config.value.ConfigValue;
 import net.fabricmc.api.EnvType;
@@ -222,12 +222,12 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .active(plr.breasts().physics().enabled()));
 
         ref.overridePhysics = addButton(builder -> builder
-                .message(() -> WildfireLang.CHAR_SETTINGS_OVERRIDE_PHYSICS.translate(ClientConfigHolder.armorPhysicsOverride() ? ENABLED : DISABLED))
+                .message(() -> WildfireLang.CHAR_SETTINGS_OVERRIDE_PHYSICS.translate(ClientConfig.config().armorPhysicsOverride.get() ? ENABLED : DISABLED))
                 .position(this.width / 2 - 36, tabOffsetY + 70)
                 .size(FULL_WIDTH, 20)
                 .onPress(button -> {
-                    if (ClientConfigHolder.config().armorPhysicsOverride.update(ConfigValue.TOGGLE)) {
-                        ClientConfigHolder.save();
+                    if (ClientConfig.config().armorPhysicsOverride.update(ConfigValue.TOGGLE)) {
+                        ClientConfig.save();
                         button.updateMessage();
                     }
                 })
@@ -300,12 +300,12 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 }));
 
         addButton(builder -> builder
-                .message(() -> WildfireLang.CHAR_SETTINGS_ARMOR_STAT.translate(ClientConfigHolder.armorStat() ? ENABLED : DISABLED))
+                .message(() -> WildfireLang.CHAR_SETTINGS_ARMOR_STAT.translate(ClientConfig.config().armorStat.get() ? ENABLED : DISABLED))
                 .position(this.width / 2 - 36, tabOffsetY + 70)
                 .size(FULL_WIDTH, 20)
                 .onPress(button -> {
-                    if (ClientConfigHolder.config().armorStat.update(ConfigValue.TOGGLE)) {
-                        ClientConfigHolder.save();
+                    if (ClientConfig.config().armorStat.update(ConfigValue.TOGGLE)) {
+                        ClientConfig.save();
                         button.updateMessage();
                     }
                 }));

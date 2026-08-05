@@ -23,7 +23,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.config.Configuration;
 import com.wildfire.main.config.value.ConfigKey;
 import com.wildfire.main.config.validator.ConfigRange;
 import java.util.function.Function;
@@ -47,12 +46,12 @@ public record BreastDataComponent(float breastSize, float cleavage, Vector3fc of
 
     private static final String KEY = "WildfireGender";
     private static final Codec<BreastDataComponent> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-        orLegacy(Configuration.BUST_SIZE, "BreastSize").forGetter(BreastDataComponent::breastSize),
-        orLegacy(Configuration.BREASTS_CLEAVAGE, "Cleavage").forGetter(BreastDataComponent::cleavage),
+        orLegacy(Breasts.BUST_SIZE, "BreastSize").forGetter(BreastDataComponent::breastSize),
+        orLegacy(Breasts.BREASTS_CLEAVAGE, "Cleavage").forGetter(BreastDataComponent::cleavage),
         Codec.BOOL.optionalFieldOf("Jacket", true).forGetter(BreastDataComponent::jacket),
-        orLegacy(Configuration.BREASTS_OFFSET_X, "XOffset").forGetter(component -> component.offsets.x()),
-        orLegacy(Configuration.BREASTS_OFFSET_Y, "YOffset").forGetter(component -> component.offsets.y()),
-        orLegacy(Configuration.BREASTS_OFFSET_Z, "ZOffset").forGetter(component -> component.offsets.y())
+        orLegacy(Breasts.BREASTS_OFFSET_X, "XOffset").forGetter(component -> component.offsets.x()),
+        orLegacy(Breasts.BREASTS_OFFSET_Y, "YOffset").forGetter(component -> component.offsets.y()),
+        orLegacy(Breasts.BREASTS_OFFSET_Z, "ZOffset").forGetter(component -> component.offsets.y())
         ).apply(instance, (breastSize, cleavage, jacket, x, y, z) -> new BreastDataComponent(breastSize, cleavage, new Vector3f(x, y, z), jacket, null))
     );
 

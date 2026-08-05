@@ -30,7 +30,7 @@ import com.mojang.util.InstantTypeAdapter;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.WildfireLang;
-import com.wildfire.main.config.ClientConfigHolder;
+import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.config.enums.SyncVerbosity;
 import com.wildfire.main.contributors.Contributor;
 import com.wildfire.main.entitydata.PlayerConfigHolder;
@@ -150,12 +150,12 @@ public final class CloudSync {
 
     /// @return `true` if syncing is enabled; this will always return `false` if [`syncing is unavailable`][#isAvailable()].
     public static boolean isEnabled() {
-        return isAvailable() && ClientConfigHolder.cloudSyncEnabled();
+        return isAvailable() && ClientConfig.config().cloudSyncEnabled.get();
     }
 
     /// @return The URL of the sync server currently being used
     public static String getCloudServer() {
-        String url = ClientConfigHolder.cloudServer();
+        String url = ClientConfig.config().cloudServer.get();
         return url.isBlank() ? DEFAULT_CLOUD_URL : url;
     }
 

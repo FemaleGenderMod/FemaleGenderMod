@@ -20,7 +20,7 @@ package com.wildfire.main.entitydata;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.wildfire.main.config.Configuration;
+import com.wildfire.main.config.value.ConfigKey;
 import com.wildfire.main.config.value.ConfigValue;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -28,9 +28,12 @@ import net.minecraft.network.codec.StreamCodec;
 
 public record Sounds(ConfigValue<Boolean> hurt, ConfigValue<Float> voicePitch) {
 
+    private static final ConfigKey<Boolean> HURT_SOUNDS = ConfigKey.create("hurt_sounds", true);
+    private static final ConfigKey<Float> VOICE_PITCH = ConfigKey.create("voice_pitch", 1F, 0.8f, 1.2f);
+
     public static final MapCodec<Sounds> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-        Configuration.HURT_SOUNDS.codecOrDefault().forGetter(sounds -> sounds.hurt.get()),
-        Configuration.VOICE_PITCH.codecOrDefault().forGetter(sounds -> sounds.voicePitch.get())
+        HURT_SOUNDS.codecOrDefault().forGetter(sounds -> sounds.hurt.get()),
+        VOICE_PITCH.codecOrDefault().forGetter(sounds -> sounds.voicePitch.get())
     ).apply(instance, Sounds::new));
     public static final StreamCodec<ByteBuf, Sounds> STREAM_CODEC = StreamCodec.composite(
         //TODO: If physics aren't enabled we don't need to sync pitch
@@ -40,8 +43,6 @@ public record Sounds(ConfigValue<Boolean> hurt, ConfigValue<Float> voicePitch) {
     );
 
     private Sounds(boolean hurt, float voicePitch) {
-        this(Configuration.HURT_SOUNDS.createValueHandler(hurt),
-            Configuration.VOICE_PITCH.createValueHandler(voicePitch)
-        );
+        this(HURT_SOUNDS.createValueHandler(hurt), VOICE_PITCH.createValueHandler(voicePitch));
     }
 }

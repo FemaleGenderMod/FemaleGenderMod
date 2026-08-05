@@ -21,7 +21,7 @@ package com.wildfire.gui;
 import com.wildfire.gui.screen.BaseWildfireScreen;
 import com.wildfire.main.WildfireEventHandler;
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.config.ClientConfigHolder;
+import com.wildfire.main.config.ClientConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
@@ -64,8 +64,8 @@ public class WildfireToast implements Toast, IFancyFontRenderer {
     public void update(ToastManager manager, long time) {
         if(shouldHide()) {
             hide();
-            if (ClientConfigHolder.config().showToast.update(false)) {
-                CompletableFuture.runAsync(ClientConfigHolder::save);
+            if (ClientConfig.config().showToast.update(false)) {
+                CompletableFuture.runAsync(ClientConfig::save);
             }
         }
     }

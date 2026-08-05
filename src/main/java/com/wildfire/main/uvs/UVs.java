@@ -20,7 +20,6 @@ package com.wildfire.main.uvs;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.wildfire.main.config.Configuration;
 import com.wildfire.main.config.value.ConfigKey;
 import com.wildfire.main.config.value.ConfigValue;
 import io.netty.buffer.ByteBuf;
@@ -30,13 +29,49 @@ import net.minecraft.network.codec.StreamCodec;
 
 public record UVs(Layer skin, Layer overlay) implements Iterable<UVLayout> {
 
+    // TODO change these UVLayout entries to use UVMap objects?
+    //        would probably require adding some form of migration capability to AbstractConfiguration
+    //        Is the above even relevant anymore?
+
+    // Base breasts
+    private static final ConfigKey<UVLayout> LEFT_BREAST_UV_LAYOUT = ConfigKey.create("leftBreastUVLayout", new UVLayout(
+        new UVQuad(24, 21, 27, 26),  // EAST
+        new UVQuad(16, 21, 20, 26),  // WEST
+        new UVQuad(20, 17, 24, 21),  // DOWN
+        new UVQuad(20, 25, 24, 27),  // UP
+        new UVQuad(20, 21, 24, 26)   // NORTH
+    )::copy);//Note: We copy to ensure that the default instance doesn't get mutated
+    private static final ConfigKey<UVLayout> RIGHT_BREAST_UV_LAYOUT = ConfigKey.create("rightBreastUVLayout", new UVLayout(
+        new UVQuad(28, 21, 32, 26),  // EAST
+        new UVQuad(21, 21, 24, 26),  // WEST
+        new UVQuad(24, 17, 28, 21),  // DOWN
+        new UVQuad(24, 25, 28, 27),  // UP
+        new UVQuad(24, 21, 28, 26)   // NORTH
+    )::copy);//Note: We copy to ensure that the default instance doesn't get mutated
+
+    // Overlay breasts
+    private static final ConfigKey<UVLayout> LEFT_BREAST_OVERLAY_UV_LAYOUT = ConfigKey.create("leftBreastOverlayUVLayout", new UVLayout(
+        UVQuad.UNUSED,                              // EAST
+        new UVQuad(17, 37, 20, 42),  // WEST
+        new UVQuad(20, 34, 24, 37),  // DOWN
+        new UVQuad(20, 41, 24, 44),  // UP
+        new UVQuad(20, 37, 24, 42)   // NORTH
+    )::copy);//Note: We copy to ensure that the default instance doesn't get mutated
+    private static final ConfigKey<UVLayout> RIGHT_BREAST_OVERLAY_UV_LAYOUT = ConfigKey.create("rightBreastOverlayUVLayout", new UVLayout(
+        new UVQuad(28, 37, 31, 42),  // EAST
+        UVQuad.UNUSED,                              // WEST
+        new UVQuad(24, 34, 28, 37),  // DOWN
+        new UVQuad(24, 41, 28, 44),  // UP
+        new UVQuad(24, 37, 28, 42)   // NORTH
+    )::copy);//Note: We copy to ensure that the default instance doesn't get mutated
+
     public static final MapCodec<UVs> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-        Layer.codec(Configuration.LEFT_BREAST_UV_LAYOUT, Configuration.RIGHT_BREAST_UV_LAYOUT).forGetter(UVs::skin),
-        Layer.codec(Configuration.LEFT_BREAST_OVERLAY_UV_LAYOUT, Configuration.RIGHT_BREAST_OVERLAY_UV_LAYOUT).forGetter(UVs::overlay)
+        Layer.codec(LEFT_BREAST_UV_LAYOUT, RIGHT_BREAST_UV_LAYOUT).forGetter(UVs::skin),
+        Layer.codec(LEFT_BREAST_OVERLAY_UV_LAYOUT, RIGHT_BREAST_OVERLAY_UV_LAYOUT).forGetter(UVs::overlay)
     ).apply(instance, UVs::new));
     public static final StreamCodec<ByteBuf, UVs> STREAM_CODEC = StreamCodec.composite(
-        Layer.streamCodec(Configuration.LEFT_BREAST_UV_LAYOUT, Configuration.RIGHT_BREAST_UV_LAYOUT), UVs::skin,
-        Layer.streamCodec(Configuration.LEFT_BREAST_OVERLAY_UV_LAYOUT, Configuration.RIGHT_BREAST_OVERLAY_UV_LAYOUT), UVs::overlay,
+        Layer.streamCodec(LEFT_BREAST_UV_LAYOUT, RIGHT_BREAST_UV_LAYOUT), UVs::skin,
+        Layer.streamCodec(LEFT_BREAST_OVERLAY_UV_LAYOUT, RIGHT_BREAST_OVERLAY_UV_LAYOUT), UVs::overlay,
         UVs::new
     );
 

@@ -20,7 +20,7 @@ package com.wildfire.main.entitydata;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.wildfire.main.config.Configuration;
+import com.wildfire.main.config.value.ConfigKey;
 import com.wildfire.main.config.value.ConfigValue;
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
@@ -40,12 +40,18 @@ import org.joml.Vector3f;
 public record Breasts(ConfigValue<Float> xOffset, ConfigValue<Float> yOffset, ConfigValue<Float> zOffset, ConfigValue<Float> bustSize, ConfigValue<Float> cleavage,
                       Physics physics) {
 
+    public static final ConfigKey<Float> BREASTS_OFFSET_X = ConfigKey.create("breasts_xOffset", 0.0F, -1, 1);
+    public static final ConfigKey<Float> BREASTS_OFFSET_Y = ConfigKey.create("breasts_yOffset", 0.0F, -1, 1);
+    public static final ConfigKey<Float> BREASTS_OFFSET_Z = ConfigKey.create("breasts_zOffset", 0.0F, -1, 0);
+    public static final ConfigKey<Float> BUST_SIZE = ConfigKey.create("bust_size", 0.6F, 0, 0.8f);
+    public static final ConfigKey<Float> BREASTS_CLEAVAGE = ConfigKey.create("breasts_cleavage", 0, 0, 0.1F);
+
     public static final MapCodec<Breasts> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-        Configuration.BREASTS_OFFSET_X.codecOrDefault().forGetter(breasts -> breasts.xOffset.get()),
-        Configuration.BREASTS_OFFSET_Y.codecOrDefault().forGetter(breasts -> breasts.yOffset.get()),
-        Configuration.BREASTS_OFFSET_Z.codecOrDefault().forGetter(breasts -> breasts.zOffset.get()),
-        Configuration.BUST_SIZE.codecOrDefault().forGetter(config -> config.bustSize.get()),
-        Configuration.BREASTS_CLEAVAGE.codecOrDefault().forGetter(breasts -> breasts.cleavage.get()),
+        BREASTS_OFFSET_X.codecOrDefault().forGetter(breasts -> breasts.xOffset.get()),
+        BREASTS_OFFSET_Y.codecOrDefault().forGetter(breasts -> breasts.yOffset.get()),
+        BREASTS_OFFSET_Z.codecOrDefault().forGetter(breasts -> breasts.zOffset.get()),
+        BUST_SIZE.codecOrDefault().forGetter(config -> config.bustSize.get()),
+        BREASTS_CLEAVAGE.codecOrDefault().forGetter(breasts -> breasts.cleavage.get()),
         Physics.CODEC.forGetter(Breasts::physics)
     ).apply(instance, Breasts::new));
     public static final StreamCodec<ByteBuf, Breasts> STREAM_CODEC = StreamCodec.composite(
@@ -59,11 +65,8 @@ public record Breasts(ConfigValue<Float> xOffset, ConfigValue<Float> yOffset, Co
     );
 
     private Breasts(float xOffset, float yOffset, float zOffset, float bustSize, float cleavage, Physics physics) {
-        this(Configuration.BREASTS_OFFSET_X.createValueHandler(xOffset),
-            Configuration.BREASTS_OFFSET_Y.createValueHandler(yOffset),
-            Configuration.BREASTS_OFFSET_Z.createValueHandler(zOffset),
-            Configuration.BUST_SIZE.createValueHandler(bustSize),
-            Configuration.BREASTS_CLEAVAGE.createValueHandler(cleavage),
+        this(BREASTS_OFFSET_X.createValueHandler(xOffset), BREASTS_OFFSET_Y.createValueHandler(yOffset), BREASTS_OFFSET_Z.createValueHandler(zOffset),
+            BUST_SIZE.createValueHandler(bustSize), BREASTS_CLEAVAGE.createValueHandler(cleavage),
             physics
         );
     }
@@ -95,11 +98,16 @@ public record Breasts(ConfigValue<Float> xOffset, ConfigValue<Float> yOffset, Co
     ///                 `false` if physics should be independent on each breast, `true` if both should use the same physics
     public record Physics(ConfigValue<Boolean> enabled, ConfigValue<Boolean> uniboob, ConfigValue<Float> bounceMultiplier, ConfigValue<Float> floppiness) {
 
+        private static final ConfigKey<Boolean> BREAST_PHYSICS = ConfigKey.create("breast_physics", true);
+        private static final ConfigKey<Boolean> BREASTS_UNIBOOB = ConfigKey.create("breasts_uniboob", true);
+        private static final ConfigKey<Float> BOUNCE_MULTIPLIER = ConfigKey.create("bounce_multiplier", 0.333F, 0, 0.5f);
+        private static final ConfigKey<Float> FLOPPY_MULTIPLIER = ConfigKey.create("floppy_multiplier", 0.75F, 0.25f, 1);
+
         public static final MapCodec<Physics> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            Configuration.BREAST_PHYSICS.codecOrDefault().forGetter(physics -> physics.enabled.get()),
-            Configuration.BREASTS_UNIBOOB.codecOrDefault().forGetter(physics -> physics.uniboob.get()),
-            Configuration.BOUNCE_MULTIPLIER.codecOrDefault().forGetter(physics -> physics.bounceMultiplier.get()),
-            Configuration.FLOPPY_MULTIPLIER.codecOrDefault().forGetter(physics -> physics.floppiness.get())
+            BREAST_PHYSICS.codecOrDefault().forGetter(physics -> physics.enabled.get()),
+            BREASTS_UNIBOOB.codecOrDefault().forGetter(physics -> physics.uniboob.get()),
+            BOUNCE_MULTIPLIER.codecOrDefault().forGetter(physics -> physics.bounceMultiplier.get()),
+            FLOPPY_MULTIPLIER.codecOrDefault().forGetter(physics -> physics.floppiness.get())
         ).apply(instance, Physics::new));
         public static final StreamCodec<ByteBuf, Physics> STREAM_CODEC = StreamCodec.composite(
             //TODO: If physics aren't enabled we don't need to sync bounce multiplier or floppiness
@@ -111,10 +119,10 @@ public record Breasts(ConfigValue<Float> xOffset, ConfigValue<Float> yOffset, Co
         );
 
         private Physics(boolean physics, boolean uniboob, float bounceMultiplier, float floppiness) {
-            this(Configuration.BREAST_PHYSICS.createValueHandler(physics),
-                Configuration.BREASTS_UNIBOOB.createValueHandler(uniboob),
-                Configuration.BOUNCE_MULTIPLIER.createValueHandler(bounceMultiplier),
-                Configuration.FLOPPY_MULTIPLIER.createValueHandler(floppiness)
+            this(BREAST_PHYSICS.createValueHandler(physics),
+                BREASTS_UNIBOOB.createValueHandler(uniboob),
+                BOUNCE_MULTIPLIER.createValueHandler(bounceMultiplier),
+                FLOPPY_MULTIPLIER.createValueHandler(floppiness)
             );
         }
     }

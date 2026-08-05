@@ -25,7 +25,7 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.wildfire.gui.screen.WardrobeBrowserScreen;
 import com.wildfire.gui.screen.WildfireFirstTimeSetupScreen;
-import com.wildfire.main.config.ClientConfigHolder;
+import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.config.enums.SyncVerbosity;
 import com.wildfire.main.entitydata.BreastDataComponent;
 import com.wildfire.main.entitydata.EntityConfigHolder;
@@ -194,8 +194,8 @@ public class WildfireCommand {
     public static int setLogLevel(CommandContext<FabricClientCommandSource> ctx) {
         SyncVerbosity level = ctx.getArgument("level", SyncVerbosity.class);
 
-        if (ClientConfigHolder.config().syncVerbosity.update(level)) {//Should always be true
-            ClientConfigHolder.save();
+        if (ClientConfig.config().syncVerbosity.update(level)) {//Should always be true
+            ClientConfig.save();
 
             send(ctx, WildfireLang.COMMAND_LOG_LEVEL.translate(level));
             return Command.SINGLE_SUCCESS;

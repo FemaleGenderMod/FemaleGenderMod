@@ -23,6 +23,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.config.Configuration;
 import com.wildfire.main.config.enums.Gender;
+import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.entitydata.PlayerConfigHolder;
 import net.minecraft.util.Util;
@@ -69,7 +70,7 @@ public final class WildfireAPI {
     /// @see	Gender
     public static Gender getPlayerGender(UUID uuid) {
         PlayerConfigHolder cfg = WildfireGender.getPlayerById(uuid);
-        if(cfg == null) return Configuration.GENDER.defaultValue();
+        if(cfg == null) return EntityConfig.GENDER.defaultValue();
         return cfg.gender().get();
     }
 }

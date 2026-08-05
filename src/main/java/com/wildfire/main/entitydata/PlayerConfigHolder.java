@@ -26,7 +26,7 @@ import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireLang;
 import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.cloud.SyncLog;
-import com.wildfire.main.config.ClientConfigHolder;
+import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.config.Configuration;
 import com.wildfire.main.config.value.ConfigKey;
 import com.wildfire.main.config.value.ConfigValue;
@@ -55,10 +55,10 @@ public class PlayerConfigHolder extends EntityConfigHolder<PlayerConfig> {
     /// @see SyncStatus
     public SyncStatus syncStatus = SyncStatus.UNKNOWN;
 
-    private final Configuration cfg;
+    private final Configuration<PlayerConfig> cfgFile;
 
     public PlayerConfigHolder(UUID uuid) {
-        cfg = new Configuration(uuid.toString());
+        cfgFile = new Configuration<>(uuid.toString(), PlayerConfig.CODEC);
         //TODO: If not success do we want to log it failed? Can it even fail? Given the fact everything has orDefault
         //TODO - 26.2: Should this actually be using JsonOps.INSTANCE.empty() and then let the orDefault handle it all instead of trying to read from the config during construction
         super(uuid, PlayerConfig.CODEC.parse(JsonOps.INSTANCE, JsonOps.INSTANCE.emptyMap()).getOrThrow());
@@ -86,7 +86,7 @@ public class PlayerConfigHolder extends EntityConfigHolder<PlayerConfig> {
         if(!needsCloudSync) return;
         //~ if >=26.2 'client.screen' -> 'client.gui.screen()'
         if(client.gui.screen() instanceof BaseWildfireScreen) return;
-        if(!ClientConfigHolder.automaticCloudSync()) return;
+        if(!ClientConfig.config().automaticCloudSync.get()) return;
         if(CloudSync.syncOnCooldown()) return;
 
         CompletableFuture.runAsync(() -> {
@@ -103,7 +103,7 @@ public class PlayerConfigHolder extends EntityConfigHolder<PlayerConfig> {
 
     /// @return `true` if the current player [`has a local config file`][Configuration#exists()]
     public boolean hasLocalConfig() {
-        return cfg.exists();
+        return cfgFile.exists();
     }
 
     /// Loads the current player's settings from a file on disk
@@ -111,16 +111,7 @@ public class PlayerConfigHolder extends EntityConfigHolder<PlayerConfig> {
     /// @param markForSync`true` if [#needsSync] should be set to true
     public void loadFromDisk(boolean markForSync) {
         this.syncStatus = SyncStatus.CACHED;
-        //TODO: If empty bc not able to read such as on server, should this try to load or skip?
-        loadFromConfig(cfg.read(), markForSync);
-    }
-
-    /// Loads the current player's settings from the local [Configuration]
-    ///
-    /// @param markForSync`true` if [#needsSync] should be set to true
-    public void loadFromConfig(JsonElement serialized, boolean markForSync) {
-        //TODO: If not success do we want to log it failed? Can it even fail? Given the fact everything has orDefault
-        PlayerConfig.CODEC.parse(JsonOps.INSTANCE, serialized).ifSuccess(parsed -> config = parsed);
+        config = cfgFile.load();
         if (markForSync) {
             this.needsSync = true;
         }
@@ -129,7 +120,7 @@ public class PlayerConfigHolder extends EntityConfigHolder<PlayerConfig> {
     /// Saves the settings stored in this [PlayerConfig] to the underlying [Configuration],
     /// and then attempts to [`save to disk`][Configuration#save].
     public void save() {
-        cfg.save(PlayerConfig.CODEC, config);
+        cfgFile.save(config);
         needsSync = true;
         needsCloudSync = true;
     }
@@ -150,7 +141,8 @@ public class PlayerConfigHolder extends EntityConfigHolder<PlayerConfig> {
     /// @param serialized The [JsonObject] to merge with the existing config for this player
     public void updateFromJson(JsonElement serialized) {
         //TODO: Previously it merged, this replaces
-        loadFromConfig(serialized, false);
+        //TODO: If not success do we want to log it failed? Can it even fail? Given the fact everything has orDefault
+        PlayerConfig.CODEC.parse(JsonOps.INSTANCE, serialized).ifSuccess(parsed -> config = parsed);
         this.syncStatus = SyncStatus.SYNCED;
     }
 

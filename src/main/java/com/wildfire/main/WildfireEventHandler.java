@@ -30,7 +30,6 @@ import com.wildfire.gui.WildfireToast;
 import com.wildfire.gui.screen.WardrobeBrowserScreen;
 import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.config.ClientConfig;
-import com.wildfire.main.config.ClientConfigHolder;
 import com.wildfire.main.entitydata.BreastDataComponent;
 import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.main.entitydata.EntityConfigHolder;
@@ -173,8 +172,8 @@ public final class WildfireEventHandler {
 
     @Environment(EnvType.CLIENT)
     private static void renderTooltip(ItemStack item, Consumer<Component> tooltipAppender, @Nullable Player player) {
-        if(player == null || !ClientConfigHolder.armorStat()) return;
-        if(ClientConfigHolder.armorPhysicsOverride()) return;
+        if(player == null || !ClientConfig.config().armorStat.get()) return;
+        if(ClientConfig.config().armorPhysicsOverride.get()) return;
 
         var playerConfig = WildfireGender.getPlayerById(player.getUUID());
         if(playerConfig == null || !playerConfig.gender().get().canHaveBreasts()) return;
@@ -200,7 +199,7 @@ public final class WildfireEventHandler {
             return;
         }
 
-        if(ClientConfigHolder.alwaysShowList().isVisible()) {
+        if(ClientConfig.config().playerListMode.get().isVisible()) {
             SyncedPlayerList.drawSyncedPlayers(context);
         } else {
             SyncedPlayerList.resetTimer();
@@ -271,7 +270,7 @@ public final class WildfireEventHandler {
     private static void clientJoin(ClientPacketListener var1, PacketSender var2, Minecraft client) {
         if (client.player == null) return;
 
-        if (ClientConfigHolder.showToast()) {
+        if (ClientConfig.config().showToast.get()) {
             var button = CONFIG_KEYBIND.getTranslatedKeyMessage();
             //~ if >=26.2 'client.getToastManager()' -> 'client.gui.toastManager()'
             ToastManager toastManager = client.gui.toastManager();
