@@ -30,7 +30,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 
-//TODO: Why do we send the uuid to the server? It should already know the player
 public record ServerboundSyncPacket(PlayerConfig config) implements CustomPacketPayload {
 
     public static final Type<ServerboundSyncPacket> ID = new CustomPacketPayload.Type<>(WildfireGender.id("send_gender_info"));

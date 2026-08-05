@@ -8,5 +8,5 @@ accessible method net/minecraft/client/gui/screens/inventory/InventoryScreen ext
 extendable method net/minecraft/client/model/Model renderToBuffer (Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;III)V
 accessible method net/minecraft/client/gui/components/PlayerTabOverlay getPlayerInfos ()Ljava/util/List;
 
-#Only needed for 26.1
-accessible method net/minecraft/client/Minecraft isMultiplayerServer ()Z
+#? if <26.2
+#accessible method net/minecraft/client/Minecraft isMultiplayerServer ()Z

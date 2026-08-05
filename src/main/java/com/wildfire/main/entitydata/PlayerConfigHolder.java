@@ -138,7 +138,6 @@ public class PlayerConfigHolder extends EntityConfigHolder<PlayerConfig> {
     ///
     /// @param serialized The [JsonObject] to merge with the existing config for this player
     public void updateFromJson(JsonElement serialized) {
-        //TODO: Previously it merged, this replaces
         //TODO: If not success do we want to log it failed? Can it even fail? Given the fact everything has orDefault
         PlayerConfig.CODEC.parse(JsonOps.INSTANCE, serialized).ifSuccess(parsed -> config = parsed);
         this.syncStatus = SyncStatus.SYNCED;
