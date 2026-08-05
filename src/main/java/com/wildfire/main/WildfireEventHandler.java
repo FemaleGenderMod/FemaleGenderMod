@@ -306,12 +306,12 @@ public final class WildfireEventHandler {
         if(!(entity instanceof Player player) || !player.level().isClientSide()) return;
 
         PlayerConfigHolder genderPlayer = WildfireGender.getPlayerById(player.getUUID());
-        if(genderPlayer == null || !genderPlayer.hurtSounds().get()) return;
+        if(genderPlayer == null || !genderPlayer.sounds().hurt().get()) return;
 
         SoundEvent hurtSound = genderPlayer.gender().get().getHurtSound();
         if(hurtSound != null) {
             float pitchVariation = (player.getRandom().nextFloat() - player.getRandom().nextFloat()) * 0.2F;
-            player.playSound(hurtSound, 1f, pitchVariation + genderPlayer.voicePitch().get());
+            player.playSound(hurtSound, 1f, pitchVariation + genderPlayer.sounds().voicePitch().get());
         }
     }
 

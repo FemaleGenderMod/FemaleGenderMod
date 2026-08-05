@@ -26,7 +26,6 @@ import com.wildfire.main.entitydata.Breasts;
 import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.main.entitydata.EntityConfigHolder;
 import com.wildfire.main.entitydata.PlayerConfig;
-import com.wildfire.main.entitydata.PlayerConfigHolder;
 import com.wildfire.main.uvs.UVLayout;
 import com.wildfire.physics.BreastPhysics;
 import net.fabricmc.api.EnvType;
@@ -92,10 +91,10 @@ public class GenderRenderState {
         this.partialTicks = partialTicks;
 
         this.gender = entityConfig.gender().get();
-        this.bustSize = entityConfig.bustSize().get();
-        this.hasBreastPhysics = entityConfig.breastPhysics().get();
-        this.bounceMultiplier = entityConfig.bounceMultiplier().get();
-        this.floppyMultiplier = entityConfig.floppiness().get();
+        this.bustSize = entityConfig.breasts().bustSize().get();
+        this.hasBreastPhysics = entityConfig.breasts().physics().enabled().get();
+        this.bounceMultiplier = entityConfig.breasts().physics().bounceMultiplier().get();
+        this.floppyMultiplier = entityConfig.breasts().physics().floppiness().get();
 
         if(entity instanceof Avatar playerLikeEntity) {
             this.hasJacketLayer = playerLikeEntity.isModelPartShown(PlayerModelPart.JACKET);
@@ -117,10 +116,10 @@ public class GenderRenderState {
             this.hasHolidayThemes = false;
         }
 
-        this.leftBreastUVLayout = entityConfig.leftBreastUVLayout().get().copy();
-        this.rightBreastUVLayout = entityConfig.rightBreastUVLayout().get().copy();
-        this.leftBreastOverlayUVLayout = entityConfig.leftBreastOverlayUVLayout().get().copy();
-        this.rightBreastOverlayUVLayout = entityConfig.rightBreastOverlayUVLayout().get().copy();
+        this.leftBreastUVLayout = entityConfig.uvs().skin().left().get().copy();
+        this.rightBreastUVLayout = entityConfig.uvs().skin().right().get().copy();
+        this.leftBreastOverlayUVLayout = entityConfig.uvs().overlay().left().get().copy();
+        this.rightBreastOverlayUVLayout = entityConfig.uvs().overlay().right().get().copy();
         this.armor = WildfireHelper.getArmorConfig(entity.getItemBySlot(EquipmentSlot.CHEST));
 
         this.isBreathing = !entity.isUnderWater() || MobEffectUtil.hasWaterBreathing(entity) ||
@@ -136,11 +135,11 @@ public class GenderRenderState {
         public final boolean uniboob;
 
         private BreastState(Breasts breasts) {
-            this.xOffset = breasts.xOffset.get();
-            this.yOffset = breasts.yOffset.get();
-            this.zOffset = breasts.zOffset.get();
-            this.cleavage = breasts.cleavage.get();
-            this.uniboob = breasts.uniboob.get();
+            this.xOffset = breasts.xOffset().get();
+            this.yOffset = breasts.yOffset().get();
+            this.zOffset = breasts.zOffset().get();
+            this.cleavage = breasts.cleavage().get();
+            this.uniboob = breasts.physics().uniboob().get();
         }
     }
 

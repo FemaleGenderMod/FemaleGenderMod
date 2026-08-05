@@ -154,22 +154,27 @@ public class PlayerConfigHolder extends EntityConfigHolder<PlayerConfig> {
         this.syncStatus = SyncStatus.SYNCED;
     }
 
+    // TODO add support for mannequins?
+    public void updateFromPacket(PlayerConfig config, boolean fromServer) {
+        this.config = config;
+        if (fromServer) {
+            this.syncStatus = SyncStatus.SYNCED;
+        }
+    }
+
     @Override
     public List<String> getDebugInfo() {
         List<String> lines = super.getDebugInfo();
         lines.add(1, "Sync status: " + getSyncStatus());
-        lines.add("Female hurt sounds: " + hurtSounds());
+        lines.add("Female hurt sounds: " + sounds().hurt());
         lines.add("Show in armor: " + showBreastsInArmor());
         return lines;
     }
 
     // Bouncer methods for config values that act upon the current config instance
 
-    public final ConfigValue<Boolean> hurtSounds() {
-        return config.hurtSounds;
-    }
-    public final ConfigValue<Float> voicePitch() {
-        return config.voicePitch;
+    public final Sounds sounds() {
+        return config.sounds;
     }
     public final ConfigValue<Boolean> holidayThemes() {
         return config.holidayThemes;

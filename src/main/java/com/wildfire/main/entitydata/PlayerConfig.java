@@ -23,57 +23,41 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.wildfire.main.config.Configuration;
 import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.config.value.ConfigValue;
-import com.wildfire.main.uvs.UVLayout;
+import com.wildfire.main.uvs.UVs;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
 /// A version of [EntityConfig] backed by a [Configuration] for use with players
 public class PlayerConfig extends EntityConfig {
 
-    //~ if >=26.2 'oldMcCodec()' -> 'codec()'
-    public static final Codec<PlayerConfig> CODEC = codec();
+    public static final Codec<PlayerConfig> CODEC = RecordCodecBuilder.create(instance -> codecGroup(instance)
+        .and(Sounds.CODEC.forGetter(config -> config.sounds))
+        .and(Configuration.SHOW_IN_ARMOR.codecOrDefault().forGetter(config -> config.showBreastsInArmor.get()))
+        .and(Configuration.HOLIDAY_THEMES.codecOrDefault().forGetter(config -> config.holidayThemes.get()))
+        .apply(instance, PlayerConfig::new));
+    // remember to update SyncHelloPacket.VERSION when modifying this codec if the changes result in a change
+    // to the underlying packet structure
+    public static final StreamCodec<ByteBuf, PlayerConfig> STREAM_CODEC = StreamCodec.composite(
+        //From EntityConfig
+        Gender.STREAM_CODEC, config -> config.gender.get(),
+        Breasts.STREAM_CODEC, config -> config.breasts,
+        UVs.STREAM_CODEC, config -> config.uvs,
+        //From PlayerConfig
+        Sounds.STREAM_CODEC, config -> config.sounds,
+        ByteBufCodecs.BOOL, config -> config.showBreastsInArmor.get(),
+        ByteBufCodecs.BOOL, config -> config.holidayThemes.get(),
+        PlayerConfig::new
+    );
 
-    //? if >=26.2 {
-    private static Codec<PlayerConfig> codec() {
-        return RecordCodecBuilder.create(instance -> codecGroup(instance)
-            .and(Configuration.HURT_SOUNDS.codecOrDefault().forGetter(config -> config.hurtSounds.get()))
-            .and(Configuration.VOICE_PITCH.codecOrDefault().forGetter(config -> config.voicePitch.get()))
-            .and(Configuration.HOLIDAY_THEMES.codecOrDefault().forGetter(config -> config.holidayThemes.get()))
-            .and(Configuration.SHOW_IN_ARMOR.codecOrDefault().forGetter(config -> config.showBreastsInArmor.get()))
-            .apply(instance, PlayerConfig::new));
-    }
-    //?}
-    //? if <26.2 {
-    private static Codec<PlayerConfig> oldMcCodec() {
-        return RecordCodecBuilder.create(instance -> instance.group(
-            EntityConfig.MAP_CODEC.forGetter(config -> config),
-            Configuration.HURT_SOUNDS.codecOrDefault().forGetter(config -> config.hurtSounds.get()),
-            Configuration.VOICE_PITCH.codecOrDefault().forGetter(config -> config.voicePitch.get()),
-            Configuration.HOLIDAY_THEMES.codecOrDefault().forGetter(config -> config.holidayThemes.get()),
-            Configuration.SHOW_IN_ARMOR.codecOrDefault().forGetter(config -> config.showBreastsInArmor.get())
-        ).apply(instance, PlayerConfig::new));
-    }
-    private PlayerConfig(EntityConfig cfg, boolean hurtSounds, float voicePitch, boolean holidayThemes, boolean showBreastsInArmor) {
-        super(cfg);
-        this.hurtSounds = Configuration.HURT_SOUNDS.createValueHandler(hurtSounds);
-        this.voicePitch = Configuration.VOICE_PITCH.createValueHandler(voicePitch);
-        this.holidayThemes = Configuration.HOLIDAY_THEMES.createValueHandler(holidayThemes);
-        this.showBreastsInArmor = Configuration.SHOW_IN_ARMOR.createValueHandler(showBreastsInArmor);
-    }
-    //?}
-
-    public final ConfigValue<Boolean> hurtSounds;
-    public final ConfigValue<Float> voicePitch;//TODO: Why is this here if it is dependent on hurt sound?
-
-    public final ConfigValue<Boolean> holidayThemes;
     public final ConfigValue<Boolean> showBreastsInArmor;
+    public final ConfigValue<Boolean> holidayThemes;
+    public final Sounds sounds;
 
-    protected PlayerConfig(Gender gender, float bustSize, Breasts breasts, boolean breastPhysics, float bounceMultiplier , float floppyMultiplier,
-        UVLayout leftBreastUVLayout, UVLayout rightBreastUVLayout, UVLayout leftBreastOverlayUVLayout, UVLayout rightBreastOverlayUVLayout,
-        boolean hurtSounds, float voicePitch, boolean holidayThemes, boolean showBreastsInArmor) {
-        super(gender, bustSize, breasts, breastPhysics, bounceMultiplier, floppyMultiplier, leftBreastUVLayout, rightBreastUVLayout,
-            leftBreastOverlayUVLayout, rightBreastOverlayUVLayout);
-        this.hurtSounds = Configuration.HURT_SOUNDS.createValueHandler(hurtSounds);
-        this.voicePitch = Configuration.VOICE_PITCH.createValueHandler(voicePitch);
-        this.holidayThemes = Configuration.HOLIDAY_THEMES.createValueHandler(holidayThemes);
+    private PlayerConfig(Gender gender, Breasts breasts, UVs uvs, Sounds sounds, boolean showBreastsInArmor, boolean holidayThemes) {
+        this.sounds = sounds;
         this.showBreastsInArmor = Configuration.SHOW_IN_ARMOR.createValueHandler(showBreastsInArmor);
+        this.holidayThemes = Configuration.HOLIDAY_THEMES.createValueHandler(holidayThemes);
+        super(gender, breasts, uvs);
     }
 }

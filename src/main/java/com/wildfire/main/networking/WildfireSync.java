@@ -105,7 +105,7 @@ public final class WildfireSync {
     public static void sendToServer(PlayerConfigHolder plr) {
         if(!plr.needsSync || !ServerboundSyncPacket.canSend()) return;
 
-        ClientPlayNetworking.send(new ServerboundSyncPacket(plr));
+        ClientPlayNetworking.send(new ServerboundSyncPacket(plr.config()));
         plr.needsSync = false;
     }
 }

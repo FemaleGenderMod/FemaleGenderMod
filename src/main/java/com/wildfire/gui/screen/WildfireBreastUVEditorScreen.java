@@ -85,9 +85,7 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
                 .size(this.width - x - 10, 20)
                 .onPress(_ -> {
                     var player = Objects.requireNonNull(getPlayer(), "getPlayer()");
-
-                    //Note: Intentionally uses bitwise or operators so that it runs on all, but we only have to save if at least one of them updated
-                    if (player.leftBreastUVLayout().reset() | player.rightBreastUVLayout().reset() | player.leftBreastOverlayUVLayout().reset() | player.rightBreastOverlayUVLayout().reset()) {
+                    if (player.uvs().reset()) {
                         player.save();
                     }
                 }));
@@ -207,10 +205,10 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
         if(player == null) return;
 
         selectedUVs = switch (selectedBreastIndex) {
-            case RIGHT -> player.rightBreastUVLayout().get();
-            case LEFT_OVERLAY -> player.leftBreastOverlayUVLayout().get();
-            case RIGHT_OVERLAY -> player.rightBreastOverlayUVLayout().get();
-            default -> player.leftBreastUVLayout().get();
+            case RIGHT -> player.uvs().skin().right().get();
+            case LEFT_OVERLAY -> player.uvs().overlay().left().get();
+            case RIGHT_OVERLAY -> player.uvs().overlay().right().get();
+            default -> player.uvs().skin().left().get();
         };
     }
 
@@ -228,14 +226,7 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
                     0, 0, textureDrawWidth, textureDrawWidth, textureDrawWidth, textureDrawWidth);
 
             //Other faces
-            UVLayout[] ALL_UVS = {
-                player.leftBreastUVLayout().get(),
-                player.rightBreastUVLayout().get(),
-                player.leftBreastOverlayUVLayout().get(),
-                player.rightBreastOverlayUVLayout().get()
-            };
-
-            for(UVLayout eachBreast : ALL_UVS) {
+            for(UVLayout eachBreast : player.uvs()) {
                 drawFaceBorders(graphics, eachBreast, mouseX, mouseY, true);
             }
 

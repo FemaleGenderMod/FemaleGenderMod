@@ -104,7 +104,7 @@ public class GenderDebugHudEntry implements DebugScreenEntry {
         lines.add("Tightness: " + armorConfig.tightness());
         lines.add("Armor stands copy: " + armorConfig.armorStandsCopySettings());
         if(armorConfig.tightness() > 0) {
-            float renderedSize = config.bustSize().get() * (1 - BreastPhysics.TIGHTNESS_REDUCTION_FACTOR * armorConfig.tightness());
+            float renderedSize = config.breasts().bustSize().get() * (1 - BreastPhysics.TIGHTNESS_REDUCTION_FACTOR * armorConfig.tightness());
             lines.add("Rendered breast size: " + renderedSize);
         }
     }

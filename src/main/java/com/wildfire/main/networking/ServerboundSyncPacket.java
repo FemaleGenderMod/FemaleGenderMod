@@ -19,8 +19,7 @@
 package com.wildfire.main.networking;
 
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.config.enums.Gender;
-import com.wildfire.main.entitydata.Breasts;
+import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.entitydata.PlayerConfigHolder;
 import io.netty.buffer.ByteBuf;
 import net.fabricmc.api.EnvType;
@@ -31,20 +30,11 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 
-import java.util.UUID;
-
-public final class ServerboundSyncPacket extends AbstractSyncPacket implements CustomPacketPayload {
+//TODO: Why do we send the uuid to the server? It should already know the player
+public record ServerboundSyncPacket(PlayerConfig config) implements CustomPacketPayload {
 
     public static final Type<ServerboundSyncPacket> ID = new CustomPacketPayload.Type<>(WildfireGender.id("send_gender_info"));
-    public static final StreamCodec<ByteBuf, ServerboundSyncPacket> CODEC = codec(ServerboundSyncPacket::new);
-
-    public ServerboundSyncPacket(PlayerConfigHolder plr) {
-        super(plr);
-    }
-
-    private ServerboundSyncPacket(UUID uuid, Gender gender, float bustSize, boolean hurtSounds, float voicePitch, BreastPhysics physics, Breasts breasts, UVLayouts uvLayouts) {
-        super(uuid, gender, bustSize, hurtSounds, voicePitch, physics, breasts, uvLayouts);
-    }
+    public static final StreamCodec<ByteBuf, ServerboundSyncPacket> CODEC = PlayerConfig.STREAM_CODEC.map(ServerboundSyncPacket::new, ServerboundSyncPacket::config);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
@@ -59,7 +49,7 @@ public final class ServerboundSyncPacket extends AbstractSyncPacket implements C
     public void handle(ServerPlayNetworking.Context context) {
         ServerPlayer player = context.player();
         PlayerConfigHolder plr = WildfireGender.getOrAddPlayerById(player.getUUID());
-        updatePlayerFromPacket(plr);
+        plr.updateFromPacket(config, false);
         WildfireSync.sendToAllClients(player, plr);
     }
 }

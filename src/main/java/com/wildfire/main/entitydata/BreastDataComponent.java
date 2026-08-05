@@ -76,8 +76,8 @@ public record BreastDataComponent(float breastSize, float cleavage, Vector3fc of
             return null;
         }
 
-        return new BreastDataComponent(config.bustSize().get(), config.breasts().cleavage.get(), config.breasts().getOffsets(),
-                player.isModelPartShown(PlayerModelPart.JACKET), null);
+        Breasts breasts = config.breasts();
+        return new BreastDataComponent(breasts.bustSize().get(), breasts.cleavage().get(), breasts.offset(), player.isModelPartShown(PlayerModelPart.JACKET), null);
     }
 
     public static @Nullable BreastDataComponent fromComponent(@Nullable CustomData component) {

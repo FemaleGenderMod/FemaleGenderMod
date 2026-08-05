@@ -19,31 +19,31 @@
 package com.wildfire.main.networking;
 
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.config.enums.Gender;
-import com.wildfire.main.entitydata.Breasts;
+import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.entitydata.PlayerConfigHolder;
 import io.netty.buffer.ByteBuf;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.UUID;
 
-public final class ClientboundSyncPacket extends AbstractSyncPacket implements CustomPacketPayload {
+public record ClientboundSyncPacket(UUID uuid, PlayerConfig config) implements CustomPacketPayload {
 
     public static final Type<ClientboundSyncPacket> ID = new CustomPacketPayload.Type<>(WildfireGender.id("sync"));
-    public static final StreamCodec<ByteBuf, ClientboundSyncPacket> CODEC = codec(ClientboundSyncPacket::new);
+    public static final StreamCodec<ByteBuf, ClientboundSyncPacket> CODEC = StreamCodec.composite(
+        UUIDUtil.STREAM_CODEC, p -> p.uuid,
+        PlayerConfig.STREAM_CODEC, p -> p.config,
+        ClientboundSyncPacket::new
+    );
 
     public ClientboundSyncPacket(PlayerConfigHolder plr) {
-        super(plr);
-    }
-
-    private ClientboundSyncPacket(UUID uuid, Gender gender, float bustSize, boolean hurtSounds, float voicePitch, BreastPhysics physics, Breasts breasts, UVLayouts uvLayouts) {
-        super(uuid, gender, bustSize, hurtSounds, voicePitch, physics,  breasts, uvLayouts);
+        this(plr.uuid, plr.config());
     }
 
     @Override
@@ -63,7 +63,6 @@ public final class ClientboundSyncPacket extends AbstractSyncPacket implements C
         }
 
         PlayerConfigHolder plr = WildfireGender.getOrAddPlayerById(uuid);
-        updatePlayerFromPacket(plr);
-        plr.syncStatus = PlayerConfigHolder.SyncStatus.SYNCED;
+        plr.updateFromPacket(config, true);
     }
 }

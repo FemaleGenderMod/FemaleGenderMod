@@ -30,8 +30,9 @@ public class ConfigValue<TYPE> implements Supplier<TYPE>, Consumer<TYPE> {
     private TYPE value;
 
     ConfigValue(ConfigKey<TYPE> key, TYPE value) {
-        assert key.validate(value);
         this.key = key;
+        //TODO: If from a packet an invalid value is sent, we should probably clamp the value
+        assert key.validate(value);
         this.value = value;
     }
 

@@ -43,7 +43,7 @@ public class PhysicsDebugHudEntry implements DebugScreenEntry {
         if(config == null) return;
 
         List<String> info = new ArrayList<>();
-        if(config.breasts().uniboob.get()) {
+        if(config.breasts().physics().uniboob().get()) {
             info.add(ChatFormatting.UNDERLINE + "Breast Physics");
             add(info, config.getLeftBreastPhysics());
         } else {

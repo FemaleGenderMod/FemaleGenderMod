@@ -27,7 +27,7 @@ import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.config.value.ConfigValue;
-import com.wildfire.main.uvs.UVLayout;
+import com.wildfire.main.uvs.UVs;
 import com.wildfire.physics.BreastPhysics;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -116,11 +116,8 @@ public class EntityConfigHolder<CONFIG extends EntityConfig> {
             return;
         }
 
-        breastPhysics().update(false);
-        bustSize().update(fromComponent.breastSize());
-        gender().update(bustSize().get() >= 0.02f ? Gender.FEMALE : Gender.MALE);
-        breasts().cleavage.update(fromComponent.cleavage());
-        breasts().updateOffsets(fromComponent.offsets());
+        breasts().updateFromComponent(fromComponent);
+        gender().update(breasts().bustSize().get() >= 0.02f ? Gender.FEMALE : Gender.MALE);
         this.jacketLayer = fromComponent.jacket();
     }
 
@@ -147,19 +144,12 @@ public class EntityConfigHolder<CONFIG extends EntityConfig> {
     }
 
     public List<String> getDebugInfo() {
-        List<String> info = new ArrayList<>();
-
-        info.add("Gender: " + switch(gender().get()) {
+        List<String> info = breasts().getDebugInfo();
+        info.addFirst("Gender: " + switch(gender().get()) {
             case FEMALE -> ChatFormatting.LIGHT_PURPLE + "Female";
             case MALE -> ChatFormatting.BLUE + "Male";
             case OTHER -> ChatFormatting.GREEN + "Other";
         });
-        info.add("Breast size: " + bustSize());
-        info.add("Physics enabled: " + breastPhysics());
-        Breasts breasts = breasts();
-        info.add("Uniboob: " + breasts.uniboob);
-        info.add("Cleavage: " + breasts.cleavage);
-        info.add("Offsets: " + breasts.getOffsets());//TODO: Validate this converts it to string as expected
         return info;
     }
 
@@ -170,34 +160,13 @@ public class EntityConfigHolder<CONFIG extends EntityConfig> {
 
     // Bouncer methods for config values that act upon the current config instance
 
-    public Breasts breasts() {
-        return config.breasts;
-    }
     public final ConfigValue<Gender> gender() {
         return config.gender;
     }
-    public final ConfigValue<Float> bustSize() {
-        return config.bustSize;
+    public Breasts breasts() {
+        return config.breasts;
     }
-    public final ConfigValue<Boolean> breastPhysics() {
-        return config.breastPhysics;
-    }
-    public final ConfigValue<Float> bounceMultiplier() {
-        return config.bounceMultiplier;
-    }
-    public final ConfigValue<Float> floppiness() {
-        return config.floppiness;
-    }
-    public final ConfigValue<UVLayout> leftBreastUVLayout() {
-        return config.leftBreastUVLayout;
-    }
-    public final ConfigValue<UVLayout> rightBreastUVLayout() {
-        return config.rightBreastUVLayout;
-    }
-    public final ConfigValue<UVLayout> leftBreastOverlayUVLayout() {
-        return config.leftBreastOverlayUVLayout;
-    }
-    public final ConfigValue<UVLayout> rightBreastOverlayUVLayout() {
-        return config.rightBreastOverlayUVLayout;
+    public final UVs uvs() {
+        return config.uvs;
     }
 }
