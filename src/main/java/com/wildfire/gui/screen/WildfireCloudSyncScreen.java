@@ -117,8 +117,8 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
 
         addButton(builder -> builder
                 .message(() -> Component.literal("X"))
-                .position(this.width / 2 + 73, yPos - 11)
-                .size(9, 9)
+                .position(this.width / 2 + 74, yPos - 11)
+                .size(8, font.lineHeight)
                 .onPress(_ -> onClose())
                 .narration(_ -> Component.translatable("gui.narrate.button", Component.translatable("gui.done"))));
 

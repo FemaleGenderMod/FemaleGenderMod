@@ -153,21 +153,22 @@ public class WildfireSlider extends AbstractWidget implements IFancyFontRenderer
             return;
         }
         int xP = getX() + 2;
-        graphics.fill(xP - 2, getY(), getX() + this.width, getY() + this.height, 0x80222222);
+        graphics.fill(xP - 2, getY(), getRight(), getBottom(), 0x80222222);
         int xPos = getX() + 2 + (int) (this.value * (float)(this.width - 3));
 
-        graphics.fill(getX() + 1, getY() + 1, xPos - 1, getY() + this.height - 1, active ? 0xB4222266 : 0xB4111133);
+        graphics.fill(getX() + 1, getY() + 1, xPos - 1, getBottom() - 1, active ? 0xB4222266 : 0xB4111133);
 
         if(active) {
             int xPos2 = this.getX() + 3 + (int) (this.value * (float) (this.width - 4));
-            graphics.fill(xPos2 - 2, getY() + 1, xPos2, getY() + this.height - 1, ARGB.white(0x78));
+            graphics.fill(xPos2 - 2, getY() + 1, xPos2, getBottom() - 1, ARGB.white(0x78));
         }
 
         int textColor = (isHoveredOrFocused()&&active) || changed ? CommonColors.SOFT_YELLOW : CommonColors.WHITE;
         if(!active) {
             textColor = 0xFF666666;
         }
-        drawScrollingString(graphics, getMessage(), getX(), getY(), TextAlignment.CENTER, textColor, getWidth(), getHeight(), 2, false);
+        //Note: We add one to the button height and width as it is considered bounds as we want the final pixel to count towards the calculation of where the text should land
+        drawScrollingString(graphics, getMessage(), getX(), getY(), getRight() + 1, getBottom() + 1, TextAlignment.CENTER, textColor, false);
 
         if(isHovered() || dragging) {
             if(!active) {
