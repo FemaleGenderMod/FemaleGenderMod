@@ -51,7 +51,7 @@ public class WildfireSlider extends AbstractWidget implements IFancyFontRenderer
     private double value;
     private final double minValue;
     private final double maxValue;
-    private final Consumer<Float> valueUpdate;
+    private final FloatConsumer valueUpdate;
     private final Float2ObjectFunction<Component> messageUpdate;
     private final FloatConsumer onSave;
 
@@ -63,7 +63,7 @@ public class WildfireSlider extends AbstractWidget implements IFancyFontRenderer
     private double mouseStep = 0;
     private double arrowKeyStep = 0.05;
 
-    private WildfireSlider(int xPos, int yPos, int width, int height, double minVal, double maxVal, double currentVal, Consumer<Float> valueUpdate,
+    private WildfireSlider(int xPos, int yPos, int width, int height, double minVal, double maxVal, double currentVal, FloatConsumer valueUpdate,
                           Float2ObjectFunction<Component> messageUpdate, FloatConsumer onSave) {
         super(xPos, yPos, width, height, CommonComponents.EMPTY);
         this.minValue = minVal;
@@ -247,8 +247,7 @@ public class WildfireSlider extends AbstractWidget implements IFancyFontRenderer
         private @Nullable Double mouseStep = null;
         private boolean active = true;
         private Float2ObjectFunction<Component> messageSupplier;
-        private Consumer<Float> onUpdate;
-        private FloatConsumer onSave;
+        private FloatConsumer onUpdate, onSave;
 
         public Builder message(Float2ObjectFunction<Component> messageSupplier) {
             this.messageSupplier = messageSupplier;
@@ -267,7 +266,7 @@ public class WildfireSlider extends AbstractWidget implements IFancyFontRenderer
             return this;
         }
 
-        public Builder update(Consumer<Float> onUpdate) {
+        public Builder update(FloatConsumer onUpdate) {
             this.onUpdate = onUpdate;
             return this;
         }
@@ -296,14 +295,15 @@ public class WildfireSlider extends AbstractWidget implements IFancyFontRenderer
             return this;
         }
 
-        public Builder forConfig(ConfigValue<Float> configValue) {
-            return range(configValue.key())
-                .current(configValue.get())
-                .update(configValue);
+        public Builder forConfig(Supplier<ConfigValue<Float>> configValue) {
+            ConfigValue<Float> currentValue = configValue.get();
+            return range(currentValue.key())
+                .current(currentValue.get())
+                .update(value -> configValue.get().update(value));
         }
 
-        public Builder active(Supplier<Boolean> activeSupplier) {
-            return active(activeSupplier.get());
+        public Builder active(Supplier<Boolean> initiallyActive) {
+            return active(initiallyActive.get());
         }
 
         public Builder active(boolean active) {

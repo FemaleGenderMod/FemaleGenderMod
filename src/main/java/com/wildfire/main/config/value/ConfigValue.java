@@ -18,6 +18,7 @@
 
 package com.wildfire.main.config.value;
 
+import com.wildfire.main.WildfireGender;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
@@ -64,6 +65,7 @@ public class ConfigValue<TYPE> implements Supplier<TYPE>, Consumer<TYPE> {
             this.value = newValue;
             return true;
         }
+        WildfireGender.LOGGER.warn("Failed to update config '{}' to value: {}", key.key(), value);
         return false;
     }
 

@@ -128,7 +128,7 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .message(value -> WildfireLang.WARDROBE_SLIDER_BREAST_SIZE.translate(Math.round(value * 1.25f * 100)))
                 .position(this.width / 2 - 36, tabOffsetY - 2)
                 .size(FULL_WIDTH, 20)
-                .forConfig(plr.breasts().bustSize())
+                .forConfig(() -> plr.breasts().bustSize())
                 .step(0.01)
                 .mouseStep(0.001));
 
@@ -136,28 +136,28 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .message(value -> WildfireLang.WARDROBE_SLIDER_SEPARATION.translate(Math.round((Math.round(value * 100f) / 100f) * 10)))
                 .position(this.width / 2 - 36, tabOffsetY + 22)
                 .size(HALF_WIDTH, 20)
-                .forConfig(plr.breasts().xOffset())
+                .forConfig(() -> plr.breasts().xOffset())
                 .mouseStep(0.05));
 
         addSlider(builder -> builder
                 .message(value -> WildfireLang.WARDROBE_SLIDER_HEIGHT.translate(Math.round((Math.round(value * 100f) / 100f) * 10)))
                 .position(this.width / 2 - 36 + HALF_WIDTH + 4, tabOffsetY + 22)
                 .size(HALF_WIDTH, 20)
-                .forConfig(plr.breasts().yOffset())
+                .forConfig(() -> plr.breasts().yOffset())
                 .mouseStep(0.05));
 
         addSlider(builder -> builder
                 .message(value -> WildfireLang.WARDROBE_SLIDER_DEPTH.translate(Math.round((Math.round(value * 100f) / 100f) * 10)))
                 .position(this.width / 2 - 36, tabOffsetY + 46)
                 .size(HALF_WIDTH, 20)
-                .forConfig(plr.breasts().zOffset())
+                .forConfig(() -> plr.breasts().zOffset())
                 .step(0.1)
                 .mouseStep(0.05));
         addSlider(builder -> builder
                 .message(value -> WildfireLang.WARDROBE_SLIDER_ROTATION.translate(Math.round((Math.round(value * 100f) / 100f) * 100)))
                 .position(this.width / 2 - 36 + HALF_WIDTH + 4, tabOffsetY + 46)
                 .size(HALF_WIDTH, 20)
-                .forConfig(plr.breasts().cleavage())
+                .forConfig(() -> plr.breasts().cleavage())
                 .step(0.1)
                 .mouseStep(0.1));
 
@@ -240,7 +240,7 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .message(value -> WildfireLang.WARDROBE_SLIDER_BOUNCE.translate(Math.round(3 * value * 100)))
                 .position(this.width / 2 - 36, tabOffsetY + 46)
                 .size(HALF_WIDTH, 20)
-                .forConfig(plr.breasts().physics().bounceMultiplier())
+                .forConfig(() -> plr.breasts().physics().bounceMultiplier())
                 .step(0.005)
                 .active(plr.breasts().physics().enabled()));
 
@@ -248,7 +248,7 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .message(value -> WildfireLang.WARDROBE_SLIDER_FLOPPY.translate(Math.round(value * 100)))
                 .position(this.width / 2 - 36 + HALF_WIDTH + 2, tabOffsetY + 46)
                 .size(HALF_WIDTH, 20)
-                .forConfig(plr.breasts().physics().floppiness())
+                .forConfig(() -> plr.breasts().physics().floppiness())
                 .step(0.01)
                 .active(plr.breasts().physics().enabled()));
     }
@@ -277,7 +277,7 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .message(value -> WildfireLang.WARDROBE_SLIDER_PITCH.translate(Math.round(value * 100)))
                 .position(this.width / 2 - 36, tabOffsetY + 22)
                 .size(HALF_WIDTH, 20)
-                .forConfig(plr.sounds().voicePitch())
+                .forConfig(() -> plr.sounds().voicePitch())
                 .save(_ -> {
                     plr.save();
                     var clientPlayer = Objects.requireNonNull(minecraft).player;
