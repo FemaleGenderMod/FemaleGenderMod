@@ -20,26 +20,17 @@ package com.wildfire.main.networking.packets.hello;
 
 import com.wildfire.main.WildfireGender;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
-public final class ServerboundSyncHelloPacket extends AbstractSyncHelloPacket {
-    public static final Type<ServerboundSyncHelloPacket> TYPE = WildfireGender.packet("serverbound/hello");
-    public static final StreamCodec<ByteBuf, ServerboundSyncHelloPacket> CODEC = codec(ServerboundSyncHelloPacket::new);
+public record ServerboundSyncHelloPacket(int version) implements SyncHelloPacket {
 
-    private final int version;
+    public static final Type<ServerboundSyncHelloPacket> TYPE = WildfireGender.packet("serverbound/hello");
+    public static final StreamCodec<ByteBuf, ServerboundSyncHelloPacket> CODEC = ByteBufCodecs.VAR_INT.map(ServerboundSyncHelloPacket::new, SyncHelloPacket::version);
 
     public ServerboundSyncHelloPacket() {
         this(VERSION);
-    }
-
-    public ServerboundSyncHelloPacket(int version) {
-        this.version = version;
-    }
-
-    @Override
-    public int version() {
-        return version;
     }
 
     @Override

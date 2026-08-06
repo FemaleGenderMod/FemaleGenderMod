@@ -19,7 +19,7 @@
 package com.wildfire.main.networking;
 
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.networking.packets.hello.AbstractSyncHelloPacket;
+import com.wildfire.main.networking.packets.hello.SyncHelloPacket;
 import com.wildfire.main.networking.packets.hello.ClientboundSyncHelloPacket;
 import com.wildfire.main.networking.packets.hello.ServerboundSyncHelloPacket;
 import net.fabricmc.api.EnvType;
@@ -68,7 +68,7 @@ import net.minecraft.util.TriState;
     private static void handleServerbound(ServerboundSyncHelloPacket packet, ServerConfigurationNetworking.Context context) {
         context.responseSender().sendPacket(new ClientboundSyncHelloPacket());
         int version = packet.version();
-        int expected = AbstractSyncHelloPacket.VERSION;
+        int expected = SyncHelloPacket.VERSION;
 
         if(packet.version() == expected) {
             WildfireGender.LOGGER.info(WildfireSync.MARKER, "Received hello packet from client with protocol version {}", version);
@@ -86,7 +86,7 @@ import net.minecraft.util.TriState;
     @Environment(EnvType.CLIENT)
     private static void handleClientbound(ClientboundSyncHelloPacket packet, ClientConfigurationNetworking.Context context) {
         int version = packet.version();
-        int expected = AbstractSyncHelloPacket.VERSION;
+        int expected = SyncHelloPacket.VERSION;
 
         if(version == expected) {
             WildfireGender.LOGGER.info(WildfireSync.MARKER, "Received hello response from server with protocol version {}", version);
