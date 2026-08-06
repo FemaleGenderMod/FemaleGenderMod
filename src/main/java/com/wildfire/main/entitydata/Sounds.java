@@ -45,9 +45,9 @@ public record Sounds(ConfigValue<Boolean> hurt, ConfigValue<Float> voicePitch) {
     // the main codec to be lenientOptionalFieldOf, or to have an orElse. We will also be able to move the fieldOf("sound") to the caller
     public static final MapCodec<Sounds> CODEC_OR_LEGACY = WildfireHelper.withAlternative(CODEC.fieldOf("sound"), LEGACY_CODEC);
     public static final StreamCodec<ByteBuf, Sounds> STREAM_CODEC = StreamCodec.composite(
-        ByteBufCodecs.BOOL, sounds -> sounds.hurt.get(),
+        HURT_SOUNDS.streamCodec(), sounds -> sounds.hurt.get(),
         //Note: While we could avoid syncing pitch when hurt is false, we don't because if we add overrides in the future, voice would need to be synced anyway
-        ByteBufCodecs.FLOAT, sounds -> sounds.voicePitch.get(),
+        VOICE_PITCH.streamCodec(), sounds -> sounds.voicePitch.get(),
         Sounds::new
     );
 

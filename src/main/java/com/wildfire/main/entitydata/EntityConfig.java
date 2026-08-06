@@ -38,7 +38,7 @@ import net.minecraft.world.entity.decoration.ArmorStand;
 /// Currently only used for [`armor stands`][ArmorStand], and as a superclass for [`player configs`][PlayerConfig].
 public class EntityConfig  {
 
-    public static final ConfigKey<Gender> GENDER = new ConfigKey<>(Gender.MALE, Gender.CODEC_OR_LEGACY);
+    public static final ConfigKey<Gender> GENDER = new ConfigKey<>(Gender.MALE, Gender.CODEC_OR_LEGACY, Gender.STREAM_CODEC);
 
     /// @return `true` if the mod has support for the provided entity
     public static boolean isSupportedEntity(LivingEntity entity) {

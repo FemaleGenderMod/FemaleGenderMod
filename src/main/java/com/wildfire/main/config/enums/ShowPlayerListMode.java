@@ -20,10 +20,13 @@ package com.wildfire.main.config.enums;
 
 import com.mojang.serialization.Codec;
 import com.wildfire.main.WildfireLang;
+import io.netty.buffer.ByteBuf;
 import java.util.Locale;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ByIdMap;
 
 import java.util.function.IntFunction;
@@ -38,6 +41,7 @@ public enum ShowPlayerListMode implements StringRepresentable {
     public static final IntFunction<ShowPlayerListMode> BY_ID = ByIdMap.continuous(ShowPlayerListMode::ordinal, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
     public static final Codec<ShowPlayerListMode> CODEC = StringRepresentable.fromEnum(ShowPlayerListMode::values);
     public static final Codec<ShowPlayerListMode> CODEC_OR_LEGACY = CODEC.withAlternative(ExtraCodecs.idResolverCodec(ShowPlayerListMode::ordinal, BY_ID, 0));
+    public static final StreamCodec<ByteBuf, ShowPlayerListMode> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, ShowPlayerListMode::ordinal);
 
     private final String saveName;
     private final WildfireLang name;

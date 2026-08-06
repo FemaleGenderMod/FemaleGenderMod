@@ -33,7 +33,7 @@ import net.minecraft.network.codec.StreamCodec;
 public record UVs(Layer skin, Layer overlay) implements Iterable<UVLayout> {
 
     private static ConfigKey<UVLayout> createConfigKey(Supplier<UVLayout> defaultValueSupplier) {
-        return new ConfigKey<>(defaultValueSupplier, UVLayout.MUTABLE_CONFIG_CODEC);
+        return new ConfigKey<>(defaultValueSupplier, UVLayout.MUTABLE_CONFIG_CODEC, UVLayout.STREAM_CODEC);
     }
 
     // Base breasts
@@ -114,8 +114,8 @@ public record UVs(Layer skin, Layer overlay) implements Iterable<UVLayout> {
 
         private static StreamCodec<ByteBuf, Layer> streamCodec(ConfigKey<UVLayout> leftKey, ConfigKey<UVLayout> rightKey) {
             return StreamCodec.composite(
-                UVLayout.STREAM_CODEC, layer -> layer.left.get(),
-                UVLayout.STREAM_CODEC, layer -> layer.right.get(),
+                leftKey.streamCodec(), layer -> layer.left.get(),
+                rightKey.streamCodec(), layer -> layer.right.get(),
                 (left, right) -> new Layer(leftKey.createValueHandler(left), rightKey.createValueHandler(right))
             );
         }

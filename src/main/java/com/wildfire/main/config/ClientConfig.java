@@ -25,6 +25,7 @@ import com.wildfire.main.config.enums.ShowPlayerListMode;
 import com.wildfire.main.config.enums.SyncVerbosity;
 import com.wildfire.main.config.value.ConfigKey;
 import com.wildfire.main.config.value.ConfigValue;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.util.TriState;
 
 public class ClientConfig {
@@ -43,10 +44,10 @@ public class ClientConfig {
     private static final ConfigKey<Boolean> CLOUD_SYNC_ENABLED = ConfigKey.DEFAULT_FALSE;
     private static final ConfigKey<Boolean> AUTOMATIC_CLOUD_SYNC = ConfigKey.DEFAULT_FALSE;
     /// @see com.wildfire.main.cloud.CloudSync#DEFAULT_CLOUD_URL for the actual default
-    private static final ConfigKey<String> CLOUD_SERVER = new ConfigKey<>("", Codec.STRING);
-    private static final ConfigKey<SyncVerbosity> SYNC_VERBOSITY = new ConfigKey<>(SyncVerbosity.DEFAULT, SyncVerbosity.CODEC_OR_LEGACY);
+    private static final ConfigKey<String> CLOUD_SERVER = new ConfigKey<>("", Codec.STRING, ByteBufCodecs.STRING_UTF8);
+    private static final ConfigKey<SyncVerbosity> SYNC_VERBOSITY = new ConfigKey<>(SyncVerbosity.DEFAULT, SyncVerbosity.CODEC_OR_LEGACY, SyncVerbosity.STREAM_CODEC);
 
-    private static final ConfigKey<ShowPlayerListMode> PLAYER_LIST_MODE = new ConfigKey<>(ShowPlayerListMode.MOD_UI_ONLY, ShowPlayerListMode.CODEC_OR_LEGACY);
+    private static final ConfigKey<ShowPlayerListMode> PLAYER_LIST_MODE = new ConfigKey<>(ShowPlayerListMode.MOD_UI_ONLY, ShowPlayerListMode.CODEC_OR_LEGACY, ShowPlayerListMode.STREAM_CODEC);
 
     private static final ConfigKey<Boolean> ARMOR_STAT = ConfigKey.DEFAULT_TRUE;
 

@@ -76,11 +76,11 @@ public record Breasts(ConfigValue<Float> xOffset, ConfigValue<Float> yOffset, Co
     public static final MapCodec<Breasts> CODEC_OR_LEGACY = WildfireHelper.withAlternative(CODEC.fieldOf("breasts"), LEGACY_CODEC);
 
     public static final StreamCodec<ByteBuf, Breasts> STREAM_CODEC = StreamCodec.composite(
-        ByteBufCodecs.FLOAT, breasts -> breasts.xOffset.get(),
-        ByteBufCodecs.FLOAT, breasts -> breasts.yOffset.get(),
-        ByteBufCodecs.FLOAT, breasts -> breasts.zOffset.get(),
-        ByteBufCodecs.FLOAT, breasts -> breasts.bustSize.get(),
-        ByteBufCodecs.FLOAT, breasts -> breasts.cleavage.get(),
+        BREASTS_OFFSET_X.streamCodec(), breasts -> breasts.xOffset.get(),
+        BREASTS_OFFSET_Y.streamCodec(), breasts -> breasts.yOffset.get(),
+        BREASTS_OFFSET_Z.streamCodec(), breasts -> breasts.zOffset.get(),
+        BUST_SIZE.streamCodec(), breasts -> breasts.bustSize.get(),
+        BREASTS_CLEAVAGE.streamCodec(), breasts -> breasts.cleavage.get(),
         Physics.STREAM_CODEC, Breasts::physics,
         Breasts::new
     );
@@ -141,9 +141,9 @@ public record Breasts(ConfigValue<Float> xOffset, ConfigValue<Float> yOffset, Co
             FLOPPINESS.codecOrDefault("floppy_multiplier").forGetter(physics -> physics.floppiness.get())
         ).apply(instance, Physics::new));
         private static final StreamCodec<ByteBuf, Physics> WITH_PHYSICS_STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.BOOL, physics -> physics.uniboob.get(),
-            ByteBufCodecs.FLOAT, physics -> physics.bounceMultiplier.get(),
-            ByteBufCodecs.FLOAT, physics -> physics.floppiness.get(),
+            BREASTS_UNIBOOB.streamCodec(), physics -> physics.uniboob.get(),
+            BOUNCE_MULTIPLIER.streamCodec(), physics -> physics.bounceMultiplier.get(),
+            FLOPPINESS.streamCodec(), physics -> physics.floppiness.get(),
             (uniboob, bounceMultiplier, floppiness) -> new Physics(true, uniboob, bounceMultiplier, floppiness)
         );
         private static final StreamCodec<ByteBuf, Physics> STREAM_CODEC = new StreamCodec<>() {

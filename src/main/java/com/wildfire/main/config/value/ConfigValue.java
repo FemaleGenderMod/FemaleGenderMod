@@ -18,7 +18,6 @@
 
 package com.wildfire.main.config.value;
 
-import com.wildfire.main.WildfireGender;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
@@ -32,7 +31,6 @@ public class ConfigValue<TYPE> implements Supplier<TYPE>, Consumer<TYPE> {
 
     ConfigValue(ConfigKey<TYPE> key, TYPE value) {
         this.key = key;
-        //TODO: If from a packet an invalid value is sent, we should probably clamp the value
         assert key.validate(value);
         this.value = value;
     }

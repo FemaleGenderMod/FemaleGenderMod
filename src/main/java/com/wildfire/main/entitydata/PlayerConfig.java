@@ -27,7 +27,6 @@ import com.wildfire.main.config.value.ConfigKey;
 import com.wildfire.main.config.value.ConfigValue;
 import com.wildfire.main.uvs.UVs;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
 /// A version of [EntityConfig] backed by a [Configuration] for use with players
@@ -45,13 +44,13 @@ public class PlayerConfig extends EntityConfig {
     // to the underlying packet structure
     public static final StreamCodec<ByteBuf, PlayerConfig> STREAM_CODEC = StreamCodec.composite(
         //From EntityConfig
-        Gender.STREAM_CODEC, config -> config.gender.get(),
+        GENDER.streamCodec(), config -> config.gender.get(),
         Breasts.STREAM_CODEC, config -> config.breasts,
         UVs.STREAM_CODEC, config -> config.uvs,
         //From PlayerConfig
         Sounds.STREAM_CODEC, config -> config.sounds,
-        ByteBufCodecs.BOOL, config -> config.showBreastsInArmor.get(),
-        ByteBufCodecs.BOOL, config -> config.holidayThemes.get(),
+        SHOW_IN_ARMOR.streamCodec(), config -> config.showBreastsInArmor.get(),
+        HOLIDAY_THEMES.streamCodec(), config -> config.holidayThemes.get(),
         PlayerConfig::new
     );
     public static final StreamCodec<ByteBuf, PlayerConfig> COMPACT_STREAM_CODEC = new StreamCodec<>() {
