@@ -115,7 +115,7 @@ public record Breasts(ConfigValue<Float> xOffset, ConfigValue<Float> yOffset, Co
         info.add("Physics enabled: " + physics().enabled());
         info.add("Uniboob: " + physics().uniboob());
         info.add("Cleavage: " + cleavage());
-        info.add("Offsets: " + offset());//TODO: Validate this converts it to string as expected
+        info.add("Offsets: (" + xOffset.get() + ", " + yOffset.get() + ", " + zOffset.get() + ")");
         return info;
     }
 

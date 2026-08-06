@@ -68,8 +68,7 @@ public class PlayerConfig extends EntityConfig {
     ).apply(instance, PlayerConfig::new));
 
     public static PlayerConfig createDefault() {
-        //TODO: Re-evaluate this? I think it is the thing that makes the most sense
-        //TODO: If not success do we want to log it failed? Can it even fail? Given the fact everything has orDefault
+        //Note: Theoretically this can never fail so it is safe to use getOrThrow as everything in the codec has orElse(default)
         return CODEC.parse(JsonOps.INSTANCE, JsonOps.INSTANCE.emptyMap()).getOrThrow();
     }
 

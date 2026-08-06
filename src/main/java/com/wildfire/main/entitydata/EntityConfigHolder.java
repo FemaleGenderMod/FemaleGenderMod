@@ -51,8 +51,7 @@ public class EntityConfigHolder<CONFIG extends EntityConfig> {
 
     public static final LoadingCache<UUID, EntityConfigHolder<? extends EntityConfig>> CACHE = CacheBuilder.newBuilder()
         .expireAfterAccess(Duration.ofMinutes(5))
-        //TODO: If not success do we want to log it failed? Can it even fail? Given the fact everything has orDefault
-        //TODO - 26.2: Should this actually be using JsonOps.INSTANCE.empty() and then let the orDefault handle it all instead of trying to read from the config during construction
+        //Note: Theoretically this can never fail so it is safe to use getOrThrow as everything in the codec has orElse(default)
         .build(CacheLoader.from(uuid -> new EntityConfigHolder<>(uuid, EntityConfig.CODEC.parse(JsonOps.INSTANCE, JsonOps.INSTANCE.emptyMap()).getOrThrow())));
 
     /// Get the configuration for a given entity

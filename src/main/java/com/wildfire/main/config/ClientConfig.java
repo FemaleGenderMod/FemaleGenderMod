@@ -66,6 +66,7 @@ public class ClientConfig {
     ).apply(instance, ClientConfig::new));
 
     private static final Configuration<ClientConfig> cfgFile = new Configuration<>(".", "female_gender_mod", CODEC);
+    //Note: Theoretically this can never fail so it is safe to use getOrThrow as everything in the codec has orElse(default)
     private static ClientConfig config = CODEC.parse(JsonOps.INSTANCE, JsonOps.INSTANCE.emptyMap()).getOrThrow();
     static {
         if (!cfgFile.exists()) {
