@@ -27,6 +27,7 @@ import com.wildfire.main.config.value.ConfigKey;
 import com.wildfire.main.config.validator.ConfigRange;
 import java.util.function.Function;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.player.Player;
@@ -44,7 +45,7 @@ import org.jspecify.annotations.Nullable;
 /// (under the `WildfireGender` key) for compatibility with vanilla clients on servers.
 public record BreastDataComponent(float breastSize, float cleavage, Vector3fc offsets, boolean jacket, @Nullable CustomData nbtComponent) {
 
-    private static final String KEY = "WildfireGender";
+    private static final String LEGACY_KEY = "WildfireGender";
     private static final Codec<BreastDataComponent> CODEC = RecordCodecBuilder.create(instance -> instance.group(
         orLegacy(Breasts.BUST_SIZE, "BreastSize").forGetter(BreastDataComponent::breastSize),
         orLegacy(Breasts.BREASTS_CLEAVAGE, "Cleavage").forGetter(BreastDataComponent::cleavage),
@@ -57,8 +58,6 @@ public record BreastDataComponent(float breastSize, float cleavage, Vector3fc of
 
     private static MapCodec<Float> orLegacy(ConfigKey<Float> configKey, String legacyKey) {
         if (configKey.validator() instanceof ConfigRange<Float>(Float minInclusive, Float maxInclusive)) {
-            //TODO: Technically this means newer servers will save it in a way that older clients don't know about. We could switch what alternative codec is first
-            // to serialize it the corresponding way, but I think that is a net negative, unless we use stonecutter to only apply that change for 26.3
             return Codec.mapEither(
                 //Don't use the default here so we can try loading via the legacy way
                 configKey.codec(),
@@ -84,7 +83,8 @@ public record BreastDataComponent(float breastSize, float cleavage, Vector3fc of
             return null;
         }
 
-        return CODEC.parse(NbtOps.INSTANCE, component.copyTag().getCompoundOrEmpty(KEY))
+        CompoundTag compoundTag = component.copyTag();
+        return CODEC.parse(NbtOps.INSTANCE, compoundTag.getCompound(WildfireGender.MODID).orElseGet(() -> compoundTag.getCompoundOrEmpty(LEGACY_KEY)))
                 .result()
                 .map(breastDataComponent -> breastDataComponent.withComponent(component))
                 .orElse(null);
@@ -95,14 +95,25 @@ public record BreastDataComponent(float breastSize, float cleavage, Vector3fc of
             throw new IllegalArgumentException("The provided ItemStack must not be empty");
         }
 
-        CustomData.update(DataComponents.CUSTOM_DATA, stack, nbt -> nbt.store(KEY, CODEC, this));
+        CustomData.update(DataComponents.CUSTOM_DATA, stack, nbt -> {
+            if (nbt.contains(LEGACY_KEY)) {//Remove legacy key if it already had it
+                nbt.remove(LEGACY_KEY);
+            }
+            nbt.store(WildfireGender.MODID, CODEC, this);
+        });
     }
 
     public static void removeFromStack(ItemStack stack) {
         if(stack.isEmpty()) return;
         CustomData component = stack.get(DataComponents.CUSTOM_DATA);
-        if(component != null && component.copyTag().contains(KEY)) {
-            CustomData.update(DataComponents.CUSTOM_DATA, stack, nbt -> nbt.remove(KEY));
+        if(component != null) {
+            CompoundTag compoundTag = component.copyTag();
+            if (compoundTag.contains(WildfireGender.MODID) || compoundTag.contains(LEGACY_KEY)) {
+                CustomData.update(DataComponents.CUSTOM_DATA, stack, nbt -> {
+                    nbt.remove(WildfireGender.MODID);
+                    nbt.remove(LEGACY_KEY);
+                });
+            }
         }
     }
 
