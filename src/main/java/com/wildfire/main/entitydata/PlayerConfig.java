@@ -33,13 +33,13 @@ import net.minecraft.network.codec.StreamCodec;
 /// A version of [EntityConfig] backed by a [Configuration] for use with players
 public class PlayerConfig extends EntityConfig {
 
-    private static final ConfigKey<Boolean> SHOW_IN_ARMOR = ConfigKey.create("show_in_armor", true);
-    private static final ConfigKey<Boolean> HOLIDAY_THEMES = ConfigKey.create("holiday_themes", true);
+    private static final ConfigKey<Boolean> SHOW_IN_ARMOR = ConfigKey.DEFAULT_TRUE;
+    private static final ConfigKey<Boolean> HOLIDAY_THEMES = ConfigKey.DEFAULT_TRUE;
 
     public static final Codec<PlayerConfig> CODEC = RecordCodecBuilder.create(instance -> codecGroup(instance)
-        .and(Sounds.CODEC.forGetter(config -> config.sounds))
-        .and(SHOW_IN_ARMOR.codecOrDefault().forGetter(config -> config.showBreastsInArmor.get()))
-        .and(HOLIDAY_THEMES.codecOrDefault().forGetter(config -> config.holidayThemes.get()))
+        .and(Sounds.CODEC_OR_LEGACY.forGetter(config -> config.sounds))
+        .and(SHOW_IN_ARMOR.codecOrDefault("show_in_armor").forGetter(config -> config.showBreastsInArmor.get()))
+        .and(HOLIDAY_THEMES.codecOrDefault("holiday_themes").forGetter(config -> config.holidayThemes.get()))
         .apply(instance, PlayerConfig::new));
     // remember to update SyncHelloPacket.VERSION when modifying this codec if the changes result in a change
     // to the underlying packet structure
@@ -55,6 +55,17 @@ public class PlayerConfig extends EntityConfig {
         ByteBufCodecs.BOOL, config -> config.holidayThemes.get(),
         PlayerConfig::new
     );
+
+    //TODO: Remove this hacky way of enforcing encoding using the old syntax, by changing the serialization to CODEC once the cloud server can support doing it on its side
+    public static final Codec<PlayerConfig> CLOUD_SYNC_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        Gender.BY_ID_CODEC.fieldOf("gender").orElseGet(GENDER::defaultValue).forGetter(config -> config.gender.get()),
+        Breasts.LEGACY_CODEC.forGetter(config -> config.breasts),
+        //Note: it is safe to use the newer codec syntax here as the cloud server doesn't care about UVs
+        UVs.CODEC_OR_LEGACY.forGetter(config -> config.uvs),
+        Sounds.LEGACY_CODEC.forGetter(config -> config.sounds),
+        SHOW_IN_ARMOR.codecOrDefault("show_in_armor").forGetter(config -> config.showBreastsInArmor.get()),
+        HOLIDAY_THEMES.codecOrDefault("holiday_themes").forGetter(config -> config.holidayThemes.get())
+    ).apply(instance, PlayerConfig::new));
 
     public static PlayerConfig createDefault() {
         //TODO: Re-evaluate this? I think it is the thing that makes the most sense

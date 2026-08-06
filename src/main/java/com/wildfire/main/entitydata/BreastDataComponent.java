@@ -18,14 +18,11 @@
 
 package com.wildfire.main.entitydata;
 
-import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.wildfire.main.WildfireGender;
 import com.wildfire.main.config.value.ConfigKey;
 import com.wildfire.main.config.validator.ConfigRange;
-import java.util.function.Function;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -47,27 +44,39 @@ public record BreastDataComponent(float breastSize, float cleavage, Vector3fc of
 
     private static final String KEY = "female_gender";
     private static final String LEGACY_KEY = "WildfireGender";
-    private static final Codec<BreastDataComponent> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-        orLegacy(Breasts.BUST_SIZE, "BreastSize").forGetter(BreastDataComponent::breastSize),
-        orLegacy(Breasts.BREASTS_CLEAVAGE, "Cleavage").forGetter(BreastDataComponent::cleavage),
-        Codec.BOOL.optionalFieldOf("Jacket", true).forGetter(BreastDataComponent::jacket),
-        orLegacy(Breasts.BREASTS_OFFSET_X, "XOffset").forGetter(component -> component.offsets.x()),
-        orLegacy(Breasts.BREASTS_OFFSET_Y, "YOffset").forGetter(component -> component.offsets.y()),
-        orLegacy(Breasts.BREASTS_OFFSET_Z, "ZOffset").forGetter(component -> component.offsets.y())
-        ).apply(instance, (breastSize, cleavage, jacket, x, y, z) -> new BreastDataComponent(breastSize, cleavage, new Vector3f(x, y, z), jacket, null))
-    );
 
-    private static MapCodec<Float> orLegacy(ConfigKey<Float> configKey, String legacyKey) {
-        if (configKey.validator() instanceof ConfigRange<Float>(Float minInclusive, Float maxInclusive)) {
-            return Codec.mapEither(
-                //Don't use the default here so we can try loading via the legacy way
-                configKey.codec(),
-                //Note: We make this be lenient so that if it failed to deserialize either with this or the new codec, then it falls back to the default value
-                ExtraCodecs.floatRange(minInclusive, maxInclusive).lenientOptionalFieldOf(legacyKey, configKey.defaultValue())
-            ).xmap(either -> either.map(Function.identity(), Function.identity()), Either::left);
+    /// Minimal variant of [Breasts] to allow for mirroring serialization of [Breasts#CODEC] more easily
+    private record BreastData(float breastSize, float cleavage, Vector3fc offsets) {
+        private static final Codec<BreastData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Breasts.BUST_SIZE.codec().fieldOf("size").forGetter(BreastData::breastSize),
+            Breasts.BREASTS_CLEAVAGE.codec().fieldOf("cleavage").forGetter(BreastData::cleavage),
+            Breasts.OFFSET_CODEC.fieldOf("offset").forGetter(BreastData::offsets)
+        ).apply(instance, BreastData::new));
+
+        public BreastData(BreastDataComponent component) {
+            this(component.breastSize, component.cleavage, component.offsets);
         }
-        WildfireGender.LOGGER.warn("No range defined for config key: {}", configKey.key());
-        return configKey.codecOrDefault();
+    }
+
+    private static final Codec<BreastDataComponent> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        BreastData.CODEC.fieldOf("breasts").forGetter(BreastData::new),
+        Codec.BOOL.optionalFieldOf("Jacket", true).forGetter(BreastDataComponent::jacket)
+    ).apply(instance, (data, jacket) -> new BreastDataComponent(data.breastSize(), data.cleavage(), data.offsets(), jacket, null)));
+    private static final Codec<BreastDataComponent> LEGACY_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        legacy(Breasts.BUST_SIZE, "BreastSize").forGetter(BreastDataComponent::breastSize),
+        legacy(Breasts.BREASTS_CLEAVAGE, "Cleavage").forGetter(BreastDataComponent::cleavage),
+        legacy(Breasts.BREASTS_OFFSET_X, "XOffset").forGetter(component -> component.offsets.x()),
+        legacy(Breasts.BREASTS_OFFSET_Y, "YOffset").forGetter(component -> component.offsets.y()),
+        legacy(Breasts.BREASTS_OFFSET_Z, "ZOffset").forGetter(component -> component.offsets.y()),
+        Codec.BOOL.optionalFieldOf("Jacket", true).forGetter(BreastDataComponent::jacket)
+    ).apply(instance, (breastSize, cleavage, x, y, z, jacket) -> new BreastDataComponent(breastSize, cleavage, new Vector3f(x, y, z), jacket, null)));
+    private static final Codec<BreastDataComponent> OR_LEGACY = CODEC.withAlternative(LEGACY_CODEC);
+
+    private static MapCodec<Float> legacy(ConfigKey<Float> configKey, String legacyKey) {
+        if (configKey.validator() instanceof ConfigRange<Float>(Float minInclusive, Float maxInclusive)) {
+            return ExtraCodecs.floatRange(minInclusive, maxInclusive).lenientOptionalFieldOf(legacyKey, configKey.defaultValue());
+        }
+        throw new IllegalArgumentException("No range defined for config key: " + legacyKey);
     }
 
     public static @Nullable BreastDataComponent fromPlayer(Player player, PlayerConfigHolder config) {
@@ -85,7 +94,7 @@ public record BreastDataComponent(float breastSize, float cleavage, Vector3fc of
         }
 
         CompoundTag compoundTag = component.copyTag();
-        return CODEC.parse(NbtOps.INSTANCE, compoundTag.getCompound(KEY).orElseGet(() -> compoundTag.getCompoundOrEmpty(LEGACY_KEY)))
+        return OR_LEGACY.parse(NbtOps.INSTANCE, compoundTag.getCompound(KEY).orElseGet(() -> compoundTag.getCompoundOrEmpty(LEGACY_KEY)))
                 .result()
                 .map(breastDataComponent -> breastDataComponent.withComponent(component))
                 .orElse(null);

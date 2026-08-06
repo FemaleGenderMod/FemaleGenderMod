@@ -44,7 +44,8 @@ public enum Gender implements StringRepresentable {
 
     public static final IntFunction<Gender> BY_ID = ByIdMap.continuous(Gender::ordinal, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
     public static final Codec<Gender> CODEC = StringRepresentable.fromEnum(Gender::values);
-    public static final Codec<Gender> CODEC_OR_LEGACY = CODEC.withAlternative(ExtraCodecs.idResolverCodec(Gender::ordinal, BY_ID, 0));
+    public static final Codec<Gender> BY_ID_CODEC = ExtraCodecs.idResolverCodec(Gender::ordinal, BY_ID, 0);
+    public static final Codec<Gender> CODEC_OR_LEGACY = CODEC.withAlternative(BY_ID_CODEC);
     public static final StreamCodec<ByteBuf, Gender> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, Gender::ordinal);
 
     private final String saveName;

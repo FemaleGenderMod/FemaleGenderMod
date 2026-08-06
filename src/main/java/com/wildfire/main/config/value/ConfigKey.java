@@ -24,13 +24,61 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.wildfire.main.config.validator.ConfigRange;
 import com.wildfire.main.config.validator.ConfigValidator;
-import com.wildfire.main.uvs.UVLayout;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import org.jetbrains.annotations.Contract;
 import org.jspecify.annotations.Nullable;
 
-public record ConfigKey<TYPE>(String key, Either<TYPE, Supplier<TYPE>> defaultValueSupplier, MapCodec<TYPE> codec, MapCodec<TYPE> codecOrDefault, ConfigValidator<TYPE> validator) {
+public record ConfigKey<TYPE>(Either<TYPE, Supplier<TYPE>> defaultValueSupplier, Codec<TYPE> codec, ConfigValidator<TYPE> validator) {
+
+    private static final ConfigValidator<?> ALWAYS_TRUE = new ConfigValidator<>() {
+        @Override
+        public boolean validate(final Object value) {
+            return false;
+        }
+
+        @Override
+        public DataResult<Object> codecValidation(Object value) {
+            return DataResult.success(value);
+        }
+
+        @Override
+        public boolean hasCodecValidation() {
+            return false;
+        }
+    };
+
+    @SuppressWarnings("unchecked")
+    public static <TYPE> ConfigValidator<TYPE> alwaysTrueValidator() {
+        return (ConfigValidator<TYPE>) ALWAYS_TRUE;
+    }
+
+    public static final ConfigKey<Boolean> DEFAULT_TRUE = new ConfigKey<>(true, Codec.BOOL);
+    public static final ConfigKey<Boolean> DEFAULT_FALSE = new ConfigKey<>(false, Codec.BOOL);
+
+    public ConfigKey {
+        if (validator.hasCodecValidation()) {
+            codec = codec.validate(validator::codecValidation).promotePartial(_ -> {
+                //TODO: Do we want to log that it was invalid and we promoted the clamped value instead?
+            });
+        }
+    }
+
+    public ConfigKey(TYPE defaultValue, Codec<TYPE> baseCodec) {
+        this(defaultValue, baseCodec, alwaysTrueValidator());
+    }
+
+    public ConfigKey(TYPE defaultValue, Codec<TYPE> baseCodec, ConfigValidator<TYPE> range) {
+        this(Either.left(defaultValue), baseCodec, range);
+    }
+
+    public ConfigKey(Supplier<TYPE> defaultValueSupplier, Codec<TYPE> baseCodec) {
+        this(defaultValueSupplier, baseCodec, alwaysTrueValidator());
+    }
+
+    public ConfigKey(Supplier<TYPE> defaultValueSupplier, Codec<TYPE> baseCodec, ConfigValidator<TYPE> range) {
+        this(Either.right(defaultValueSupplier), baseCodec, range);
+    }
 
     public TYPE defaultValue() {
         return defaultValueSupplier.map(Function.identity(), Supplier::get);
@@ -41,52 +89,16 @@ public record ConfigKey<TYPE>(String key, Either<TYPE, Supplier<TYPE>> defaultVa
         return value != null && validator.validate(value);
     }
 
+    public MapCodec<TYPE> codecOrDefault(String key) {
+        //Note: We don't do any logging for when we fall back to the default values, as this is also the path used for constructing the default config objects
+        return codec.fieldOf(key).orElseGet(this::defaultValue);
+    }
+
     public ConfigValue<TYPE> createValueHandler(TYPE value) {
         return new ConfigValue<>(this, value);
     }
 
-    private static final ConfigValidator<?> ALWAYS_TRUE = _ -> true;
-
-    @SuppressWarnings("unchecked")
-    public static <TYPE> ConfigValidator<TYPE> alwaysTrueValidator() {
-        return (ConfigValidator<TYPE>) ALWAYS_TRUE;
-    }
-
-    public static <TYPE> ConfigKey<TYPE> create(String key, TYPE defaultValue, Codec<TYPE> baseCodec) {
-        return create(key, defaultValue, baseCodec, alwaysTrueValidator());
-    }
-
-    public static <TYPE> ConfigKey<TYPE> create(String key, TYPE defaultValue, Codec<TYPE> baseCodec, ConfigValidator<TYPE> range) {
-        MapCodec<TYPE> codec = baseCodec.fieldOf(key);
-        //Note: We don't do any logging for when we fall back to the default values, as this is also the path used for constructing the default config objects
-        //TODO: Do we want the promote partial to be here instead of just for floats??
-        return new ConfigKey<>(key, Either.left(defaultValue), codec, codec.orElse(defaultValue), range);
-    }
-
-    public static <TYPE> ConfigKey<TYPE> create(String key, Supplier<TYPE> defaultValueSupplier, Codec<TYPE> baseCodec, ConfigValidator<TYPE> range) {
-        MapCodec<TYPE> codec = baseCodec.fieldOf(key);
-        //Note: We don't do any logging for when we fall back to the default values, as this is also the path used for constructing the default config objects
-        //TODO: Do we want the promote partial to be here instead of just for floats??
-        return new ConfigKey<>(key, Either.right(defaultValueSupplier), codec, codec.orElseGet(defaultValueSupplier), range);
-    }
-
-    public static ConfigKey<UVLayout> create(String key, Supplier<UVLayout> defaultValueSupplier) {
-        return create(key, defaultValueSupplier, UVLayout.MUTABLE_CONFIG_CODEC, alwaysTrueValidator());
-    }
-
-    public static ConfigKey<Boolean> create(String key, boolean defaultValue) {
-        return create(key, defaultValue, Codec.BOOL);
-    }
-
-    public static ConfigKey<Float> create(String key, float defaultValue, float minInclusive, float maxInclusive) {
-        ConfigRange<Float> configRange = new ConfigRange<>(minInclusive, maxInclusive);
-        //Codec is based on ExtraCodecs#floatRange, but sets the clamped value as a partial value, and then promotes it
-        return create(key, defaultValue, Codec.FLOAT.validate(value -> {
-            if (configRange.validate(value)) {
-                return DataResult.success(value);
-            }
-            return DataResult.error(() -> "Value must be within range [" + minInclusive + ";" + maxInclusive + "]: " + value, Math.clamp(value, minInclusive, maxInclusive));
-        }).promotePartial(_ -> {//TODO: Do we want to log that it was invalid and we promoted the clamped value instead?
-        }), configRange);
+    public static ConfigKey<Float> create(float defaultValue, float minInclusive, float maxInclusive) {
+        return new ConfigKey<>(defaultValue, Codec.FLOAT, new ConfigRange<>(minInclusive, maxInclusive));
     }
 }

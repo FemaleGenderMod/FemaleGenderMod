@@ -18,8 +18,10 @@
 
 package com.wildfire.main.entitydata;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.config.value.ConfigKey;
 import com.wildfire.main.config.value.ConfigValue;
 import io.netty.buffer.ByteBuf;
@@ -28,13 +30,20 @@ import net.minecraft.network.codec.StreamCodec;
 
 public record Sounds(ConfigValue<Boolean> hurt, ConfigValue<Float> voicePitch) {
 
-    private static final ConfigKey<Boolean> HURT_SOUNDS = ConfigKey.create("hurt_sounds", true);
-    private static final ConfigKey<Float> VOICE_PITCH = ConfigKey.create("voice_pitch", 1F, 0.8f, 1.2f);
+    private static final ConfigKey<Boolean> HURT_SOUNDS = ConfigKey.DEFAULT_TRUE;
+    private static final ConfigKey<Float> VOICE_PITCH = ConfigKey.create(1F, 0.8F, 1.2F);
 
-    public static final MapCodec<Sounds> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-        HURT_SOUNDS.codecOrDefault().forGetter(sounds -> sounds.hurt.get()),
-        VOICE_PITCH.codecOrDefault().forGetter(sounds -> sounds.voicePitch.get())
+    public static final Codec<Sounds> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        HURT_SOUNDS.codec().fieldOf("override_hurt").forGetter(sounds -> sounds.hurt.get()),
+        VOICE_PITCH.codec().fieldOf("voice_pitch").forGetter(sounds -> sounds.voicePitch.get())
     ).apply(instance, Sounds::new));
+    public static final MapCodec<Sounds> LEGACY_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+        HURT_SOUNDS.codecOrDefault("hurt_sounds").forGetter(sounds -> sounds.hurt.get()),
+        VOICE_PITCH.codecOrDefault("voice_pitch").forGetter(sounds -> sounds.voicePitch.get())
+    ).apply(instance, Sounds::new));
+    //Note: We allow the legacy codec to handle loading as defaults if not present/malformed. If/when we remove the legacy codec, we will need to adjust
+    // the main codec to be lenientOptionalFieldOf, or to have an orElse. We will also be able to move the fieldOf("sound") to the caller
+    public static final MapCodec<Sounds> CODEC_OR_LEGACY = WildfireHelper.withAlternative(CODEC.fieldOf("sound"), LEGACY_CODEC);
     public static final StreamCodec<ByteBuf, Sounds> STREAM_CODEC = StreamCodec.composite(
         //TODO: If physics aren't enabled we don't need to sync pitch
         ByteBufCodecs.BOOL, sounds -> sounds.hurt.get(),

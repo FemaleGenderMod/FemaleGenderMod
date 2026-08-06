@@ -281,7 +281,8 @@ public class WildfireSlider extends AbstractWidget implements IFancyFontRenderer
             if (key.validator() instanceof ConfigRange<Float>(Float minInclusive, Float maxInclusive)) {
                 return range(minInclusive, maxInclusive);
             }
-            WildfireGender.LOGGER.warn("No range available for {}", key.key());
+            //TODO: Do we care about having a logging message? If so where should we get the key name from
+            //WildfireGender.LOGGER.warn("No range available for {}", key.key());
             return this;
         }
 

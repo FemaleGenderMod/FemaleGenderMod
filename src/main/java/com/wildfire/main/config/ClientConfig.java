@@ -36,33 +36,33 @@ public class ClientConfig {
     public static boolean DISPLAY_OWN_NAMETAG = false;
     // endregion
 
-    private static final ConfigKey<Boolean> ARMOR_PHYSICS_OVERRIDE = ConfigKey.create("armor_physics_override", false);
+    private static final ConfigKey<Boolean> ARMOR_PHYSICS_OVERRIDE = ConfigKey.DEFAULT_FALSE;
 
-    private static final ConfigKey<Boolean> FIRST_TIME_LOAD = ConfigKey.create("firstTimeLoad", true);
-    private static final ConfigKey<Boolean> SHOW_TOAST = ConfigKey.create("showToast", true);
-    private static final ConfigKey<Boolean> CLOUD_SYNC_ENABLED = ConfigKey.create("cloud_sync", false);
-    private static final ConfigKey<Boolean> AUTOMATIC_CLOUD_SYNC = ConfigKey.create("sync_player_data", false);
+    private static final ConfigKey<Boolean> FIRST_TIME_LOAD = ConfigKey.DEFAULT_TRUE;
+    private static final ConfigKey<Boolean> SHOW_TOAST = ConfigKey.DEFAULT_TRUE;
+    private static final ConfigKey<Boolean> CLOUD_SYNC_ENABLED = ConfigKey.DEFAULT_FALSE;
+    private static final ConfigKey<Boolean> AUTOMATIC_CLOUD_SYNC = ConfigKey.DEFAULT_FALSE;
     /// @see com.wildfire.main.cloud.CloudSync#DEFAULT_CLOUD_URL for the actual default
-    private static final ConfigKey<String> CLOUD_SERVER = ConfigKey.create("cloud_server", "", Codec.STRING);
-    private static final ConfigKey<SyncVerbosity> SYNC_VERBOSITY = ConfigKey.create("sync_log_verbosity", SyncVerbosity.DEFAULT, SyncVerbosity.CODEC_OR_LEGACY);
+    private static final ConfigKey<String> CLOUD_SERVER = new ConfigKey<>("", Codec.STRING);
+    private static final ConfigKey<SyncVerbosity> SYNC_VERBOSITY = new ConfigKey<>(SyncVerbosity.DEFAULT, SyncVerbosity.CODEC_OR_LEGACY);
 
-    private static final ConfigKey<ShowPlayerListMode> PLAYER_LIST_MODE = ConfigKey.create("alwaysShowList", ShowPlayerListMode.MOD_UI_ONLY, ShowPlayerListMode.CODEC_OR_LEGACY);
+    private static final ConfigKey<ShowPlayerListMode> PLAYER_LIST_MODE = new ConfigKey<>(ShowPlayerListMode.MOD_UI_ONLY, ShowPlayerListMode.CODEC_OR_LEGACY);
 
-    private static final ConfigKey<Boolean> ARMOR_STAT = ConfigKey.create("armor_stat", true);
+    private static final ConfigKey<Boolean> ARMOR_STAT = ConfigKey.DEFAULT_TRUE;
 
-    private static final ConfigKey<Boolean> HIDE_OWN_CONTRIBUTOR_TAG = ConfigKey.create("hide_own_contributor_nametag", false);
+    private static final ConfigKey<Boolean> HIDE_OWN_CONTRIBUTOR_TAG = ConfigKey.DEFAULT_FALSE;
 
     public static final Codec<ClientConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-        ARMOR_PHYSICS_OVERRIDE.codecOrDefault().forGetter(config -> config.armorPhysicsOverride.get()),
-        FIRST_TIME_LOAD.codecOrDefault().forGetter(config -> config.firstTimeLoad.get()),
-        CLOUD_SYNC_ENABLED.codecOrDefault().forGetter(config -> config.cloudSyncEnabled.get()),
-        AUTOMATIC_CLOUD_SYNC.codecOrDefault().forGetter(config -> config.automaticCloudSync.get()),
-        CLOUD_SERVER.codecOrDefault().forGetter(config -> config.cloudServer.get()),
-        SYNC_VERBOSITY.codecOrDefault().forGetter(config -> config.syncVerbosity.get()),
-        PLAYER_LIST_MODE.codecOrDefault().forGetter(config -> config.playerListMode.get()),
-        ARMOR_STAT.codecOrDefault().forGetter(config -> config.armorStat.get()),
-        HIDE_OWN_CONTRIBUTOR_TAG.codecOrDefault().forGetter(config -> config.hideOwnContributorTag.get()),
-        SHOW_TOAST.codecOrDefault().forGetter(config -> config.showToast.get())
+        ARMOR_PHYSICS_OVERRIDE.codecOrDefault("armor_physics_override").forGetter(config -> config.armorPhysicsOverride.get()),
+        FIRST_TIME_LOAD.codecOrDefault("firstTimeLoad").forGetter(config -> config.firstTimeLoad.get()),
+        CLOUD_SYNC_ENABLED.codecOrDefault("cloud_sync").forGetter(config -> config.cloudSyncEnabled.get()),
+        AUTOMATIC_CLOUD_SYNC.codecOrDefault("sync_player_data").forGetter(config -> config.automaticCloudSync.get()),
+        CLOUD_SERVER.codecOrDefault("cloud_server").forGetter(config -> config.cloudServer.get()),
+        SYNC_VERBOSITY.codecOrDefault("sync_log_verbosity").forGetter(config -> config.syncVerbosity.get()),
+        PLAYER_LIST_MODE.codecOrDefault("alwaysShowList").forGetter(config -> config.playerListMode.get()),
+        ARMOR_STAT.codecOrDefault("armor_stat").forGetter(config -> config.armorStat.get()),
+        HIDE_OWN_CONTRIBUTOR_TAG.codecOrDefault("hide_own_contributor_nametag").forGetter(config -> config.hideOwnContributorTag.get()),
+        SHOW_TOAST.codecOrDefault("showToast").forGetter(config -> config.showToast.get())
     ).apply(instance, ClientConfig::new));
 
     private static final Configuration<ClientConfig> cfgFile = new Configuration<>(".", "female_gender_mod", CODEC);

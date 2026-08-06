@@ -18,20 +18,28 @@
 
 package com.wildfire.main;
 
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.wildfire.api.IGenderArmor;
+import com.wildfire.main.config.validator.ConfigRange;
 import com.wildfire.resources.GenderArmorResourceManager;
+import java.util.StringJoiner;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.TriState;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 
 import java.util.concurrent.ThreadLocalRandom;
+import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 public final class WildfireHelper {
 
@@ -98,5 +106,31 @@ public final class WildfireHelper {
 
     public static double snapToStep(double value, double stepSize) {
         return Math.round(value / stepSize) * stepSize;
+    }
+
+    public static <T> MapCodec<T> withAlternative(MapCodec<T> primary, MapCodec<? extends T> alternative) {
+        return Codec.mapEither(primary, alternative).xmap(Either::unwrap, Either::left);
+    }
+
+    public static Codec<Vector3fc> validatedVector(ConfigRange<Float> xRange, ConfigRange<Float> yRange, ConfigRange<Float> zRange) {
+        return ExtraCodecs.VECTOR3F.validate(value -> {
+            boolean xValid = xRange.validate(value.x());
+            boolean yValid = yRange.validate(value.y());
+            boolean zValid = zRange.validate(value.z());
+            if (xValid && yValid && zValid) {
+                return DataResult.success(value);
+            }
+            return DataResult.error(() -> {
+                StringJoiner message = new StringJoiner(". ");
+                if (!xValid) message.add("X value must be within range [" + xRange.minInclusive() + ";" + xRange.maxInclusive() + "]: " + value.x());
+                if (!yValid) message.add("Y value must be within range [" + yRange.minInclusive() + ";" + yRange.maxInclusive() + "]: " + value.y());
+                if (!zValid) message.add("Z value must be within range [" + zRange.minInclusive() + ";" + zRange.maxInclusive() + "]: " + value.z());
+                return message.toString();
+            }, new Vector3f(
+                Math.clamp(value.x(), xRange.minInclusive(), xRange.maxInclusive()),
+                Math.clamp(value.y(), yRange.minInclusive(), yRange.maxInclusive()),
+                Math.clamp(value.z(), zRange.minInclusive(), zRange.maxInclusive())
+            ));
+        });
     }
 }

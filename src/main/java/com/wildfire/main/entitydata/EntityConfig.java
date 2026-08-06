@@ -38,7 +38,7 @@ import net.minecraft.world.entity.decoration.ArmorStand;
 /// Currently only used for [`armor stands`][ArmorStand], and as a superclass for [`player configs`][PlayerConfig].
 public class EntityConfig  {
 
-    public static final ConfigKey<Gender> GENDER = ConfigKey.create("gender", Gender.MALE, Gender.CODEC_OR_LEGACY);
+    public static final ConfigKey<Gender> GENDER = new ConfigKey<>(Gender.MALE, Gender.CODEC_OR_LEGACY);
 
     /// @return `true` if the mod has support for the provided entity
     public static boolean isSupportedEntity(LivingEntity entity) {
@@ -54,10 +54,10 @@ public class EntityConfig  {
 
     protected static <CONFIG extends EntityConfig> P3<Mu<CONFIG>, Gender, Breasts, UVs> codecGroup(Instance<CONFIG> instance) {
         return instance.group(
-            GENDER.codecOrDefault().forGetter(config -> config.gender.get()),
-            Breasts.CODEC.forGetter(config -> config.breasts),
+            GENDER.codecOrDefault("gender").forGetter(config -> config.gender.get()),
+            Breasts.CODEC_OR_LEGACY.forGetter(config -> config.breasts),
             //TODO: Should UVs be in player, or maybe avatar once that intermediary exists?
-            UVs.CODEC.forGetter(config -> config.uvs)
+            UVs.CODEC_OR_LEGACY.forGetter(config -> config.uvs)
         );
     }
 

@@ -65,7 +65,8 @@ public class ConfigValue<TYPE> implements Supplier<TYPE>, Consumer<TYPE> {
             this.value = newValue;
             return true;
         }
-        WildfireGender.LOGGER.warn("Failed to update config '{}' to value: {}", key.key(), value);
+        //TODO: Do we care about having a logging message? If so where should we get the key name from
+        //WildfireGender.LOGGER.warn("Failed to update config '{}' to value: {}", key.key(), value);
         return false;
     }
 

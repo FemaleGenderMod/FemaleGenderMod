@@ -18,8 +18,15 @@
 
 package com.wildfire.main.config.validator;
 
-@FunctionalInterface
+import com.mojang.serialization.DataResult;
+
 public interface ConfigValidator<TYPE> {
 
     boolean validate(TYPE value);
+
+    DataResult<TYPE> codecValidation(TYPE value);
+
+    default boolean hasCodecValidation() {
+        return true;
+    }
 }

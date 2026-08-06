@@ -34,7 +34,7 @@ import com.wildfire.main.WildfireLang;
 import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.config.enums.SyncVerbosity;
 import com.wildfire.main.contributors.Contributor;
-import com.wildfire.main.entitydata.EntityConfig;
+import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.entitydata.PlayerConfigHolder;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -296,14 +296,8 @@ public final class CloudSync {
         return CompletableFuture.runAsync(() -> {
             var token = getAuthToken();
             var url = URI.create(getCloudServer() + "/" + config.uuid);
-            var json = Util.make(config.toJson(), jsonElement -> {
-                //TODO: Remove this hacky way of enforcing encoding the gender as the ordinal, by changing the serialization out once the cloud server can support doing it on its side
-                if (jsonElement.isJsonObject()) {
-                    EntityConfig.GENDER.codec().codec().parse(JsonOps.INSTANCE, jsonElement).ifSuccess(gender ->
-                        jsonElement.getAsJsonObject().addProperty(EntityConfig.GENDER.key(), gender.ordinal())
-                    );
-                }
-            }).toString();
+            //TODO: Remove this hacky way of enforcing encoding the gender as the ordinal, by changing the serialization out once the cloud server can support doing it on its side
+            var json = PlayerConfig.CLOUD_SYNC_CODEC.encodeStart(JsonOps.INSTANCE, config.config()).resultOrPartial().orElseGet(JsonObject::new).toString();
 
             SyncLog.add(WildfireLang.SYNC_LOG_START);
 
