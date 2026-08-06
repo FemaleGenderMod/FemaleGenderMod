@@ -37,7 +37,7 @@ public record ConfigKey<TYPE>(Either<TYPE, Supplier<TYPE>> defaultValueSupplier,
     private static final ConfigValidator<?> ALWAYS_TRUE = new ConfigValidator<>() {
         @Override
         public boolean validate(final Object value) {
-            return false;
+            return true;
         }
 
         @Override
