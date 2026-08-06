@@ -126,34 +126,51 @@ public record Breasts(ConfigValue<Float> xOffset, ConfigValue<Float> yOffset, Co
         private static final ConfigKey<Boolean> BREAST_PHYSICS = ConfigKey.DEFAULT_TRUE;
         private static final ConfigKey<Boolean> BREASTS_UNIBOOB = ConfigKey.DEFAULT_TRUE;
         private static final ConfigKey<Float> BOUNCE_MULTIPLIER = ConfigKey.create(0.333F, 0, 0.5F);
-        private static final ConfigKey<Float> FLOPPY_MULTIPLIER = ConfigKey.create(0.75F, 0.25F, 1);
+        private static final ConfigKey<Float> FLOPPINESS = ConfigKey.create(0.75F, 0.25F, 1);
 
         private static final Codec<Physics> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             BREAST_PHYSICS.codec().fieldOf("enabled").forGetter(physics -> physics.enabled.get()),
             BREASTS_UNIBOOB.codec().fieldOf("uniboob").forGetter(physics -> physics.uniboob.get()),
             BOUNCE_MULTIPLIER.codec().fieldOf("bounce_multiplier").forGetter(physics -> physics.bounceMultiplier.get()),
-            FLOPPY_MULTIPLIER.codec().fieldOf("floppiness").forGetter(physics -> physics.floppiness.get())
+            FLOPPINESS.codec().fieldOf("floppiness").forGetter(physics -> physics.floppiness.get())
         ).apply(instance, Physics::new));
         private static final MapCodec<Physics> LEGACY_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             BREAST_PHYSICS.codecOrDefault("breast_physics").forGetter(physics -> physics.enabled.get()),
             BREASTS_UNIBOOB.codecOrDefault("breasts_uniboob").forGetter(physics -> physics.uniboob.get()),
             BOUNCE_MULTIPLIER.codecOrDefault("bounce_multiplier").forGetter(physics -> physics.bounceMultiplier.get()),
-            FLOPPY_MULTIPLIER.codecOrDefault("floppy_multiplier").forGetter(physics -> physics.floppiness.get())
+            FLOPPINESS.codecOrDefault("floppy_multiplier").forGetter(physics -> physics.floppiness.get())
         ).apply(instance, Physics::new));
-        private static final StreamCodec<ByteBuf, Physics> STREAM_CODEC = StreamCodec.composite(
-            //TODO: If physics aren't enabled we don't need to sync bounce multiplier or floppiness
-            ByteBufCodecs.BOOL, physics -> physics.enabled.get(),
+        private static final StreamCodec<ByteBuf, Physics> WITH_PHYSICS_STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.BOOL, physics -> physics.uniboob.get(),
             ByteBufCodecs.FLOAT, physics -> physics.bounceMultiplier.get(),
             ByteBufCodecs.FLOAT, physics -> physics.floppiness.get(),
-            Physics::new
+            (uniboob, bounceMultiplier, floppiness) -> new Physics(true, uniboob, bounceMultiplier, floppiness)
         );
+        private static final StreamCodec<ByteBuf, Physics> STREAM_CODEC = new StreamCodec<>() {
+            @Override
+            public Physics decode(final ByteBuf input) {
+                if (input.readBoolean()) {
+                    return WITH_PHYSICS_STREAM_CODEC.decode(input);
+                }
+                return new Physics(false, BREASTS_UNIBOOB.defaultValue(), BOUNCE_MULTIPLIER.defaultValue(), FLOPPINESS.defaultValue());
+            }
+
+            @Override
+            public void encode(final ByteBuf output, final Physics physics) {
+                if (physics.enabled.get()) {
+                    output.writeBoolean(true);
+                    WITH_PHYSICS_STREAM_CODEC.encode(output, physics);
+                } else {
+                    output.writeBoolean(false);
+                }
+            }
+        };
 
         private Physics(boolean physics, boolean uniboob, float bounceMultiplier, float floppiness) {
             this(BREAST_PHYSICS.createValueHandler(physics),
                 BREASTS_UNIBOOB.createValueHandler(uniboob),
                 BOUNCE_MULTIPLIER.createValueHandler(bounceMultiplier),
-                FLOPPY_MULTIPLIER.createValueHandler(floppiness)
+                FLOPPINESS.createValueHandler(floppiness)
             );
         }
     }

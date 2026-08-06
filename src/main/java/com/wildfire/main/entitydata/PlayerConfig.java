@@ -46,7 +46,6 @@ public class PlayerConfig extends EntityConfig {
     public static final StreamCodec<ByteBuf, PlayerConfig> STREAM_CODEC = StreamCodec.composite(
         //From EntityConfig
         Gender.STREAM_CODEC, config -> config.gender.get(),
-        //TODO: Technically if the gender is male, none of this other stuff needs to be synced
         Breasts.STREAM_CODEC, config -> config.breasts,
         UVs.STREAM_CODEC, config -> config.uvs,
         //From PlayerConfig
@@ -55,6 +54,25 @@ public class PlayerConfig extends EntityConfig {
         ByteBufCodecs.BOOL, config -> config.holidayThemes.get(),
         PlayerConfig::new
     );
+    public static final StreamCodec<ByteBuf, PlayerConfig> COMPACT_STREAM_CODEC = new StreamCodec<>() {
+        @Override
+        public PlayerConfig decode(final ByteBuf input) {
+            if (input.readBoolean()) {
+                return STREAM_CODEC.decode(input);
+            }
+            return createDefault();
+        }
+
+        @Override
+        public void encode(final ByteBuf output, final PlayerConfig config) {
+            if (config.gender.get() == Gender.MALE) {
+                output.writeBoolean(false);
+            } else {
+                output.writeBoolean(true);
+                STREAM_CODEC.encode(output, config);
+            }
+        }
+    };
 
     //TODO: Remove this hacky way of enforcing encoding using the old syntax, by changing the serialization to CODEC once the cloud server can support doing it on its side
     public static final Codec<PlayerConfig> CLOUD_SYNC_CODEC = RecordCodecBuilder.create(instance -> instance.group(

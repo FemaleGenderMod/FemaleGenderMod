@@ -33,7 +33,7 @@ import net.minecraft.server.level.ServerPlayer;
 public record ServerboundSyncPacket(PlayerConfig config) implements CustomPacketPayload {
 
     public static final Type<ServerboundSyncPacket> ID = new CustomPacketPayload.Type<>(WildfireGender.id("send_gender_info"));
-    public static final StreamCodec<ByteBuf, ServerboundSyncPacket> CODEC = PlayerConfig.STREAM_CODEC.map(ServerboundSyncPacket::new, ServerboundSyncPacket::config);
+    public static final StreamCodec<ByteBuf, ServerboundSyncPacket> CODEC = PlayerConfig.COMPACT_STREAM_CODEC.map(ServerboundSyncPacket::new, ServerboundSyncPacket::config);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {

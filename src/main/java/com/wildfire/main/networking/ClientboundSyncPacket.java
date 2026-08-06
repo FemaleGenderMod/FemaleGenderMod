@@ -38,7 +38,7 @@ public record ClientboundSyncPacket(UUID uuid, PlayerConfig config) implements C
     public static final Type<ClientboundSyncPacket> ID = new CustomPacketPayload.Type<>(WildfireGender.id("sync"));
     public static final StreamCodec<ByteBuf, ClientboundSyncPacket> CODEC = StreamCodec.composite(
         UUIDUtil.STREAM_CODEC, p -> p.uuid,
-        PlayerConfig.STREAM_CODEC, p -> p.config,
+        PlayerConfig.COMPACT_STREAM_CODEC, p -> p.config,
         ClientboundSyncPacket::new
     );
 
