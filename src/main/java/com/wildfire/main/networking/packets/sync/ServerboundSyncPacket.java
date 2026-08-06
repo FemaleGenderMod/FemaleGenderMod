@@ -25,15 +25,13 @@ import io.netty.buffer.ByteBuf;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.fabricmc.fabric.api.networking.v1.context.PacketContextProvider;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.util.TriState;
 
 public record ServerboundSyncPacket(PlayerConfig config) implements CustomPacketPayload {
 
-    public static final Type<ServerboundSyncPacket> TYPE = WildfireGender.packet("serverbound/sync");
+    public static final Type<ServerboundSyncPacket> TYPE = WildfireGender.serverBoundPacket("sync");
     public static final StreamCodec<ByteBuf, ServerboundSyncPacket> CODEC = PlayerConfig.COMPACT_STREAM_CODEC.map(ServerboundSyncPacket::new, ServerboundSyncPacket::config);
 
     @Override
@@ -42,12 +40,7 @@ public record ServerboundSyncPacket(PlayerConfig config) implements CustomPacket
     }
 
     @Environment(EnvType.CLIENT)
-    public static boolean canSend() {
-        ClientPacketListener connection = Minecraft.getInstance().getConnection();
-        if (connection == null) {
-            return false;
-        }
-        TriState matchingVersion = connection.getPacketContext().orElse(WildfireSync.MATCHING_VERSION, TriState.DEFAULT);
-        return ClientPlayNetworking.canSend(TYPE) && matchingVersion.toBoolean(false);
+    public static boolean canSend(PacketContextProvider contextProvider) {
+        return ClientPlayNetworking.canSend(TYPE) && WildfireSync.versionMatches(contextProvider);
     }
 }

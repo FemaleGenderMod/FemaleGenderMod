@@ -34,7 +34,7 @@ public sealed interface SyncHelloPacket extends CustomPacketPayload permits Clie
     /// | `1` (`5.0.0-Beta.2`) | Initial versioned protocol |
     /// | `2` (TBD)            | Hello packet is now sent during config phase and is now required, sync packets are now identified as `{client,server}bound/sync`, sync
     /// packet contents are now different |
-    int VERSION = 2;//TODO: Do we want to try to make it so that if it detects version 1 it syncs using that format?
+    int VERSION = 2;
 
     int version();
 }

@@ -28,13 +28,12 @@ import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.TriState;
 
 import java.util.UUID;
 
 public record ClientboundSyncPacket(UUID uuid, PlayerConfig config) implements CustomPacketPayload {
 
-    public static final Type<ClientboundSyncPacket> TYPE = WildfireGender.packet("clientbound/sync");
+    public static final Type<ClientboundSyncPacket> TYPE = WildfireGender.clientBoundPacket("sync");
     public static final StreamCodec<ByteBuf, ClientboundSyncPacket> CODEC = StreamCodec.composite(
         UUIDUtil.STREAM_CODEC, p -> p.uuid,
         PlayerConfig.COMPACT_STREAM_CODEC, p -> p.config,
@@ -51,7 +50,6 @@ public record ClientboundSyncPacket(UUID uuid, PlayerConfig config) implements C
     }
 
     public static boolean canSend(ServerPlayer player) {
-        TriState matchingVersion = player.connection.getPacketContext().orElse(WildfireSync.MATCHING_VERSION, TriState.DEFAULT);
-        return ServerPlayNetworking.canSend(player, TYPE) && matchingVersion.toBoolean(false);
+        return ServerPlayNetworking.canSend(player, TYPE) && WildfireSync.versionMatches(player);
     }
 }

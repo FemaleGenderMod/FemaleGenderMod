@@ -86,7 +86,15 @@ public class WildfireGender implements ModInitializer {
         return Identifier.fromNamespaceAndPath(MODID, path);
     }
 
-    public static <T extends CustomPacketPayload> CustomPacketPayload.Type<T> packet(String path) {
+    public static <T extends CustomPacketPayload> CustomPacketPayload.Type<T> clientBoundPacket(String path) {
+        return packet("clientbound/" + path);
+    }
+
+    public static <T extends CustomPacketPayload> CustomPacketPayload.Type<T> serverBoundPacket(String path) {
+        return packet("serverbound/" + path);
+    }
+
+    private static <T extends CustomPacketPayload> CustomPacketPayload.Type<T> packet(String path) {
         return new CustomPacketPayload.Type<>(id(path));
     }
 }

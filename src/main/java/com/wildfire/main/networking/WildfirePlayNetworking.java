@@ -35,9 +35,9 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
-import net.minecraft.util.TriState;
 
 /*package-private*/ final class WildfirePlayNetworking {
+
     /*package-private*/ static void register() {
         PayloadTypeRegistry.serverboundPlay().register(ClientboundSyncPacket.TYPE, ClientboundSyncPacket.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(ClientboundSyncPacket.TYPE, ClientboundSyncPacket.CODEC);
@@ -53,12 +53,10 @@ import net.minecraft.util.TriState;
     }
 
     private static void initServer(ServerGamePacketListenerImpl listener, MinecraftServer server) {
-        if(listener.getPacketContext().orElse(WildfireSync.MATCHING_VERSION, TriState.DEFAULT).toBoolean(false)) {
+        if (WildfireSync.versionMatches(listener)) {
             ServerPlayNetworking.registerReceiver(listener, ServerboundSyncPacket.TYPE, WildfirePlayNetworking::handleServerbound);
         } else {
-            WildfireGender.LOGGER.debug(
-                WildfireSync.MARKER,
-                "{} is not using a supported sync protocol version (or doesn't have the mod), not registering receivers",
+            WildfireGender.LOGGER.debug(WildfireSync.MARKER, "{} is not using a supported sync protocol version (or doesn't have the mod), not registering receivers",
                 listener.getPlayer()
             );
         }
@@ -66,13 +64,10 @@ import net.minecraft.util.TriState;
 
     @Environment(EnvType.CLIENT)
     private static void initClient(ClientPacketListener listener, Minecraft client) {
-        if(listener.getPacketContext().orElse(WildfireSync.MATCHING_VERSION, TriState.DEFAULT).toBoolean(false)) {
+        if (WildfireSync.versionMatches(listener)) {
             ClientPlayNetworking.registerReceiver(ClientboundSyncPacket.TYPE, WildfirePlayNetworking::handleClientbound);
         } else {
-            WildfireGender.LOGGER.debug(
-                WildfireSync.MARKER,
-                "Server is not using a supported sync protocol version (or doesn't have the mod), not registering receivers"
-            );
+            WildfireGender.LOGGER.debug(WildfireSync.MARKER, "Server is not using a supported sync protocol version (or doesn't have the mod), not registering receivers");
         }
     }
 
@@ -92,11 +87,10 @@ import net.minecraft.util.TriState;
     @Environment(EnvType.CLIENT)
     private static void handleClientbound(ClientboundSyncPacket packet, ClientPlayNetworking.Context context) {
         UUID uuid = packet.uuid();
-        if(context.player().getUUID().equals(uuid)) {
+        if (context.player().getUUID().equals(uuid)) {
             WildfireGender.LOGGER.warn("Ignoring sync packet referring to the client player");
             return;
         }
-
         WildfireGender.LOGGER.debug(WildfireSync.MARKER, "Received player data for player {}", uuid);
         PlayerConfigHolder plr = WildfireGender.getOrAddPlayerById(uuid);
         plr.updateFromPacket(packet.config(), true);
