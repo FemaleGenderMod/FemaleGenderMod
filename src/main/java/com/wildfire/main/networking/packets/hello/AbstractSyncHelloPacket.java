@@ -24,7 +24,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
-public sealed abstract class AbstractSyncHelloPacket implements CustomPacketPayload permits ClientboundSyncHelloPacket, ServerboundSyncHelloPacket {
+public abstract sealed class AbstractSyncHelloPacket implements CustomPacketPayload permits ClientboundSyncHelloPacket, ServerboundSyncHelloPacket {
     /// Denotes the current sync protocol version
     ///
     /// This version handshake is initiated by the connecting client, with the server only then responding
@@ -37,7 +37,7 @@ public sealed abstract class AbstractSyncHelloPacket implements CustomPacketPayl
     /// | ------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
     /// | `1` (5.0.0-Beta.2) | Initial versioned protocol                                                                                                       |
     /// | `2` (TBD)          | Hello packet is now sent during config phase and is now required, sync packets are now identified as `{client,server}bound/sync` |
-    public static final int VERSION = 2;
+    public static final int VERSION = 2;//TODO: Do we want to try to make it so that if it detects version 1 it syncs using that format?
 
     public abstract int version();
 

@@ -21,7 +21,6 @@ package com.wildfire.main.networking;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.entitydata.PlayerConfigHolder;
-import com.wildfire.main.networking.packets.SyncHelloPacket;
 import com.wildfire.main.networking.packets.sync.ClientboundSyncPacket;
 import com.wildfire.main.networking.packets.sync.ServerboundSyncPacket;
 import net.fabricmc.api.EnvType;

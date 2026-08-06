@@ -54,16 +54,4 @@ public record ClientboundSyncPacket(UUID uuid, PlayerConfig config) implements C
         TriState matchingVersion = player.connection.getPacketContext().orElse(WildfireSync.MATCHING_VERSION, TriState.DEFAULT);
         return ServerPlayNetworking.canSend(player, TYPE) && matchingVersion.toBoolean(false);
     }
-
-    @Environment(EnvType.CLIENT)
-    public void handle(ClientPlayNetworking.Context context) {
-        if(context.player().getUUID().equals(uuid)) {
-            WildfireGender.LOGGER.warn("Ignoring sync packet referring to the client player");
-            return;
-        }
-
-        WildfireSync.LOGGER.debug("Received player data for player {}", uuid);
-        PlayerConfigHolder plr = WildfireGender.getOrAddPlayerById(uuid);
-        plr.updateFromPacket(config, true);
-    }
 }
