@@ -38,6 +38,7 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.CommonColors;
+import net.minecraft.util.Mth;
 import org.jetbrains.annotations.UnknownNullability;
 
 /// @apiNote Only use this on the client side
@@ -170,7 +171,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
     }
 
     private int getTotalPages() {
-        return (int) Math.ceil((double) getActiveBoxes().length / boxesPerPage);
+        return Mth.ceil((double) getActiveBoxes().length / boxesPerPage);
     }
 
     private FakeGUIPlayer[] getActiveBoxes() {

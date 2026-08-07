@@ -50,8 +50,6 @@ import org.jspecify.annotations.Nullable;
 /// @apiNote Only use this on the client side
 public class GenderLayer<S extends HumanoidRenderState, M extends HumanoidModel<S>> extends RenderLayer<S, M> {
 
-    private static final float DEG_TO_RAD = (float) (Math.PI / 180);
-
     @UnknownNullability("null until #resizeBox() is first called")
     private BreastModelBox lBreast, rBreast;
     @UnknownNullability("null until #resizeBox() is first called")
@@ -169,7 +167,7 @@ public class GenderLayer<S extends HumanoidRenderState, M extends HumanoidModel<
         zOffset = 0.0625f - (bSize * 0.0625f); // Calculate zOffset
         breastSize += 0.5f * Math.abs(bSize - 0.7f) * 2f; // Adjust breastSize based on bSize
 
-        float resistance = Mth.clamp(genderArmor.physicsResistance(), 0, 1);
+        float resistance = Math.clamp(genderArmor.physicsResistance(), 0, 1);
         breathingAnimation = (armorPhysicsOverride || resistance <= 0.5F) && genderState.isBreathing;
         bounceEnabled = genderState.hasBreastPhysics && (!isChestplateOccupied || resistance < 1); //oh, you found this?
         return true;
@@ -219,7 +217,7 @@ public class GenderLayer<S extends HumanoidRenderState, M extends HumanoidModel<
             matrixStack.translate(-0.0625f * 2 * (side.isLeft ? 1 : -1), 0, 0);
         }
         if(bounceEnabled) {
-            matrixStack.mulPose(new Quaternionf().rotationXYZ(0, (float)((side.isLeft ? lPhysBounceRotation : rPhysBounceRotation) * (Math.PI / 180f)), 0));
+            matrixStack.mulPose(new Quaternionf().rotationXYZ(0, (side.isLeft ? lPhysBounceRotation : rPhysBounceRotation) * Mth.DEG_TO_RAD, 0));
         }
         if(!isUniboob) {
             matrixStack.translate(0.0625f * 2 * (side.isLeft ? 1 : -1), 0, 0);
@@ -239,12 +237,12 @@ public class GenderLayer<S extends HumanoidRenderState, M extends HumanoidModel<
         }
 
         Quaternionf rotationTransform = new Quaternionf()
-                .rotationY((side.isLeft ? outwardAngle : -outwardAngle) * DEG_TO_RAD)
-                .rotateX(-35f * rotation * DEG_TO_RAD);
+                .rotationY((side.isLeft ? outwardAngle : -outwardAngle) * Mth.DEG_TO_RAD)
+                .rotateX(-35f * rotation * Mth.DEG_TO_RAD);
 
         if(breathingAnimation) {
             float f5 = -Mth.cos(state.ageInTicks * 0.09F) * 0.45F + 0.45F;
-            rotationTransform.rotateX(f5 * DEG_TO_RAD);
+            rotationTransform.rotateX(f5 * Mth.DEG_TO_RAD);
         }
 
         matrixStack.mulPose(rotationTransform);
