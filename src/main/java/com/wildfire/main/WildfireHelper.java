@@ -33,7 +33,6 @@ import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 
-import java.util.concurrent.ThreadLocalRandom;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
@@ -41,13 +40,6 @@ public final class WildfireHelper {
 
     private WildfireHelper() {
         throw new UnsupportedOperationException();
-    }
-
-    public static int randInt(int min, int max) {
-        return ThreadLocalRandom.current().nextInt(min, max + 1);
-    }
-    public static float randFloat(float min, float max) {
-        return (float) ThreadLocalRandom.current().nextDouble(min, (double) max + 1);
     }
 
     public static float round(float num, float decimalPlaces) {
