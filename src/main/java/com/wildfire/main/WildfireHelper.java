@@ -21,9 +21,7 @@ package com.wildfire.main;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.wildfire.api.IGenderArmor;
 import com.wildfire.main.config.validator.ConfigRange;
 import com.wildfire.resources.GenderArmorResourceManager;
@@ -32,7 +30,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.util.ExtraCodecs;
-import net.minecraft.util.TriState;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 
@@ -45,28 +42,6 @@ public final class WildfireHelper {
     private WildfireHelper() {
         throw new UnsupportedOperationException();
     }
-
-    public static final PrimitiveCodec<TriState> TRISTATE = new PrimitiveCodec<>() {
-        @Override
-        public <T> DataResult<TriState> read(final DynamicOps<T> ops, final T input) {
-            return DataResult.success(ops.getBooleanValue(input)
-                    .map(TriState::from)
-                    .result().orElse(TriState.DEFAULT));
-        }
-
-        @Override
-        public <T> T write(final DynamicOps<T> ops, final TriState value) {
-            if(value == TriState.DEFAULT) {
-                return ops.empty();
-            }
-            return ops.createBoolean(value == TriState.TRUE);
-        }
-
-        @Override
-        public String toString() {
-            return "TriState";
-        }
-    };
 
     public static int randInt(int min, int max) {
         return ThreadLocalRandom.current().nextInt(min, max + 1);
