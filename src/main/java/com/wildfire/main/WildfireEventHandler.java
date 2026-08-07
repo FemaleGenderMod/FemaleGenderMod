@@ -34,7 +34,8 @@ import com.wildfire.main.entitydata.BreastDataComponent;
 import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.main.entitydata.EntityConfigHolder;
 import com.wildfire.main.entitydata.PlayerConfigHolder;
-import com.wildfire.main.networking.ServerboundSyncPacket;
+import com.wildfire.main.entitydata.PlayerConfig;
+import com.wildfire.main.networking.packets.sync.ServerboundSyncPacket;
 import com.wildfire.main.networking.WildfireSync;
 import com.wildfire.render.GenderArmorLayer;
 import com.wildfire.render.GenderLayer;
@@ -240,7 +241,7 @@ public final class WildfireEventHandler {
             // Only attempt to sync if the server will accept the packet, and only once every 5 ticks, or around 4 times a second
             if (client.isMultiplayerServer() && clientConfig != null) {
                 // sendToServer will only actually send a packet if any changes have been made that need to be synced, or if we haven't synced before.
-                WildfireSync.sendToServer(clientConfig);
+                WildfireSync.sendToServer(client.player, clientConfig);
             }
             if (timer % 40 == 0) {//All timers that are divisible by 40 will be divisible by 5, so we may as well put it within the outer if statement
                 CloudSync.sendNextQueueBatch();

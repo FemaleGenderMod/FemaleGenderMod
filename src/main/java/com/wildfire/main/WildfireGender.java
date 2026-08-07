@@ -25,6 +25,7 @@ import com.mojang.logging.LogUtils;
 import com.wildfire.main.entitydata.PlayerConfigHolder;
 import com.wildfire.main.networking.WildfireSync;
 import net.fabricmc.api.ModInitializer;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -83,5 +84,17 @@ public class WildfireGender implements ModInitializer {
 
     public static Identifier id(String path) {
         return Identifier.fromNamespaceAndPath(MODID, path);
+    }
+
+    public static <T extends CustomPacketPayload> CustomPacketPayload.Type<T> clientBoundPacket(String path) {
+        return packet("clientbound/" + path);
+    }
+
+    public static <T extends CustomPacketPayload> CustomPacketPayload.Type<T> serverBoundPacket(String path) {
+        return packet("serverbound/" + path);
+    }
+
+    private static <T extends CustomPacketPayload> CustomPacketPayload.Type<T> packet(String path) {
+        return new CustomPacketPayload.Type<>(id(path));
     }
 }

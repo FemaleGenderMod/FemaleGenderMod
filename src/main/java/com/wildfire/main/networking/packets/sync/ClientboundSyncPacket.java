@@ -16,15 +16,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.main.networking;
+package com.wildfire.main.networking.packets.sync;
 
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.entitydata.PlayerConfigHolder;
+import com.wildfire.main.networking.WildfireSync;
 import io.netty.buffer.ByteBuf;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.codec.StreamCodec;
@@ -35,7 +33,7 @@ import java.util.UUID;
 
 public record ClientboundSyncPacket(UUID uuid, PlayerConfig config) implements CustomPacketPayload {
 
-    public static final Type<ClientboundSyncPacket> ID = new CustomPacketPayload.Type<>(WildfireGender.id("sync"));
+    public static final Type<ClientboundSyncPacket> TYPE = WildfireGender.clientBoundPacket("sync");
     public static final StreamCodec<ByteBuf, ClientboundSyncPacket> CODEC = StreamCodec.composite(
         UUIDUtil.STREAM_CODEC, p -> p.uuid,
         PlayerConfig.COMPACT_STREAM_CODEC, p -> p.config,
@@ -48,21 +46,10 @@ public record ClientboundSyncPacket(UUID uuid, PlayerConfig config) implements C
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
-        return ID;
+        return TYPE;
     }
 
     public static boolean canSend(ServerPlayer player) {
-        return ServerPlayNetworking.canSend(player, ID);
-    }
-
-    @Environment(EnvType.CLIENT)
-    public void handle(ClientPlayNetworking.Context context) {
-        if(context.player().getUUID().equals(uuid)) {
-            WildfireGender.LOGGER.warn("Ignoring sync packet referring to the client player");
-            return;
-        }
-
-        PlayerConfigHolder plr = WildfireGender.getOrAddPlayerById(uuid);
-        plr.updateFromPacket(config, true);
+        return ServerPlayNetworking.canSend(player, TYPE) && WildfireSync.versionMatches(player);
     }
 }

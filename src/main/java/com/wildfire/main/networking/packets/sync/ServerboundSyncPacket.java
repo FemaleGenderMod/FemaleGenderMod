@@ -16,44 +16,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.main.networking;
+package com.wildfire.main.networking.packets.sync;
 
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.entitydata.PlayerConfig;
-import com.wildfire.main.entitydata.PlayerConfigHolder;
+import com.wildfire.main.networking.WildfireSync;
 import io.netty.buffer.ByteBuf;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.context.PacketContextProvider;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.server.level.ServerPlayer;
 
 public record ServerboundSyncPacket(PlayerConfig config) implements CustomPacketPayload {
 
-    public static final Type<ServerboundSyncPacket> ID = new CustomPacketPayload.Type<>(WildfireGender.id("send_gender_info"));
+    public static final Type<ServerboundSyncPacket> TYPE = WildfireGender.serverBoundPacket("sync");
     public static final StreamCodec<ByteBuf, ServerboundSyncPacket> CODEC = PlayerConfig.COMPACT_STREAM_CODEC.map(ServerboundSyncPacket::new, ServerboundSyncPacket::config);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
-        return ID;
+        return TYPE;
     }
 
     @Environment(EnvType.CLIENT)
-    public static boolean canSend() {
-        return ClientPlayNetworking.canSend(ID);
-    }
-
-    public void handle(ServerPlayNetworking.Context context) {
-        ServerPlayer player = context.player();
-        PlayerConfigHolder plr = WildfireGender.getOrAddPlayerById(player.getUUID());
-        if (!context.server().isSingleplayerOwner(player.nameAndId())) {
-            //Note: We skip bothering to update the config if the server is an integrated server hosted by the player who sent it
-            // In that case the actual backing config will have already been updated because of it being stored in a static field
-            // which has the side effect of reaching across logical sides and updating both the server and client at once.
-            plr.updateFromPacket(config, false);
-        }
-        WildfireSync.sendToAllClients(player, plr);
+    public static boolean canSend(PacketContextProvider contextProvider) {
+        return ClientPlayNetworking.canSend(TYPE) && WildfireSync.versionMatches(contextProvider);
     }
 }
