@@ -45,23 +45,10 @@ public record BreastDataComponent(float breastSize, float cleavage, Vector3fc of
     private static final String KEY = "female_gender";
     private static final String LEGACY_KEY = "WildfireGender";
 
-    /// Minimal variant of [Breasts] to allow for mirroring serialization of [Breasts#CODEC] more easily
-    private record BreastData(float breastSize, float cleavage, Vector3fc offsets) {
-        private static final Codec<BreastData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Breasts.BUST_SIZE.codec().fieldOf("size").forGetter(BreastData::breastSize),
-            Breasts.BREASTS_CLEAVAGE.codec().fieldOf("cleavage").forGetter(BreastData::cleavage),
-            Breasts.OFFSET_CODEC.fieldOf("offset").forGetter(BreastData::offsets)
-        ).apply(instance, BreastData::new));
-
-        public BreastData(BreastDataComponent component) {
-            this(component.breastSize, component.cleavage, component.offsets);
-        }
-    }
-
     private static final Codec<BreastDataComponent> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-        BreastData.CODEC.fieldOf("breasts").forGetter(BreastData::new),
+        BreastState.CODEC.fieldOf("breasts").forGetter(BreastState::new),
         Codec.BOOL.optionalFieldOf("Jacket", true).forGetter(BreastDataComponent::jacket)
-    ).apply(instance, (data, jacket) -> new BreastDataComponent(data.breastSize(), data.cleavage(), data.offsets(), jacket, null)));
+    ).apply(instance, (state, jacket) -> new BreastDataComponent(state.breastSize(), state.cleavage(), state.offsets(), jacket, null)));
     private static final Codec<BreastDataComponent> LEGACY_CODEC = RecordCodecBuilder.create(instance -> instance.group(
         legacy(Breasts.BUST_SIZE, "BreastSize").forGetter(BreastDataComponent::breastSize),
         legacy(Breasts.BREASTS_CLEAVAGE, "Cleavage").forGetter(BreastDataComponent::cleavage),

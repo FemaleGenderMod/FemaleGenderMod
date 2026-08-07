@@ -23,6 +23,7 @@ import com.wildfire.api.IGenderArmor;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.config.ClientConfig;
+import com.wildfire.main.entitydata.BreastState;
 import com.wildfire.main.uvs.UVLayout;
 import com.wildfire.mixins.accessors.LivingEntityRendererAccessor;
 import com.wildfire.render.WildfireModelRenderer.BreastModelBox;
@@ -126,16 +127,16 @@ public class GenderLayer<S extends HumanoidRenderState, M extends HumanoidModel<
             return false;
         }
 
-        GenderRenderState.BreastState breasts = genderState.breasts;
-        breastOffsetX = WildfireHelper.round(breasts.xOffset, 1);
-        breastOffsetY = -WildfireHelper.round(breasts.yOffset, 1);
-        breastOffsetZ = -WildfireHelper.round(breasts.zOffset, 1);
+        BreastState breasts = genderState.breasts;
+        breastOffsetX = WildfireHelper.round(breasts.offsets().x(), 1);
+        breastOffsetY = -WildfireHelper.round(breasts.offsets().y(), 1);
+        breastOffsetZ = -WildfireHelper.round(breasts.offsets().z(), 1);
 
-        isUniboob = breasts.uniboob;
+        isUniboob = genderState.uniboob;
 
         GenderRenderState.BreastPhysicsState leftPhysicsState = genderState.leftBreastPhysics;
         final float bSize = leftPhysicsState.getBreastSize();
-        outwardAngle = Math.round(breasts.cleavage * 100f);
+        outwardAngle = Math.round(breasts.cleavage() * 100f);
         outwardAngle = Math.min(outwardAngle, 10);
 
         resizeBox(genderState, bSize);

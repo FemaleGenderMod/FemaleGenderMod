@@ -22,7 +22,7 @@ import com.wildfire.api.IGenderArmor;
 import com.wildfire.main.WildfireGenderClient;
 import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.config.enums.Gender;
-import com.wildfire.main.entitydata.Breasts;
+import com.wildfire.main.entitydata.BreastState;
 import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.main.entitydata.EntityConfigHolder;
 import com.wildfire.main.entitydata.PlayerConfig;
@@ -58,6 +58,7 @@ public class GenderRenderState {
     }
 
     public final BreastState breasts;
+    public final boolean uniboob;
     public final BreastPhysicsState leftBreastPhysics;
     public final BreastPhysicsState rightBreastPhysics;
 
@@ -83,6 +84,7 @@ public class GenderRenderState {
 
     private GenderRenderState(EntityConfigHolder<?> entityConfig, LivingEntity entity, float partialTicks) {
         this.breasts = new BreastState(entityConfig.breasts());
+        this.uniboob = entityConfig.breasts().physics().uniboob().get();
         this.leftBreastPhysics = new BreastPhysicsState(entityConfig.getLeftBreastPhysics());
         this.rightBreastPhysics = new BreastPhysicsState(entityConfig.getRightBreastPhysics());
 
@@ -123,22 +125,6 @@ public class GenderRenderState {
         this.isBreathing = !entity.isUnderWater() || MobEffectUtil.hasWaterBreathing(entity) ||
             entity.level().getBlockState(entity.blockPosition()).is(Blocks.BUBBLE_COLUMN);
         this.nametag = entity instanceof Player ? WildfireGenderClient.getNametag(entity.getUUID()) : null;
-    }
-
-    public static class BreastState {
-        public final float xOffset;
-        public final float yOffset;
-        public final float zOffset;
-        public final float cleavage;
-        public final boolean uniboob;
-
-        private BreastState(Breasts breasts) {
-            this.xOffset = breasts.xOffset().get();
-            this.yOffset = breasts.yOffset().get();
-            this.zOffset = breasts.zOffset().get();
-            this.cleavage = breasts.cleavage().get();
-            this.uniboob = breasts.physics().uniboob().get();
-        }
     }
 
     public class BreastPhysicsState {
