@@ -28,18 +28,20 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.network.chat.Component;
 
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 import net.minecraft.util.Util;
+import net.minecraft.world.entity.LivingEntity;
 import org.jspecify.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public abstract class BaseWildfireScreen extends Screen implements IFancyFontRenderer {
 
-    protected static final float ENTITY_SCALE = 0.0625F;
+    private static final float ENTITY_SCALE = 0.0625F;
 
     protected final UUID playerUUID;
     protected final @Nullable Screen parent;
@@ -72,11 +74,7 @@ public abstract class BaseWildfireScreen extends Screen implements IFancyFontRen
     protected void renderPlayerInFrame(GuiGraphicsExtractor graphics, int xP, int yP, int mouseX, int mouseY) {
         var player = minecraft.player;
         if(player == null) return;
-        // This sucks. In order to position the player properly, we need to trick the player renderer into
-        // thinking the area the player should be rendered is much taller than it actually is.
-        graphics.enableScissor(xP - 38, yP - 79, xP + 38, yP + 9);
-        InventoryScreen.extractEntityInInventoryFollowsMouse(graphics, xP - 38, yP - 79, xP + 38, yP + 69, 70, ENTITY_SCALE, mouseX, mouseY + 35, player);
-        graphics.disableScissor();
+        InventoryScreen.extractEntityInInventoryFollowsMouse(graphics, xP - 38, yP - 79, xP + 38, yP + 9, 70, getEntityScale(player, 0.4F), mouseX, mouseY, player);
     }
 
     @Override
@@ -99,5 +97,26 @@ public abstract class BaseWildfireScreen extends Screen implements IFancyFontRen
     public void onClose() {
         //~ if >=26.2 'minecraft.setScreen' -> 'minecraft.gui.setScreen'
         minecraft.gui.setScreen(parent);
+    }
+
+    protected static float getEntityScale(LivingEntity entity, float shift) {
+        return getEntityScale(entity, shift, true);
+    }
+
+    protected static float getEntityScale(LivingEntity entity, float shift, boolean adjustByHeight) {
+        float scale = ENTITY_SCALE;
+        //Note: While we could reimplement the default values that get set for state.isUpsideDown,
+        // it is easier and more mod compatible to just extract the render state an extra time
+        if (InventoryScreen.extractRenderState(entity) instanceof LivingEntityRenderState state && state.isUpsideDown) {
+            //Invert the scale
+            scale = -scale;
+            if (adjustByHeight) {
+                state.boundingBoxWidth /= state.scale;
+                state.boundingBoxHeight /= state.scale;
+                //Negate the scale and also undo the transformation that InventoryScreen#extractEntityInInventoryFollowsMouse does
+                scale -= state.boundingBoxHeight / 2;
+            }
+        }
+        return scale + shift;
     }
 }

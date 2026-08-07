@@ -156,6 +156,7 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 
     @Override
     public void tick() {
+        super.tick();
         this.fakeKeira.get().tick();
     }
 
@@ -177,7 +178,7 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
         drawScaledScrollingString(graphics, NOTICE, x - (SCREEN_WIDTH / 2), y + 63, TextAlignment.CENTER, CommonColors.DARK_GRAY, SCREEN_WIDTH, 6, false, 0.8F);
 
         var fakeKeira = this.fakeKeira.get().getEntity();
-        InventoryScreen.extractEntityInInventoryFollowsMouse(graphics, x - 132, y - 13, x - 75, y + 60, 50, ENTITY_SCALE + 0.4f, mouseX, mouseY, fakeKeira);
+        InventoryScreen.extractEntityInInventoryFollowsMouse(graphics, x - 132, y - 13, x - 75, y + 60, 50, getEntityScale(fakeKeira, 0.4f), mouseX, mouseY, fakeKeira);
     }
 
     @Override
