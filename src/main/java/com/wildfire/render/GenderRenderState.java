@@ -29,15 +29,14 @@ import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.uvs.UVLayout;
 import com.wildfire.physics.BreastPhysics;
 import net.fabricmc.fabric.api.client.rendering.v1.RenderStateDataKey;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectUtil;
-import net.minecraft.world.entity.Avatar;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.level.block.Blocks;
 import org.jspecify.annotations.Nullable;
 
@@ -46,14 +45,14 @@ import org.jspecify.annotations.Nullable;
 public class GenderRenderState {
     private static final RenderStateDataKey<GenderRenderState> STATE = RenderStateDataKey.create(() -> "GenderRenderState");
 
-    public static void update(LivingEntity entity, EntityRenderState state, float partialTicks) {
+    public static void update(LivingEntity entity, LivingEntityRenderState state, float partialTicks) {
         if(EntityConfig.isSupportedEntity(entity)) {
             var config = EntityConfigHolder.getEntity(entity);
-            state.setData(STATE, new GenderRenderState(config, entity, partialTicks));
+            state.setData(STATE, new GenderRenderState(config, entity, state, partialTicks));
         }
     }
 
-    public static @Nullable GenderRenderState get(EntityRenderState state) {
+    public static @Nullable GenderRenderState get(LivingEntityRenderState state) {
         return state.getData(STATE);
     }
 
@@ -82,7 +81,7 @@ public class GenderRenderState {
     public final boolean isBreathing;
     public final @Nullable Component nametag;
 
-    private GenderRenderState(EntityConfigHolder<?> entityConfig, LivingEntity entity, float partialTicks) {
+    private GenderRenderState(EntityConfigHolder<?> entityConfig, LivingEntity entity, LivingEntityRenderState entityState, float partialTicks) {
         this.breasts = new BreastState(entityConfig.breasts());
         this.uniboob = entityConfig.breasts().physics().uniboob().get();
         this.leftBreastPhysics = new BreastPhysicsState(entityConfig.getLeftBreastPhysics());
@@ -96,13 +95,13 @@ public class GenderRenderState {
         this.bounceMultiplier = entityConfig.breasts().physics().bounceMultiplier().get();
         this.floppyMultiplier = entityConfig.breasts().physics().floppiness().get();
 
-        if(entity instanceof Avatar playerLikeEntity) {
-            this.hasJacketLayer = playerLikeEntity.isModelPartShown(PlayerModelPart.JACKET);
+        if (entityState instanceof AvatarRenderState avatarState) {
+            this.hasJacketLayer = avatarState.showJacket;
         } else {
             this.hasJacketLayer = entityConfig.config() instanceof PlayerConfig || entityConfig.hasJacketLayer();
         }
 
-        if(entityConfig.config() instanceof PlayerConfig playerConfig) {
+        if (entityConfig.config() instanceof PlayerConfig playerConfig) {
             this.showBreastsInArmor = playerConfig.showBreastsInArmor.get();
             if (entityConfig.uuid.version() == 4) {
                 // Real players always have a UUID of version 4; if this isn't the case, then this is undeniably
@@ -120,7 +119,7 @@ public class GenderRenderState {
         this.rightBreastUVLayout = entityConfig.uvs().skin().right().get().copy();
         this.leftBreastOverlayUVLayout = entityConfig.uvs().overlay().left().get().copy();
         this.rightBreastOverlayUVLayout = entityConfig.uvs().overlay().right().get().copy();
-        this.armor = WildfireHelper.getArmorConfig(entity.getItemBySlot(EquipmentSlot.CHEST));
+        this.armor = entityState instanceof HumanoidRenderState humanoidState ? WildfireHelper.getArmorConfig(humanoidState.chestEquipment) : IGenderArmor.EMPTY;
 
         this.isBreathing = !entity.isUnderWater() || MobEffectUtil.hasWaterBreathing(entity) ||
             entity.level().getBlockState(entity.blockPosition()).is(Blocks.BUBBLE_COLUMN);

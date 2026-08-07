@@ -127,6 +127,7 @@ public final class WildfireClientEventHandler {//TODO: Move other classes to a c
         }
 
         matrixStack.pushPose();
+        //TODO: Try to base this off of EntityRenderState#nameTagAttachment which should help position it appropriately
         float translationAmt = switch (state.pose) {
             case CROUCHING -> 0.8f;
             case SLEEPING -> 0.125f;
