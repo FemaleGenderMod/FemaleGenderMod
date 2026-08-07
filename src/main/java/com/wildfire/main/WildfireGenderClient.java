@@ -31,7 +31,6 @@ import com.wildfire.render.debug.PhysicsDebugHudEntry;
 import com.wildfire.resources.GenderArmorResourceManager;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.debug.DebugScreenEntries;
@@ -63,15 +62,15 @@ public class WildfireGenderClient implements ClientModInitializer {
         DebugScreenEntries.register(GenderDebugHudEntry.SELF, new GenderDebugHudEntry(true));
         DebugScreenEntries.register(GenderDebugHudEntry.OTHER, new GenderDebugHudEntry(false));
         // only register this in dev env, as this likely isn't going to be very useful anywhere else.
-        if(FabricLoader.getInstance().isDevelopmentEnvironment()) {
+        if (LoaderAgnostics.isDevelopmentEnv()) {
             DebugScreenEntries.register(PhysicsDebugHudEntry.ID, new PhysicsDebugHudEntry());
         }
         WildfireCommand.init();
     }
 
     private static void tryMigrate(String oldPath, String newPath) {
-        Path oldFile = FabricLoader.getInstance().getConfigDir().resolve(oldPath);
-        Path newFile = FabricLoader.getInstance().getConfigDir().resolve(newPath);
+        Path oldFile = LoaderAgnostics.getConfigDir().resolve(oldPath);
+        Path newFile = LoaderAgnostics.getConfigDir().resolve(newPath);
 
         if(Files.notExists(oldFile)) {
             WildfireGender.LOGGER.debug("{} doesn't exist, nothing to migrate", oldPath);

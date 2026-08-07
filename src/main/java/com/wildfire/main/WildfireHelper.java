@@ -30,7 +30,6 @@ import com.wildfire.resources.GenderArmorResourceManager;
 import java.util.StringJoiner;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.TriState;
@@ -91,17 +90,8 @@ public final class WildfireHelper {
             .orElseGet(() -> stack.has(DataComponents.EQUIPPABLE) ? IGenderArmor.DEFAULT : IGenderArmor.EMPTY);
     }
 
-    public static String getModVersion(String modId) {
-        var mod = FabricLoader.getInstance().getModContainer(modId).orElseThrow();
-        return mod.getMetadata().getVersion().getFriendlyString();
-    }
-
     public static String toFormattedPercent(double value) {
         return ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(value * 100.0);
-    }
-
-    public static boolean onClient() {
-        return FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
     }
 
     public static double snapToStep(double value, double stepSize) {
