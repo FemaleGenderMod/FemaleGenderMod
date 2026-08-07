@@ -19,9 +19,6 @@
 package com.wildfire.gui;
 
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
-import com.wildfire.gui.WildfireSlider.Builder;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
@@ -32,7 +29,7 @@ import java.util.function.Supplier;
 import net.minecraft.util.Util;
 import org.jspecify.annotations.Nullable;
 
-@Environment(EnvType.CLIENT)
+/// @apiNote Only use this on the client side
 public class WildfireButton extends Button implements IFancyFontRenderer {
 
     private final @Nullable ButtonRenderer renderer;

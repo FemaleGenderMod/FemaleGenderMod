@@ -27,10 +27,7 @@ import com.wildfire.main.contributors.Contributors;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
@@ -43,7 +40,7 @@ import net.minecraft.util.ARGB;
 import net.minecraft.util.CommonColors;
 import org.jetbrains.annotations.UnknownNullability;
 
-@Environment(EnvType.CLIENT)
+/// @apiNote Only use this on the client side
 public class WildfireCreditsScreen extends BaseWildfireScreen {
 
     private static final Identifier CREDIT_CONTAINER = WildfireGender.id("credits/credit_container");

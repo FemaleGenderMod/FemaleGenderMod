@@ -28,8 +28,6 @@ import java.util.Map;
 import java.util.SequencedMap;
 import java.util.Set;
 import java.util.UUID;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.Optionull;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
@@ -42,7 +40,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import org.jspecify.annotations.Nullable;
 
-@Environment(EnvType.CLIENT)
+/// @apiNote Only use this on the client side
 public final class Contributors {
     @Language("RegExp")
     private static final String UUID_PATTERN = "(?i)[a-z0-9]{8}-[a-z0-9]{4}-4[0-9a-z]{3}-[a-z0-9]{4}-[a-z0-9]{12}";

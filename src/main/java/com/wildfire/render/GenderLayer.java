@@ -27,8 +27,6 @@ import com.wildfire.main.uvs.UVLayout;
 import com.wildfire.mixins.accessors.LivingEntityRendererAccessor;
 import com.wildfire.render.WildfireModelRenderer.BreastModelBox;
 import com.wildfire.render.WildfireModelRenderer.OverlayModelBox;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -49,7 +47,7 @@ import java.util.function.Consumer;
 import org.jspecify.annotations.Nullable;
 
 // TODO split this into an AbstractGenderLayer?
-@Environment(EnvType.CLIENT)
+/// @apiNote Only use this on the client side
 public class GenderLayer<S extends HumanoidRenderState, M extends HumanoidModel<S>> extends RenderLayer<S, M> {
 
     private static final float DEG_TO_RAD = (float) (Math.PI / 180);

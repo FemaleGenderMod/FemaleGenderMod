@@ -21,8 +21,6 @@ package com.wildfire.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.config.ClientConfig;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.model.geom.PartNames;
@@ -40,7 +38,7 @@ import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.SpecialDates;
 
-@Environment(EnvType.CLIENT)
+/// @apiNote Only use this on the client side
 public class HolidayFeaturesRenderer extends RenderLayer<AvatarRenderState, PlayerModel> {
     private static final Identifier SANTA_HAT_TEXTURE = WildfireGender.id("textures/santa_hat.png");
     private static final HumanoidModel<AvatarRenderState> SANTA_HAT_MODEL = new SantaHatModel();

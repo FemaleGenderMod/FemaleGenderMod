@@ -30,8 +30,6 @@ import com.wildfire.main.config.enums.SyncVerbosity;
 import com.wildfire.main.entitydata.BreastDataComponent;
 import com.wildfire.main.entitydata.EntityConfigHolder;
 import com.wildfire.main.entitydata.PlayerConfigHolder;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
@@ -61,9 +59,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.argument;
-
-@Environment(EnvType.CLIENT)
+/// @apiNote Only use this on the client side
 public class WildfireCommand {
 
     //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor' {
@@ -109,19 +105,19 @@ public class WildfireCommand {
                             return Command.SINGLE_SUCCESS;
                         }))
                 .then(ClientCommands.literal("cache")
-                        .then(argument("allPlayers", BoolArgumentType.bool())
+                        .then(ClientCommands.argument("allPlayers", BoolArgumentType.bool())
                                 .executes(WildfireCommand::getUsers)
-                                .then(argument("showEntities", BoolArgumentType.bool())
+                                .then(ClientCommands.argument("showEntities", BoolArgumentType.bool())
                                         .executes(WildfireCommand::getUsers)))
                         .executes(WildfireCommand::getUsers))
                 .then(ClientCommands.literal("syncverbosity")
-                        .then(argument("level", new SyncVerbosity.SyncVerbosityArgumentType())
+                        .then(ClientCommands.argument("level", new SyncVerbosity.SyncVerbosityArgumentType())
                                 .executes(WildfireCommand::setLogLevel)));
 
         if(Minecraft.getInstance().isLocalServer()) {
             debug
                     .then(ClientCommands.literal("trim")
-                            .then(argument("glint", BoolArgumentType.bool())
+                            .then(ClientCommands.argument("glint", BoolArgumentType.bool())
                                     .executes(WildfireCommand::equipTrimmedChestplate))
                             .executes(WildfireCommand::equipTrimmedChestplate))
                     .then(ClientCommands.literal("armorstand").executes(WildfireCommand::spawnArmorStand));

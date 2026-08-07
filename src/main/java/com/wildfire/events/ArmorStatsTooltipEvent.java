@@ -18,26 +18,24 @@
 
 package com.wildfire.events;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import java.util.function.Consumer;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-
-import java.util.function.Consumer;
 import org.jspecify.annotations.Nullable;
 
 /// Event invoked when an armor item is appending its stats to a tooltip.
 ///
-/// This is only invoked for the [net.minecraft.core.component.DataComponents#EQUIPPABLE] data component,
-/// and only if stats have already been added for the component.
+/// This is only invoked for the [net.minecraft.core.component.DataComponents#EQUIPPABLE] data component, and only if stats have already been added for the component.
+///
+/// @apiNote Only use this on the client side
 @FunctionalInterface
-@Environment(EnvType.CLIENT)
 public interface ArmorStatsTooltipEvent {
+
     Event<ArmorStatsTooltipEvent> EVENT = EventFactory.createArrayBacked(ArmorStatsTooltipEvent.class, listeners -> (item, tooltip, player) -> {
-        for(var listener : listeners) {
+        for (var listener : listeners) {
             listener.appendTooltips(item, tooltip, player);
         }
     });

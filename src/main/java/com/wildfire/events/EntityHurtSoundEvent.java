@@ -18,19 +18,19 @@
 
 package com.wildfire.events;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 
 /// Event invoked when **any** [LivingEntity] plays a hurt sound.
+///
+/// @apiNote Only use this on the client side
 @FunctionalInterface
-@Environment(EnvType.CLIENT)
 public interface EntityHurtSoundEvent {
+
     Event<EntityHurtSoundEvent> EVENT = EventFactory.createArrayBacked(EntityHurtSoundEvent.class, listeners -> (entity, source) -> {
-        for(var listener : listeners) {
+        for (var listener : listeners) {
             listener.onHurt(entity, source);
         }
     });

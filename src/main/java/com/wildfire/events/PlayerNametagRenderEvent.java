@@ -19,21 +19,20 @@
 package com.wildfire.events;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import java.util.function.Consumer;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.network.chat.Component;
 
-import java.util.function.Consumer;
-
 /// Event invoked before a player's nametag is rendered above their head
+///
+/// @apiNote Only use this on the client side
 @FunctionalInterface
-@Environment(EnvType.CLIENT)
 public interface PlayerNametagRenderEvent {
+
     Event<PlayerNametagRenderEvent> EVENT = EventFactory.createArrayBacked(PlayerNametagRenderEvent.class, listeners -> (state, matrixStack, renderHelper) -> {
-        for(var listener : listeners) {
+        for (var listener : listeners) {
             listener.onRenderNameTag(state, matrixStack, renderHelper);
         }
     });

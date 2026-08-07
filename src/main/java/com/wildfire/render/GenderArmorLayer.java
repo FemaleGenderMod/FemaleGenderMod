@@ -26,8 +26,6 @@ import com.wildfire.main.uvs.UVQuad;
 import com.wildfire.mixins.accessors.EquipmentLayerRendererAccessor;
 import com.wildfire.render.WildfireModelRenderer.BreastModelBox;
 import com.wildfire.render.ducks.MissingTextureLogger;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.Sheets;
@@ -57,7 +55,7 @@ import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.Objects;
 
-@Environment(EnvType.CLIENT)
+/// @apiNote Only use this on the client side
 public class GenderArmorLayer<S extends HumanoidRenderState, M extends HumanoidModel<S>> extends GenderLayer<S, M> {
 
     private final EquipmentLayerRenderer equipmentRenderer;

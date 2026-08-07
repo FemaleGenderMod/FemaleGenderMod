@@ -19,6 +19,7 @@
 package com.wildfire.main;
 
 import com.google.gson.JsonObject;
+import com.wildfire.client.WildfireClientEventHandler;
 import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.config.Configuration;
@@ -29,8 +30,6 @@ import com.wildfire.render.debug.GenderDebugHudEntry;
 import com.wildfire.render.debug.PhysicsDebugHudEntry;
 import com.wildfire.resources.GenderArmorResourceManager;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.Util;
@@ -47,7 +46,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import org.jspecify.annotations.Nullable;
 
-@Environment(EnvType.CLIENT)
+/// @apiNote Only use this on the client side
 public class WildfireGenderClient implements ClientModInitializer {
     private static final Executor LOAD_EXECUTOR = Util.ioPool().forName("wildfire_gender$loadPlayerData");
 
@@ -59,7 +58,7 @@ public class WildfireGenderClient implements ClientModInitializer {
         ClientConfig.load();
         WildfireSounds.register();
         WildfireSync.registerClient();
-        WildfireEventHandler.registerClientEvents();
+        WildfireClientEventHandler.registerClientEvents();
         ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(GenderArmorResourceManager.ID, GenderArmorResourceManager.INSTANCE);
         DebugScreenEntries.register(GenderDebugHudEntry.SELF, new GenderDebugHudEntry(true));
         DebugScreenEntries.register(GenderDebugHudEntry.OTHER, new GenderDebugHudEntry(false));

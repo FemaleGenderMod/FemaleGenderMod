@@ -18,10 +18,7 @@
 
 package com.wildfire.render;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-
-@Environment(EnvType.CLIENT)
+/// @apiNote Only use this on the client side (or move it to a different package)
 public enum BreastSide {
     LEFT(true),
     RIGHT(false);

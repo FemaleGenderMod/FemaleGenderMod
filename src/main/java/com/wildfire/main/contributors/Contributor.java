@@ -21,31 +21,28 @@ package com.wildfire.main.contributors;
 import com.google.common.base.Preconditions;
 import com.google.gson.annotations.SerializedName;
 import com.wildfire.main.WildfireLang;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
 
-import java.util.Locale;
 import org.jspecify.annotations.Nullable;
 
-@Environment(EnvType.CLIENT)
+/// @apiNote Only use this on the client side
 public record Contributor(
-        // TODO this technically supports multiple roles due to this using a bitmask, but any additional roles other than
-        //		the topmost one defined in Role is currently ignored
-        int roles,
-        @Nullable Integer color,//TODO: Can this be moved to a TextColor or does that break serializiation
-        @Nullable String name,
-        @SerializedName("show_in_credits")
-        @Nullable Boolean showInCredits
+    // TODO this technically supports multiple roles due to this using a bitmask, but any additional roles other than
+    //		the topmost one defined in Role is currently ignored
+    int roles,
+    @Nullable Integer color,//TODO: Can this be moved to a TextColor or does that break serializiation
+    @Nullable String name,
+    @SerializedName("show_in_credits")
+    @Nullable Boolean showInCredits
 ) {
+
     //~ if >=26.2 'fromRgb(0xFFAA00)' -> 'GOLD'
     private static final TextColor DEFAULT_COLOR = TextColor.GOLD;
 
     public TextColor getColor() {
-        if(color != null) {
+        if (color != null) {
             return TextColor.fromRgb(color);
         }
         return getRole().getColor();
@@ -56,12 +53,12 @@ public record Contributor(
     }
 
     public Role getRole() {
-        if(roles == 0) {
+        if (roles == 0) {
             return Role.GENERIC;
         }
 
-        for(var role : Role.values()) {
-            if(role.isIn(this.roles)) {
+        for (var role : Role.values()) {
+            if (role.isIn(this.roles)) {
                 return role;
             }
         }

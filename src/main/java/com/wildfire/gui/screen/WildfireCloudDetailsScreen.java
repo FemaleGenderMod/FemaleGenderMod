@@ -18,9 +18,6 @@
 
 package com.wildfire.gui.screen;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-
 /*import com.wildfire.gui.GuiUtils;
 import com.wildfire.main.WildfireGender;
 import net.minecraft.client.gui.GuiGraphics;
@@ -31,7 +28,7 @@ import net.minecraft.resources.Identifier;
 
 import java.util.UUID;*/
 
-@Environment(EnvType.CLIENT)
+/// @apiNote Only use this on the client side
 public class WildfireCloudDetailsScreen /*extends BaseWildfireScreen*/ {
 
     /*//TODO: PROPER TRANSLATIONS
