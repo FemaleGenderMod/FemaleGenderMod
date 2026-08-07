@@ -36,18 +36,18 @@ public class WildfireCloudDetailsScreen /*extends BaseWildfireScreen*/ {
 
     /*//TODO: PROPER TRANSLATIONS
 
-    private static final Component TITLE = Component.translatable("wildfire_gender.cloud_details.title");
+    private static final Component TITLE = WildfireLang.CLOUD_DETAILS.translate();
 
-    private static final Component PAGE_1 = Component.translatable("wildfire_gender.cloud_details.title").withStyle(style -> style.withUnderlined(true));
+    private static final Component PAGE_1 = WildfireLang.CLOUD_DETAILS.translate().withStyle(style -> style.withUnderlined(true));
 
-    private static final Component NEXT_PAGE = Component.translatable("wildfire_gender.details.next_page");
-    private static final Component PREV_PAGE = Component.translatable("wildfire_gender.details.prev_page");
-    private static final Identifier BACKGROUND = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/details_page.png");
+    private static final Component NEXT_PAGE = WildfireLang.DETAILS_NEXT_PAGE.translate();
+    private static final Component PREV_PAGE = WildfireLang.DETAILS_PREV_PAGE.translate();
+    private static final Identifier BACKGROUND = WildfireGender.id("textures/gui/details_page.png");
 
     private int currentPage = 0;
 
     public WildfireCloudDetailsScreen(Screen parent, UUID uuid) {
-        super(Component.translatable("wildfire_gender.cloud_settings"), parent, uuid);
+        super(WildfireLang.CLOUD_SETTINGS.translate(), parent, uuid);
     }
 
     @Override

@@ -29,7 +29,7 @@ import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.util.InstantTypeAdapter;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireHelper;
-import com.wildfire.main.WildfireLocalization;
+import com.wildfire.main.WildfireLang;
 import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.config.enums.SyncVerbosity;
 import com.wildfire.main.contributors.Contributor;
@@ -228,12 +228,12 @@ public final class CloudSync {
         synchronized(AUTH_LOCK) {
             var client = Minecraft.getInstance();
             if(client.player == null) {
-                SyncLog.add(WildfireLocalization.SYNC_LOG_AUTHENTICATION_FAILED);
+                SyncLog.add(WildfireLang.SYNC_LOG_AUTH_FAILED);
                 throw new IllegalStateException("Cannot get a new auth token while the client player is unset");
             }
             if(auth == null || auth.isExpired() || auth.isInvalidForClientPlayer()) {
                 WildfireGender.LOGGER.info("Authenticating with Mojang session servers");
-                SyncLog.add(WildfireLocalization.SYNC_LOG_AUTHENTICATING_MOJANG);
+                SyncLog.add(WildfireLang.SYNC_LOG_AUTH_MOJANG);
 
                 var serverId = generateServerId();
                 var session = client.getUser();
@@ -241,18 +241,18 @@ public final class CloudSync {
                 try {
                     CloudUtils.getSessionService().joinServer(Objects.requireNonNull(session.getProfileId()), session.getAccessToken(), serverId);
                 } catch(AuthenticationException e) {
-                    SyncLog.add(WildfireLocalization.SYNC_LOG_AUTHENTICATION_FAILED);
+                    SyncLog.add(WildfireLang.SYNC_LOG_AUTH_FAILED);
                     throw new RuntimeException(e);
                 }
 
                 WildfireGender.LOGGER.info("Obtaining new authentication token from the cloud sync server");
-                SyncLog.add(WildfireLocalization.SYNC_LOG_AUTHENTICATING_CLOUD_SYNC);
+                SyncLog.add(WildfireLang.SYNC_LOG_AUTH_SYNC);
                 var query = HttpAuthenticationService.buildQuery(Map.of("serverId", serverId, "username", session.getName()));
                 var uri = URI.create(getCloudServer() + "/auth?" + query);
                 var request = createRequest(uri).GET().build();
                 var response = CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString()).join();
                 if(response.statusCode() >= HttpURLConnection.HTTP_BAD_REQUEST) {
-                    SyncLog.add(WildfireLocalization.SYNC_LOG_AUTHENTICATION_FAILED);
+                    SyncLog.add(WildfireLang.SYNC_LOG_AUTH_FAILED);
                     throw new RuntimeException("Failed to authenticate with sync server: " + response.body());
                 }
 
@@ -296,7 +296,7 @@ public final class CloudSync {
             var url = URI.create(getCloudServer() + "/" + config.uuid);
             var json = config.toJson().toString();
 
-            SyncLog.add(WildfireLocalization.SYNC_LOG_ATTEMPTING_SYNC);
+            SyncLog.add(WildfireLang.SYNC_LOG_START);
 
             var request = createRequest(url)
                     .PUT(HttpRequest.BodyPublishers.ofString(json))
@@ -305,7 +305,7 @@ public final class CloudSync {
                     .build();
             var response = CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString()).join();
             if(response.statusCode() == HttpURLConnection.HTTP_UNAUTHORIZED && !resyncing) {
-                SyncLog.add(WildfireLocalization.SYNC_LOG_REAUTHENTICATING);
+                SyncLog.add(WildfireLang.SYNC_LOG_REAUTH);
                 WildfireGender.LOGGER.warn("Auth token is invalid, attempting to reauth...");
                 auth = null;
                 syncInternal(config, true).join();
@@ -314,7 +314,7 @@ public final class CloudSync {
                 throw new RuntimeException("Server responded " + response.statusCode() + ": " + response.body());
             }
             WildfireGender.LOGGER.debug("Server responded to update: {}", response.body());
-            SyncLog.add(WildfireLocalization.SYNC_LOG_SYNC_SUCCESS);
+            SyncLog.add(WildfireLang.SYNC_LOG_SUCCESS);
         }, EXECUTOR);
     }
 
@@ -331,14 +331,14 @@ public final class CloudSync {
             var request = createRequest(url).DELETE().header("Auth-Token", token).build();
             var response = CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString()).join();
             if(response.statusCode() == HttpURLConnection.HTTP_NOT_FOUND) {
-                SyncLog.add(WildfireLocalization.SYNC_LOG_NO_PROFILE_TO_DELETE);
+                SyncLog.add(WildfireLang.SYNC_LOG_NO_PROFILE);
                 return;
             } else if(response.statusCode() >= HttpURLConnection.HTTP_BAD_REQUEST) {
-                SyncLog.add(WildfireLocalization.SYNC_LOG_DELETION_FAILED);
+                SyncLog.add(WildfireLang.SYNC_LOG_PROFILE_DELETION_FAILED);
                 throw new RuntimeException("Server responded " + response.statusCode() + ": " + response.body());
             }
             WildfireGender.LOGGER.debug("Deleted cloud sync profile");
-            SyncLog.add(WildfireLocalization.SYNC_LOG_DELETED);
+            SyncLog.add(WildfireLang.SYNC_LOG_PROFILE_DELETED);
         }, EXECUTOR);
     }
 
@@ -385,7 +385,7 @@ public final class CloudSync {
                 throw new RuntimeException("Server responded " + response.statusCode() + ": " + response.body());
             }
 
-            SyncLog.add(WildfireLocalization.SYNC_LOG_GET_SINGLE_PROFILE, SyncVerbosity.SHOW_FETCHES);
+            SyncLog.add(WildfireLang.SYNC_LOG_SINGLE_PROFILE, SyncVerbosity.SHOW_FETCHES);
 
             var data = GSON.fromJson(response.body(), JsonObject.class);
             FETCH_CACHE.put(uuid, Optional.of(data));
@@ -422,7 +422,7 @@ public final class CloudSync {
                 throw new RuntimeException("Server responded " + response.statusCode() + ": " + response.body());
             }
 
-            SyncLog.add(WildfireLocalization.SYNC_LOG_GET_MULTIPLE_PROFILES, SyncVerbosity.SHOW_FETCHES);
+            SyncLog.add(WildfireLang.SYNC_LOG_MULTIPLE_PROFILES, SyncVerbosity.SHOW_FETCHES);
             var data = GSON.fromJson(response.body(), BulkFetch.class).users();
             uuids.forEach(uuid -> FETCH_CACHE.put(uuid, Optional.ofNullable(data.get(uuid))));
             return data;

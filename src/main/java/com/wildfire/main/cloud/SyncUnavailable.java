@@ -18,15 +18,21 @@
 
 package com.wildfire.main.cloud;
 
-import java.util.Locale;
+import com.wildfire.main.WildfireLang;
 import net.minecraft.network.chat.Component;
 
 public enum SyncUnavailable {
-    INVALID_ACCOUNT,
-    OFFLINE_SERVER,
+    INVALID_ACCOUNT(WildfireLang.CLOUD_UNAVAILABLE_INVALID_ACC),
+    OFFLINE_SERVER(WildfireLang.CLOUD_UNAVAILABLE_OFFLINE_SERVER),
     ;
 
+    private final WildfireLang name;
+
+    SyncUnavailable(WildfireLang name) {
+        this.name = name;
+    }
+
     public Component text() {
-        return Component.translatable("wildfire_gender.cloud.unavailable." + name().toLowerCase(Locale.ROOT));
+        return this.name.translate();
     }
 }

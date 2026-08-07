@@ -18,6 +18,7 @@
 
 package com.wildfire.main.config.enums;
 
+import com.wildfire.main.WildfireLang;
 import com.wildfire.main.WildfireSounds;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
@@ -31,12 +32,11 @@ import java.util.function.IntFunction;
 import org.jspecify.annotations.Nullable;
 
 public enum Gender {
-
     // NOTE: The order of these should remain unchanged! Changing these WILL modify player configs!
-    //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.' {
-    FEMALE(Component.translatable("wildfire_gender.label.female").withColor(TextColor.LIGHT_PURPLE), true, WildfireSounds.FEMALE_HURT),
-    MALE(Component.translatable("wildfire_gender.label.male").withColor(TextColor.BLUE), false, null),
-    OTHER(Component.translatable("wildfire_gender.label.other").withColor(TextColor.GREEN), true, WildfireSounds.FEMALE_HURT);
+    //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor' {
+    FEMALE(WildfireLang.LABEL_FEMALE.translateColored(TextColor.LIGHT_PURPLE), true, WildfireSounds.FEMALE_HURT),
+    MALE(WildfireLang.LABEL_MALE.translateColored(TextColor.BLUE), false, null),
+    OTHER(WildfireLang.LABEL_OTHER.translateColored(TextColor.GREEN), true, WildfireSounds.FEMALE_HURT);
     //~}
 
     public static final IntFunction<Gender> BY_ID = ByIdMap.continuous(Gender::ordinal, values(), ByIdMap.OutOfBoundsStrategy.WRAP);

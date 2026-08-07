@@ -21,7 +21,7 @@ package com.wildfire.main.entitydata;
 import com.google.gson.JsonObject;
 import com.wildfire.gui.screen.BaseWildfireScreen;
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.WildfireLocalization;
+import com.wildfire.main.WildfireLang;
 import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.cloud.SyncLog;
 import com.wildfire.main.config.ClientConfig;
@@ -228,7 +228,7 @@ public class PlayerConfig extends EntityConfig {
                 WildfireGender.LOGGER.info("Synced player data to the cloud");
             } catch(Exception e) {
                 WildfireGender.LOGGER.error("Failed to sync player data", e);
-                SyncLog.add(WildfireLocalization.SYNC_LOG_FAILED_TO_SYNC_DATA);
+                SyncLog.add(WildfireLang.SYNC_LOG_FAILED);
             }
         });
         needsCloudSync = false;

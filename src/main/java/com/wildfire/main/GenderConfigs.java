@@ -34,6 +34,7 @@ public class GenderConfigs {
 
     private static final Gson GSON = new Gson();
 
+    //TODO: Move modeldata to being hardcoded configurations, or maybe add datagen for it
     public static final JsonObject DEFAULT_FEMALE = loadConfig("modeldata/female_default.json");
     public static final JsonObject DEFAULT_MALE = loadConfig("modeldata/male_default.json");
 

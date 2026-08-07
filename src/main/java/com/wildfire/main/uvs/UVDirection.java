@@ -19,7 +19,9 @@
 package com.wildfire.main.uvs;
 
 import com.mojang.serialization.Codec;
+import com.wildfire.main.WildfireLang;
 import io.netty.buffer.ByteBuf;
+import java.util.Objects;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -31,19 +33,19 @@ import net.minecraft.util.CommonColors;
 import net.minecraft.util.StringRepresentable;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
-
-import java.util.Locale;
 import java.util.function.IntFunction;
+import org.jspecify.annotations.Nullable;
 
 public enum UVDirection implements StringRepresentable {
-    EAST("east", "", "E", CommonColors.RED, new Vec3i(1, 0, 0)),
-    WEST("west", "", "W", CommonColors.GREEN, new Vec3i(-1, 0, 0)),
-    DOWN("down", "wildfire_gender.uv_editor.faces.bottom", "D", CommonColors.BLUE, new Vec3i(0, -1, 0)),
-    UP("up", "wildfire_gender.uv_editor.faces.top", "U", 0xFF00FFFF, new Vec3i(0, 1, 0)),
-    NORTH("north", "wildfire_gender.uv_editor.faces.front", "N", 0xFFFF00FF, new Vec3i(0, 0, -1));
+    EAST("east", null, WildfireLang.UV_DIRECTION_EAST, CommonColors.RED, new Vec3i(1, 0, 0)),
+    WEST("west", null, WildfireLang.UV_DIRECTION_WEST, CommonColors.GREEN, new Vec3i(-1, 0, 0)),
+    DOWN("down", WildfireLang.UV_EDITOR_FACE_BOTTOM, WildfireLang.UV_DIRECTION_DOWN, CommonColors.BLUE, new Vec3i(0, -1, 0)),
+    UP("up", WildfireLang.UV_EDITOR_FACE_TOP, WildfireLang.UV_DIRECTION_UP, 0xFF00FFFF, new Vec3i(0, 1, 0)),
+    NORTH("north", WildfireLang.UV_EDITOR_FACE_FRONT, WildfireLang.UV_DIRECTION_NORTH, 0xFFFF00FF, new Vec3i(0, 0, -1));
 
-    private final String unlocalizedName;
-    private final String shortName;
+    @Nullable
+    private final WildfireLang name;
+    private final WildfireLang shortName;
     private final String saveName;
     private final int baseColor;
     private final Vector3fc floatVector;
@@ -52,8 +54,8 @@ public enum UVDirection implements StringRepresentable {
     public static final Codec<UVDirection> NAME_CODEC = StringRepresentable.fromEnum(UVDirection::values);
     public static final StreamCodec<ByteBuf, UVDirection> PACKET_CODEC = ByteBufCodecs.idMapper(BY_ID, UVDirection::ordinal);
 
-    UVDirection(String saveName, String unlocalizedName, String shortName, int baseColor, Vec3i vector) {
-        this.unlocalizedName = unlocalizedName;
+    UVDirection(String saveName, @Nullable WildfireLang name, WildfireLang shortName, int baseColor, Vec3i vector) {
+        this.name = name;
         this.saveName = saveName;
         this.shortName = shortName;
         this.baseColor = baseColor;
@@ -71,34 +73,25 @@ public enum UVDirection implements StringRepresentable {
     }
 
     public MutableComponent getDirectionText(BreastTypes type) {
-        if(this == EAST || this == WEST) {
-            String key = (type == BreastTypes.LEFT || type == BreastTypes.LEFT_OVERLAY)
-                    ? "wildfire_gender.uv_editor.faces.inner"
-                    : "wildfire_gender.uv_editor.faces.outer";
-            return Component.translatable(key);
+        if (this == EAST || this == WEST) {
+            WildfireLang langEntry = (type == BreastTypes.LEFT || type == BreastTypes.LEFT_OVERLAY)
+                    ? WildfireLang.UV_EDITOR_FACE_INNER
+                    : WildfireLang.UV_EDITOR_FACE_OUTER;
+            return langEntry.translate();
         }
-
-        if(!unlocalizedName.isEmpty()) {
-            return Component.translatable(unlocalizedName);
-        }
-
-        return Component.literal(saveName);
+        return Objects.requireNonNull(name, "Name should not be null unless it is covered by a case above").translate();
     }
 
     public String getSaveName() {
         return saveName;
     }
 
-    public String getShortName() {
-        return shortName;
-    }
-
-    public String getUnlocalizedName() {
-        return unlocalizedName;
+    public Component getShortName() {
+        return shortName.translate();
     }
 
     @Override
     public String getSerializedName() {
-        return name().toLowerCase(Locale.ROOT);
+        return saveName;
     }
 }

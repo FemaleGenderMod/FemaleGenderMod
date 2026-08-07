@@ -100,8 +100,6 @@
 	"wildfire_gender.label.disabled": "已停用",
 	"wildfire_gender.label.on": "開啟",
 	"wildfire_gender.label.off": "關閉",
-	"wildfire_gender.label.yes": "是",
-	"wildfire_gender.label.no": "否",
 	"wildfire_gender.label.with_creator": "您正與本模組的創作者在同一個伺服器遊玩！",
 	"wildfire_gender.label.with_contributor": "您正與本模組的貢獻者在同一個伺服器遊玩！",
 	"wildfire_gender.label.with_both": "您正與本模組的創作者及貢獻者在同一個伺服器遊玩！",
