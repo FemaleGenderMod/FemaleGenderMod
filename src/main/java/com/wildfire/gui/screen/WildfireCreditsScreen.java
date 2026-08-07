@@ -22,6 +22,7 @@ import com.wildfire.gui.FakeGUIPlayer;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireLang;
 import com.wildfire.main.contributors.Contributor;
+import com.wildfire.main.contributors.Contributor.Role;
 import com.wildfire.main.contributors.Contributors;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -165,6 +166,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
 
     @Override
     public void tick() {
+        super.tick();
         for(FakeGUIPlayer player : getActiveBoxes()) {
             player.tick();
         }
@@ -211,20 +213,19 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
 
             graphics.blitSprite(RenderPipelines.GUI_TEXTURED, CREDIT_CONTAINER, creditBoxX, creditBoxY, 52, 68);
 
+            Role role = creditBox.getRoleOrGeneric();
             graphics.blitSprite(RenderPipelines.GUI_TEXTURED, CREDIT_OUTLINE, creditBoxX + 3, creditBoxY + 3, 46, 53,
-                ARGB.opaque(Objects.requireNonNull(creditBox.getRole()).getColor().getValue()));
+                ARGB.opaque(role.getColor().getValue()));
 
             int xP = creditBoxX + (52 / 2);
             int yP = creditBoxY + (68 / 2);
-            graphics.enableScissor(xP - 21, yP - 79, xP + 21, yP + 20);
-            InventoryScreen.extractEntityInInventoryFollowsMouse(graphics, xP - 38, yP - 29, xP + 38, yP + 59, 40, ENTITY_SCALE, mouseX, mouseY + 35, creditBox.getEntity());
-            graphics.disableScissor();
+            var entity = creditBox.getEntity();
+            InventoryScreen.extractEntityInInventoryFollowsMouse(graphics, xP - 38, yP - 29, xP + 38, yP + 20, 40, getEntityScale(entity, 0.5F), mouseX, mouseY, entity);
 
             drawScaledScrollingString(graphics, Component.literal(creditBox.getName()), creditBoxX + 3, yP + 23, TextAlignment.CENTER, CommonColors.WHITE, 46,  1, false, 0.55F);
 
             if (mouseX > xP - 24 && mouseX < xP + 23 && mouseY > yP + 22 && mouseY < yP + 31) {
                 List<Component> txtList = new ArrayList<>();
-                var role = creditBox.getRoleOrGeneric();
                 //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor'
                 txtList.add(WildfireLang.GENERIC_DASH_EXPLANATION.translateColored(TextColor.DARK_GRAY,
                     role.withColor(Component.literal(creditBox.getName())),

@@ -19,11 +19,11 @@
 package com.wildfire.gui;
 
 import com.google.common.base.Suppliers;
-import com.google.gson.JsonObject;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.contributors.Contributor;
+import com.wildfire.main.contributors.Contributor.Role;
 import com.wildfire.main.contributors.Contributors;
 import com.wildfire.main.entitydata.EntityConfigHolder;
 import com.wildfire.main.entitydata.PlayerConfig;
@@ -60,7 +60,7 @@ public class FakeGUIPlayer {
     public FakeGUIPlayer(String name, UUID uuid, @Nullable Component description, @Nullable Consumer<PlayerConfig> defaultGenderSettings) {
         this.name = name;
         this.uuid = uuid;
-        this.entity = createPlayerSupplier(uuid, defaultGenderSettings);
+        this.entity = createPlayerSupplier(this.uuid, this.name, defaultGenderSettings);
         this.description = description;
     }
 
@@ -85,7 +85,7 @@ public class FakeGUIPlayer {
     }
 
     public Contributor.Role getRoleOrGeneric() {
-        var role = getRole();
+        Role role = getRole();
         return role == null ? Contributor.Role.GENERIC : role;
     }
 
@@ -100,12 +100,15 @@ public class FakeGUIPlayer {
     }
 
     @SuppressWarnings("NullableProblems")
-    private static Supplier<GUIMannequin> createPlayerSupplier(final UUID uuid, final @Nullable Consumer<PlayerConfig> defaultGenderData) {
+    private static Supplier<GUIMannequin> createPlayerSupplier(final UUID uuid, final String name, final @Nullable Consumer<PlayerConfig> defaultGenderData) {
         return Suppliers.memoize(() -> {
             var client = Minecraft.getInstance();
             assert client.level != null;
 
             var entity = new GUIMannequin(client.level, client.playerSkinRenderCache(), ResolvableProfile.createUnresolved(uuid));
+            //Set the custom name in case it is relevant for player rendering (for example Dinnerbone or Grumm).
+            // As it is possible a mod adds other names to render upside down, so we might be as compatible as possible
+            entity.setCustomName(Component.literal(name));
 
             PlayerConfigHolder config;
             try {

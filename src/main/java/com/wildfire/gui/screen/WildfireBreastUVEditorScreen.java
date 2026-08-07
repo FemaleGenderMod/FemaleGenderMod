@@ -20,7 +20,6 @@ package com.wildfire.gui.screen;
 
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireLang;
-import com.wildfire.main.config.Configuration;
 import com.wildfire.main.uvs.BreastTypes;
 import com.wildfire.main.uvs.UVDirection;
 import com.wildfire.main.uvs.UVLayout;
@@ -201,6 +200,7 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
     @Override
     public void tick() {
+        super.tick();
         var player = getPlayer();
         if(player == null) return;
 
@@ -268,8 +268,9 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
             modelScale = 200;
         }
 
+        var entity = minecraft.player;
         InventoryScreen.extractEntityInInventoryFollowsMouse(graphics, this.width / 2 - modelScale, this.height / 2 - modelScale, this.width / 2 + modelScale,
-            this.height / 2 + modelScale, modelScale, ENTITY_SCALE, mouseX, mouseY, minecraft.player);
+            this.height / 2 + modelScale, modelScale, getEntityScale(entity, 0, false), mouseX, mouseY, entity);
         drawScrollingString(graphics, getTitle(), uvWindowPos.x(), 20, TextAlignment.CENTER, CommonColors.WHITE, textureDrawWidth, 2, false);
 
         super.extractRenderState(graphics, mouseX, mouseY, delta);
