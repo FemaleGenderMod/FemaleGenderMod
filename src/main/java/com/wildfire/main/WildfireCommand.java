@@ -28,8 +28,8 @@ import com.wildfire.gui.screen.WildfireFirstTimeSetupScreen;
 import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.config.enums.SyncVerbosity;
 import com.wildfire.main.entitydata.BreastDataComponent;
-import com.wildfire.main.entitydata.EntityConfig;
-import com.wildfire.main.entitydata.PlayerConfig;
+import com.wildfire.main.entitydata.EntityConfigHolder;
+import com.wildfire.main.entitydata.PlayerConfigHolder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
@@ -194,11 +194,13 @@ public class WildfireCommand {
     public static int setLogLevel(CommandContext<FabricClientCommandSource> ctx) {
         SyncVerbosity level = ctx.getArgument("level", SyncVerbosity.class);
 
-        ClientConfig.INSTANCE.set(ClientConfig.SYNC_VERBOSITY, level);
-        ClientConfig.INSTANCE.save();
+        if (ClientConfig.config().syncVerbosity.update(level)) {//Should always be true
+            ClientConfig.save();
 
-        send(ctx, WildfireLang.COMMAND_LOG_LEVEL.translate(level));
-        return Command.SINGLE_SUCCESS;
+            send(ctx, WildfireLang.COMMAND_LOG_LEVEL.translate(level));
+            return Command.SINGLE_SUCCESS;
+        }
+        return 0;
     }
 
     private static int getUsers(CommandContext<FabricClientCommandSource> ctx) {
@@ -214,7 +216,7 @@ public class WildfireCommand {
         }
 
         if(showEntities) {
-            var entities = dump(EntityConfig.CACHE, ctx.getSource().getLevel(), false);
+            var entities = dump(EntityConfigHolder.CACHE, ctx.getSource().getLevel(), false);
             if(!entities.isEmpty()) {
                 send(ctx, WildfireLang.COMMAND_ENTITIES.translate(entities.size()));
                 for(var line : entities) {
@@ -226,7 +228,7 @@ public class WildfireCommand {
         return Command.SINGLE_SUCCESS;
     }
 
-    private static List<Component> dump(Cache<UUID, ? extends EntityConfig> cache, Level world, boolean ignoreEmptyConfig) {
+    private static List<Component> dump(Cache<UUID, ? extends EntityConfigHolder<?>> cache, Level world, boolean ignoreEmptyConfig) {
         List<Component> lines = new ArrayList<>();
         for(var entry : cache.asMap().entrySet()) {
             var uuid = entry.getKey();
@@ -234,7 +236,7 @@ public class WildfireCommand {
             if(config == null) {
                 continue;
             }
-            if(config instanceof PlayerConfig playerConfig && playerConfig.getSyncStatus() == PlayerConfig.SyncStatus.UNKNOWN && ignoreEmptyConfig) {
+            if(config instanceof PlayerConfigHolder playerConfig && playerConfig.getSyncStatus() == PlayerConfigHolder.SyncStatus.UNKNOWN && ignoreEmptyConfig) {
                 continue;
             }
             var entity = world.getEntity(uuid);
@@ -242,7 +244,7 @@ public class WildfireCommand {
 
             var info = ComponentUtils.formatList(config.getDebugInfo(), CommonComponents.NEW_LINE, Component::literal);
 
-            lines.add(WildfireLang.GENERIC_DASH_EXPLANATION.translate(entity.getDisplayName(), config.getGender().getDisplayName())
+            lines.add(WildfireLang.GENERIC_DASH_EXPLANATION.translate(entity.getDisplayName(), config.gender().get().getDisplayName())
                     .withStyle(style -> style.withHoverEvent(new HoverEvent.ShowText(info))));
         }
         return lines;
@@ -250,7 +252,7 @@ public class WildfireCommand {
 
     private static int invalidateCache(CommandContext<FabricClientCommandSource> ctx) {
         WildfireGender.CACHE.invalidateAll();
-        EntityConfig.CACHE.invalidateAll();
+        EntityConfigHolder.CACHE.invalidateAll();
 
         send(ctx, WildfireLang.COMMAND_INVALIDATE_CACHE_SUCCESS.translate());
         return Command.SINGLE_SUCCESS;

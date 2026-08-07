@@ -16,31 +16,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.main.config.types;
+package com.wildfire.main.config.validator;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+import com.mojang.serialization.DataResult;
 
-public class StringConfigKey extends ConfigKey<String> {
+public interface ConfigValidator<TYPE> {
 
-    public StringConfigKey(String key, String defaultValue) {
-        super(key, defaultValue);
-    }
+    boolean validate(TYPE value);
 
-    @Override
-    protected String read(JsonElement element) {
-        if (element.isJsonPrimitive()) {
-            JsonPrimitive primitive = element.getAsJsonPrimitive();
-            if (primitive.isString()) {
-                return primitive.getAsString();
-            }
-        }
-        return defaultValue;
-    }
+    DataResult<TYPE> codecValidation(TYPE value);
 
-    @Override
-    public void save(JsonObject object, String value) {
-        object.addProperty(key, value);
+    default boolean hasCodecValidation() {
+        return true;
     }
 }

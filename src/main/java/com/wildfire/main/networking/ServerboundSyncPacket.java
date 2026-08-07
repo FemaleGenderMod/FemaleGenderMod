@@ -19,9 +19,8 @@
 package com.wildfire.main.networking;
 
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.config.enums.Gender;
-import com.wildfire.main.entitydata.Breasts;
 import com.wildfire.main.entitydata.PlayerConfig;
+import com.wildfire.main.entitydata.PlayerConfigHolder;
 import io.netty.buffer.ByteBuf;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -31,20 +30,10 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 
-import java.util.UUID;
-
-public final class ServerboundSyncPacket extends AbstractSyncPacket implements CustomPacketPayload {
+public record ServerboundSyncPacket(PlayerConfig config) implements CustomPacketPayload {
 
     public static final Type<ServerboundSyncPacket> ID = new CustomPacketPayload.Type<>(WildfireGender.id("send_gender_info"));
-    public static final StreamCodec<ByteBuf, ServerboundSyncPacket> CODEC = codec(ServerboundSyncPacket::new);
-
-    public ServerboundSyncPacket(PlayerConfig plr) {
-        super(plr);
-    }
-
-    private ServerboundSyncPacket(UUID uuid, Gender gender, float bustSize, boolean hurtSounds, float voicePitch, BreastPhysics physics, Breasts breasts, UVLayouts uvLayouts) {
-        super(uuid, gender, bustSize, hurtSounds, voicePitch, physics, breasts, uvLayouts);
-    }
+    public static final StreamCodec<ByteBuf, ServerboundSyncPacket> CODEC = PlayerConfig.COMPACT_STREAM_CODEC.map(ServerboundSyncPacket::new, ServerboundSyncPacket::config);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
@@ -58,8 +47,13 @@ public final class ServerboundSyncPacket extends AbstractSyncPacket implements C
 
     public void handle(ServerPlayNetworking.Context context) {
         ServerPlayer player = context.player();
-        PlayerConfig plr = WildfireGender.getOrAddPlayerById(player.getUUID());
-        updatePlayerFromPacket(plr);
+        PlayerConfigHolder plr = WildfireGender.getOrAddPlayerById(player.getUUID());
+        if (!context.server().isSingleplayerOwner(player.nameAndId())) {
+            //Note: We skip bothering to update the config if the server is an integrated server hosted by the player who sent it
+            // In that case the actual backing config will have already been updated because of it being stored in a static field
+            // which has the side effect of reaching across logical sides and updating both the server and client at once.
+            plr.updateFromPacket(config, false);
+        }
         WildfireSync.sendToAllClients(player, plr);
     }
 }

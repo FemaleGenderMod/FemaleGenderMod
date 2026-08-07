@@ -21,12 +21,11 @@ package com.wildfire.gui.screen;
 import com.google.common.base.Suppliers;
 import com.wildfire.gui.FakeGUIPlayer;
 import com.wildfire.gui.WildfireButton;
-import com.wildfire.main.GenderConfigs;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireGenderClient;
-import com.wildfire.main.WildfireLang;
 import com.wildfire.main.config.ClientConfig;
-import com.wildfire.main.entitydata.PlayerConfig;
+import com.wildfire.main.WildfireLang;
+import com.wildfire.main.entitydata.PlayerConfigHolder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -64,7 +63,7 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 
     private static final UUID keiraUUID = UUID.fromString("372271ab-28f2-44bd-b585-95f43e010c22");
 
-    private final Supplier<FakeGUIPlayer> fakeKeira = Suppliers.memoize(() -> new FakeGUIPlayer("KeiaraFGM", keiraUUID, GenderConfigs.DEFAULT_FEMALE));
+    private final Supplier<FakeGUIPlayer> fakeKeira = Suppliers.memoize(() -> new FakeGUIPlayer("KeiaraFGM", keiraUUID, FakeGUIPlayer.FEMALE_CHANGES));
 
     public WildfireFirstTimeSetupScreen(@Nullable Screen parent, UUID uuid) {
         super(WildfireLang.FIRST_TIME_TITLE.translate().withStyle(style -> style.withUnderlined(true)), parent, uuid);
@@ -76,7 +75,7 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
         int x = this.width / 2;
         int y = this.height / 2;
 
-        final var config = ClientConfig.INSTANCE;
+        final var config = ClientConfig.config();
         final var ref = new Object() {
             @UnknownNullability
             WildfireButton no;
@@ -87,9 +86,9 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
                 .position(x + 3, y + 74)
                 .size(128, 20)
                 .onPress(button -> {
-                    config.set(ClientConfig.CLOUD_SYNC_ENABLED, true);
-                    config.set(ClientConfig.AUTOMATIC_CLOUD_SYNC, true);
-                    config.set(ClientConfig.FIRST_TIME_LOAD, false);
+                    config.cloudSyncEnabled.update(true);
+                    config.automaticCloudSync.update(true);
+                    config.firstTimeLoad.update(false);
 
                     button.active = false;
                     button.setMessage(CommonComponents.ELLIPSIS);
@@ -108,9 +107,9 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
                 .position(x - 131, y + 74)
                 .size(128, 20)
                 .onPress(_ -> {
-                    config.set(ClientConfig.CLOUD_SYNC_ENABLED, false);
-                    config.set(ClientConfig.AUTOMATIC_CLOUD_SYNC, false);
-                    config.set(ClientConfig.FIRST_TIME_LOAD, false);
+                    config.cloudSyncEnabled.update(false);
+                    config.automaticCloudSync.update(false);
+                    config.firstTimeLoad.update(false);
 
                     //~ if >=26.2 'minecraft.setScreen' -> 'minecraft.gui.setScreen'
                     minecraft.gui.setScreen(new WardrobeBrowserScreen(null, playerUUID));
@@ -123,7 +122,7 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
         var clientUUID = client.player.getUUID();
 
         WildfireGender.CACHE.asMap().values()
-            .removeIf(config -> config.syncStatus == PlayerConfig.SyncStatus.UNKNOWN);
+            .removeIf(config -> config.syncStatus == PlayerConfigHolder.SyncStatus.UNKNOWN);
 
         return CompletableFuture.runAsync(() -> {
             var clientConfig = WildfireGender.getOrAddPlayerById(clientUUID);
@@ -183,6 +182,6 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 
     @Override
     public void removed() {
-        ClientConfig.INSTANCE.save();
+        ClientConfig.save();
     }
 }

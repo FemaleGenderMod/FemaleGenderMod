@@ -50,7 +50,7 @@ abstract class AvatarRendererMixin extends LivingEntityRenderer<Avatar, AvatarRe
     @ModifyReturnValue(method = "shouldShowName(Lnet/minecraft/world/entity/Avatar;D)Z", at = @At("RETURN"))
     public boolean wildfiregender$forceLabel(boolean original, @Local(argsOnly = true) Avatar entity) {
         if(FabricLoader.getInstance().isDevelopmentEnvironment()) {
-            if(entity instanceof LocalPlayer && ClientConfig.INSTANCE.get(ClientConfig.DISPLAY_OWN_NAMETAG)) {
+            if(entity instanceof LocalPlayer && ClientConfig.DISPLAY_OWN_NAMETAG) {
                 return true;
             }
         }

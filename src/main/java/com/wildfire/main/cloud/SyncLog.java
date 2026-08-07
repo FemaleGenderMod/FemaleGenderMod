@@ -33,8 +33,8 @@ import java.util.List;
 public final class SyncLog {
     public static final List<Entry> SYNC_LOG = new ArrayList<>();
 
-    public static int verbosity() {
-        return ClientConfig.INSTANCE.get(ClientConfig.SYNC_VERBOSITY).ordinal();
+    public static SyncVerbosity verbosity() {
+        return ClientConfig.config().syncVerbosity.get();
     }
 
     public static void add(WildfireLang langEntry, SyncVerbosity verbosity) {
@@ -42,7 +42,7 @@ public final class SyncLog {
     }
 
     public static void add(Component text, SyncVerbosity verbosity) {
-        if(verbosity() < verbosity.ordinal()) {
+        if(verbosity().ordinal() < verbosity.ordinal()) {
             return;
         }
         add(text);

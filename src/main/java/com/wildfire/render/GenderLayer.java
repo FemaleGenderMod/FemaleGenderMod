@@ -118,7 +118,8 @@ public class GenderLayer<S extends HumanoidRenderState, M extends HumanoidModel<
         //Note: When the stack is empty the helper will fall back to an implementation that returns the proper data
         // TODO should this be moved into the render state?
         genderArmor = WildfireHelper.getArmorConfig(armorStack);
-        isChestplateOccupied = genderArmor.coversBreasts() && !genderState.armorPhysicsOverride;
+        boolean armorPhysicsOverride = ClientConfig.config().armorPhysicsOverride.get();
+        isChestplateOccupied = genderArmor.coversBreasts() && !armorPhysicsOverride;
         if(genderArmor.alwaysHidesBreasts() || !genderState.showBreastsInArmor && isChestplateOccupied) {
             //If the armor always hides breasts or there is armor and the player configured breasts
             // to be hidden when wearing armor, we can just exit early rather than doing any calculations
@@ -171,7 +172,7 @@ public class GenderLayer<S extends HumanoidRenderState, M extends HumanoidModel<
         breastSize += 0.5f * Math.abs(bSize - 0.7f) * 2f; // Adjust breastSize based on bSize
 
         float resistance = Mth.clamp(genderArmor.physicsResistance(), 0, 1);
-        breathingAnimation = (genderState.armorPhysicsOverride || resistance <= 0.5F) && genderState.isBreathing;
+        breathingAnimation = (armorPhysicsOverride || resistance <= 0.5F) && genderState.isBreathing;
         bounceEnabled = genderState.hasBreastPhysics && (!isChestplateOccupied || resistance < 1); //oh, you found this?
         return true;
     }

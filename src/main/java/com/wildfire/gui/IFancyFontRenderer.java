@@ -40,6 +40,11 @@ public interface IFancyFontRenderer {
         drawScrollingString(graphics, text, x + maxLengthPad, y, x + width - maxLengthPad, y + height, alignment, color, shadow, visibleFor);
     }
 
+    default void drawScrollingString(GuiGraphicsExtractor graphics, Component text, int minX, int minY, int maxX, int maxY, TextAlignment alignment, int color,
+        boolean shadow) {
+        drawScrollingString(graphics, text.getVisualOrderText(), minX, minY, maxX, maxY, alignment, color, shadow, -1);
+    }
+
     default void drawScrollingString(GuiGraphicsExtractor graphics, FormattedCharSequence text, int minX, int minY, int maxX, int maxY, TextAlignment alignment, int color,
         boolean shadow, long visibleFor) {
         Font font = font();

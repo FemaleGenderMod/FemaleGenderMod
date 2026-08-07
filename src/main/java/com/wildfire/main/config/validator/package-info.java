@@ -16,17 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.main.config.functions;
+@NullMarked
+package com.wildfire.main.config.validator;
 
-import com.wildfire.main.entitydata.Breasts;
-import com.wildfire.main.entitydata.PlayerConfig;
-
-@FunctionalInterface
-public interface BreastGetter<T> extends PlayerGetter<T> {
-    T get(Breasts player);
-
-    @Override
-    default T get(PlayerConfig player) {
-        return get(player.getBreasts());
-    }
-}
+import org.jspecify.annotations.NullMarked;

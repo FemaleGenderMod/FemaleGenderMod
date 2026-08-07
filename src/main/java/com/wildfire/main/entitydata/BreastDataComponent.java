@@ -19,15 +19,20 @@
 package com.wildfire.main.entitydata;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.wildfire.main.config.Configuration;
+import com.wildfire.main.config.value.ConfigKey;
+import com.wildfire.main.config.validator.ConfigRange;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 import org.jspecify.annotations.Nullable;
 
 /// Data component-like class for storing player breast settings on armor equipped onto armor stands
@@ -35,38 +40,52 @@ import org.jspecify.annotations.Nullable;
 /// Note that while this is treated similarly to any other [`data component`][DataComponents] for performance reasons,
 /// this is never written as its own component on item stacks, but instead uses the [`custom NBT data component`][DataComponents#CUSTOM_DATA]
 /// (under the `WildfireGender` key) for compatibility with vanilla clients on servers.
-public record BreastDataComponent(float breastSize, float cleavage, Vector3f offsets, boolean jacket, @Nullable CustomData nbtComponent) {
+public record BreastDataComponent(float breastSize, float cleavage, Vector3fc offsets, boolean jacket, @Nullable CustomData nbtComponent) {
 
-    private static final String KEY = "WildfireGender";
+    private static final String KEY = "female_gender";
+    private static final String LEGACY_KEY = "WildfireGender";
+
+    /// Minimal variant of [Breasts] to allow for mirroring serialization of [Breasts#CODEC] more easily
+    private record BreastData(float breastSize, float cleavage, Vector3fc offsets) {
+        private static final Codec<BreastData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Breasts.BUST_SIZE.codec().fieldOf("size").forGetter(BreastData::breastSize),
+            Breasts.BREASTS_CLEAVAGE.codec().fieldOf("cleavage").forGetter(BreastData::cleavage),
+            Breasts.OFFSET_CODEC.fieldOf("offset").forGetter(BreastData::offsets)
+        ).apply(instance, BreastData::new));
+
+        public BreastData(BreastDataComponent component) {
+            this(component.breastSize, component.cleavage, component.offsets);
+        }
+    }
+
     private static final Codec<BreastDataComponent> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Configuration.BUST_SIZE.codec()
-                    .optionalFieldOf("BreastSize", 0f)
-                    .forGetter(BreastDataComponent::breastSize),
-            Configuration.BREASTS_CLEAVAGE.codec()
-                    .optionalFieldOf("Cleavage", Configuration.BREASTS_CLEAVAGE.getDefault())
-                    .forGetter(BreastDataComponent::cleavage),
-            Codec.BOOL
-                    .optionalFieldOf("Jacket", true)
-                    .forGetter(BreastDataComponent::jacket),
-            Configuration.BREASTS_OFFSET_X.codec()
-                    .optionalFieldOf("XOffset", 0f)
-                    .forGetter(component -> component.offsets.x),
-            Configuration.BREASTS_OFFSET_Y.codec()
-                    .optionalFieldOf("YOffset", 0f)
-                    .forGetter(component -> component.offsets.y),
-            Configuration.BREASTS_OFFSET_Z.codec()
-                    .optionalFieldOf("ZOffset", 0f)
-                    .forGetter(component -> component.offsets.y)
-        ).apply(instance, (breastSize, cleavage, jacket, x, y, z) -> new BreastDataComponent(breastSize, cleavage, new Vector3f(x, y, z), jacket, null))
-    );
+        BreastData.CODEC.fieldOf("breasts").forGetter(BreastData::new),
+        Codec.BOOL.optionalFieldOf("Jacket", true).forGetter(BreastDataComponent::jacket)
+    ).apply(instance, (data, jacket) -> new BreastDataComponent(data.breastSize(), data.cleavage(), data.offsets(), jacket, null)));
+    private static final Codec<BreastDataComponent> LEGACY_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        legacy(Breasts.BUST_SIZE, "BreastSize").forGetter(BreastDataComponent::breastSize),
+        legacy(Breasts.BREASTS_CLEAVAGE, "Cleavage").forGetter(BreastDataComponent::cleavage),
+        legacy(Breasts.BREASTS_OFFSET_X, "XOffset").forGetter(component -> component.offsets.x()),
+        legacy(Breasts.BREASTS_OFFSET_Y, "YOffset").forGetter(component -> component.offsets.y()),
+        legacy(Breasts.BREASTS_OFFSET_Z, "ZOffset").forGetter(component -> component.offsets.y()),
+        Codec.BOOL.optionalFieldOf("Jacket", true).forGetter(BreastDataComponent::jacket)
+    ).apply(instance, (breastSize, cleavage, x, y, z, jacket) -> new BreastDataComponent(breastSize, cleavage, new Vector3f(x, y, z), jacket, null)));
+    private static final Codec<BreastDataComponent> OR_LEGACY = CODEC.withAlternative(LEGACY_CODEC);
 
-    public static @Nullable BreastDataComponent fromPlayer(Player player, PlayerConfig config) {
-        if(!config.getGender().canHaveBreasts() || !config.showBreastsInArmor()) {
+    private static MapCodec<Float> legacy(ConfigKey<Float> configKey, String legacyKey) {
+        if (configKey.validator() instanceof ConfigRange<Float>(Float minInclusive, Float maxInclusive)) {
+            return ExtraCodecs.floatRange(minInclusive, maxInclusive).lenientOptionalFieldOf(legacyKey, configKey.defaultValue());
+        }
+        throw new IllegalArgumentException("No range defined for config key: " + legacyKey);
+    }
+
+    public static @Nullable BreastDataComponent fromPlayer(Player player, PlayerConfigHolder config) {
+        if(!config.gender().get().canHaveBreasts() || !config.showBreastsInArmor().get()) {
             return null;
         }
 
-        return new BreastDataComponent(config.getBustSize(), config.getBreasts().getCleavage(), config.getBreasts().getOffsets(),
-                player.isModelPartShown(PlayerModelPart.JACKET), null);
+        Breasts breasts = config.breasts();
+        return new BreastDataComponent(breasts.bustSize().get(), breasts.cleavage().get(), breasts.offset(), player.isModelPartShown(PlayerModelPart.JACKET), null);
     }
 
     public static @Nullable BreastDataComponent fromComponent(@Nullable CustomData component) {
@@ -74,7 +93,8 @@ public record BreastDataComponent(float breastSize, float cleavage, Vector3f off
             return null;
         }
 
-        return CODEC.parse(NbtOps.INSTANCE, component.copyTag().getCompoundOrEmpty(KEY))
+        CompoundTag compoundTag = component.copyTag();
+        return OR_LEGACY.parse(NbtOps.INSTANCE, compoundTag.getCompound(KEY).orElseGet(() -> compoundTag.getCompoundOrEmpty(LEGACY_KEY)))
                 .result()
                 .map(breastDataComponent -> breastDataComponent.withComponent(component))
                 .orElse(null);
@@ -85,14 +105,25 @@ public record BreastDataComponent(float breastSize, float cleavage, Vector3f off
             throw new IllegalArgumentException("The provided ItemStack must not be empty");
         }
 
-        CustomData.update(DataComponents.CUSTOM_DATA, stack, nbt -> nbt.store(KEY, CODEC, this));
+        CustomData.update(DataComponents.CUSTOM_DATA, stack, nbt -> {
+            if (nbt.contains(LEGACY_KEY)) {//Remove legacy key if it already had it
+                nbt.remove(LEGACY_KEY);
+            }
+            nbt.store(KEY, CODEC, this);
+        });
     }
 
     public static void removeFromStack(ItemStack stack) {
         if(stack.isEmpty()) return;
         CustomData component = stack.get(DataComponents.CUSTOM_DATA);
-        if(component != null && component.copyTag().contains(KEY)) {
-            CustomData.update(DataComponents.CUSTOM_DATA, stack, nbt -> nbt.remove(KEY));
+        if(component != null) {
+            CompoundTag compoundTag = component.copyTag();
+            if (compoundTag.contains(KEY) || compoundTag.contains(LEGACY_KEY)) {
+                CustomData.update(DataComponents.CUSTOM_DATA, stack, nbt -> {
+                    nbt.remove(KEY);
+                    nbt.remove(LEGACY_KEY);
+                });
+            }
         }
     }
 

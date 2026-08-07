@@ -17,6 +17,6 @@
  */
 
 @NullMarked
-package com.wildfire.main.config.functions;
+package com.wildfire.main.config.value;
 
 import org.jspecify.annotations.NullMarked;

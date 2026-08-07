@@ -23,7 +23,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.config.Configuration;
 import com.wildfire.main.config.enums.Gender;
+import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
+import com.wildfire.main.entitydata.PlayerConfigHolder;
 import net.minecraft.util.Util;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -58,7 +60,7 @@ public final class WildfireAPI {
     ///
     /// @param  uuid  the uuid of the target [Player]
     /// @see	PlayerConfig
-    public static @Nullable PlayerConfig getPlayerById(UUID uuid) {
+    public static @Nullable PlayerConfigHolder getPlayerById(UUID uuid) {//TODO: This is technically breaking, we could give it a value, but PlayerConfig underwent breaking changes itself
         return WildfireGender.getPlayerById(uuid);
     }
 
@@ -67,8 +69,8 @@ public final class WildfireAPI {
     /// @param  uuid  the uuid of the target [Player].
     /// @see	Gender
     public static Gender getPlayerGender(UUID uuid) {
-        PlayerConfig cfg = WildfireGender.getPlayerById(uuid);
-        if(cfg == null) return Configuration.GENDER.getDefault();
-        return cfg.getGender();
+        PlayerConfigHolder cfg = WildfireGender.getPlayerById(uuid);
+        if(cfg == null) return EntityConfig.GENDER.defaultValue();
+        return cfg.gender().get();
     }
 }

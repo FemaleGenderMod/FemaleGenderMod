@@ -85,14 +85,9 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
                 .size(this.width - x - 10, 20)
                 .onPress(_ -> {
                     var player = Objects.requireNonNull(getPlayer(), "getPlayer()");
-
-                    player.updateLeftBreastUVLayout(Configuration.LEFT_BREAST_UV_LAYOUT.getDefault());
-                    player.updateRightBreastUVLayout(Configuration.RIGHT_BREAST_UV_LAYOUT.getDefault());
-
-                    player.updateLeftBreastOverlayUVLayout(Configuration.LEFT_BREAST_OVERLAY_UV_LAYOUT.getDefault());
-                    player.updateRightBreastOverlayUVLayout(Configuration.RIGHT_BREAST_OVERLAY_UV_LAYOUT.getDefault());
-
-                    player.save();
+                    if (player.uvs().reset()) {
+                        player.save();
+                    }
                 }));
 
         addButton(builder -> builder
@@ -210,10 +205,10 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
         if(player == null) return;
 
         selectedUVs = switch (selectedBreastIndex) {
-            case RIGHT -> player.getRightBreastUVLayout();
-            case LEFT_OVERLAY -> player.getLeftBreastOverlayUVLayout();
-            case RIGHT_OVERLAY -> player.getRightBreastOverlayUVLayout();
-            default -> player.getLeftBreastUVLayout();
+            case RIGHT -> player.uvs().skin().right().get();
+            case LEFT_OVERLAY -> player.uvs().overlay().left().get();
+            case RIGHT_OVERLAY -> player.uvs().overlay().right().get();
+            default -> player.uvs().skin().left().get();
         };
     }
 
@@ -231,14 +226,7 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
                     0, 0, textureDrawWidth, textureDrawWidth, textureDrawWidth, textureDrawWidth);
 
             //Other faces
-            UVLayout[] ALL_UVS = {
-                    player.getLeftBreastUVLayout(),
-                    player.getRightBreastUVLayout(),
-                    player.getLeftBreastOverlayUVLayout(),
-                    player.getRightBreastOverlayUVLayout()
-            };
-
-            for(UVLayout eachBreast : ALL_UVS) {
+            for(UVLayout eachBreast : player.uvs()) {
                 drawFaceBorders(graphics, eachBreast, mouseX, mouseY, true);
             }
 

@@ -19,6 +19,9 @@
 package com.wildfire.main.uvs;
 
 import com.mojang.serialization.Codec;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.UnmodifiableView;
 
@@ -30,10 +33,17 @@ import org.jspecify.annotations.Nullable;
 public class UVLayout {
     /// @apiNote Any layouts returned from this codec are [`immutable`][Immutable]
     public static final Codec<UVLayout> CODEC = Codec.unboundedMap(UVDirection.NAME_CODEC, UVQuad.CODEC).xmap(UVLayout::createImmutable, UVLayout::getQuads);
+    public static final Codec<UVLayout> MUTABLE_CONFIG_CODEC = Codec.unboundedMap(UVDirection.NAME_CODEC, UVQuad.OR_LEGACY).xmap(UVLayout::new, UVLayout::getQuads);
+    public static final StreamCodec<ByteBuf, UVLayout> STREAM_CODEC = ByteBufCodecs.map(
+        _ -> new EnumMap<>(UVDirection.class),
+        UVDirection.STREAM_CODEC,
+        UVQuad.STREAM_CODEC,
+        UVDirection.values().length
+    ).map(UVLayout::new, UVLayout::getQuads);
 
     private final EnumMap<UVDirection, @Nullable UVQuad> quads = new EnumMap<>(UVDirection.class);
 
-    public UVLayout(Map<UVDirection, @Nullable UVQuad> map) {
+    private UVLayout(Map<UVDirection, @Nullable UVQuad> map) {
         this.quads.putAll(map);
         fillMissing();
     }

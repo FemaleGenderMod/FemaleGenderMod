@@ -20,10 +20,15 @@ package com.wildfire.gui;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
+import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireHelper;
-import com.wildfire.main.config.types.FloatConfigKey;
+import com.wildfire.main.config.value.ConfigKey;
+import com.wildfire.main.config.validator.ConfigRange;
+import com.wildfire.main.config.value.ConfigValue;
 import it.unimi.dsi.fastutil.floats.Float2ObjectFunction;
 import it.unimi.dsi.fastutil.floats.FloatConsumer;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -148,21 +153,22 @@ public class WildfireSlider extends AbstractWidget implements IFancyFontRenderer
             return;
         }
         int xP = getX() + 2;
-        graphics.fill(xP - 2, getY(), getX() + this.width, getY() + this.height, 0x80222222);
+        graphics.fill(xP - 2, getY(), getRight(), getBottom(), 0x80222222);
         int xPos = getX() + 2 + (int) (this.value * (float)(this.width - 3));
 
-        graphics.fill(getX() + 1, getY() + 1, xPos - 1, getY() + this.height - 1, active ? 0xB4222266 : 0xB4111133);
+        graphics.fill(getX() + 1, getY() + 1, xPos - 1, getBottom() - 1, active ? 0xB4222266 : 0xB4111133);
 
         if(active) {
             int xPos2 = this.getX() + 3 + (int) (this.value * (float) (this.width - 4));
-            graphics.fill(xPos2 - 2, getY() + 1, xPos2, getY() + this.height - 1, ARGB.white(0x78));
+            graphics.fill(xPos2 - 2, getY() + 1, xPos2, getBottom() - 1, ARGB.white(0x78));
         }
 
         int textColor = (isHoveredOrFocused()&&active) || changed ? CommonColors.SOFT_YELLOW : CommonColors.WHITE;
         if(!active) {
             textColor = 0xFF666666;
         }
-        drawScrollingString(graphics, getMessage(), getX(), getY(), TextAlignment.CENTER, textColor, getWidth(), getHeight(), 2, false);
+        //Note: We add one to the button height and width as it is considered bounds as we want the final pixel to count towards the calculation of where the text should land
+        drawScrollingString(graphics, getMessage(), getX(), getY(), getRight() + 1, getBottom() + 1, TextAlignment.CENTER, textColor, false);
 
         if(isHovered() || dragging) {
             if(!active) {
@@ -271,8 +277,13 @@ public class WildfireSlider extends AbstractWidget implements IFancyFontRenderer
             return this;
         }
 
-        public Builder range(FloatConfigKey key) {
-            return range(key.getMinInclusive(), key.getMaxInclusive());
+        public Builder range(ConfigKey<Float> key) {
+            if (key.validator() instanceof ConfigRange<Float>(Float minInclusive, Float maxInclusive)) {
+                return range(minInclusive, maxInclusive);
+            }
+            //TODO: Do we care about having a logging message? If so where should we get the key name from
+            //WildfireGender.LOGGER.warn("No range available for {}", key.key());
+            return this;
         }
 
         public Builder range(float min, float max) {
@@ -284,6 +295,17 @@ public class WildfireSlider extends AbstractWidget implements IFancyFontRenderer
         public Builder current(double value) {
             this.value = value;
             return this;
+        }
+
+        public Builder forConfig(Supplier<ConfigValue<Float>> configValue) {
+            ConfigValue<Float> currentValue = configValue.get();
+            return range(currentValue.key())
+                .current(currentValue.get())
+                .update(value -> configValue.get().update(value));
+        }
+
+        public Builder active(Supplier<Boolean> initiallyActive) {
+            return active(initiallyActive.get());
         }
 
         public Builder active(boolean active) {

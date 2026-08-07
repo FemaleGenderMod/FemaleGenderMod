@@ -22,13 +22,16 @@ import com.google.common.base.Suppliers;
 import com.google.gson.JsonObject;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.cloud.CloudSync;
+import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.contributors.Contributor;
 import com.wildfire.main.contributors.Contributors;
-import com.wildfire.main.entitydata.EntityConfig;
+import com.wildfire.main.entitydata.EntityConfigHolder;
 import com.wildfire.main.entitydata.PlayerConfig;
+import com.wildfire.main.entitydata.PlayerConfigHolder;
 import com.wildfire.mixins.accessors.ClientMannequinAccessor;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.ClientMannequin;
@@ -40,19 +43,28 @@ import org.jspecify.annotations.Nullable;
 
 public class FakeGUIPlayer {
 
+    public static final Consumer<PlayerConfig> FEMALE_CHANGES = config -> {
+        //The settings that need to be changed away from default
+        config.gender.update(Gender.FEMALE);
+        config.breasts.yOffset().update(-0.2F);
+        config.breasts.physics().uniboob().update(false);
+        config.breasts.cleavage().update(0.05F);
+        config.holidayThemes.update(false);
+    };
+
     private final String name;
     private final UUID uuid;
     private final Supplier<GUIMannequin> entity;
     private final @Nullable Component description;
 
-    public FakeGUIPlayer(String name, UUID uuid, @Nullable Component description, @Nullable JsonObject defaultGenderSettings) {
+    public FakeGUIPlayer(String name, UUID uuid, @Nullable Component description, @Nullable Consumer<PlayerConfig> defaultGenderSettings) {
         this.name = name;
         this.uuid = uuid;
         this.entity = createPlayerSupplier(uuid, defaultGenderSettings);
         this.description = description;
     }
 
-    public FakeGUIPlayer(String name, UUID uuid, @Nullable JsonObject defaultGenderSettings) {
+    public FakeGUIPlayer(String name, UUID uuid, @Nullable Consumer<PlayerConfig> defaultGenderSettings) {
         this(name, uuid, null, defaultGenderSettings);
     }
 
@@ -84,20 +96,21 @@ public class FakeGUIPlayer {
     public void tick() {
         entity.get().applyLoadedSkin();
         entity.get().tickCount++; // This allows for playing the breathing animation
-        EntityConfig.getEntity(getEntity()).tickBreastPhysics(getEntity());
+        EntityConfigHolder.getEntity(getEntity()).tickBreastPhysics(getEntity());
     }
 
-    private static Supplier<GUIMannequin> createPlayerSupplier(final UUID uuid, final @Nullable JsonObject defaultGenderData) {
+    @SuppressWarnings("NullableProblems")
+    private static Supplier<GUIMannequin> createPlayerSupplier(final UUID uuid, final @Nullable Consumer<PlayerConfig> defaultGenderData) {
         return Suppliers.memoize(() -> {
             var client = Minecraft.getInstance();
             assert client.level != null;
 
             var entity = new GUIMannequin(client.level, client.playerSkinRenderCache(), ResolvableProfile.createUnresolved(uuid));
 
-            PlayerConfig config;
+            PlayerConfigHolder config;
             try {
                 // while we don't have proper support for mannequins right now, we can most certainly fake it
-                config = (PlayerConfig) EntityConfig.CACHE.get(entity.getUUID(), () -> new PlayerConfig(entity.getUUID()));
+                config = (PlayerConfigHolder) EntityConfigHolder.CACHE.get(entity.getUUID(), () -> new PlayerConfigHolder(entity.getUUID()));
             } catch(ExecutionException | ClassCastException _) {
                 return entity;
             }
@@ -110,7 +123,8 @@ public class FakeGUIPlayer {
                     if(json != null) {
                         config.updateFromJson(json);
                     } else if(defaultGenderData != null) {
-                        config.updateFromJson(defaultGenderData);
+                        //Apply changes compared to the default configs
+                        defaultGenderData.accept(config.config());
                     }
                 });
             } else {

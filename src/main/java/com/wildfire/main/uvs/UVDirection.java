@@ -52,7 +52,7 @@ public enum UVDirection implements StringRepresentable {
 
     public static final IntFunction<UVDirection> BY_ID = ByIdMap.continuous(UVDirection::ordinal, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
     public static final Codec<UVDirection> NAME_CODEC = StringRepresentable.fromEnum(UVDirection::values);
-    public static final StreamCodec<ByteBuf, UVDirection> PACKET_CODEC = ByteBufCodecs.idMapper(BY_ID, UVDirection::ordinal);
+    public static final StreamCodec<ByteBuf, UVDirection> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, UVDirection::ordinal);
 
     UVDirection(String saveName, @Nullable WildfireLang name, WildfireLang shortName, int baseColor, Vec3i vector) {
         this.name = name;

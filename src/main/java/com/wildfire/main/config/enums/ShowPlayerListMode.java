@@ -18,27 +18,44 @@
 
 package com.wildfire.main.config.enums;
 
+import com.mojang.serialization.Codec;
 import com.wildfire.main.WildfireLang;
+import io.netty.buffer.ByteBuf;
+import java.util.Locale;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ByIdMap;
 
 import java.util.function.IntFunction;
+import net.minecraft.util.ExtraCodecs;
+import net.minecraft.util.StringRepresentable;
 
-public enum ShowPlayerListMode {
+public enum ShowPlayerListMode implements StringRepresentable {
     MOD_UI_ONLY(WildfireLang.PLAYER_LIST_MODE_MOD_UI, WildfireLang.PLAYER_LIST_MODE_MOD_UI_TOOLTIP),
     TAB_LIST_OPEN(WildfireLang.PLAYER_LIST_MODE_TAB_LIST, WildfireLang.PLAYER_LIST_MODE_TAB_LIST_TOOLTIP),
     ALWAYS(WildfireLang.PLAYER_LIST_MODE_ALWAYS, WildfireLang.PLAYER_LIST_MODE_ALWAYS_TOOLTIP);
 
     public static final IntFunction<ShowPlayerListMode> BY_ID = ByIdMap.continuous(ShowPlayerListMode::ordinal, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
+    public static final Codec<ShowPlayerListMode> CODEC = StringRepresentable.fromEnum(ShowPlayerListMode::values);
+    public static final Codec<ShowPlayerListMode> CODEC_OR_LEGACY = CODEC.withAlternative(ExtraCodecs.idResolverCodec(ShowPlayerListMode::ordinal, BY_ID, 0));
+    public static final StreamCodec<ByteBuf, ShowPlayerListMode> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, ShowPlayerListMode::ordinal);
 
+    private final String saveName;
     private final WildfireLang name;
     private final WildfireLang tooltip;
 
     ShowPlayerListMode(WildfireLang name, WildfireLang tooltip) {
+        this.saveName = name().toLowerCase(Locale.ROOT);
         this.name = name;
         this.tooltip = tooltip;
+    }
+
+    @Override
+    public String getSerializedName() {
+        return this.saveName;
     }
 
     public ShowPlayerListMode next() {

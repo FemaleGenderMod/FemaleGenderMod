@@ -32,7 +32,8 @@ import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.entitydata.BreastDataComponent;
 import com.wildfire.main.entitydata.EntityConfig;
-import com.wildfire.main.entitydata.PlayerConfig;
+import com.wildfire.main.entitydata.EntityConfigHolder;
+import com.wildfire.main.entitydata.PlayerConfigHolder;
 import com.wildfire.main.networking.ServerboundSyncPacket;
 import com.wildfire.main.networking.WildfireSync;
 import com.wildfire.render.GenderArmorLayer;
@@ -171,11 +172,11 @@ public final class WildfireEventHandler {
 
     @Environment(EnvType.CLIENT)
     private static void renderTooltip(ItemStack item, Consumer<Component> tooltipAppender, @Nullable Player player) {
-        if(player == null || !ClientConfig.INSTANCE.get(ClientConfig.ARMOR_STAT)) return;
-        if(ClientConfig.INSTANCE.get(ClientConfig.ARMOR_PHYSICS_OVERRIDE)) return;
+        if(player == null || !ClientConfig.config().armorStat.get()) return;
+        if(ClientConfig.config().armorPhysicsOverride.get()) return;
 
         var playerConfig = WildfireGender.getPlayerById(player.getUUID());
-        if(playerConfig == null || !playerConfig.getGender().canHaveBreasts()) return;
+        if(playerConfig == null || !playerConfig.gender().get().canHaveBreasts()) return;
 
         var equippableComponent = item.get(DataComponents.EQUIPPABLE);
         if(equippableComponent == null || equippableComponent.slot() != EquipmentSlot.CHEST) return;
@@ -198,7 +199,7 @@ public final class WildfireEventHandler {
             return;
         }
 
-        if(ClientConfig.INSTANCE.get(ClientConfig.ALWAYS_SHOW_LIST).isVisible()) {
+        if(ClientConfig.config().playerListMode.get().isVisible()) {
             SyncedPlayerList.drawSyncedPlayers(context);
         } else {
             SyncedPlayerList.resetTimer();
@@ -224,7 +225,7 @@ public final class WildfireEventHandler {
     private static void onEntityUnload(Entity entity, Level world) {
         // note that we don't attempt to unload players; they're instead only ever unloaded once we leave a world,
         // or once they disconnect
-        EntityConfig.CACHE.invalidate(entity.getUUID());
+        EntityConfigHolder.CACHE.invalidate(entity.getUUID());
     }
 
     /// Perform various actions that should happen once per client tick, such as syncing client player settings
@@ -232,20 +233,20 @@ public final class WildfireEventHandler {
     @Environment(EnvType.CLIENT)
     private static void onClientTick(Minecraft client) {
         if(client.level == null || client.player == null) return;
-
-        PlayerConfig clientConfig = WildfireGender.getPlayerById(client.player.getUUID());
         timer++;
 
-        // Only attempt to sync if the server will accept the packet, and only once every 5 ticks, or around 4 times a second
-        if(ServerboundSyncPacket.canSend() && timer % 5 == 0) {
-            // sendToServer will only actually send a packet if any changes have been made that need to be synced,
-            // or if we haven't synced before.
-            if(clientConfig != null) WildfireSync.sendToServer(clientConfig);
-        }
-
-        if(timer % 40 == 0) {
-            CloudSync.sendNextQueueBatch();
-            if(clientConfig != null) clientConfig.attemptCloudSync();
+        if (timer % 5 == 0) {
+            PlayerConfigHolder clientConfig = WildfireGender.getPlayerById(client.player.getUUID());
+            // Only attempt to sync if the server will accept the packet, and only once every 5 ticks, or around 4 times a second
+            if (client.isMultiplayerServer() && clientConfig != null) {
+                // sendToServer will only actually send a packet if any changes have been made that need to be synced, or if we haven't synced before.
+                WildfireSync.sendToServer(clientConfig);
+            }
+            if (timer % 40 == 0) {//All timers that are divisible by 40 will be divisible by 5, so we may as well put it within the outer if statement
+                CloudSync.sendNextQueueBatch();
+                if (clientConfig != null)
+                    clientConfig.attemptCloudSync();
+            }
         }
 
         //~ if >=26.2 'client.screen' -> 'client.gui.screen()' {
@@ -262,14 +263,14 @@ public final class WildfireEventHandler {
     @Environment(EnvType.CLIENT)
     private static void clientDisconnect(ClientPacketListener networkHandler, Minecraft client) {
         WildfireGender.CACHE.invalidateAll();
-        EntityConfig.CACHE.invalidateAll();
+        EntityConfigHolder.CACHE.invalidateAll();
     }
 
     @Environment(EnvType.CLIENT)
     private static void clientJoin(ClientPacketListener var1, PacketSender var2, Minecraft client) {
         if (client.player == null) return;
 
-        if (ClientConfig.INSTANCE.get(ClientConfig.SHOW_TOAST)) {
+        if (ClientConfig.config().showToast.get()) {
             var button = CONFIG_KEYBIND.getTranslatedKeyMessage();
             //~ if >=26.2 'client.getToastManager()' -> 'client.gui.toastManager()'
             ToastManager toastManager = client.gui.toastManager();
@@ -285,7 +286,7 @@ public final class WildfireEventHandler {
     /// Send a sync packet when a player enters the render distance of another player
     private static void onBeginTracking(Entity tracked, ServerPlayer syncTo) {
         if(tracked instanceof Player toSync) {
-            PlayerConfig genderToSync = WildfireGender.getPlayerById(toSync.getUUID());
+            PlayerConfigHolder genderToSync = WildfireGender.getPlayerById(toSync.getUUID());
             if(genderToSync == null) return;
             // Note that we intentionally don't check if we've previously synced a player with this code path;
             // because we use entity tracking to sync, it's entirely possible that one player would leave the
@@ -303,13 +304,13 @@ public final class WildfireEventHandler {
         if(client.player == null || client.level == null) return;
         if(!(entity instanceof Player player) || !player.level().isClientSide()) return;
 
-        PlayerConfig genderPlayer = WildfireGender.getPlayerById(player.getUUID());
-        if(genderPlayer == null || !genderPlayer.hasHurtSounds()) return;
+        PlayerConfigHolder genderPlayer = WildfireGender.getPlayerById(player.getUUID());
+        if(genderPlayer == null || !genderPlayer.sounds().hurt().get()) return;
 
-        SoundEvent hurtSound = genderPlayer.getGender().getHurtSound();
+        SoundEvent hurtSound = genderPlayer.gender().get().getHurtSound();
         if(hurtSound != null) {
             float pitchVariation = (player.getRandom().nextFloat() - player.getRandom().nextFloat()) * 0.2F;
-            player.playSound(hurtSound, 1f, pitchVariation + genderPlayer.getVoicePitch());
+            player.playSound(hurtSound, 1f, pitchVariation + genderPlayer.sounds().voicePitch().get());
         }
     }
 
@@ -317,7 +318,7 @@ public final class WildfireEventHandler {
     @Environment(EnvType.CLIENT)
     private static void onEntityTick(LivingEntity entity) {
         if(EntityConfig.isSupportedEntity(entity)) {
-            EntityConfig cfg = EntityConfig.getEntity(entity);
+            EntityConfigHolder<?> cfg = EntityConfigHolder.getEntity(entity);
             if(entity instanceof ArmorStand) {
                 cfg.readFromStack(entity.getItemBySlot(EquipmentSlot.CHEST));
             }
@@ -327,7 +328,7 @@ public final class WildfireEventHandler {
 
     /// Apply player settings to chestplates equipped onto armor stands
     private static void onEquipArmorStand(Player player, ItemStack item) {
-        PlayerConfig playerConfig = WildfireGender.getPlayerById(player.getUUID());
+        PlayerConfigHolder playerConfig = WildfireGender.getPlayerById(player.getUUID());
         if(playerConfig == null) {
             // while we shouldn't have our tag on the stack still, we're still checking to catch any armor
             // that may still have the tag from older versions, or from potential cross-mod interactions

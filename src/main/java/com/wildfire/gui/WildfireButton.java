@@ -19,6 +19,7 @@
 package com.wildfire.gui;
 
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
+import com.wildfire.gui.WildfireSlider.Builder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -56,7 +57,8 @@ public class WildfireButton extends Button implements IFancyFontRenderer {
             return;
         }
         int textColor = active ? CommonColors.WHITE : 0xFF666666;
-        drawScrollingString(graphics, getMessage(), getX(), getY(), TextAlignment.CENTER, textColor, getWidth(), getHeight(), 2, false);
+        //Note: We add one to the button height and width as it is considered bounds as we want the final pixel to count towards the calculation of where the text should land
+        drawScrollingString(graphics, getMessage(), getX(), getY(), getRight() + 1, getBottom() + 1, TextAlignment.CENTER, textColor, false);
     }
 
     @Override
@@ -64,7 +66,7 @@ public class WildfireButton extends Button implements IFancyFontRenderer {
         int clr = 0x54444444;
         if(this.isHoveredOrFocused()) clr = 0x54666666;
         if(!active) clr = 0x54222222;
-        if(!transparent) graphics.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), clr);
+        if(!transparent) graphics.fill(getX(), getY(), getRight(), getBottom(), clr);
 
         drawInner(graphics, mouseX, mouseY, partialTicks);
         if(isHovered()) {
@@ -137,6 +139,10 @@ public class WildfireButton extends Button implements IFancyFontRenderer {
         public Builder tooltip(@Nullable Tooltip tooltip) {
             this.tooltip = tooltip;
             return this;
+        }
+
+        public Builder active(Supplier<Boolean> activeSupplier) {
+            return active(activeSupplier.get());
         }
 
         public Builder active(boolean active) {
