@@ -11,7 +11,6 @@
         "ItemStackMixin",
         "LivingEntityMixin",
         "LivingEntityRendererMixin",
-        "TextureManagerMixin",
         "accessors.ClientMannequinAccessor",
         "accessors.EquipmentLayerRendererAccessor",
         "accessors.LivingEntityRendererAccessor",

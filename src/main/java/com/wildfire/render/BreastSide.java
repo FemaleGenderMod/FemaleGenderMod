@@ -23,9 +23,21 @@ public enum BreastSide {
     LEFT(true),
     RIGHT(false);
 
-    public final boolean isLeft;
+    private final boolean isLeft;
 
     BreastSide(boolean isLeft) {
         this.isLeft = isLeft;
+    }
+
+    public float leftOrNegate(float left) {
+        return isLeft ? left : -left;
+    }
+
+    public float forSide(float left, float right) {
+        return isLeft ? left : right;
+    }
+
+    public <T> T forSide(T left, T right) {
+        return isLeft ? left : right;
     }
 }

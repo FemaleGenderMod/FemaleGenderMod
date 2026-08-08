@@ -35,6 +35,7 @@ import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectUtil;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
@@ -119,7 +120,16 @@ public class GenderRenderState {
         this.rightBreastUVLayout = entityConfig.uvs().skin().right().get().copy();
         this.leftBreastOverlayUVLayout = entityConfig.uvs().overlay().left().get().copy();
         this.rightBreastOverlayUVLayout = entityConfig.uvs().overlay().right().get().copy();
-        this.armor = entityState instanceof HumanoidRenderState humanoidState ? WildfireHelper.getArmorConfig(humanoidState.chestEquipment) : IGenderArmor.EMPTY;
+        if (entityState instanceof HumanoidRenderState humanoidState) {
+            if (humanoidState.chestEquipment.isEmpty()) {
+                //TODO: Re-evaluate this, it seems necessary as the injection point is in living entity rather than for the humanoid mob
+                this.armor = WildfireHelper.getArmorConfig(entity.getItemBySlot(EquipmentSlot.CHEST));
+            } else {
+                this.armor = WildfireHelper.getArmorConfig(humanoidState.chestEquipment);
+            }
+        } else {
+            this.armor = IGenderArmor.EMPTY;
+        }
 
         this.isBreathing = !entity.isUnderWater() || MobEffectUtil.hasWaterBreathing(entity) ||
             entity.level().getBlockState(entity.blockPosition()).is(Blocks.BUBBLE_COLUMN);

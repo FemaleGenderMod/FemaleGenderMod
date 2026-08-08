@@ -193,10 +193,10 @@ public final class WildfireClientEventHandler {//TODO: Move other classes to a c
         EntityRendererProvider.Context context) {
         if (entityRenderer instanceof AvatarRenderer<?> playerRenderer) {
             registrationHelper.register(new GenderLayer<>(playerRenderer));
-            registrationHelper.register(new GenderArmorLayer<>(playerRenderer, context.getEquipmentAssets(), context.getEquipmentRenderer()));
+            registrationHelper.register(new GenderArmorLayer<>(playerRenderer, context.getEquipmentRenderer()));
             registrationHelper.register(new HolidayFeaturesRenderer(playerRenderer));
         } else if (entityRenderer instanceof ArmorStandRenderer armorStandRenderer) {
-            registrationHelper.register(new GenderArmorLayer<>(armorStandRenderer, context.getEquipmentAssets(), context.getEquipmentRenderer()));
+            registrationHelper.register(new GenderArmorLayer<>(armorStandRenderer, context.getEquipmentRenderer()));
         }
     }
 
