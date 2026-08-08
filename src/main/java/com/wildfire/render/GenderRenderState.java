@@ -31,11 +31,9 @@ import com.wildfire.physics.BreastPhysics;
 import net.fabricmc.fabric.api.client.rendering.v1.RenderStateDataKey;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
-import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectUtil;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
@@ -46,14 +44,14 @@ import org.jspecify.annotations.Nullable;
 public class GenderRenderState {
     private static final RenderStateDataKey<GenderRenderState> STATE = RenderStateDataKey.create(() -> "GenderRenderState");
 
-    public static void update(LivingEntity entity, LivingEntityRenderState state, float partialTicks) {
+    public static void update(LivingEntity entity, HumanoidRenderState state, float partialTicks) {
         if(EntityConfig.isSupportedEntity(entity)) {
             var config = EntityConfigHolder.getEntity(entity);
             state.setData(STATE, new GenderRenderState(config, entity, state, partialTicks));
         }
     }
 
-    public static @Nullable GenderRenderState get(LivingEntityRenderState state) {
+    public static @Nullable GenderRenderState get(HumanoidRenderState state) {
         return state.getData(STATE);
     }
 
@@ -82,7 +80,7 @@ public class GenderRenderState {
     public final boolean isBreathing;
     public final @Nullable Component nametag;
 
-    private GenderRenderState(EntityConfigHolder<?> entityConfig, LivingEntity entity, LivingEntityRenderState entityState, float partialTicks) {
+    private GenderRenderState(EntityConfigHolder<?> entityConfig, LivingEntity entity, HumanoidRenderState entityState, float partialTicks) {
         this.breasts = new BreastState(entityConfig.breasts());
         this.uniboob = entityConfig.breasts().physics().uniboob().get();
         this.leftBreastPhysics = new BreastPhysicsState(entityConfig.getLeftBreastPhysics());
@@ -120,16 +118,7 @@ public class GenderRenderState {
         this.rightBreastUVLayout = entityConfig.uvs().skin().right().get().copy();
         this.leftBreastOverlayUVLayout = entityConfig.uvs().overlay().left().get().copy();
         this.rightBreastOverlayUVLayout = entityConfig.uvs().overlay().right().get().copy();
-        if (entityState instanceof HumanoidRenderState humanoidState) {
-            if (humanoidState.chestEquipment.isEmpty()) {
-                //TODO: Re-evaluate this, it seems necessary as the injection point is in living entity rather than for the humanoid mob
-                this.armor = WildfireHelper.getArmorConfig(entity.getItemBySlot(EquipmentSlot.CHEST));
-            } else {
-                this.armor = WildfireHelper.getArmorConfig(humanoidState.chestEquipment);
-            }
-        } else {
-            this.armor = IGenderArmor.EMPTY;
-        }
+        this.armor = WildfireHelper.getArmorConfig(entityState.chestEquipment);
 
         this.isBreathing = !entity.isUnderWater() || MobEffectUtil.hasWaterBreathing(entity) ||
             entity.level().getBlockState(entity.blockPosition()).is(Blocks.BUBBLE_COLUMN);
