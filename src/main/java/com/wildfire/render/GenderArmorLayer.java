@@ -32,7 +32,6 @@ import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.equipment.Equippable;
 import org.jetbrains.annotations.UnknownNullability;
@@ -61,7 +60,7 @@ public class GenderArmorLayer<STATE extends HumanoidRenderState, MODEL extends H
         if (genderRenderState == null || !HumanoidArmorLayer.shouldRender(state.chestEquipment, EquipmentSlot.CHEST)) return;
         try {
             if (!setupRender(state, genderRenderState)) return;
-            if (state.entityType == EntityTypes.ARMOR_STAND && !genderRenderState.armor.armorStandsCopySettings()) return;
+            if (isArmorStand(state) && !genderRenderState.armor.armorStandsCopySettings()) return;
 
             renderSides(state, getParentModel(), genderRenderState, matrixStack, nodeCollector, light, OverlayTexture.NO_OVERLAY, this::renderArmor);
         } catch(Exception e) {
@@ -69,9 +68,14 @@ public class GenderArmorLayer<STATE extends HumanoidRenderState, MODEL extends H
         }
     }
 
+    private boolean isArmorStand(STATE state) {
+        //~ if >=26.2 'net.minecraft.world.entity.EntityType' -> 'net.minecraft.world.entity.EntityTypes'
+        return state.entityType == net.minecraft.world.entity.EntityTypes.ARMOR_STAND;
+    }
+
     private void renderArmor(STATE state, GenderRenderState genderState, PoseStack poseStack, SubmitNodeCollector nodeCollector, int lightCoords, int overlayCoords, BreastSide side) {
         Equippable equippable = Objects.requireNonNull(state.chestEquipment.get(DataComponents.EQUIPPABLE), "Chest slot is null after having not been null at the start of render call");
-        EquipmentClientInfo.LayerType layerType = state.isBaby && state.entityType != EntityTypes.ARMOR_STAND ? EquipmentClientInfo.LayerType.HUMANOID_BABY : EquipmentClientInfo.LayerType.HUMANOID;
+        EquipmentClientInfo.LayerType layerType = state.isBaby && !isArmorStand(state) ? EquipmentClientInfo.LayerType.HUMANOID_BABY : EquipmentClientInfo.LayerType.HUMANOID;
         var model = new BreastModel(side.forSide(lBoobArmor, rBoobArmor));
         equipmentRenderer.renderLayers(layerType, equippable.assetId().orElseThrow(), model, state, state.chestEquipment, poseStack, nodeCollector, lightCoords,
             null, state.outlineColor, genderState.hasJacketLayer ? 2 : 1);
