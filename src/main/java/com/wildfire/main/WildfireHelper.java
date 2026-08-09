@@ -22,15 +22,9 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
-import com.wildfire.api.IGenderArmor;
 import com.wildfire.main.config.validator.ConfigRange;
-import com.wildfire.resources.GenderArmorResourceManager;
 import java.util.StringJoiner;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.util.ExtraCodecs;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 
 import org.joml.Vector3f;
@@ -45,16 +39,6 @@ public final class WildfireHelper {
     public static float round(float num, float decimalPlaces) {
         float factor = (float) Math.pow(10, decimalPlaces);
         return Math.round(num * factor) / factor;
-    }
-
-    @Environment(EnvType.CLIENT)
-    public static IGenderArmor getArmorConfig(ItemStack stack) {
-        if(stack.isEmpty()) {
-            return IGenderArmor.EMPTY;
-        }
-
-        return GenderArmorResourceManager.get(stack)
-            .orElseGet(() -> stack.has(DataComponents.EQUIPPABLE) ? IGenderArmor.DEFAULT : IGenderArmor.EMPTY);
     }
 
     public static String toFormattedPercent(double value) {

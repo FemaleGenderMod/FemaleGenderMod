@@ -21,8 +21,6 @@ package com.wildfire.physics;
 import com.wildfire.api.IGenderArmor;
 import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.entitydata.EntityConfigHolder;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
@@ -109,7 +107,7 @@ public class BreastPhysics {
 
     // this class cannot be blanket marked as client-side only, as this is referenced in the constructor for EntityConfig;
     // as such, the best we can get here is marking this method as such.
-    @Environment(EnvType.CLIENT)
+    /// @apiNote Only call this on the client side, or the implementation will crash
     public void update(LivingEntity entity, IGenderArmor armor) {
         boolean armorPhysicsOverride = ClientConfig.config().armorPhysicsOverride.get();
         // always suppress the full physics calculations on armor stands

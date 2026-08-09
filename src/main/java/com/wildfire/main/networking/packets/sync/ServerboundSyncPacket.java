@@ -22,8 +22,6 @@ import com.wildfire.main.WildfireGender;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.networking.WildfireSync;
 import io.netty.buffer.ByteBuf;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.context.PacketContextProvider;
 import net.minecraft.network.codec.StreamCodec;
@@ -39,7 +37,7 @@ public record ServerboundSyncPacket(PlayerConfig config) implements CustomPacket
         return TYPE;
     }
 
-    @Environment(EnvType.CLIENT)
+    /// @apiNote Only call on the client
     public static boolean canSend(PacketContextProvider contextProvider) {
         return ClientPlayNetworking.canSend(TYPE) && WildfireSync.versionMatches(contextProvider);
     }

@@ -19,8 +19,8 @@
 package com.wildfire.render;
 
 import com.wildfire.api.IGenderArmor;
+import com.wildfire.client.WildfireClientHelper;
 import com.wildfire.main.WildfireGenderClient;
-import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.entitydata.BreastState;
 import com.wildfire.main.entitydata.EntityConfig;
@@ -28,6 +28,7 @@ import com.wildfire.main.entitydata.EntityConfigHolder;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.uvs.UVLayout;
 import com.wildfire.physics.BreastPhysics;
+import com.wildfire.physics.BothBreastsPhysics;
 import net.fabricmc.fabric.api.client.rendering.v1.RenderStateDataKey;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
@@ -83,8 +84,9 @@ public class GenderRenderState {
     private GenderRenderState(EntityConfigHolder<?> entityConfig, LivingEntity entity, HumanoidRenderState entityState, float partialTicks) {
         this.breasts = new BreastState(entityConfig.breasts());
         this.uniboob = entityConfig.breasts().physics().uniboob().get();
-        this.leftBreastPhysics = new BreastPhysicsState(entityConfig.getLeftBreastPhysics());
-        this.rightBreastPhysics = new BreastPhysicsState(entityConfig.getRightBreastPhysics());
+        BothBreastsPhysics breastPhysics = entityConfig.breastPhysics();
+        this.leftBreastPhysics = new BreastPhysicsState(breastPhysics.left());
+        this.rightBreastPhysics = new BreastPhysicsState(breastPhysics.right());
 
         this.partialTicks = partialTicks;
 
@@ -118,7 +120,7 @@ public class GenderRenderState {
         this.rightBreastUVLayout = entityConfig.uvs().skin().right().get().copy();
         this.leftBreastOverlayUVLayout = entityConfig.uvs().overlay().left().get().copy();
         this.rightBreastOverlayUVLayout = entityConfig.uvs().overlay().right().get().copy();
-        this.armor = WildfireHelper.getArmorConfig(entityState.chestEquipment);
+        this.armor = WildfireClientHelper.getArmorConfig(entityState.chestEquipment);
 
         this.isBreathing = !entity.isUnderWater() || MobEffectUtil.hasWaterBreathing(entity) ||
             entity.level().getBlockState(entity.blockPosition()).is(Blocks.BUBBLE_COLUMN);

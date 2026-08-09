@@ -24,8 +24,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.wildfire.events.PlayerNametagRenderEvent;
 import com.wildfire.main.LoaderAgnostics;
 import com.wildfire.main.config.ClientConfig;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -40,8 +38,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+/// @apiNote Only applied on the client side
 @Mixin(AvatarRenderer.class)
-@Environment(EnvType.CLIENT)
 abstract class AvatarRendererMixin extends LivingEntityRenderer<Avatar, AvatarRenderState, HumanoidModel<AvatarRenderState>> {
     private AvatarRendererMixin(EntityRendererProvider.Context ctx, HumanoidModel<AvatarRenderState> model, float shadowRadius) {
         super(ctx, model, shadowRadius);

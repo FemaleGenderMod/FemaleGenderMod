@@ -95,7 +95,7 @@ public class FakeGUIPlayer {
     public void tick() {
         entity.get().applyLoadedSkin();
         entity.get().tickCount++; // This allows for playing the breathing animation
-        EntityConfigHolder.getEntity(getEntity()).tickBreastPhysics(getEntity());
+        EntityConfigHolder.getEntity(getEntity()).breastPhysics().tick(getEntity());
     }
 
     @SuppressWarnings("NullableProblems")

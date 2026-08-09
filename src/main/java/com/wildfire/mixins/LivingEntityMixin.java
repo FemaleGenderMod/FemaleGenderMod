@@ -20,8 +20,6 @@ package com.wildfire.mixins;
 
 import com.wildfire.events.EntityHurtSoundEvent;
 import com.wildfire.events.EntityTickEvent;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -32,8 +30,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+/// @apiNote Only applied on the client side
 @Mixin(LivingEntity.class)
-@Environment(EnvType.CLIENT)
 abstract class LivingEntityMixin extends Entity {
     private LivingEntityMixin(EntityType<?> type, Level world) {
         super(type, world);

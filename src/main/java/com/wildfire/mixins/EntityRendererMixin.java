@@ -20,8 +20,6 @@ package com.wildfire.mixins;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.wildfire.render.GenderRenderState;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
@@ -32,8 +30,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+/// @apiNote Only applied on the client side
 @Mixin(EntityRenderer.class)
-@Environment(EnvType.CLIENT)
 abstract class EntityRendererMixin {
     @Inject(method = "createRenderState(Lnet/minecraft/world/entity/Entity;F)Lnet/minecraft/client/renderer/entity/state/EntityRenderState;", at = @At("TAIL"))
     public void wildfiregender$captureEntityRenderState(Entity entity, float partialTicks, CallbackInfoReturnable<? extends EntityRenderState> ci, @Local(name = "state") EntityRenderState state) {

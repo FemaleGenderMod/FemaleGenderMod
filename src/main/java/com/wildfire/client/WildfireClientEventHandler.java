@@ -161,7 +161,7 @@ public final class WildfireClientEventHandler {//TODO: Move other classes to a c
             return;
         }
 
-        var config = WildfireHelper.getArmorConfig(item);
+        var config = WildfireClientHelper.getArmorConfig(item);
         // don't show a +0 tooltip on items that don't interact with physics (e.g. Elytra)
         if (!config.coversBreasts() || config.physicsResistance() == 0f) {
             return;
@@ -287,7 +287,7 @@ public final class WildfireClientEventHandler {//TODO: Move other classes to a c
             if (entity instanceof ArmorStand) {
                 cfg.readFromStack(entity.getItemBySlot(EquipmentSlot.CHEST));
             }
-            cfg.tickBreastPhysics(entity);
+            cfg.breastPhysics().tick(entity);
         }
     }
 }
