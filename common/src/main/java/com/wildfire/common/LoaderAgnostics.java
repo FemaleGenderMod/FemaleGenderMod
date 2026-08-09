@@ -24,6 +24,10 @@ public interface LoaderAgnostics {
 
     LoaderAgnostics INSTANCE = WildfireHelper.getService(LoaderAgnostics.class);
 
+    String name();
+
+    String getLoaderVersion();
+
     Path getConfigDir();
 
     boolean isDevelopmentEnv();

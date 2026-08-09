@@ -27,6 +27,16 @@ import net.fabricmc.loader.api.ModContainer;
 public class LoaderAgnosticsFabric implements LoaderAgnostics {
 
     @Override
+    public String name() {
+        return "Fabric";
+    }
+
+    @Override
+    public String getLoaderVersion() {
+        return getModVersion("fabricloader");
+    }
+
+    @Override
     public Path getConfigDir() {
         return FabricLoader.getInstance().getConfigDir();
     }

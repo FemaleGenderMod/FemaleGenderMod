@@ -24,7 +24,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.serialization.JsonOps;
 import com.mojang.util.InstantTypeAdapter;
@@ -58,6 +57,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Random;
+import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -65,6 +65,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Util;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.ApiStatus;
@@ -103,9 +104,11 @@ public final class CloudSync {
         return builder.build();
     });
 
-    private static final String USER_AGENT =
-            "WildfireGender/" + StringUtils.split(LoaderAgnostics.INSTANCE.getModVersion(WildfireAPI.MODID), '+')[0]
-                    + " Minecraft/" + LoaderAgnostics.INSTANCE.getModVersion("minecraft");
+    private static final String USER_AGENT = Util.make(new StringJoiner(" "), joiner -> {
+        joiner.add("WildfireGender/" +  StringUtils.split(LoaderAgnostics.INSTANCE.getModVersion(WildfireAPI.MODID), '+')[0]);
+        joiner.add("Minecraft/" + LoaderAgnostics.INSTANCE.getModVersion(Identifier.DEFAULT_NAMESPACE));
+        joiner.add(LoaderAgnostics.INSTANCE.name() + "/" + LoaderAgnostics.INSTANCE.getLoaderVersion());
+    }).toString();
 
     private static final Queue<QueuedFetch> QUEUED = new ConcurrentLinkedDeque<>();
     private static final Cache<UUID, Optional<JsonObject>> FETCH_CACHE = CacheBuilder.newBuilder()
@@ -250,8 +253,8 @@ public final class CloudSync {
                 WildfireGender.LOGGER.info("Obtaining new authentication token from the cloud sync server");
                 SyncLog.add(WildfireLang.SYNC_LOG_AUTH_SYNC);
                 String body = Util.make(new JsonObject(), obj -> {
-                    obj.add("server_id", new JsonPrimitive(serverId));
-                    obj.add("username", new JsonPrimitive(session.getName()));
+                    obj.addProperty("server_id", serverId);
+                    obj.addProperty("username", session.getName());
                 }).toString();
                 var uri = URI.create(getCloudServer() + "/auth");
                 var request = createRequest(uri)

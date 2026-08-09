@@ -26,9 +26,20 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.i18n.MavenVersionTranslator;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 
 public class LoaderAgnosticsNeo implements LoaderAgnostics {
+
+    @Override
+    public String name() {
+        return "NeoForge";
+    }
+
+    @Override
+    public String getLoaderVersion() {
+        return getModVersion(NeoForgeMod.MOD_ID);
+    }
 
     @Override
     public Path getConfigDir() {
