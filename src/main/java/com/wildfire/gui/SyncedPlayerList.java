@@ -24,7 +24,6 @@ import com.wildfire.main.WildfireLang;
 import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.contributors.Contributors;
 import com.wildfire.main.entitydata.PlayerConfigHolder;
-import com.wildfire.mixins.accessors.PlayerTabOverlayAccessor;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -75,8 +74,7 @@ public final class SyncedPlayerList {
         int screenWidth = graphics.guiWidth();
         int width = screenWidth;
         //~ if >=26.2 'getTabList' -> 'hud.getTabList'
-        var tabListAccessor = (PlayerTabOverlayAccessor) Minecraft.getInstance().gui.hud.getTabList();
-        if (tabListAccessor.isVisible()) {
+        if (Minecraft.getInstance().gui.hud.getTabList().visible) {
             //Where it starts drawing, given we start at 0, this works for calculating the width
             int maxLineWidth = getTabOverlayMaxLineWidth(screenWidth);
             if (maxLineWidth > 0) {
@@ -159,7 +157,6 @@ public final class SyncedPlayerList {
         }
         //~ if >=26.2 'getTabList' -> 'hud.getTabList'
         PlayerTabOverlay tabList = mc.gui.hud.getTabList();
-        var tabListAccessor = (PlayerTabOverlayAccessor) tabList;
 
         Scoreboard scoreboard = mc.level.getScoreboard();
         Objective displayObjective = scoreboard.getDisplayObjective(DisplaySlot.LIST);
@@ -206,15 +203,13 @@ public final class SyncedPlayerList {
 
         int slotWidth = Math.min(cols * ((showHead ? 9 : 0) + maxNameWidth + widthForScore + 13), screenWidth - 50) / cols;
         int maxLineWidth = slotWidth * cols + (cols - 1) * 5;
-        Component header = tabListAccessor.getHeader();
-        if (header != null) {
-            for (FormattedCharSequence line : mc.font.split(header, screenWidth - 50)) {
+        if (tabList.header != null) {
+            for (FormattedCharSequence line : mc.font.split(tabList.header, screenWidth - 50)) {
                 maxLineWidth = Math.max(maxLineWidth, mc.font.width(line));
             }
         }
-        Component footer = tabListAccessor.getFooter();
-        if (footer != null) {
-            for (FormattedCharSequence line : mc.font.split(footer, screenWidth - 50)) {
+        if (tabList.footer != null) {
+            for (FormattedCharSequence line : mc.font.split(tabList.footer, screenWidth - 50)) {
                 maxLineWidth = Math.max(maxLineWidth, mc.font.width(line));
             }
         }

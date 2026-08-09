@@ -11,9 +11,7 @@
         "EntityRendererMixin",
         "ItemStackMixin",
         "LivingEntityMixin",
-        "accessors.ClientMannequinAccessor",
         "accessors.LivingEntityRendererAccessor",
-        "accessors.PlayerTabOverlayAccessor",
         "accessors.YggdrasilMinecraftSessionServiceAccessor"
     ],
     "injectors": {
