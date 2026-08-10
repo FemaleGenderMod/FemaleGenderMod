@@ -1,6 +1,7 @@
 {
     "key.category.wildfire_gender.generic": "Women Gunda Mood",
     "key.wildfire_gender.gender_menu": "Women Gunda Mano",
+    "key.wildfire_gender.toggle": "Toggol Baloun Renderins",
 
     "wildfire_gender.player_list.title": "Women Gunda Mood",
     "wildfire_gender.player_list.settings_button": "Setinz",
@@ -17,15 +18,26 @@
     "wildfire_gender.wardrobe.slider.height": "Lifd of: %s",
     "wildfire_gender.wardrobe.slider.depth": "Dats dep: %s",
     "wildfire_gender.wardrobe.slider.rotation": "How speen: %s digris",
+    "wildfire_gender.uv_editor": "Baloun Textuurz Edituur",
 
     "wildfire_gender.appearance_settings.title": "Wat u luk laik",
     "wildfire_gender.char_settings.title": "Wat iz dat sopsoss 2 luk laik",
     "wildfire_gender.char_settings.physics": "Bouncy-Bouncy: %s",
     "wildfire_gender.char_settings.hide_in_armor": "Hait shirt plz: %s",
     "wildfire_gender.char_settings.hurt_sounds": "Women kat oofs: %s",
+    "wildfire_gender.slider.voice_pitch": "Pitchy: %1$s%%",
     "wildfire_gender.tooltip.hurt_sounds": "Maiks kats oof.",
+    "wildfire_gender.char_settings.jump": "Bounc",
+    "wildfire_gender.char_settings.jumping": "No moar bouncy plz",
+    "wildfire_gender.char_settings.show_armor_stat": "Shows Da Drip Tooltipz: %1$s",
+    "wildfire_gender.misc.holiday_themes": "Happiday Themez: %1$s",
+  
 
     "wildfire_gender.breast_customization.dual_physics": "Double bouncy-bouncy: %s",
+  
+    "wildfire_gender.breast_customization.tab_customization": "Customizashun",
+    "wildfire_gender.breast_customization.tab_physics": "Baloun Fysics",
+    "wildfire_gender.breast_customization.tab_miscellaneous": "Mizcelaneouz",
 
     "wildfire_gender.label.gender": "Gunda",
     "wildfire_gender.label.female": "Women",
