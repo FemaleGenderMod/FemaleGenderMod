@@ -65,6 +65,7 @@ public enum ShowPlayerListMode implements StringRepresentable {
     public boolean isVisible() {
         return switch(this) {
             case MOD_UI_ONLY -> false;
+            //~ if >=26.2 'getTabList' -> 'hud.getTabList'
             case TAB_LIST_OPEN -> Minecraft.getInstance().gui.hud.getTabList().visible;
             case ALWAYS -> true;
         };
