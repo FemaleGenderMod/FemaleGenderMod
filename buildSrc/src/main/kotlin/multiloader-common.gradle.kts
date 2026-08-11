@@ -28,7 +28,7 @@ plugins {
 base {
     //TODO: This is what jared's multiloader template uses (but do we care about having the extra information?), but maybe the id is similar
     //archivesName.set("$mod_id-${project.name}-$minecraft_version")
-    archivesName.set(commonMod.hyphenedName)
+    archivesName.set(commonMod.name.replace(' ', '-'))
 }
 
 //TODO: ?? Also do we need to be getting the mc version in the same way this does?
@@ -52,33 +52,48 @@ rootProject.tasks.named("generatePackageInfos").configure {
     dependsOn(generatePackageInfos)
 }
 
+val licenseFile = rootProject.layout.projectDirectory.file("LICENSE")
 tasks.withType<Jar>().configureEach {
-    from(rootProject.file("LICENSE")) {
-        rename { "${it}_${commonMod.hyphenedName}" }
+    inputs.property("name", commonMod.name)
+    from(licenseFile) {
+        rename("LICENSE", "LICENSE_${commonMod.name.replace(' ', '_')}")
+    }
+}
+
+tasks.withType<Javadoc>().configureEach {
+    options.encoding = "UTF-8"
+    val opts = options as StandardJavadocDocletOptions
+    opts.tags = (opts.tags ?: mutableListOf()).apply {
+        add("apiNote:a:API Note:")
+        add("implSpec:a:Implementation Requirements:")
+        add("implNote:a:Implementation Note:")
     }
 }
 
 tasks.named<Jar>("jar") {
-    manifest {
-        attributes(
-            mapOf(
-                "Specification-Title" to commonMod.name,
-                "Specification-Vendor" to "WildfireRomeo, celeste, pupnewfster",
-                "Specification-Version" to archiveVersion.get(),
-                "Implementation-Title" to project.name,
-                "Implementation-Version" to archiveVersion.get(),
-                "Implementation-Vendor" to "WildfireRomeo, celeste, pupnewfster",
-                "Built-On-Minecraft" to commonMod.mc
-            )
-        )
-    }
+    manifest.attributes(mapOf(
+        "Specification-Title" to commonMod.name,
+        "Specification-Vendor" to "WildfireRomeo, celeste, pupnewfster",
+        "Specification-Version" to archiveVersion.get(),
+        "Implementation-Title" to commonMod.name,
+        "Implementation-Vendor" to "WildfireRomeo, celeste, pupnewfster",
+        "Implementation-Version" to archiveVersion.get(),
+        "Built-On-Minecraft" to commonMod.mc
+    ))
+    inputs.property("name", commonMod.name)
+    inputs.property("version", archiveVersion.get())
+    inputs.property("mc", commonMod.mc)
+}
+
+tasks.named<Jar>("sourcesJar") {
+    dependsOn(":common:${commonMod.prop("major_minecraft_version")}:stonecutterGenerate")
 }
 
 tasks.named<ProcessResources>("processResources") {
     dependsOn(":common:${commonMod.prop("major_minecraft_version")}:stonecutterGenerate")
     val expandProps = mapOf(
         "version" to commonMod.version,
-        "group" to project.group,//Else we target the task's group.
+        "group" to commonMod.modProp("group"),//Else we target the task's group.
         "minecraft_version" to commonMod.mc,
         "major_minecraft_version" to commonMod.prop("major_minecraft_version"),
         "fabric_version" to commonMod.dep("fabric_api"),

@@ -21,9 +21,7 @@ tasks.register<ValidateJson>("validateJson") {
         "fabric/versions/${stonecutter.current?.project}/src/main/generated/assets/wildfire_gender/lang/en_us.json"
     ))
     translationFiles.from(fileTree(layout.projectDirectory) {
-        stonecutter.versions.forEach { version ->
-            include("*/versions/${version.project}/src/main/generated/assets/wildfire_gender/lang/*.json")
-        }
+        include("*/versions/*/src/main/generated/assets/wildfire_gender/lang/*.json")
         include("common/src/main/resources/assets/wildfire_gender/lang/*.json")
     })
     nonExhaustiveLocales.set(setOf(

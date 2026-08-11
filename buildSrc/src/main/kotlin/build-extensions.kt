@@ -43,7 +43,6 @@ val Project.loader: String? get() = prop("loader")
 value class ModData(private val project: Project) {
     val id: String get() = modProp("id")
     val name: String get() = modProp("name")
-    val hyphenedName: String get() = name.replace(' ', '-')
     val version: String get() = modProp("version")
     val mc: String get() = prop("minecraft_version")
 
