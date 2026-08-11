@@ -28,13 +28,13 @@
     "environment": "*",
     "entrypoints": {
         "main": [
-            "com.wildfire.main.WildfireGenderFabric"
+            "com.wildfire.common.WildfireGenderFabric"
         ],
         "client": [
             "com.wildfire.client.WildfireGenderClientFabric"
         ],
         "modmenu": [
-            "com.wildfire.compat.ModMenuIntegration"
+            "com.wildfire.client.compat.ModMenuIntegration"
         ],
         "fabric-datagen": [
           "com.wildfire.datagen.WildfireGenderDataGenerator"

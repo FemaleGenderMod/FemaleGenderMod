@@ -18,7 +18,7 @@
 
 package com.wildfire.datagen;
 
-import com.wildfire.main.WildfireGender;
+import com.wildfire.common.WildfireGender;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.neoforged.bus.api.SubscribeEvent;

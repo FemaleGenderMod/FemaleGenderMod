@@ -19,23 +19,19 @@
 package com.wildfire.client;
 
 import com.wildfire.client.command.WildfireCommand;
-import com.wildfire.events.ArmorStatsTooltipEvent;
-import com.wildfire.events.EntityHurtSoundEvent;
-import com.wildfire.events.EntityTickEvent;
-import com.wildfire.events.PlayerNametagRenderEvent;
-import com.wildfire.gui.SyncedPlayerList;
-import com.wildfire.main.LoaderAgnostics;
-import com.wildfire.main.WildfireFabricSounds;
-import com.wildfire.main.WildfireGender;
-import com.wildfire.main.config.ClientConfig;
-import com.wildfire.main.entitydata.PlayerConfigHolder;
-import com.wildfire.main.networking.FabricSync;
-import com.wildfire.render.GenderArmorLayer;
-import com.wildfire.render.GenderLayer;
-import com.wildfire.render.HolidayFeaturesRenderer;
-import com.wildfire.render.debug.GenderDebugHudEntry;
-import com.wildfire.render.debug.PhysicsDebugHudEntry;
-import com.wildfire.resources.GenderArmorResourceManager;
+import com.wildfire.client.events.ArmorStatsTooltipEvent;
+import com.wildfire.client.events.EntityHurtSoundEvent;
+import com.wildfire.client.events.EntityTickEvent;
+import com.wildfire.client.events.PlayerNametagRenderEvent;
+import com.wildfire.client.gui.SyncedPlayerList;
+import com.wildfire.common.LoaderAgnostics;
+import com.wildfire.common.WildfireGender;
+import com.wildfire.common.config.ClientConfig;
+import com.wildfire.common.entitydata.PlayerConfigHolder;
+import com.wildfire.common.networking.FabricSync;
+import com.wildfire.client.render.debug.GenderDebugHudEntry;
+import com.wildfire.client.render.debug.PhysicsDebugHudEntry;
+import com.wildfire.client.resources.GenderArmorResourceManager;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
@@ -63,7 +59,7 @@ public class WildfireGenderClientFabric implements ClientModInitializer {
         WildfireGenderClient.tryMigrate();
 
         ClientConfig.load();
-        WildfireFabricSounds.register();
+        FabricClientHelper.registerSounds();
         FabricSync.registerClient();
         registerKeybindings();
         registerClientEvents();

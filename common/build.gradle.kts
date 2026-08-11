@@ -10,7 +10,7 @@ neoForge {
     // Automatically enable AccessTransformers if the file exists
     val at = file("src/main/resources/META-INF/accesstransformer.cfg")
     if (at.exists()) {
-        accessTransformers.from(sc.process(at, "build/dev.aw").absolutePath)
+        accessTransformers.from(sc.process(at, "build/dev.at").absolutePath)
         validateAccessTransformers = true
     }
 }

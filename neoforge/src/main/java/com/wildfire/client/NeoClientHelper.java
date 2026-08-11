@@ -19,17 +19,29 @@
 package com.wildfire.client;
 
 import com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService;
-import com.wildfire.main.WildfireGender;
-import com.wildfire.render.GenderRenderState;
+import com.wildfire.common.WildfireGender;
+import com.wildfire.client.render.GenderRenderState;
 import java.util.Objects;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.context.ContextKey;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jspecify.annotations.Nullable;
 
 public class NeoClientHelper implements ClientHelper {
 
     public static final ContextKey<GenderRenderState> STATE = new ContextKey<>(WildfireGender.id("gender_state"));
+    public static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(Registries.SOUND_EVENT, WildfireGender.MODID);
+
+    private static final DeferredHolder<SoundEvent, SoundEvent> FEMALE_HURT = SOUND_EVENTS.register("female_hurt", SoundEvent::createVariableRangeEvent);
+
+    @Override
+    public SoundEvent femaleHurt() {
+        return FEMALE_HURT.get();
+    }
 
     @Nullable
     @Override

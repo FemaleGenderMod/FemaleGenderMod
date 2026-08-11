@@ -18,9 +18,9 @@
 
 package com.wildfire.datagen;
 
-import com.wildfire.main.WildfireGender;
-import com.wildfire.main.WildfireLang;
-import com.wildfire.main.WildfireSounds;
+import com.wildfire.client.ClientHelper;
+import com.wildfire.common.WildfireGender;
+import com.wildfire.common.WildfireLang;
 import java.util.function.BiConsumer;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
@@ -31,7 +31,7 @@ public class WildfireSoundData {
     }
 
     public static <RESULT> void generateSounds(BiConsumer<SoundEvent, RESULT> builder, SoundCreator<RESULT> soundCreator) {
-        builder.accept(WildfireSounds.INSTANCE.femaleHurt(), soundCreator.create(
+        builder.accept(ClientHelper.INSTANCE.femaleHurt(), soundCreator.create(
             WildfireLang.HURT_SOUND_SUBTITLE.getTranslationKey(),
             WildfireGender.id("female_damage"),
             WildfireGender.id("female_damage2"))

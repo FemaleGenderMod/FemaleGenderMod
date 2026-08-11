@@ -20,26 +20,21 @@ package com.wildfire.client;
 
 import com.google.common.reflect.TypeToken;
 import com.wildfire.client.command.WildfireCommand;
-import com.wildfire.gui.SyncedPlayerList;
-import com.wildfire.main.LoaderAgnostics;
-import com.wildfire.main.WildfireGender;
-import com.wildfire.main.WildfireNeoSounds;
-import com.wildfire.main.config.ClientConfig;
-import com.wildfire.main.entitydata.EntityConfig;
-import com.wildfire.main.entitydata.EntityConfigHolder;
-import com.wildfire.render.GenderArmorLayer;
-import com.wildfire.render.GenderLayer;
-import com.wildfire.render.GenderRenderState;
-import com.wildfire.render.HolidayFeaturesRenderer;
-import com.wildfire.render.debug.GenderDebugHudEntry;
-import com.wildfire.render.debug.PhysicsDebugHudEntry;
-import com.wildfire.resources.GenderArmorResourceManager;
+import com.wildfire.client.gui.SyncedPlayerList;
+import com.wildfire.common.LoaderAgnostics;
+import com.wildfire.common.WildfireGender;
+import com.wildfire.common.config.ClientConfig;
+import com.wildfire.common.entitydata.EntityConfig;
+import com.wildfire.common.entitydata.EntityConfigHolder;
+import com.wildfire.client.render.GenderRenderState;
+import com.wildfire.client.render.debug.GenderDebugHudEntry;
+import com.wildfire.client.render.debug.PhysicsDebugHudEntry;
+import com.wildfire.client.resources.GenderArmorResourceManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.entity.ArmorStandRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
-import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.util.TriState;
@@ -64,7 +59,6 @@ import net.neoforged.neoforge.common.tooltip.TooltipLocation;
 import net.neoforged.neoforge.event.RegisterTooltipAppendersEvent;
 import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
-import org.jspecify.annotations.Nullable;
 
 @Mod(value = WildfireGender.MODID, dist = Dist.CLIENT)
 public class WildfireGenderClientNeo {
@@ -118,7 +112,7 @@ public class WildfireGenderClientNeo {
 
         //Note: We intentionally only register the sound events on the client, as if the client has extra sound events it works
         // but if the server has extra, then the connection fails
-        WildfireNeoSounds.SOUND_EVENTS.register(modEventBus);
+        NeoClientHelper.SOUND_EVENTS.register(modEventBus);
     }
 
     private void renderNameTag(RenderNameTagEvent.DoRender event) {

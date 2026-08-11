@@ -20,9 +20,9 @@ package com.wildfire.mixins;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.wildfire.client.FabricClientHelper;
-import com.wildfire.main.entitydata.EntityConfig;
-import com.wildfire.main.entitydata.EntityConfigHolder;
-import com.wildfire.render.GenderRenderState;
+import com.wildfire.common.entitydata.EntityConfig;
+import com.wildfire.common.entitydata.EntityConfigHolder;
+import com.wildfire.client.render.GenderRenderState;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;

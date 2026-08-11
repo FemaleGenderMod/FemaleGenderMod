@@ -19,8 +19,8 @@
 package com.wildfire.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.wildfire.main.WildfireGender;
-import com.wildfire.main.WildfireHelper;
+import com.wildfire.common.WildfireGender;
+import com.wildfire.common.WildfireHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.KeyMapping.Category;
 import net.minecraft.resources.Identifier;

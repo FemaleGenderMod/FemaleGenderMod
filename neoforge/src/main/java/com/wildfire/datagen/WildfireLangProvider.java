@@ -19,7 +19,7 @@
 package com.wildfire.datagen;
 
 import com.wildfire.datagen.lang.WildfireLangData;
-import com.wildfire.main.WildfireGender;
+import com.wildfire.common.WildfireGender;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.PackOutput;

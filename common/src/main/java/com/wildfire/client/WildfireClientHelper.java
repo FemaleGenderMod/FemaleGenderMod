@@ -19,7 +19,7 @@
 package com.wildfire.client;
 
 import com.wildfire.api.IGenderArmor;
-import com.wildfire.resources.GenderArmorResourceManager;
+import com.wildfire.client.resources.GenderArmorResourceManager;
 import java.util.Optional;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;

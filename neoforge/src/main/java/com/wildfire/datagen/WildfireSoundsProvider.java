@@ -18,7 +18,7 @@
 
 package com.wildfire.datagen;
 
-import com.wildfire.main.WildfireGender;
+import com.wildfire.common.WildfireGender;
 import java.util.Arrays;
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.common.data.SoundDefinition;

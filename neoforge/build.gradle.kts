@@ -16,7 +16,7 @@ neoForge {
     val at = project(":common").file("src/main/resources/META-INF/accesstransformer.cfg")
     if (at.exists()) {
         //TODO - Neo: Figure this out to make it target same as common
-        accessTransformers.from(sc.process(at, "build/dev.aw").absolutePath)
+        accessTransformers.from(sc.process(at, "build/dev.at").absolutePath)
         validateAccessTransformers = true
     }
 

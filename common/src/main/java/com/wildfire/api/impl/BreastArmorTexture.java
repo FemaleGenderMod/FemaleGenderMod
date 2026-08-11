@@ -19,7 +19,7 @@
 package com.wildfire.api.impl;
 
 import com.wildfire.api.IBreastArmorTexture;
-import com.wildfire.main.uvs.UVMap;
+import com.wildfire.common.config.uvs.UVMap;
 import org.joml.Vector2ic;
 
 /// Default record implementation of [IBreastArmorTexture] used for resource pack entries

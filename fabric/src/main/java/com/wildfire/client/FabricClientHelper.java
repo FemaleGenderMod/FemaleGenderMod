@@ -19,16 +19,30 @@
 package com.wildfire.client;
 
 import com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService;
+import com.wildfire.common.WildfireGender;
 import com.wildfire.mixins.accessors.YggdrasilMinecraftSessionServiceAccessor;
-import com.wildfire.render.GenderRenderState;
+import com.wildfire.client.render.GenderRenderState;
 import java.util.Objects;
 import net.fabricmc.fabric.api.client.rendering.v1.RenderStateDataKey;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.sounds.SoundEvent;
 import org.jspecify.annotations.Nullable;
 
 public class FabricClientHelper implements ClientHelper {
 
     public static final RenderStateDataKey<GenderRenderState> STATE = RenderStateDataKey.create(() -> "GenderRenderState");
+    private static final SoundEvent FEMALE_HURT = SoundEvent.createVariableRangeEvent(WildfireGender.id("female_hurt"));
+
+    public static void registerSounds() {
+        Registry.register(BuiltInRegistries.SOUND_EVENT, FEMALE_HURT.location(), FEMALE_HURT);
+    }
+
+    @Override
+    public SoundEvent femaleHurt() {
+        return FEMALE_HURT;
+    }
 
     @Override
     public @Nullable GenderRenderState getRenderState(HumanoidRenderState state) {

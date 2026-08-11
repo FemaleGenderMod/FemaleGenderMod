@@ -19,7 +19,7 @@
 package com.wildfire.mixins;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import com.wildfire.events.ArmorStandInteractEvents;
+import com.wildfire.common.events.ArmorStandInteractEvents;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;

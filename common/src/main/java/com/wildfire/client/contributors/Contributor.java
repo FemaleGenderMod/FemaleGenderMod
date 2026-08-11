@@ -1,0 +1,122 @@
+/*
+ * Wildfire's Female Gender Mod is a female gender mod created for Minecraft.
+ * Copyright (C) 2023-present WildfireRomeo
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package com.wildfire.client.contributors;
+
+import com.google.common.base.Preconditions;
+import com.google.gson.annotations.SerializedName;
+import com.wildfire.common.WildfireLang;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextColor;
+
+import org.jspecify.annotations.Nullable;
+
+/// @apiNote Only use this on the client side
+public record Contributor(
+    // TODO this technically supports multiple roles due to this using a bitmask, but any additional roles other than
+    //		the topmost one defined in Role is currently ignored
+    int roles,
+    @Nullable Integer color,//TODO: Can this be moved to a TextColor or does that break serializiation
+    @Nullable String name,
+    @SerializedName("show_in_credits")
+    @Nullable Boolean showInCredits
+) {
+
+    //~ if >=26.2 'fromRgb(0xFFAA00)' -> 'GOLD'
+    private static final TextColor DEFAULT_COLOR = TextColor.GOLD;
+
+    public TextColor getColor() {
+        if (color != null) {
+            return TextColor.fromRgb(color);
+        }
+        return getRole().getColor();
+    }
+
+    public Component asText() {
+        return getRole().langEntry.translateColored(getColor());
+    }
+
+    public Role getRole() {
+        if (roles == 0) {
+            return Role.GENERIC;
+        }
+
+        for (var role : Role.values()) {
+            if (role.isIn(this.roles)) {
+                return role;
+            }
+        }
+
+        return Role.GENERIC;
+    }
+
+    public enum Role {
+        //~ if >=26.2 '0xFF55FF' -> 'TextColor.LIGHT_PURPLE'
+        MOD_CREATOR(0, WildfireLang.CONTRIBUTOR_ROLE_MOD_CREATOR, TextColor.LIGHT_PURPLE),
+        FABRIC_MAINTAINER(1, WildfireLang.CONTRIBUTOR_ROLE_FABRIC_MAINTAINER, 0xA78FFF),
+        NEOFORGE_MAINTAINER(2, WildfireLang.CONTRIBUTOR_ROLE_NEO_MAINTAINER, 0xA78FFF),
+        CI_MAINTAINER(8, WildfireLang.CONTRIBUTOR_ROLE_CI_MAINTAINER, 0x50C878),
+        DEVELOPER(3, WildfireLang.CONTRIBUTOR_ROLE_DEVELOPER),
+        TRANSLATOR(4, WildfireLang.CONTRIBUTOR_ROLE_TRANSLATOR, 0x66CCFF),
+        MASCOT(5, WildfireLang.CONTRIBUTOR_ROLE_MASCOT),
+        VOICE_ACTOR_FEMALE(6, WildfireLang.CONTRIBUTOR_ROLE_FEMALE_VOICE_ACTOR),
+        GENERIC(7, WildfireLang.CONTRIBUTOR_ROLE_GENERIC),
+        ;
+
+        private final int bit;
+        private final WildfireLang langEntry;
+        private final @Nullable TextColor color;
+
+        Role(int bit, WildfireLang langEntry, int color) {
+            this(bit, langEntry, TextColor.fromRgb(color));
+        }
+
+        Role(int bit, WildfireLang langEntry, @Nullable TextColor color) {
+            this.bit = 1 << bit;
+            this.langEntry = langEntry;
+            this.color = color;
+        }
+
+        Role(int bit, WildfireLang langEntry) {
+            this(bit, langEntry, null);
+        }
+
+        public int bit() {
+            return bit;
+        }
+
+        public boolean isIn(int bitmask) {
+            return (bitmask & bit()) == bit();
+        }
+
+        public TextColor getColor() {
+            return color == null ? DEFAULT_COLOR : color;
+        }
+
+        public MutableComponent withColor(MutableComponent text) {
+            Preconditions.checkNotNull(text);
+            //~ if >=26.2 'getColor().getValue()' -> 'getColor()'
+            return text.withColor(getColor());
+        }
+
+        public MutableComponent shortName() {
+            return langEntry.translateShort();
+        }
+    }
+}

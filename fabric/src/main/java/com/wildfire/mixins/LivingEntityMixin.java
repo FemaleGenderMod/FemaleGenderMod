@@ -18,8 +18,8 @@
 
 package com.wildfire.mixins;
 
-import com.wildfire.events.EntityHurtSoundEvent;
-import com.wildfire.events.EntityTickEvent;
+import com.wildfire.client.events.EntityHurtSoundEvent;
+import com.wildfire.client.events.EntityTickEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;

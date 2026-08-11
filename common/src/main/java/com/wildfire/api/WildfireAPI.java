@@ -20,11 +20,11 @@ package com.wildfire.api;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.wildfire.main.WildfireGender;
-import com.wildfire.main.config.enums.Gender;
-import com.wildfire.main.entitydata.EntityConfig;
-import com.wildfire.main.entitydata.PlayerConfig;
-import com.wildfire.main.entitydata.PlayerConfigHolder;
+import com.wildfire.common.WildfireGender;
+import com.wildfire.common.config.enums.Gender;
+import com.wildfire.common.entitydata.EntityConfig;
+import com.wildfire.common.entitydata.PlayerConfig;
+import com.wildfire.common.entitydata.PlayerConfigHolder;
 import net.minecraft.util.Util;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;

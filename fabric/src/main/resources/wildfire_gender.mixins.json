@@ -11,7 +11,7 @@
         "EntityRendererMixin",
         "ItemStackMixin",
         "LivingEntityMixin",
-      "accessors.YggdrasilMinecraftSessionServiceAccessor"
+        "accessors.YggdrasilMinecraftSessionServiceAccessor"
     ],
     "injectors": {
         "defaultRequire": 1

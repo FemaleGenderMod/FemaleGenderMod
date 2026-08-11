@@ -21,7 +21,7 @@ package com.wildfire.mixins;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.wildfire.events.ArmorStatsTooltipEvent;
+import com.wildfire.client.events.ArmorStatsTooltipEvent;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;

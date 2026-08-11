@@ -18,8 +18,8 @@
 
 package com.wildfire.datagen.lang;
 
-import com.wildfire.main.WildfireGender;
-import com.wildfire.main.WildfireLang;
+import com.wildfire.common.WildfireGender;
+import com.wildfire.common.WildfireLang;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;

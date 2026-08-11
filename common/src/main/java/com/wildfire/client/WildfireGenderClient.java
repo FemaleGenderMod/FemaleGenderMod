@@ -19,13 +19,13 @@
 package com.wildfire.client;
 
 import com.google.gson.JsonObject;
-import com.wildfire.main.LoaderAgnostics;
-import com.wildfire.main.WildfireGender;
-import com.wildfire.main.cloud.CloudSync;
-import com.wildfire.main.config.ClientConfig;
-import com.wildfire.main.config.Configuration;
-import com.wildfire.main.contributors.Contributors;
-import com.wildfire.main.entitydata.PlayerConfigHolder;
+import com.wildfire.common.LoaderAgnostics;
+import com.wildfire.common.WildfireGender;
+import com.wildfire.client.cloud.CloudSync;
+import com.wildfire.common.config.ClientConfig;
+import com.wildfire.common.config.Configuration;
+import com.wildfire.client.contributors.Contributors;
+import com.wildfire.common.entitydata.PlayerConfigHolder;
 import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;

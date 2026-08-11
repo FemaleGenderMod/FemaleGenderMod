@@ -19,21 +19,21 @@
 package com.wildfire.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.wildfire.gui.SyncedPlayerList;
-import com.wildfire.gui.WildfireToast;
-import com.wildfire.gui.screen.WardrobeBrowserScreen;
-import com.wildfire.main.WildfireGender;
-import com.wildfire.main.WildfireHelper;
-import com.wildfire.main.WildfireLang;
-import com.wildfire.main.cloud.CloudSync;
-import com.wildfire.main.config.ClientConfig;
-import com.wildfire.main.entitydata.EntityConfig;
-import com.wildfire.main.entitydata.EntityConfigHolder;
-import com.wildfire.main.entitydata.PlayerConfigHolder;
-import com.wildfire.main.networking.WildfireSync;
-import com.wildfire.render.GenderArmorLayer;
-import com.wildfire.render.GenderLayer;
-import com.wildfire.render.HolidayFeaturesRenderer;
+import com.wildfire.client.gui.SyncedPlayerList;
+import com.wildfire.client.gui.WildfireToast;
+import com.wildfire.client.gui.screen.WardrobeBrowserScreen;
+import com.wildfire.common.WildfireGender;
+import com.wildfire.common.WildfireHelper;
+import com.wildfire.common.WildfireLang;
+import com.wildfire.client.cloud.CloudSync;
+import com.wildfire.common.config.ClientConfig;
+import com.wildfire.common.entitydata.EntityConfig;
+import com.wildfire.common.entitydata.EntityConfigHolder;
+import com.wildfire.common.entitydata.PlayerConfigHolder;
+import com.wildfire.common.networking.WildfireSync;
+import com.wildfire.client.render.GenderArmorLayer;
+import com.wildfire.client.render.GenderLayer;
+import com.wildfire.client.render.HolidayFeaturesRenderer;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import net.minecraft.client.DeltaTracker;
@@ -61,7 +61,7 @@ import net.minecraft.world.level.Level;
 import org.jspecify.annotations.Nullable;
 
 /// @apiNote Only use this on the client side
-public final class WildfireClientEventHandler {//TODO: Move other classes to a client based package
+public final class WildfireClientEventHandler {
 
     private WildfireClientEventHandler() {
         throw new UnsupportedOperationException();
