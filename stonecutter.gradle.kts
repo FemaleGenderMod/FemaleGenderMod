@@ -1,13 +1,16 @@
 import com.wildfire.ValidateJson
-import org.gradle.kotlin.dsl.register
 
 plugins {
     id("dev.kikugie.stonecutter")
-    id("net.fabricmc.fabric-loom") version "1.16-SNAPSHOT" apply false
-    id("me.modmuss50.mod-publish-plugin") version "1.1.0" apply false
+    id("net.neoforged.moddev") version "2.0.143" apply false
+    id("net.fabricmc.fabric-loom") version "1.17-SNAPSHOT" apply false
+    id("me.modmuss50.mod-publish-plugin") version "2.2.0" apply false
 }
 
 stonecutter active "26.2"
+
+tasks.register("generatePackageInfos") {
+}
 
 tasks.register<ValidateJson>("validateJson") {
     criticalFiles.from(

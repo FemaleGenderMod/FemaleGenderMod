@@ -1,0 +1,71 @@
+{
+    "schemaVersion": 1,
+    "id": "${mod_id}",
+    "version": "${version}",
+    "name": "${mod_name}",
+    "description": "${description}",
+    "authors": [
+        "WildfireRomeo",
+        "celeste",
+        "pupnewfster"
+    ],
+    "contributors": [
+        "Arcti_cc",
+        "BluelightAmelia",
+        "diademiemi",
+        "IzzyBizzy45",
+        "Kichura",
+        "PinguinLars",
+        "Powerless001",
+        "Crosby"
+    ],
+    "contact": {
+        "sources": "${source_code}",
+        "issues": "${issue_tracker}"
+    },
+    "license": "${license}",
+    "icon": "assets/${mod_id}/icon.png",
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "com.wildfire.main.WildfireGenderFabric"
+        ],
+        "client": [
+            "com.wildfire.client.WildfireGenderClientFabric"
+        ],
+        "modmenu": [
+            "com.wildfire.compat.ModMenuIntegration"
+        ],
+        "fabric-datagen": [
+          "com.wildfire.datagen.WildfireGenderDataGenerator"
+        ]
+    },
+    "mixins": [
+        "${mod_id}.mixins.json"
+    ],
+    "accessWidener": "${mod_id}.accesswidener",
+    "depends": {
+        "fabricloader": ">=${fabric_loader_version}",
+        "fabric-networking-api-v1": "*",
+        "fabric-command-api-v2": "*",
+        "fabric-key-mapping-api-v1": "*",
+        "fabric-lifecycle-events-v1": "*",
+        "fabric-rendering-v1": "*",
+        "fabric-resource-loader-v1": "*",
+        "fabric-registry-sync-v0": "*",
+        "minecraft": "~${major_minecraft_version}",
+        "java": ">=${java_version}"
+    },
+    "conflicts": {
+        "skinlayers": "*",
+        "essential": "*",
+        "essential-loader": "*"
+    },
+    "custom": {
+        "modmenu": {
+            "links": {
+                "modmenu.discord": "https://discord.gg/4VDfQu4Wgb"
+            }
+        }
+    }
+}

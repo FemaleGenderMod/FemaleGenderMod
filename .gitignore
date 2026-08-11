@@ -20,7 +20,7 @@ classes/
 *.iws
 
 #Minecraft
-run/
+*/run/
 runV2/
 dependencies/
 src/main/generated/.cache/

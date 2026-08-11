@@ -1,0 +1,24 @@
+license = "${license}"
+issueTrackerURL = "${issue_tracker}"
+
+[[mods]]
+    modId = "${mod_id}"
+    version = "${version}"
+    displayName = "${mod_name}"
+    displayURL = "https://www.curseforge.com/minecraft/mc-mods/female-gender-neoforge"
+    iconFile = "assets/${mod_id}/icon.png"
+    bannerFile = "assets/${mod_id}/banner.png"
+    credits = "Arcti_cc, BluelightAmelia, diademiemi, IzzyBizzy45, Kichura, PinguinLars, Powerless001, Crosby"
+    authors = "WildfireRomeo, celeste, pupnewfster"
+    description = "${description}"
+
+[[dependencies.${mod_id}]]
+    modId = "minecraft"
+    type = "required"
+    versionRange = "[${major_minecraft_version},)"
+    side = "BOTH"
+[[dependencies.${mod_id}]]
+    modId = "neoforge"
+    type = "required"
+    versionRange = "[${neoforge_version},)"
+    side = "BOTH"
