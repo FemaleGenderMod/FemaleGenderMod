@@ -23,10 +23,13 @@ import groovy.json.JsonSlurper
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.ProjectLayout
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.*
+import java.io.File
 import java.util.Collections
+import javax.inject.Inject
 
 abstract class ValidateJson : DefaultTask() {
 
@@ -36,6 +39,9 @@ abstract class ValidateJson : DefaultTask() {
         description = "Validates JSON files and translation completeness."
         group = "verification"
     }
+
+    @get:Inject
+    abstract val layout: ProjectLayout
 
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
@@ -52,6 +58,10 @@ abstract class ValidateJson : DefaultTask() {
     @get:Input
     abstract val nonExhaustiveLocales: SetProperty<String>
 
+    fun relativePath(file: File): String {
+        return layout.projectDirectory.asFile.toPath().relativize(file.toPath()).toString()
+    }
+
     @TaskAction
     fun validate() {
         for (criticalFile in criticalFiles) {
@@ -59,7 +69,7 @@ abstract class ValidateJson : DefaultTask() {
                 json.parse(criticalFile)
             } catch (e: JsonException) {
                 //# JSON decode errors in any of these files should cause a build to fail
-                logger.lifecycle("::error file=${project.relativePath(criticalFile)}::${e.message}")
+                logger.lifecycle("::error file=${relativePath(criticalFile)}::${e.message}")
                 throw GradleException("Critical JSON files contain syntax errors.", e)
             }
         }
@@ -91,14 +101,14 @@ abstract class ValidateJson : DefaultTask() {
             logger.lifecycle("::group::${file.name}")
 
             if (missingFromRoot.isNotEmpty()) {
-                logger.lifecycle("::notice file=${project.relativePath(file)}::Has ${missingFromRoot.size} extra translation strings")
+                logger.lifecycle("::notice file=${relativePath(file)}::Has ${missingFromRoot.size} extra translation strings")
                 missingFromRoot.sorted().forEach {
                     logger.lifecycle("  - $it")
                 }
             }
 
             if (missingFromTranslation.isNotEmpty()) {
-                logger.lifecycle("::notice file=${project.relativePath(file)}::Missing ${missingFromTranslation.size} translation strings")
+                logger.lifecycle("::notice file=${relativePath(file)}::Missing ${missingFromTranslation.size} translation strings")
                 missingFromTranslation.sorted().forEach {
                     logger.lifecycle("  - $it")
                 }

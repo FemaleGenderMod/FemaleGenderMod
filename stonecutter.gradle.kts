@@ -14,18 +14,17 @@ tasks.register("generatePackageInfos") {
 
 tasks.register<ValidateJson>("validateJson") {
     criticalFiles.from(
-        "src/main/resources/fabric.mod.json",
-        "src/main/resources/wildfire_gender.mixins.json"
+        "fabric/src/main/resources/fabric.mod.json",
+        "fabric/src/main/resources/wildfire_gender.mixins.json"
     )
     rootTranslation.set(layout.projectDirectory.file(
-        "versions/${stonecutter.current?.project}/src/main/generated/assets/wildfire_gender/lang/en_us.json"
+        "fabric/versions/${stonecutter.current?.project}/src/main/generated/assets/wildfire_gender/lang/en_us.json"
     ))
     translationFiles.from(fileTree(layout.projectDirectory) {
         stonecutter.versions.forEach { version ->
-            include("versions/${version.project}/src/main/generated/assets/wildfire_gender/lang/*.json")
+            include("*/versions/${version.project}/src/main/generated/assets/wildfire_gender/lang/*.json")
         }
-        include("src/main/resources/assets/wildfire_gender/lang/*.json")
-
+        include("common/src/main/resources/assets/wildfire_gender/lang/*.json")
     })
     nonExhaustiveLocales.set(setOf(
         //Only generates the relevant overrides as missing lang entries fall back to en_us
