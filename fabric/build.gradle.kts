@@ -62,10 +62,9 @@ loom {
         runDirectory = file("../../run")
     }
 
+    //TODO: Generate the access widener file automatically from the AT file?
     val aw = project(":common").file("src/main/resources/wildfire_gender.accesswidener")
-    if (aw.exists()) {
-        accessWidenerPath = sc.process(aw, "build/dev.aw")
-    }
+    accessWidenerPath = sc.process(aw, "build/dev.aw")
 }
 
 fabricApi {

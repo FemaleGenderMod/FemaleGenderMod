@@ -12,13 +12,11 @@ sourceSets.main {
 neoForge {
     version = commonMod.dep("neoforge")
 
-    // Automatically enable AccessTransformers if present
     val at = project(":common").file("src/main/resources/META-INF/accesstransformer.cfg")
-    if (at.exists()) {
-        //TODO - Neo: Figure this out to make it target same as common
-        accessTransformers.from(sc.process(at, "build/dev.at").absolutePath)
-        validateAccessTransformers = true
-    }
+    //Use the common project's StoneCutter to process the path, so that it points at the identical absolute path
+    // and MDG is able to more reliably re-use the recompiled minecraft
+    accessTransformers.from(commonProject.sc.process(at, "build/dev.at").absolutePath)
+    validateAccessTransformers = true
 
     mods {
         register(commonMod.id) {

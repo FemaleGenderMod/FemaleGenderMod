@@ -7,12 +7,10 @@ plugins {
 
 neoForge {
     neoFormVersion = commonMod.dep("neo_form_version")
-    // Automatically enable AccessTransformers if the file exists
-    val at = file("src/main/resources/META-INF/accesstransformer.cfg")
-    if (at.exists()) {
-        accessTransformers.from(sc.process(at, "build/dev.at").absolutePath)
-        validateAccessTransformers = true
-    }
+
+    val at = project(":common").file("src/main/resources/META-INF/accesstransformer.cfg")
+    accessTransformers.from(sc.process(at, "build/dev.at").absolutePath)
+    validateAccessTransformers = true
 }
 
 dependencies {
