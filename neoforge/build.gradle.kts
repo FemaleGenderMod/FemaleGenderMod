@@ -53,7 +53,7 @@ neoForge {
         register("data") {
             clientData()
 
-            //TODO: Do we need to pass common in as existing?
+            //TODO - Neo: Do we need to pass common in as existing?
             programArguments.addAll("--all", "--output", file("src/generated/resources").absolutePath,
                 "--mod", commonMod.id, "--existing", file("src/main/resources").absolutePath
             )

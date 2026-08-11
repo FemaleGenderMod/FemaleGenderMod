@@ -40,7 +40,7 @@ public class LoaderAgnosticsNeo implements LoaderAgnostics {
 
     @Override
     public String getModVersion(String modId) {
-        //TODO: Test this
+        //TODO - Neo: Test this
         Optional<? extends ModContainer> containerById = ModList.get().getModContainerById(modId);
         if (containerById.isEmpty()) {
             return "unknown";

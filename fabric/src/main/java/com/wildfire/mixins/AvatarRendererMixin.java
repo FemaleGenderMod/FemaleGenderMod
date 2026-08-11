@@ -55,7 +55,6 @@ abstract class AvatarRendererMixin extends LivingEntityRenderer<Avatar, AvatarRe
         return original;
     }
 
-    @SuppressWarnings("CodeBlock2Expr")
     @Inject(
         method = "submitNameDisplay(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V",
         at = @At(
@@ -71,18 +70,6 @@ abstract class AvatarRendererMixin extends LivingEntityRenderer<Avatar, AvatarRe
         final CameraRenderState camera,
         CallbackInfo ci
     ) {
-        PlayerNametagRenderEvent.EVENT.invoker().onRenderNameTag(state, poseStack, text -> {
-            collector.submitNameTag(
-                poseStack,
-                state.nameTagAttachment,
-                state.showExtraEars ? -10 : 0,
-                text,
-                !state.isDiscrete,
-                state.lightCoords,
-                //? if 26.1
-                //state.distanceToCameraSq,
-                camera
-            );
-        });
+        PlayerNametagRenderEvent.EVENT.invoker().onRenderNameTag(state, collector, poseStack, camera);
     }
 }

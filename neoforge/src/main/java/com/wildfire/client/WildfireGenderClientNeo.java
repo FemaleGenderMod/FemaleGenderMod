@@ -35,6 +35,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.entity.ArmorStandRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.util.TriState;
@@ -75,7 +76,7 @@ public class WildfireGenderClientNeo {
         modEventBus.addListener(RegisterGuiLayersEvent.class, this::registerOverlays);
         modEventBus.addListener(RegisterRenderStateModifiersEvent.class, this::registerRenderStateModifiers);
         modEventBus.addListener(EntityRenderersEvent.AddLayers.class, this::addLayers);
-        //TODO: Can we get this rendering with the attributes? Similar to fabric
+        //TODO - Neo: Can we get this rendering with the attributes? Similar to fabric
         modEventBus.addListener(RegisterTooltipAppendersEvent.class, event -> event.registerAppender(TooltipLocation.PRE_ITEM_INFO,
             (stack, _, _, player, _, builder) -> WildfireClientEventHandler.renderTooltip(stack, builder, player)));
 
@@ -88,21 +89,20 @@ public class WildfireGenderClientNeo {
             SyncedPlayerList.onTick(minecraft);
         });
         NeoForge.EVENT_BUS.addListener(EntityTickEvent.Post.class, event -> {
-            //TODO: Should we be checking level.tickRateManager().isEntityFrozen(living) ??
+            //TODO - both: Should we be checking level.tickRateManager().isEntityFrozen(living) ??
             if (event.getEntity() instanceof LivingEntity living && living.level().isClientSide()) {
                 WildfireClientEventHandler.onEntityTick(living);
             }
         });
         NeoForge.EVENT_BUS.addListener(EntityLeaveLevelEvent.class, event -> {
             if (event.getLevel().isClientSide()) {
-                //TODO: Should this check if it is a living entity?
+                //TODO - Neo: Should this check if it is a living entity?
                 WildfireClientEventHandler.onEntityUnload(event.getEntity(), event.getLevel());
             }
         });
 
         if (LoaderAgnostics.INSTANCE.isDevelopmentEnv()) {
             NeoForge.EVENT_BUS.addListener(RenderNameTagEvent.CanRender.class, event -> {
-                //TODO: Test this
                 if (event.getEntity() instanceof LocalPlayer && ClientConfig.DISPLAY_OWN_NAMETAG) {
                     event.setCanRender(TriState.TRUE);
                 }
@@ -116,8 +116,9 @@ public class WildfireGenderClientNeo {
     }
 
     private void renderNameTag(RenderNameTagEvent.DoRender event) {
-        //TODO - Neo: Implement this
-        //WildfireClientEventHandler.onPlayerNametag(event.getEntityRenderState(), event.getPoseStack(), event.getSubmitNodeCollector());
+        if (event.getEntityRenderState() instanceof AvatarRenderState state) {
+            WildfireClientEventHandler.onPlayerNametag(state, event.getSubmitNodeCollector(), event.getPoseStack(), event.getCameraRenderState());
+        }
     }
 
     private void registerReloadListeners(AddClientReloadListenersEvent event) {

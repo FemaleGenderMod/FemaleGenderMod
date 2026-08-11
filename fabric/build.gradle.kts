@@ -62,7 +62,7 @@ loom {
         runDirectory = file("../../run")
     }
 
-    //TODO: Generate the access widener file automatically from the AT file?
+    //TODO - Fabric: Generate the access widener file automatically from the AT file?
     val aw = project(":common").file("src/main/resources/wildfire_gender.accesswidener")
     accessWidenerPath = sc.process(aw, "build/dev.aw")
 }
@@ -73,7 +73,7 @@ fabricApi {
     }
 }
 
-//TODO: Figure out where to define this. https://modmuss50.github.io/mod-publish-plugin/multi_platform/ might be of some help
+//TODO - both: Figure out where to define this. https://modmuss50.github.io/mod-publish-plugin/multi_platform/ might be of some help
 publishMods {
     val modVer: String = sc.properties["mod_version"]
     val minVer: String = sc.properties["publish.min_version"]

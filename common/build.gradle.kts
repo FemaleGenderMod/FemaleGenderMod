@@ -9,7 +9,7 @@ neoForge {
     neoFormVersion = commonMod.dep("neo_form_version")
 
     val at = project(":common").file("src/main/resources/META-INF/accesstransformer.cfg")
-    accessTransformers.from(sc.process(at, "build/dev.at").absolutePath)
+    accessTransformers.from(commonProject.sc.process(at, "build/dev.at").absolutePath)
     validateAccessTransformers = true
 }
 

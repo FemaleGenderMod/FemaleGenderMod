@@ -90,7 +90,7 @@ public class FabricSync {
             );
         });
 
-        //TODO - 26.2: Validate the above works properly
+        //TODO - Fabric: Validate the above works properly
         /*WildfireGender.LOGGER.debug(WildfireSync.MARKER, "Registering client-side config phase receiver");
         ClientConfigurationNetworking.registerGlobalReceiver(ClientboundSyncHelloPacket.TYPE, (packet, context) ->
             packet.handle(context.responseSender()::sendPacket, version -> context.packetContext().set(FabricNetworking.VERSION, version))

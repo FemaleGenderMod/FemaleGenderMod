@@ -19,11 +19,11 @@
 package com.wildfire.client.events;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import java.util.function.Consumer;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
-import net.minecraft.network.chat.Component;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 
 /// Event invoked before a player's nametag is rendered above their head
 ///
@@ -31,11 +31,11 @@ import net.minecraft.network.chat.Component;
 @FunctionalInterface
 public interface PlayerNametagRenderEvent {
 
-    Event<PlayerNametagRenderEvent> EVENT = EventFactory.createArrayBacked(PlayerNametagRenderEvent.class, listeners -> (state, matrixStack, renderHelper) -> {
+    Event<PlayerNametagRenderEvent> EVENT = EventFactory.createArrayBacked(PlayerNametagRenderEvent.class, listeners -> (state, nodeCollector, matrixStack, camera) -> {
         for (var listener : listeners) {
-            listener.onRenderNameTag(state, matrixStack, renderHelper);
+            listener.onRenderNameTag(state, nodeCollector, matrixStack, camera);
         }
     });
 
-    void onRenderNameTag(AvatarRenderState state, PoseStack matrixStack, Consumer<Component> renderHelper);
+    void onRenderNameTag(AvatarRenderState state, SubmitNodeCollector nodeCollector, PoseStack matrixStack, CameraRenderState camera);
 }

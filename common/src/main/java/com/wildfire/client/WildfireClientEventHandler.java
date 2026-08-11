@@ -42,12 +42,14 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.toasts.ToastManager;
 import net.minecraft.client.model.object.armorstand.ArmorStandArmorModel;
 import net.minecraft.client.model.player.PlayerModel;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.ArmorStandRenderer;
 import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.client.renderer.entity.state.ArmorStandRenderState;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
@@ -69,7 +71,7 @@ public final class WildfireClientEventHandler {
 
     private static int timer = 0;
 
-    static void onPlayerNametag(AvatarRenderState state, PoseStack matrixStack, Consumer<Component> renderHelper) {
+    static void onPlayerNametag(AvatarRenderState state, SubmitNodeCollector nodeCollector, PoseStack matrixStack, CameraRenderState camera) {
         var genderRenderState = ClientHelper.INSTANCE.getRenderState(state);
         if (genderRenderState == null) {
             return;
@@ -81,7 +83,7 @@ public final class WildfireClientEventHandler {
         }
 
         matrixStack.pushPose();
-        //TODO: Try to base this off of EntityRenderState#nameTagAttachment which should help position it appropriately
+        //TODO - both: Try to base this off of EntityRenderState#nameTagAttachment which should help position it appropriately
         float translationAmt = switch (state.pose) {
             case CROUCHING -> 0.8f;
             case SLEEPING -> 0.125f;
@@ -91,7 +93,19 @@ public final class WildfireClientEventHandler {
         };
         matrixStack.translate(0f, translationAmt, 0f);
         matrixStack.scale(0.5f, 0.5f, 0.5f);
-        renderHelper.accept(nametag);
+
+        nodeCollector.submitNameTag(
+            matrixStack,
+            state.nameTagAttachment,
+            state.showExtraEars ? -10 : 0,
+            nametag,
+            !state.isDiscrete,
+            state.lightCoords,
+            //? if 26.1
+            //state.distanceToCameraSq,
+            camera
+        );
+
         matrixStack.popPose();
         // shift the rest of the name tag up a little bit
         matrixStack.translate(0f, 2.15F * 1.15F * 0.025F, 0f);
