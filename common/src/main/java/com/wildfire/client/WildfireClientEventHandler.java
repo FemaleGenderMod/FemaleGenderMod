@@ -102,7 +102,7 @@ public final class WildfireClientEventHandler {
             nametag,
             !state.isDiscrete,
             state.lightCoords,
-            //? if 26.1
+            //? if ~26.1
             //state.distanceToCameraSq,
             camera
         );

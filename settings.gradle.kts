@@ -12,22 +12,9 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
-val fabricVersions = providers.gradleProperty("stonecutter_enabled_fabric_versions").orNull?.split(",")?.map { it.trim() } ?: emptyList()
-val neoforgeVersions = providers.gradleProperty("stonecutter_enabled_neoforge_versions").orNull?.split(",")?.map { it.trim() } ?: emptyList()
-val commonVersions = listOf(fabricVersions, neoforgeVersions).flatten().distinct()
-
 stonecutter {
     create(rootProject) {
-        versions(commonVersions)
-        branch("common") {
-            versions(commonVersions)
-        }
-        branch("fabric") {
-            versions(fabricVersions)
-        }
-        branch("neoforge") {
-            versions(neoforgeVersions)
-        }
+        load(file("versions.json5"))
     }
 }
 

@@ -77,11 +77,10 @@ tasks.named<Jar>("jar") {
         "Implementation-Title" to commonMod.name,
         "Implementation-Vendor" to "WildfireRomeo, celeste, pupnewfster",
         "Implementation-Version" to archiveVersion.get(),
-        "Built-On-Minecraft" to stonecutterBuild.current.project
+        "Built-On-Minecraft" to stonecutterBuild.current.version
     ))
     inputs.property("name", commonMod.name)
     inputs.property("version", archiveVersion.get())
-    inputs.property("mc", commonMod.mc)
 }
 
 tasks.named<Jar>("sourcesJar") {
@@ -93,7 +92,7 @@ tasks.named<ProcessResources>("processResources") {
     val expandProps = mapOf(
         "version" to commonMod.version,
         "group" to commonMod.modProp("group"),//Else we target the task's group.
-        "minecraft_version" to commonMod.mc,
+        "minecraft_version" to stonecutterBuild.current.version,
         "major_minecraft_version" to stonecutterBuild.current.project,
         "fabric_version" to commonMod.dep("fabric_api"),
         "fabric_loader_version" to commonMod.dep("fabric_loader"),

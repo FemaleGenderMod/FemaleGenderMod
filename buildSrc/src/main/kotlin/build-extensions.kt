@@ -44,9 +44,7 @@ value class ModData(private val project: Project) {
     val id: String get() = modProp("id")
     val name: String get() = modProp("name")
     val version: String get() = modProp("version")
-    val mc: String get() = prop("minecraft_version")
 
-    fun prop(key: String) = requireNotNull(project.prop(key)) { "Missing '$key'" }
     fun modProp(key: String) = requireNotNull(project.prop("mod.$key")) { "Missing 'mod.$key'" }
     fun dep(key: String) = requireNotNull(project.prop("deps.$key")?.takeIf { it.isNotEmpty() && it != "" }) { "Missing 'deps.$key'" }
 }
