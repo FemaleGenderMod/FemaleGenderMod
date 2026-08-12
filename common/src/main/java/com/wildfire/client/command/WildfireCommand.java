@@ -27,7 +27,7 @@ import com.wildfire.client.gui.screen.WardrobeBrowserScreen;
 import com.wildfire.client.gui.screen.WildfireFirstTimeSetupScreen;
 import com.wildfire.common.WildfireGender;
 import com.wildfire.common.WildfireLang;
-import com.wildfire.common.config.ClientConfig;
+import com.wildfire.client.config.ClientConfig;
 import com.wildfire.common.config.enums.SyncVerbosity;
 import com.wildfire.common.entitydata.BreastDataComponent;
 import com.wildfire.common.entitydata.EntityConfigHolder;
@@ -191,8 +191,8 @@ public class WildfireCommand {
     public static <SOURCE extends SharedSuggestionProvider> int setLogLevel(CommandContext<SOURCE> ctx, ClientCommandHelper<SOURCE> helper) {
         SyncVerbosity level = ctx.getArgument("level", SyncVerbosity.class);
 
-        if (ClientConfig.config().syncVerbosity.update(level)) {//Should always be true
-            ClientConfig.save();
+        if (ClientConfig.config().syncVerbosity().update(level)) {//Should always be true
+            ClientConfig.INSTANCE.save();
 
             send(ctx, helper, WildfireLang.COMMAND_LOG_LEVEL.translate(level));
             return Command.SINGLE_SUCCESS;

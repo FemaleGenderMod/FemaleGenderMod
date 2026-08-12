@@ -12,6 +12,9 @@ issueTrackerURL = "${issue_tracker}"
     authors = "WildfireRomeo, celeste, pupnewfster"
     description = "${description}"
 
+[[mixins]]
+    config = "${mod_id}.mixins.json"
+
 [[dependencies.${mod_id}]]
     modId = "minecraft"
     type = "required"

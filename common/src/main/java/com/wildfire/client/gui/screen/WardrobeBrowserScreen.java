@@ -22,7 +22,7 @@ import com.wildfire.client.gui.SyncedPlayerList;
 import com.wildfire.common.WildfireGender;
 import com.wildfire.common.WildfireLang;
 import com.wildfire.client.cloud.CloudSync;
-import com.wildfire.common.config.ClientConfig;
+import com.wildfire.client.config.ClientConfig;
 import com.wildfire.common.config.enums.Gender;
 import com.wildfire.common.config.enums.ShowPlayerListMode;
 import com.wildfire.client.contributors.Contributors;
@@ -72,7 +72,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
     }
 
     public static BaseWildfireScreen create(LocalPlayer player, @Nullable Screen parent) {
-        if(ClientConfig.config().firstTimeLoad.get() && CloudSync.isAvailable()) {
+        if (ClientConfig.config().firstTimeLoad().get() && CloudSync.isAvailable()) {
             return new WildfireFirstTimeSetupScreen(parent, player.getUUID());
         } else {
             return new WardrobeBrowserScreen(parent, player.getUUID());
@@ -92,15 +92,15 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
         var plr = Objects.requireNonNull(getPlayer(), "getPlayer()");
 
         addButton(builder -> builder
-                .message(() -> WildfireLang.PLAYER_LIST_MODE.translate(ClientConfig.config().playerListMode.get().text()))
-                .tooltip(ClientConfig.config().playerListMode.get().tooltip())
+                .message(() -> WildfireLang.PLAYER_LIST_MODE.translate(ClientConfig.config().playerListMode().get().getTranslatedName()))
+                .tooltip(ClientConfig.config().playerListMode().get().tooltip())
                 .position(126, 4)
                 .size(185, 10)
                 .onPress(button -> {
-                    if (ClientConfig.config().playerListMode.update(ShowPlayerListMode::next)) {
-                        ClientConfig.save();
+                    if (ClientConfig.config().playerListMode().update(ShowPlayerListMode::next)) {
+                        ClientConfig.INSTANCE.save();
                         button.updateMessage();
-                        button.setTooltip(ClientConfig.config().playerListMode.get().tooltip());
+                        button.setTooltip(ClientConfig.config().playerListMode().get().tooltip());
                     }
                 }));
 

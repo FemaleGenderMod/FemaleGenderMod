@@ -22,7 +22,7 @@ import com.google.gson.JsonObject;
 import com.wildfire.common.LoaderAgnostics;
 import com.wildfire.common.WildfireGender;
 import com.wildfire.client.cloud.CloudSync;
-import com.wildfire.common.config.ClientConfig;
+import com.wildfire.client.config.ClientConfig;
 import com.wildfire.common.config.Configuration;
 import com.wildfire.client.contributors.Contributors;
 import com.wildfire.common.entitydata.PlayerConfigHolder;
@@ -42,6 +42,7 @@ import org.jspecify.annotations.Nullable;
 public class WildfireGenderClient {
     private static final Executor LOAD_EXECUTOR = Util.ioPool().forName("wildfire_gender$loadPlayerData");
 
+    //TODO = Neo: Can we migrate the client config file?
     static void tryMigrate() {
         tryMigrate("WildfireGender", Configuration.CONFIG_DIR);
         tryMigrate(WildfireGender.MODID + ".json", "female_gender_mod.json");
@@ -104,7 +105,7 @@ public class WildfireGenderClient {
     }
 
     public static @Nullable Component getNametag(UUID uuid) {
-        if (ClientConfig.config().hideOwnContributorTag.get()) {
+        if (ClientConfig.config().hideOwnContributorTag().get()) {
             var clientPlayer = Minecraft.getInstance().player;
             if (clientPlayer != null && uuid.equals(clientPlayer.getUUID())) {
                 return null;

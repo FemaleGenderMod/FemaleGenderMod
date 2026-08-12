@@ -16,30 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.common.config.value;
+package com.wildfire.mixins;
 
-import com.wildfire.common.config.validator.ConfigValidator;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
+import com.wildfire.common.config.enums.SyncVerbosity;
+import net.neoforged.neoforge.common.TranslatableEnum;
+import org.spongepowered.asm.mixin.Mixin;
 
-public interface ConfigValue<TYPE> extends Supplier<TYPE>, Consumer<TYPE> {
-
-    UnaryOperator<Boolean> TOGGLE = value -> !value;
-
-    ConfigValidator<TYPE> validator();
-
-    /// {@return `true` if the value was changed to the default value, `false` if it was already at the default value}
-    boolean reset();
-
-    default boolean update(UnaryOperator<TYPE> transformer) {
-        return update(transformer.apply(get()));
-    }
-
-    boolean update(TYPE newValue);
-
-    @Override
-    default void accept(TYPE newValue) {
-        update(newValue);
-    }
+@Mixin(SyncVerbosity.class)
+abstract class SyncVerbosityMixin implements TranslatableEnum {
 }

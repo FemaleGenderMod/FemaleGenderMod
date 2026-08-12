@@ -48,7 +48,7 @@ public class Configuration<TYPE> {
         this(CONFIG_DIR, cfgName, codec);
     }
 
-    protected Configuration(String directory, String cfgName, Codec<TYPE> codec) {
+    public Configuration(String directory, String cfgName, Codec<TYPE> codec) {
         this.codec = codec;
         Path saveDir = LoaderAgnostics.INSTANCE.getConfigDir().resolve(directory);
         if(supportsSaving() && !Files.isDirectory(saveDir)) {

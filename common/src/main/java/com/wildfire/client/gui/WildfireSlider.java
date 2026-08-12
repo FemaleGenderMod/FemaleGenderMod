@@ -21,7 +21,7 @@ package com.wildfire.client.gui;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import com.wildfire.common.WildfireHelper;
-import com.wildfire.common.config.value.ConfigKey;
+import com.wildfire.common.config.validator.ConfigValidator;
 import com.wildfire.common.config.validator.ConfigRange;
 import com.wildfire.common.config.value.ConfigValue;
 import it.unimi.dsi.fastutil.floats.Float2ObjectFunction;
@@ -272,8 +272,8 @@ public class WildfireSlider extends AbstractWidget implements IFancyFontRenderer
             return this;
         }
 
-        public Builder range(ConfigKey<Float> key) {
-            if (key.validator() instanceof ConfigRange<Float>(Float minInclusive, Float maxInclusive)) {
+        public Builder range(ConfigValidator<Float> validator) {
+            if (validator instanceof ConfigRange<Float>(Float minInclusive, Float maxInclusive)) {
                 return range(minInclusive, maxInclusive);
             }
             //TODO: Do we care about having a logging message? If so where should we get the key name from
@@ -292,9 +292,9 @@ public class WildfireSlider extends AbstractWidget implements IFancyFontRenderer
             return this;
         }
 
-        public Builder forConfig(Supplier<ConfigValue<Float>> configValue) {
+        public Builder forConfig(Supplier<? extends ConfigValue<Float>> configValue) {
             ConfigValue<Float> currentValue = configValue.get();
-            return range(currentValue.key())
+            return range(currentValue.validator())
                 .current(currentValue.get())
                 .update(value -> configValue.get().update(value));
         }

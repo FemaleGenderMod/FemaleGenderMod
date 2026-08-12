@@ -71,14 +71,15 @@ public enum ShowPlayerListMode implements StringRepresentable {
         };
     }
 
-    public Component text() {
-        return this.name.translate();
-    }
-
     public Tooltip tooltip() {
         if (this == TAB_LIST_OPEN) {
             return Tooltip.create(tooltip.translate(Minecraft.getInstance().options.keyPlayerList.getTranslatedKeyMessage()));
         }
         return Tooltip.create(tooltip.translate());
+    }
+
+    /// @implNote **Do not rename this method, our Neo impl mixes in an interface (net.neoforged.neoforge.common.TranslatableEnum) so that it can be translated in the config screen**
+    public Component getTranslatedName() {
+        return this.name.translate();
     }
 }

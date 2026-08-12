@@ -16,30 +16,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.common.config.value;
+package com.wildfire.common.config;
 
-import com.wildfire.common.config.validator.ConfigValidator;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
+import org.jspecify.annotations.Nullable;
 
-public interface ConfigValue<TYPE> extends Supplier<TYPE>, Consumer<TYPE> {
+/// From [Mekanism](https://github.com/mekanism/Mekanism/blob/26.2/src/main/java/mekanism/common/config/IConfigTranslation.java)
+public interface ConfigTranslation {
 
-    UnaryOperator<Boolean> TOGGLE = value -> !value;
+    String getTranslationKey();
 
-    ConfigValidator<TYPE> validator();
+    String title();
 
-    /// {@return `true` if the value was changed to the default value, `false` if it was already at the default value}
-    boolean reset();
+    String tooltip();
 
-    default boolean update(UnaryOperator<TYPE> transformer) {
-        return update(transformer.apply(get()));
+    @Nullable
+    default String button() {
+        return null;
     }
 
-    boolean update(TYPE newValue);
-
-    @Override
-    default void accept(TYPE newValue) {
-        update(newValue);
+    @Nullable
+    static String getSectionTitle(String title, boolean isSection) {
+        return isSection ? "Edit " + title : null;
     }
 }

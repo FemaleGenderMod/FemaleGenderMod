@@ -21,7 +21,7 @@ package com.wildfire.client.gui;
 import com.wildfire.client.WildfireKeyBindings;
 import com.wildfire.client.gui.screen.BaseWildfireScreen;
 import com.wildfire.common.WildfireGender;
-import com.wildfire.common.config.ClientConfig;
+import com.wildfire.client.config.ClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -62,8 +62,8 @@ public class WildfireToast implements Toast, IFancyFontRenderer {
     public void update(ToastManager manager, long time) {
         if(shouldHide()) {
             hide();
-            if (ClientConfig.config().showToast.update(false)) {
-                CompletableFuture.runAsync(ClientConfig::save);
+            if (ClientConfig.config().showToast().update(false)) {
+                CompletableFuture.runAsync(ClientConfig.INSTANCE::save);
             }
         }
     }

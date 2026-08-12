@@ -6,6 +6,5 @@
   "wildfire_gender.char_settings.show_armor_stat": "Show Armour Tooltip: %1$s",
   "wildfire_gender.command.single_player.armor_stand.description": "Spawns an armour stand with armour copying your breast settings pre-equipped",
   "wildfire_gender.command.single_player.armor_stand.error.no_component": "Returned breast data component was null; do you have Hide in Armour on?",
-  "wildfire_gender.first_time_setup.description": "Would you like to enable cloud server syncing for your gender settings? This feature allows other players to view your customised gender appearance, even if the server doesn't have the mod installed.",
-  "wildfire_gender.tooltip.override_armor_physics.line1": "Breast physics will no longer be reduced/suppressed by any worn armour while enabled; this is primarily intended for use with resource packs that hide armour."
+  "wildfire_gender.first_time_setup.description": "Would you like to enable cloud server syncing for your gender settings? This feature allows other players to view your customised gender appearance, even if the server doesn't have the mod installed."
 }

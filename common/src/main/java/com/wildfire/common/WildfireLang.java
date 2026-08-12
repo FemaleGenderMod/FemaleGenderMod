@@ -169,6 +169,8 @@ public enum WildfireLang {
     SYNC_LOG_NO_PROFILE("sync_log.no_data_to_delete"),
     SYNC_LOG_SINGLE_PROFILE("sync_log.get_single_profile"),
     SYNC_LOG_MULTIPLE_PROFILES("sync_log.get_multiple_profiles"),
+    SYNC_LOG_VERBOSITY_DEFAULT("sync_log.verbosity.default"),
+    SYNC_LOG_VERBOSITY_SHOW_FETCHES("sync_log.verbosity.show_fetches"),
 
     CONTRIBUTOR_ROLE_MOD_CREATOR("contributor.role.mod_creator"),
     CONTRIBUTOR_ROLE_FABRIC_MAINTAINER("contributor.role.fabric_maintainer"),

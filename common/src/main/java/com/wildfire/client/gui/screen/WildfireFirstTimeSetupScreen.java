@@ -23,7 +23,7 @@ import com.wildfire.client.gui.FakeGUIPlayer;
 import com.wildfire.client.gui.WildfireButton;
 import com.wildfire.common.WildfireGender;
 import com.wildfire.client.WildfireGenderClient;
-import com.wildfire.common.config.ClientConfig;
+import com.wildfire.client.config.ClientConfig;
 import com.wildfire.common.WildfireLang;
 import com.wildfire.common.entitydata.PlayerConfigHolder;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -73,7 +73,6 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
         int x = this.width / 2;
         int y = this.height / 2;
 
-        final var config = ClientConfig.config();
         final var ref = new Object() {
             @UnknownNullability
             WildfireButton no;
@@ -84,9 +83,10 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
                 .position(x + 3, y + 74)
                 .size(128, 20)
                 .onPress(button -> {
-                    config.cloudSyncEnabled.update(true);
-                    config.automaticCloudSync.update(true);
-                    config.firstTimeLoad.update(false);
+                    final var config = ClientConfig.config();
+                    config.cloudSyncEnabled().update(true);
+                    config.automaticCloudSync().update(true);
+                    config.firstTimeLoad().update(false);
 
                     button.active = false;
                     button.setMessage(CommonComponents.ELLIPSIS);
@@ -105,9 +105,10 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
                 .position(x - 131, y + 74)
                 .size(128, 20)
                 .onPress(_ -> {
-                    config.cloudSyncEnabled.update(false);
-                    config.automaticCloudSync.update(false);
-                    config.firstTimeLoad.update(false);
+                    final var config = ClientConfig.config();
+                    config.cloudSyncEnabled().update(false);
+                    config.automaticCloudSync().update(false);
+                    config.firstTimeLoad().update(false);
 
                     //~ if >=26.2 'minecraft.setScreen' -> 'minecraft.gui.setScreen'
                     minecraft.gui.setScreen(new WardrobeBrowserScreen(null, playerUUID));
@@ -181,6 +182,6 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 
     @Override
     public void removed() {
-        ClientConfig.save();
+        ClientConfig.INSTANCE.save();
     }
 }

@@ -23,7 +23,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.wildfire.client.events.PlayerNametagRenderEvent;
 import com.wildfire.common.LoaderAgnostics;
-import com.wildfire.common.config.ClientConfig;
+import com.wildfire.client.config.ClientConfig;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -48,7 +48,7 @@ abstract class AvatarRendererMixin extends LivingEntityRenderer<Avatar, AvatarRe
     @ModifyReturnValue(method = "shouldShowName(Lnet/minecraft/world/entity/Avatar;D)Z", at = @At("RETURN"))
     public boolean wildfiregender$forceLabel(boolean original, @Local(argsOnly = true) Avatar entity) {
         if (LoaderAgnostics.INSTANCE.isDevelopmentEnv()) {
-            if(entity instanceof LocalPlayer && ClientConfig.DISPLAY_OWN_NAMETAG) {
+            if(entity instanceof LocalPlayer && ClientConfig.INSTANCE.displayOwnNameTag()) {
                 return true;
             }
         }

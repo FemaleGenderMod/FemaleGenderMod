@@ -19,6 +19,7 @@
 package com.wildfire.client;
 
 import com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService;
+import com.wildfire.client.config.ClientConfig;
 import com.wildfire.common.WildfireHelper;
 import com.wildfire.client.render.GenderRenderState;
 import com.wildfire.common.config.enums.Gender;
@@ -34,6 +35,9 @@ public interface ClientHelper {
 
     @Nullable
     default SoundEvent hurtSound(Gender gender) {
+        if (ClientConfig.config().disableSoundReplacement().get()) {
+            return null;
+        }
         return switch (gender) {
             case FEMALE, OTHER -> femaleHurt();
             case MALE -> null;

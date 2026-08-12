@@ -27,7 +27,7 @@ import com.wildfire.common.WildfireGender;
 import com.wildfire.common.WildfireLang;
 import com.wildfire.client.cloud.CloudSync;
 import com.wildfire.client.cloud.SyncLog;
-import com.wildfire.common.config.ClientConfig;
+import com.wildfire.client.config.ClientConfig;
 import com.wildfire.common.config.Configuration;
 import com.wildfire.common.config.value.ConfigKey;
 import com.wildfire.common.config.value.ConfigValue;
@@ -88,7 +88,7 @@ public class PlayerConfigHolder extends EntityConfigHolder<PlayerConfig> {
         if(!needsCloudSync) return;
         //~ if >=26.2 'client.screen' -> 'client.gui.screen()'
         if(client.gui.screen() instanceof BaseWildfireScreen) return;
-        if(!ClientConfig.config().automaticCloudSync.get()) return;
+        if(!ClientConfig.config().automaticCloudSync().get()) return;
         if(CloudSync.syncOnCooldown()) return;
 
         CompletableFuture.runAsync(() -> {

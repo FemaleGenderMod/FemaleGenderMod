@@ -19,9 +19,11 @@
 package com.wildfire.common.config.enums;
 
 import com.mojang.serialization.Codec;
+import com.wildfire.common.WildfireLang;
 import io.netty.buffer.ByteBuf;
 import java.util.Locale;
 import net.minecraft.commands.arguments.StringRepresentableArgument;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ByIdMap;
@@ -31,8 +33,8 @@ import net.minecraft.util.StringRepresentable;
 import java.util.function.IntFunction;
 
 public enum SyncVerbosity implements StringRepresentable {
-    DEFAULT,
-    SHOW_FETCHES;
+    DEFAULT(WildfireLang.SYNC_LOG_VERBOSITY_DEFAULT),
+    SHOW_FETCHES(WildfireLang.SYNC_LOG_VERBOSITY_SHOW_FETCHES);
 
     public static final IntFunction<SyncVerbosity> BY_ID = ByIdMap.continuous(SyncVerbosity::ordinal, values(), ByIdMap.OutOfBoundsStrategy.CLAMP);
     public static final Codec<SyncVerbosity> CODEC = StringRepresentable.fromEnum(SyncVerbosity::values);
@@ -40,14 +42,21 @@ public enum SyncVerbosity implements StringRepresentable {
     public static final StreamCodec<ByteBuf, SyncVerbosity> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, SyncVerbosity::ordinal);
 
     private final String saveName;
+    private final WildfireLang name;
 
-    SyncVerbosity() {
+    SyncVerbosity(WildfireLang name) {
         this.saveName = name().toLowerCase(Locale.ROOT);
+        this.name = name;
     }
 
     @Override
     public String getSerializedName() {
         return this.saveName;
+    }
+
+    /// @implNote **Do not rename this method, our Neo impl mixes in an interface (net.neoforged.neoforge.common.TranslatableEnum) so that it can be translated in the config screen**
+    public Component getTranslatedName() {
+        return this.name.translate();
     }
 
     public static class SyncVerbosityArgumentType extends StringRepresentableArgument<SyncVerbosity> {

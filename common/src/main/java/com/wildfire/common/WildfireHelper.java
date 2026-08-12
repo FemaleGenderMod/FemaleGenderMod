@@ -33,6 +33,7 @@ import net.minecraft.world.item.component.ItemAttributeModifiers;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 public final class WildfireHelper {
@@ -94,14 +95,30 @@ public final class WildfireHelper {
     /// @throws IllegalStateException when an implementation is not found
     @Internal
     public static <SERVICE> SERVICE getService(Class<SERVICE> serviceClass) {
-        Iterator<SERVICE> service = ServiceLoader.load(serviceClass, SERVICE_CL).iterator();
-        if (service.hasNext()) {
-            return service.next();
+        SERVICE service = getOptionalService(serviceClass);
+        if (service != null) {
+            return service;
         }
 
         IllegalStateException illegalStateException = new IllegalStateException("No valid ServiceImpl for " + serviceClass.getSimpleName() + " found");
         LOGGER.error("Failed to load service", illegalStateException);
         LOGGER.error("CL: {} CCL: {}", SERVICE_CL, Thread.currentThread().getContextClassLoader());
         throw illegalStateException;
+    }
+
+    /// Loads a WildfireGender service from ServiceLoader, ensuring that the correct classloader is used instead of relying on the context classloader, which may not be
+    /// correct
+    ///
+    /// @param serviceClass the interface class to search for
+    ///
+    /// @return the concrete implementation, or `null` if no implementation is found
+    @Nullable
+    @Internal
+    public static <SERVICE> SERVICE getOptionalService(Class<SERVICE> serviceClass) {
+        Iterator<SERVICE> service = ServiceLoader.load(serviceClass, SERVICE_CL).iterator();
+        if (service.hasNext()) {
+            return service.next();
+        }
+        return null;
     }
 }

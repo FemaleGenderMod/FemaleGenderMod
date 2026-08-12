@@ -112,31 +112,10 @@ public record ConfigKey<TYPE>(Either<TYPE, Supplier<TYPE>> defaultValueSupplier,
     }
 
     public ConfigValue<TYPE> createValueHandler(TYPE value) {
-        return new ConfigValue<>(this, value);
+        return new KeyBackedConfigValue<>(this, value);
     }
 
     public static ConfigKey<Float> create(float defaultValue, float minInclusive, float maxInclusive) {
         return new ConfigKey<>(defaultValue, Codec.FLOAT, ByteBufCodecs.FLOAT, new ConfigRange<>(minInclusive, maxInclusive));
-    }
-
-    public <BUF extends ByteBuf> StreamCodec<BUF, TYPE> validating(StreamCodec<BUF, TYPE> streamCodec) {
-        return new StreamCodec<>() {
-            @Override
-            public TYPE decode(final BUF input) {
-                TYPE decoded = streamCodec.decode(input);
-                if (validator.validate(decoded)) {
-                    return decoded;
-                } else if (validator.hasCodecValidation()) {
-                    //If the value is invalid, try to see if we can get it cleaned up
-                    return validator.codecValidation(decoded).resultOrPartial().orElseGet(ConfigKey.this::defaultValue);
-                }
-                return defaultValue();
-            }
-
-            @Override
-            public void encode(final BUF output, final TYPE value) {
-                streamCodec.encode(output, value);
-            }
-        };
     }
 }

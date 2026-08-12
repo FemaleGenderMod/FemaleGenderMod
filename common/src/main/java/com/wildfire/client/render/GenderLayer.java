@@ -23,7 +23,7 @@ import com.mojang.math.Axis;
 import com.wildfire.client.ClientHelper;
 import com.wildfire.common.WildfireGender;
 import com.wildfire.common.WildfireHelper;
-import com.wildfire.common.config.ClientConfig;
+import com.wildfire.client.config.ClientConfig;
 import com.wildfire.common.entitydata.BreastState;
 import com.wildfire.common.config.uvs.UVLayout;
 import com.wildfire.client.render.WildfireModelRenderer.BreastModelBox;
@@ -91,9 +91,9 @@ public class GenderLayer<STATE extends HumanoidRenderState, MODEL extends Humano
     /// @return `true` if rendering should continue
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     protected boolean setupRender(STATE entityState, GenderRenderState genderState) {
-        if(!ClientConfig.RENDER_BREASTS) return false;
+        if (ClientConfig.config().disableRendering().get()) return false;
 
-        boolean armorPhysicsOverride = ClientConfig.config().armorPhysicsOverride.get();
+        boolean armorPhysicsOverride = ClientConfig.config().overrideArmorPhysics().get();
         isChestplateOccupied = genderState.armor.coversBreasts() && !armorPhysicsOverride;
         if (genderState.armor.alwaysHidesBreasts() || !genderState.showBreastsInArmor && isChestplateOccupied) {
             //If the armor always hides breasts or there is armor and the player configured breasts

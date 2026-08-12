@@ -26,7 +26,8 @@ import com.wildfire.common.WildfireGender;
 import com.wildfire.common.WildfireHelper;
 import com.wildfire.common.WildfireLang;
 import com.wildfire.client.cloud.CloudSync;
-import com.wildfire.common.config.ClientConfig;
+import com.wildfire.client.config.ClientConfig;
+import com.wildfire.common.config.value.ConfigValue;
 import com.wildfire.common.entitydata.EntityConfig;
 import com.wildfire.common.entitydata.EntityConfigHolder;
 import com.wildfire.common.entitydata.PlayerConfigHolder;
@@ -112,10 +113,10 @@ public final class WildfireClientEventHandler {
     }
 
     static void renderTooltip(ItemStack item, Consumer<Component> tooltipAppender, @Nullable Player player) {
-        if (player == null || !ClientConfig.config().armorStat.get()) {
+        if (player == null || !ClientConfig.config().armorStat().get()) {
             return;
         }
-        if (ClientConfig.config().armorPhysicsOverride.get()) {
+        if (ClientConfig.config().overrideArmorPhysics().get()) {
             return;
         }
         var equippableComponent = item.get(DataComponents.EQUIPPABLE);
@@ -147,7 +148,7 @@ public final class WildfireClientEventHandler {
             return;
         }
 
-        if (ClientConfig.config().playerListMode.get().isVisible()) {
+        if (ClientConfig.config().playerListMode().get().isVisible()) {
             SyncedPlayerList.drawSyncedPlayers(context);
         } else {
             SyncedPlayerList.resetTimer();
@@ -185,7 +186,8 @@ public final class WildfireClientEventHandler {
 
         //~ if >=26.2 'client.screen' -> 'client.gui.screen()' {
         if (WildfireKeyBindings.INSTANCE.toggleKey().consumeClick() && client.gui.screen() == null) {
-            ClientConfig.RENDER_BREASTS ^= true;
+            ClientConfig.config().disableRendering().update(ConfigValue.TOGGLE);
+            ClientConfig.INSTANCE.save();
         }
         if (WildfireKeyBindings.INSTANCE.configKey().consumeClick() && client.gui.screen() == null) {
             WardrobeBrowserScreen.open(client, client.player);
@@ -200,7 +202,7 @@ public final class WildfireClientEventHandler {
     }
 
     static void clientJoin(Minecraft client) {
-        if (client.player != null && ClientConfig.config().showToast.get()) {
+        if (client.player != null && ClientConfig.config().showToast().get()) {
             var button = WildfireKeyBindings.INSTANCE.configKey().getTranslatedKeyMessage();
             //~ if >=26.2 'client.getToastManager()' -> 'client.gui.toastManager()'
             ToastManager toastManager = client.gui.toastManager();

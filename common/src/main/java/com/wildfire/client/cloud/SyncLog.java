@@ -19,7 +19,7 @@
 package com.wildfire.client.cloud;
 
 import com.wildfire.common.WildfireLang;
-import com.wildfire.common.config.ClientConfig;
+import com.wildfire.client.config.ClientConfig;
 import com.wildfire.common.config.enums.SyncVerbosity;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
@@ -33,7 +33,7 @@ public final class SyncLog {
     public static final List<Entry> SYNC_LOG = new ArrayList<>();
 
     public static SyncVerbosity verbosity() {
-        return ClientConfig.config().syncVerbosity.get();
+        return ClientConfig.config().syncVerbosity().get();
     }
 
     public static void add(WildfireLang langEntry, SyncVerbosity verbosity) {

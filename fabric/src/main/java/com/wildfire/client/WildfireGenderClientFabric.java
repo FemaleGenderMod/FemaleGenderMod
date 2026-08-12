@@ -26,7 +26,7 @@ import com.wildfire.client.events.PlayerNametagRenderEvent;
 import com.wildfire.client.gui.SyncedPlayerList;
 import com.wildfire.common.LoaderAgnostics;
 import com.wildfire.common.WildfireGender;
-import com.wildfire.common.config.ClientConfig;
+import com.wildfire.client.config.ClientConfig;
 import com.wildfire.common.entitydata.PlayerConfigHolder;
 import com.wildfire.common.networking.FabricSync;
 import com.wildfire.client.render.debug.GenderDebugHudEntry;
@@ -58,7 +58,7 @@ public class WildfireGenderClientFabric implements ClientModInitializer {
     public void onInitializeClient() {
         WildfireGenderClient.tryMigrate();
 
-        ClientConfig.load();
+        ClientConfig.INSTANCE.load(null);
         FabricClientHelper.registerSounds();
         FabricSync.registerClient();
         registerKeybindings();

@@ -19,7 +19,7 @@
 package com.wildfire.client.physics;
 
 import com.wildfire.api.IGenderArmor;
-import com.wildfire.common.config.ClientConfig;
+import com.wildfire.client.config.ClientConfig;
 import com.wildfire.common.entitydata.EntityConfigHolder;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -108,7 +108,7 @@ public class BreastPhysics {
     // as such, the best we can get here is marking this method as such.
     /// @apiNote Only call this on the client side, or the implementation will crash
     public void update(LivingEntity entity, IGenderArmor armor) {
-        boolean armorPhysicsOverride = ClientConfig.config().armorPhysicsOverride.get();
+        boolean armorPhysicsOverride = ClientConfig.config().overrideArmorPhysics().get();
         // always suppress the full physics calculations on armor stands
         if(entity instanceof ArmorStand || entityConfig.forceSimplifiedPhysics) {
             simplifiedTick(armor, armorPhysicsOverride);

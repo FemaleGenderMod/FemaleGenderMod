@@ -20,8 +20,12 @@ package com.wildfire.datagen.lang;
 
 import com.wildfire.common.WildfireGender;
 import com.wildfire.common.WildfireLang;
+import com.wildfire.common.config.ConfigTranslation;
+import com.wildfire.common.config.Configuration;
+import com.wildfire.common.config.GenderConfigTranslations;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import net.minecraft.data.CachedOutput;
@@ -148,7 +152,7 @@ public class WildfireLangData {
         add(builder, WildfireLang.PLAYER_LIST_SOUNDS, "Female Sounds: %1$s");
 
         add(builder, WildfireLang.PLAYER_LIST_MODE, "Show Synced Players: %1$s");
-        add(builder, WildfireLang.PLAYER_LIST_MODE_MOD_UI, "This screen");
+        add(builder, WildfireLang.PLAYER_LIST_MODE_MOD_UI, "Female Gender Mod UI");
         add(builder, WildfireLang.PLAYER_LIST_MODE_MOD_UI_TOOLTIP, "The synced player list will only show while in this menu");
         add(builder, WildfireLang.PLAYER_LIST_MODE_TAB_LIST, "Player list");
         add(builder, WildfireLang.PLAYER_LIST_MODE_TAB_LIST_TOOLTIP, "The synced player list will show while in this menu or by pressing %1$s");
@@ -183,10 +187,6 @@ public class WildfireLangData {
         add(builder, WildfireLang.CHAR_SETTINGS_HURT_SOUNDS, "Female Hurt Sounds: %1$s");
         add(builder, WildfireLang.CHAR_SETTINGS_HURT_SOUNDS_TOOLTIP, "Your character will play a female hurt sound when taking damage if your gender is set to either Female or Other");
         add(builder, WildfireLang.CHAR_SETTINGS_OVERRIDE_PHYSICS, "Armor Physics: %1$s");
-        add(builder, WildfireLang.CHAR_SETTINGS_OVERRIDE_PHYSICS_TOOLTIP,
-            "Breast physics will no longer be reduced/suppressed by any worn armor while enabled; this is primarily intended for use with resource packs that hide armor.",
-            "This affects how you see other players and yourself, but does not affect how others see you."
-        );
 
         add(builder, WildfireLang.LABEL_GENDER, "Gender");
         add(builder, WildfireLang.LABEL_FEMALE, "Female");
@@ -257,6 +257,9 @@ public class WildfireLangData {
         add(builder, WildfireLang.SYNC_LOG_SINGLE_PROFILE, "Retrieving profile...");
         add(builder, WildfireLang.SYNC_LOG_MULTIPLE_PROFILES, "Retrieving batch of profiles...");
 
+        add(builder, WildfireLang.SYNC_LOG_VERBOSITY_DEFAULT, "Default");
+        add(builder, WildfireLang.SYNC_LOG_VERBOSITY_SHOW_FETCHES, "Show Fetches");
+
         addCompact(builder, WildfireLang.CONTRIBUTOR_ROLE_MOD_CREATOR, "Female Gender Mod Creator", "Mod Creator");
         addCompact(builder, WildfireLang.CONTRIBUTOR_ROLE_FABRIC_MAINTAINER, "Female Gender Mod Maintainer", "Maintainer (Fabric)");
         addCompact(builder, WildfireLang.CONTRIBUTOR_ROLE_NEO_MAINTAINER, "Female Gender Mod Maintainer", "Maintainer (NeoForge)");
@@ -314,6 +317,27 @@ public class WildfireLangData {
         add(builder, WildfireLang.COMMAND_SYNCED_PLAYERS, "Synced Players (%1$s):");
         add(builder, WildfireLang.COMMAND_ENTITIES, "Entities (Class: %1$s):");
 
+        generateConfigTranslations(builder);
+
         // intentionally omitted as they aren't used anywhere:
+    }
+
+    private void generateConfigTranslations(BiConsumer<String, String> builder) {
+        builder.accept(WildfireGender.MODID + ".configuration.title", "Female Gender Mod Config");
+
+        String baseConfigFolder = Configuration.CONFIG_DIR.toLowerCase(Locale.ROOT);
+        //Config section translation
+        String key = WildfireGender.MODID + ".configuration.section." + baseConfigFolder + ".client.toml";
+        builder.accept(key, "Client Config");
+        builder.accept(key + ".title", "Female Gender Mod - Client Config");
+
+        for (ConfigTranslation translation : GenderConfigTranslations.values()) {
+            builder.accept(translation.getTranslationKey(), translation.title());
+            builder.accept(translation.getTranslationKey() + ".tooltip", translation.tooltip());
+            String button = translation.button();
+            if (button != null) {
+                builder.accept(translation.getTranslationKey() + ".button", button);
+            }
+        }
     }
 }

@@ -20,16 +20,16 @@ package com.wildfire.client;
 
 import com.google.common.reflect.TypeToken;
 import com.wildfire.client.command.WildfireCommand;
+import com.wildfire.client.config.ClientConfig;
 import com.wildfire.client.gui.SyncedPlayerList;
-import com.wildfire.common.LoaderAgnostics;
-import com.wildfire.common.WildfireGender;
-import com.wildfire.common.config.ClientConfig;
-import com.wildfire.common.entitydata.EntityConfig;
-import com.wildfire.common.entitydata.EntityConfigHolder;
 import com.wildfire.client.render.GenderRenderState;
 import com.wildfire.client.render.debug.GenderDebugHudEntry;
 import com.wildfire.client.render.debug.PhysicsDebugHudEntry;
 import com.wildfire.client.resources.GenderArmorResourceManager;
+import com.wildfire.common.LoaderAgnostics;
+import com.wildfire.common.WildfireGender;
+import com.wildfire.common.entitydata.EntityConfig;
+import com.wildfire.common.entitydata.EntityConfigHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.entity.ArmorStandRenderer;
@@ -43,6 +43,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.PlayerModelType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
@@ -64,11 +65,10 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 @Mod(value = WildfireGender.MODID, dist = Dist.CLIENT)
 public class WildfireGenderClientNeo {
 
-    public WildfireGenderClientNeo(IEventBus modEventBus) {
+    public WildfireGenderClientNeo(ModContainer modContainer, IEventBus modEventBus) {
         WildfireGenderClient.tryMigrate();
 
-        //TODO - Neo: Replace this ClientConfig with a neo config and connect it to the config menu
-        ClientConfig.load();
+        ClientConfig.INSTANCE.load(modContainer);
 
         modEventBus.addListener(RegisterKeyMappingsEvent.class, this::registerKeybindings);
         modEventBus.addListener(AddClientReloadListenersEvent.class, this::registerReloadListeners);
@@ -78,7 +78,10 @@ public class WildfireGenderClientNeo {
         modEventBus.addListener(EntityRenderersEvent.AddLayers.class, this::addLayers);
         //TODO - Neo: Can we get this rendering with the attributes? Similar to fabric
         modEventBus.addListener(RegisterTooltipAppendersEvent.class, event -> event.registerAppender(TooltipLocation.PRE_ITEM_INFO,
-            (stack, _, _, player, _, builder) -> WildfireClientEventHandler.renderTooltip(stack, builder, player)));
+            (stack, _, _, player, _, builder) -> {
+                //TODO - Neo: Only display this if the tooltip display isn't hiding attributes? (Does fabric already do that?)
+                WildfireClientEventHandler.renderTooltip(stack, builder, player);
+            }));
 
         NeoForge.EVENT_BUS.addListener(RegisterClientCommandsEvent.class, this::registerClientCommands);
         NeoForge.EVENT_BUS.addListener(ClientPlayerNetworkEvent.LoggingIn.class, _ -> WildfireClientEventHandler.clientJoin(Minecraft.getInstance()));
@@ -103,7 +106,7 @@ public class WildfireGenderClientNeo {
 
         if (LoaderAgnostics.INSTANCE.isDevelopmentEnv()) {
             NeoForge.EVENT_BUS.addListener(RenderNameTagEvent.CanRender.class, event -> {
-                if (event.getEntity() instanceof LocalPlayer && ClientConfig.DISPLAY_OWN_NAMETAG) {
+                if (event.getEntity() instanceof LocalPlayer && ClientConfig.INSTANCE.displayOwnNameTag()) {
                     event.setCanRender(TriState.TRUE);
                 }
             });

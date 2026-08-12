@@ -20,8 +20,9 @@ package com.wildfire.client.gui.screen;
 
 import com.wildfire.client.gui.WildfireSlider;
 import com.wildfire.common.WildfireGender;
-import com.wildfire.common.config.ClientConfig;
+import com.wildfire.client.config.ClientConfig;
 import com.wildfire.common.WildfireLang;
+import com.wildfire.common.config.GenderConfigTranslations;
 import com.wildfire.common.config.value.ConfigValue;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
@@ -231,18 +232,16 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .active(plr.breasts().physics().enabled()));
 
         ref.overridePhysics = addButton(builder -> builder
-                .message(() -> WildfireLang.CHAR_SETTINGS_OVERRIDE_PHYSICS.translate(ClientConfig.config().armorPhysicsOverride.get() ? ENABLED : DISABLED))
+                .message(() -> WildfireLang.CHAR_SETTINGS_OVERRIDE_PHYSICS.translate(ClientConfig.config().overrideArmorPhysics().get() ? ENABLED : DISABLED))
                 .position(this.width / 2 - 36, tabOffsetY + 70)
                 .size(FULL_WIDTH, 20)
                 .onPress(button -> {
-                    if (ClientConfig.config().armorPhysicsOverride.update(ConfigValue.TOGGLE)) {
-                        ClientConfig.save();
+                    if (ClientConfig.config().overrideArmorPhysics().update(ConfigValue.TOGGLE)) {
+                        ClientConfig.INSTANCE.save();
                         button.updateMessage();
                     }
                 })
-                .tooltip(Tooltip.create(WildfireLang.CHAR_SETTINGS_OVERRIDE_PHYSICS_TOOLTIP.line(1)
-                        .append("\n\n")
-                        .append(WildfireLang.CHAR_SETTINGS_OVERRIDE_PHYSICS_TOOLTIP.line(2))))
+                .tooltip(Tooltip.create(GenderConfigTranslations.CLIENT_OVERRIDE_ARMOR_PHYSICS.tooltipComponent()))
                 .active(plr.breasts().physics().enabled()));
 
         ref.bounceSlider = addSlider(builder -> builder
@@ -309,12 +308,12 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 }));
 
         addButton(builder -> builder
-                .message(() -> WildfireLang.CHAR_SETTINGS_ARMOR_STAT.translate(ClientConfig.config().armorStat.get() ? ENABLED : DISABLED))
+                .message(() -> WildfireLang.CHAR_SETTINGS_ARMOR_STAT.translate(ClientConfig.config().armorStat().get() ? ENABLED : DISABLED))
                 .position(this.width / 2 - 36, tabOffsetY + 70)
                 .size(FULL_WIDTH, 20)
                 .onPress(button -> {
-                    if (ClientConfig.config().armorStat.update(ConfigValue.TOGGLE)) {
-                        ClientConfig.save();
+                    if (ClientConfig.config().armorStat().update(ConfigValue.TOGGLE)) {
+                        ClientConfig.INSTANCE.save();
                         button.updateMessage();
                     }
                 }));
