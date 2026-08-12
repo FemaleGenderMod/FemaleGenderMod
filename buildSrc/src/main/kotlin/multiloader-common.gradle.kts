@@ -31,8 +31,7 @@ base {
     archivesName.set(commonMod.name.replace(' ', '-'))
 }
 
-//TODO: ?? Also do we need to be getting the mc version in the same way this does?
-version = "${loader}-${commonMod.version}+mc${stonecutterBuild.current.version}"
+version = "${loader}-${commonMod.version}+mc${stonecutterBuild.current.project}"
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(commonProject.prop("java.version")!!))
@@ -78,7 +77,7 @@ tasks.named<Jar>("jar") {
         "Implementation-Title" to commonMod.name,
         "Implementation-Vendor" to "WildfireRomeo, celeste, pupnewfster",
         "Implementation-Version" to archiveVersion.get(),
-        "Built-On-Minecraft" to commonMod.mc
+        "Built-On-Minecraft" to stonecutterBuild.current.project
     ))
     inputs.property("name", commonMod.name)
     inputs.property("version", archiveVersion.get())
@@ -86,16 +85,16 @@ tasks.named<Jar>("jar") {
 }
 
 tasks.named<Jar>("sourcesJar") {
-    dependsOn(":common:${commonMod.prop("major_minecraft_version")}:stonecutterGenerate")
+    dependsOn(":common:${stonecutterBuild.current.project}:stonecutterGenerate")
 }
 
 tasks.named<ProcessResources>("processResources") {
-    dependsOn(":common:${commonMod.prop("major_minecraft_version")}:stonecutterGenerate")
+    dependsOn(":common:${stonecutterBuild.current.project}:stonecutterGenerate")
     val expandProps = mapOf(
         "version" to commonMod.version,
         "group" to commonMod.modProp("group"),//Else we target the task's group.
         "minecraft_version" to commonMod.mc,
-        "major_minecraft_version" to commonMod.prop("major_minecraft_version"),
+        "major_minecraft_version" to stonecutterBuild.current.project,
         "fabric_version" to commonMod.dep("fabric_api"),
         "fabric_loader_version" to commonMod.dep("fabric_loader"),
         "mod_name" to commonMod.name,
@@ -103,7 +102,7 @@ tasks.named<ProcessResources>("processResources") {
         "license" to commonMod.modProp("license"),
         "source_code" to commonMod.modProp("source"),
         "issue_tracker" to commonMod.modProp("issue_tracker"),
-        "description" to commonMod.modProp("description"),//TODO: Jared's template uses: project.description,
+        "description" to commonMod.modProp("description"),
         "neoforge_version" to commonMod.dep("min_neoforge"),
         "java_version" to commonProject.prop("java.version")
     )
