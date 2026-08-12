@@ -16,13 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.render.ducks;
+@NullMarked
+package com.wildfire.client;
 
-import net.minecraft.resources.Identifier;
-
-import java.util.Set;
-
-public interface MissingTextureLogger {
-    /// Provides a [Set] containing texture [Identifier]s that have failed to load
-    Set<Identifier> wildfire_gender$missingTextures();
-}
+import org.jspecify.annotations.NullMarked;

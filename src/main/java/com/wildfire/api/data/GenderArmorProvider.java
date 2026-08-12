@@ -42,17 +42,21 @@ public abstract class GenderArmorProvider implements DataProvider {
     private final Map<Identifier, IGenderArmor> armorConfigs = new HashMap<>();
     private final CompletableFuture<HolderLookup.Provider> registries;
     private final PathProvider pathProvider;
-    private final String modid;
+    private final String modId;
 
     protected GenderArmorProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+        this(output, registries, output.getModId());
+    }
+
+    protected GenderArmorProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, String modId) {
         this.registries = registries;
         this.pathProvider = output.createPathProvider(Target.RESOURCE_PACK, "wildfire_gender_data");
-        this.modid = output.getModId();
+        this.modId = modId;
     }
 
     @Override
     public final String getName() {
-        return "Gender Armor Provider: " + modid;
+        return "Gender Armor Provider: " + modId;
     }
 
     @Override

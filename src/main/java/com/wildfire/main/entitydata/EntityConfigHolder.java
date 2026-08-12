@@ -22,23 +22,17 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.mojang.serialization.JsonOps;
-import com.wildfire.api.IGenderArmor;
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.config.value.ConfigValue;
 import com.wildfire.main.uvs.UVs;
-import com.wildfire.physics.BreastPhysics;
+import com.wildfire.physics.BothBreastsPhysics;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
@@ -69,11 +63,11 @@ public class EntityConfigHolder<CONFIG extends EntityConfig> {
     }
 
     public final UUID uuid;
-    // TODO ideally these physics objects would be made entirely client-sided, but this class is
-    //      used on both the client and server (primarily through PlayerConfig), making it very
+    // TODO ideally this physics object would be made entirely client-sided, but this class is
+    //      used on both the client and server (primarily through PlayerConfigHolder), making it very
     //      difficult to do so without some major changes to split this up further into a common class
     //      with a client extension class (e.g. the PlayerEntity & AbstractClientPlayerEntity classes)
-    protected final BreastPhysics lBreastPhysics, rBreastPhysics;
+    protected final BothBreastsPhysics breastPhysics;
 
     protected boolean jacketLayer = true;
     protected @Nullable BreastDataComponent fromComponent;
@@ -85,8 +79,7 @@ public class EntityConfigHolder<CONFIG extends EntityConfig> {
 
     protected EntityConfigHolder(UUID uuid, CONFIG config) {
         this.uuid = uuid;
-        this.lBreastPhysics = new BreastPhysics(this);
-        this.rBreastPhysics = new BreastPhysics(this);
+        this.breastPhysics = new BothBreastsPhysics(this);
         this.config = config;
     }
 
@@ -126,20 +119,8 @@ public class EntityConfigHolder<CONFIG extends EntityConfig> {
         return jacketLayer;
     }
 
-    public BreastPhysics getLeftBreastPhysics() {
-        return lBreastPhysics;
-    }
-
-    public BreastPhysics getRightBreastPhysics() {
-        return rBreastPhysics;
-    }
-
-    @Environment(EnvType.CLIENT)
-    public void tickBreastPhysics(LivingEntity entity) {
-        IGenderArmor armor = WildfireHelper.getArmorConfig(entity.getItemBySlot(EquipmentSlot.CHEST));
-
-        getLeftBreastPhysics().update(entity, armor);
-        getRightBreastPhysics().update(entity, armor);
+    public BothBreastsPhysics breastPhysics() {
+        return breastPhysics;
     }
 
     public List<String> getDebugInfo() {

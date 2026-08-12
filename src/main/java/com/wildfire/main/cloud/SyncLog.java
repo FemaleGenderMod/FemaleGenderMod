@@ -24,7 +24,6 @@ import com.wildfire.main.config.enums.SyncVerbosity;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.CommonColors;
-import net.minecraft.util.Mth;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -65,7 +64,7 @@ public final class SyncLog {
 
         public int color() {
             long secondsPassed = Instant.now().getEpochSecond() - timestamp.getEpochSecond();
-            float delta = Mth.clamp(secondsPassed / 60f, 0f, 1f);
+            float delta = Math.clamp(secondsPassed / 60F, 0, 1);
             return ARGB.linearLerp(delta, NEW_COLOR, OLD_COLOR);
         }
     }

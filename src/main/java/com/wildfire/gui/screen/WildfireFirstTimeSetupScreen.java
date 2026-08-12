@@ -26,8 +26,6 @@ import com.wildfire.main.WildfireGenderClient;
 import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.WildfireLang;
 import com.wildfire.main.entitydata.PlayerConfigHolder;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
@@ -47,7 +45,7 @@ import java.util.concurrent.CompletionException;
 import java.util.function.Supplier;
 import org.jspecify.annotations.Nullable;
 
-@Environment(EnvType.CLIENT)
+/// @apiNote Only use this on the client side
 public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 
     private static final Component DESCRIPTION = WildfireLang.FIRST_TIME_DESCRIPTION.translate();

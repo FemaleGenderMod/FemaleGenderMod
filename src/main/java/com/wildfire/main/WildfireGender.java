@@ -46,7 +46,7 @@ public class WildfireGender implements ModInitializer {
         // a local config file or from the cloud.
         // Note that servers will manually invalidate cache entries upon a player disconnecting
         // (see WildfireEventHandler#playerDisconnected).
-        if(WildfireHelper.onClient()) {
+        if(LoaderAgnostics.onClient()) {
             // TODO this design is super janky, and has some potential edge case issues around LAN worlds;
             //		notably, connected players could potentially have their configs expire, although this is currently
             //		prevented through further jank with how SyncedPlayerList is implemented (which should also
@@ -60,7 +60,7 @@ public class WildfireGender implements ModInitializer {
         CACHE = builder.build(CacheLoader.from(key -> {
             var config = new PlayerConfigHolder(key);
             // only attempt to load player data on the client
-            if(WildfireHelper.onClient()) {
+            if(LoaderAgnostics.onClient()) {
                 // markForSync being true will only ever do anything for the client player
                 WildfireGenderClient.loadGenderInfo(config, true, false);
             }

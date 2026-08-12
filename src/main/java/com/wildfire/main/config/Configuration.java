@@ -23,12 +23,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonWriter;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
+import com.wildfire.main.LoaderAgnostics;
 import com.wildfire.main.WildfireGender;
 import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
 import java.util.Optional;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.GsonHelper;
 
 import java.io.File;
@@ -51,7 +50,7 @@ public class Configuration<TYPE> {
 
     protected Configuration(String directory, String cfgName, Codec<TYPE> codec) {
         this.codec = codec;
-        Path saveDir = FabricLoader.getInstance().getConfigDir().resolve(directory);
+        Path saveDir = LoaderAgnostics.getConfigDir().resolve(directory);
         if(supportsSaving() && !Files.isDirectory(saveDir)) {
             try {
                 Files.createDirectory(saveDir);
@@ -63,7 +62,7 @@ public class Configuration<TYPE> {
     }
 
     public static boolean supportsSaving() {
-        return FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER;
+        return LoaderAgnostics.onClient();
     }
 
     public boolean exists() {

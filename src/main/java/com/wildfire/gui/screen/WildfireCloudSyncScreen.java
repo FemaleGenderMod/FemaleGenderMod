@@ -26,8 +26,6 @@ import com.wildfire.main.cloud.SyncLog;
 import com.wildfire.main.cloud.SyncingTooFrequentlyException;
 import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.config.value.ConfigValue;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
@@ -43,7 +41,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import org.jetbrains.annotations.UnknownNullability;
 
-@Environment(EnvType.CLIENT)
+/// @apiNote Only use this on the client side
 public class WildfireCloudSyncScreen extends BaseWildfireScreen {
 
     private static final Identifier BACKGROUND = WildfireGender.id("textures/gui/sync_bg_v2.png");

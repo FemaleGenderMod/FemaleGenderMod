@@ -19,47 +19,45 @@
 package com.wildfire.render;
 
 import com.wildfire.api.IGenderArmor;
+import com.wildfire.client.WildfireClientHelper;
 import com.wildfire.main.WildfireGenderClient;
-import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.config.enums.Gender;
-import com.wildfire.main.entitydata.Breasts;
+import com.wildfire.main.entitydata.BreastState;
 import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.main.entitydata.EntityConfigHolder;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.uvs.UVLayout;
 import com.wildfire.physics.BreastPhysics;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import com.wildfire.physics.BothBreastsPhysics;
 import net.fabricmc.fabric.api.client.rendering.v1.RenderStateDataKey;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectUtil;
-import net.minecraft.world.entity.Avatar;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.level.block.Blocks;
 import org.jspecify.annotations.Nullable;
 
 /// A decoupled render state object that represents a snapshot of a [EntityConfig] during a certain frame.
-@Environment(EnvType.CLIENT)
+/// @apiNote Only use this on the client side
 public class GenderRenderState {
     private static final RenderStateDataKey<GenderRenderState> STATE = RenderStateDataKey.create(() -> "GenderRenderState");
 
-    public static void update(LivingEntity entity, EntityRenderState state, float partialTicks) {
+    public static void update(LivingEntity entity, HumanoidRenderState state, float partialTicks) {
         if(EntityConfig.isSupportedEntity(entity)) {
             var config = EntityConfigHolder.getEntity(entity);
-            state.setData(STATE, new GenderRenderState(config, entity, partialTicks));
+            state.setData(STATE, new GenderRenderState(config, entity, state, partialTicks));
         }
     }
 
-    public static @Nullable GenderRenderState get(EntityRenderState state) {
+    public static @Nullable GenderRenderState get(HumanoidRenderState state) {
         return state.getData(STATE);
     }
 
     public final BreastState breasts;
+    public final boolean uniboob;
     public final BreastPhysicsState leftBreastPhysics;
     public final BreastPhysicsState rightBreastPhysics;
 
@@ -83,10 +81,12 @@ public class GenderRenderState {
     public final boolean isBreathing;
     public final @Nullable Component nametag;
 
-    private GenderRenderState(EntityConfigHolder<?> entityConfig, LivingEntity entity, float partialTicks) {
+    private GenderRenderState(EntityConfigHolder<?> entityConfig, LivingEntity entity, HumanoidRenderState entityState, float partialTicks) {
         this.breasts = new BreastState(entityConfig.breasts());
-        this.leftBreastPhysics = new BreastPhysicsState(entityConfig.getLeftBreastPhysics());
-        this.rightBreastPhysics = new BreastPhysicsState(entityConfig.getRightBreastPhysics());
+        this.uniboob = entityConfig.breasts().physics().uniboob().get();
+        BothBreastsPhysics breastPhysics = entityConfig.breastPhysics();
+        this.leftBreastPhysics = new BreastPhysicsState(breastPhysics.left());
+        this.rightBreastPhysics = new BreastPhysicsState(breastPhysics.right());
 
         this.partialTicks = partialTicks;
 
@@ -96,13 +96,13 @@ public class GenderRenderState {
         this.bounceMultiplier = entityConfig.breasts().physics().bounceMultiplier().get();
         this.floppyMultiplier = entityConfig.breasts().physics().floppiness().get();
 
-        if(entity instanceof Avatar playerLikeEntity) {
-            this.hasJacketLayer = playerLikeEntity.isModelPartShown(PlayerModelPart.JACKET);
+        if (entityState instanceof AvatarRenderState avatarState) {
+            this.hasJacketLayer = avatarState.showJacket;
         } else {
             this.hasJacketLayer = entityConfig.config() instanceof PlayerConfig || entityConfig.hasJacketLayer();
         }
 
-        if(entityConfig.config() instanceof PlayerConfig playerConfig) {
+        if (entityConfig.config() instanceof PlayerConfig playerConfig) {
             this.showBreastsInArmor = playerConfig.showBreastsInArmor.get();
             if (entityConfig.uuid.version() == 4) {
                 // Real players always have a UUID of version 4; if this isn't the case, then this is undeniably
@@ -120,27 +120,11 @@ public class GenderRenderState {
         this.rightBreastUVLayout = entityConfig.uvs().skin().right().get().copy();
         this.leftBreastOverlayUVLayout = entityConfig.uvs().overlay().left().get().copy();
         this.rightBreastOverlayUVLayout = entityConfig.uvs().overlay().right().get().copy();
-        this.armor = WildfireHelper.getArmorConfig(entity.getItemBySlot(EquipmentSlot.CHEST));
+        this.armor = WildfireClientHelper.getArmorConfig(entityState.chestEquipment);
 
         this.isBreathing = !entity.isUnderWater() || MobEffectUtil.hasWaterBreathing(entity) ||
             entity.level().getBlockState(entity.blockPosition()).is(Blocks.BUBBLE_COLUMN);
         this.nametag = entity instanceof Player ? WildfireGenderClient.getNametag(entity.getUUID()) : null;
-    }
-
-    public static class BreastState {
-        public final float xOffset;
-        public final float yOffset;
-        public final float zOffset;
-        public final float cleavage;
-        public final boolean uniboob;
-
-        private BreastState(Breasts breasts) {
-            this.xOffset = breasts.xOffset().get();
-            this.yOffset = breasts.yOffset().get();
-            this.zOffset = breasts.zOffset().get();
-            this.cleavage = breasts.cleavage().get();
-            this.uniboob = breasts.physics().uniboob().get();
-        }
     }
 
     public class BreastPhysicsState {

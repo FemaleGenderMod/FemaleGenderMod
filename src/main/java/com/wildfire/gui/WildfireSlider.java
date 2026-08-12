@@ -20,17 +20,13 @@ package com.wildfire.gui;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
-import com.wildfire.main.WildfireGender;
 import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.config.value.ConfigKey;
 import com.wildfire.main.config.validator.ConfigRange;
 import com.wildfire.main.config.value.ConfigValue;
 import it.unimi.dsi.fastutil.floats.Float2ObjectFunction;
 import it.unimi.dsi.fastutil.floats.FloatConsumer;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
@@ -42,11 +38,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.CommonColors;
-import net.minecraft.util.Mth;
 import net.minecraft.util.Util;
 import org.jspecify.annotations.Nullable;
 
-@Environment(EnvType.CLIENT)
+/// @apiNote Only use this on the client side
 public class WildfireSlider extends AbstractWidget implements IFancyFontRenderer {
     private double value;
     private final double minValue;
@@ -119,7 +114,7 @@ public class WildfireSlider extends AbstractWidget implements IFancyFontRenderer
         int keyCode = event.key();
         if(keyCode == InputConstants.KEY_LEFT || keyCode == InputConstants.KEY_RIGHT) {
             value += keyCode == InputConstants.KEY_LEFT ? -arrowKeyStep : arrowKeyStep;
-            value = WildfireHelper.snapToStep(Mth.clamp(value, 0, 1), arrowKeyStep);
+            value = WildfireHelper.snapToStep(Math.clamp(value, 0, 1), arrowKeyStep);
             applyValue();
             updateMessage();
             return true;
@@ -193,7 +188,7 @@ public class WildfireSlider extends AbstractWidget implements IFancyFontRenderer
     }
 
     private void setValueInternal(double value) {
-        this.value = Mth.clamp((value - this.minValue) / (this.maxValue - this.minValue), 0, 1);
+        this.value = Math.clamp((value - this.minValue) / (this.maxValue - this.minValue), 0, 1);
         this.lastValue = (float) value;
         updateMessage();
         //Note: Does not call applyValue
@@ -213,11 +208,11 @@ public class WildfireSlider extends AbstractWidget implements IFancyFontRenderer
 
     private void setValueFromMouse(double mouseX) {
         this.value = (mouseX - (this.getX() + 4)) / (this.getWidth() - 8);
-        this.value = Mth.clamp(this.value, 0, 1);
+        this.value = Math.clamp(this.value, 0, 1);
 
         if (mouseStep > 0) {
             double snapped = Math.round(this.value / mouseStep) * mouseStep;
-            this.value = Mth.clamp(snapped, 0, 1);
+            this.value = Math.clamp(snapped, 0, 1);
         }
 
         applyValue();

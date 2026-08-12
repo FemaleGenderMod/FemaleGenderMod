@@ -16,28 +16,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.render;
+package com.wildfire.physics;
 
-/// @apiNote Only use this on the client side (or move it to a different package)
-public enum BreastSide {
-    LEFT(true),
-    RIGHT(false);
+import com.wildfire.api.IGenderArmor;
+import com.wildfire.client.WildfireClientHelper;
+import com.wildfire.main.entitydata.EntityConfigHolder;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 
-    private final boolean isLeft;
+public record BothBreastsPhysics(BreastPhysics left, BreastPhysics right) {
 
-    BreastSide(boolean isLeft) {
-        this.isLeft = isLeft;
+    public BothBreastsPhysics(EntityConfigHolder<?> configHolder) {
+        this(new BreastPhysics(configHolder), new BreastPhysics(configHolder));
     }
 
-    public float leftOrNegate(float left) {
-        return isLeft ? left : -left;
-    }
+    /// @apiNote Only call this on the client side, or the implementation will crash
+    public void tick(LivingEntity entity) {
+        IGenderArmor armor = WildfireClientHelper.getArmorConfig(entity.getItemBySlot(EquipmentSlot.CHEST));
 
-    public float forSide(float left, float right) {
-        return isLeft ? left : right;
-    }
-
-    public <T> T forSide(T left, T right) {
-        return isLeft ? left : right;
+        left.update(entity, armor);
+        right.update(entity, armor);
     }
 }

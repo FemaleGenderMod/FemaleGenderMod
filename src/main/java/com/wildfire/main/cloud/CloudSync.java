@@ -28,8 +28,8 @@ import com.mojang.authlib.HttpAuthenticationService;
 import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.serialization.JsonOps;
 import com.mojang.util.InstantTypeAdapter;
+import com.wildfire.main.LoaderAgnostics;
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.WildfireHelper;
 import com.wildfire.main.WildfireLang;
 import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.config.enums.SyncVerbosity;
@@ -49,9 +49,6 @@ import java.util.Optional;
 import java.util.Queue;
 import java.util.Random;
 import java.util.UUID;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 import org.apache.commons.lang3.StringUtils;
@@ -75,7 +72,7 @@ import org.jspecify.annotations.Nullable;
 
 /// Utility class for managing syncing player data to/from the cloud, even if the current connected server doesn't
 /// have the mod installed.
-@Environment(EnvType.CLIENT)
+/// @apiNote Only use this on the client side
 public final class CloudSync {
     private CloudSync() {
         throw new UnsupportedOperationException();
@@ -96,7 +93,7 @@ public final class CloudSync {
         // Use HTTP/1.1 in a development environment if the sync server is not running over https; this is because
         // HttpClient's default of HTTP/2.0 causes issues when making a PUT request to a FastAPI server running
         // over an unencrypted HTTP connection.
-        if(FabricLoader.getInstance().isDevelopmentEnvironment() && getCloudServer().startsWith("http://")) {
+        if (LoaderAgnostics.isDevelopmentEnv() && getCloudServer().startsWith("http://")) {
             builder.version(HttpClient.Version.HTTP_1_1);
         }
         builder.connectTimeout(Duration.ofSeconds(5)).followRedirects(HttpClient.Redirect.NORMAL);
@@ -104,8 +101,8 @@ public final class CloudSync {
     });
 
     private static final String USER_AGENT =
-            "WildfireGender/" + StringUtils.split(WildfireHelper.getModVersion(WildfireGender.MODID), '+')[0]
-                    + " Minecraft/" + WildfireHelper.getModVersion("minecraft");
+            "WildfireGender/" + StringUtils.split(LoaderAgnostics.getModVersion(WildfireGender.MODID), '+')[0]
+                    + " Minecraft/" + LoaderAgnostics.getModVersion("minecraft");
 
     private static final Queue<QueuedFetch> QUEUED = new ConcurrentLinkedDeque<>();
     private static final Cache<UUID, Optional<JsonObject>> FETCH_CACHE = CacheBuilder.newBuilder()

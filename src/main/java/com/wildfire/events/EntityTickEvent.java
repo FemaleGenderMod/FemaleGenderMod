@@ -18,21 +18,20 @@
 
 package com.wildfire.events;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.world.entity.LivingEntity;
 
 /// Event invoked when **any** [LivingEntity] ticks on the client.
 ///
-/// Note that this event may not be consistently invoked for every entity, such as if other
-/// mods (e.g. EntityCulling) cancel the entity tick.
+/// Note that this event may not be consistently invoked for every entity, such as if other mods (e.g. EntityCulling) cancel the entity tick.
+///
+/// @apiNote Only use this on the client side
 @FunctionalInterface
-@Environment(EnvType.CLIENT)
 public interface EntityTickEvent {
+
     Event<EntityTickEvent> EVENT = EventFactory.createArrayBacked(EntityTickEvent.class, listeners -> entity -> {
-        for(var listener : listeners) {
+        for (var listener : listeners) {
             listener.onTick(entity);
         }
     });

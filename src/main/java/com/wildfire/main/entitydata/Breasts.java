@@ -28,7 +28,6 @@ import com.wildfire.main.config.value.ConfigValue;
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;

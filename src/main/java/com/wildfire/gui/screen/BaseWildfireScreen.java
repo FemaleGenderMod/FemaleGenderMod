@@ -23,8 +23,6 @@ import com.wildfire.gui.WildfireButton;
 import com.wildfire.gui.WildfireSlider;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.entitydata.PlayerConfigHolder;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -38,7 +36,7 @@ import net.minecraft.util.Util;
 import net.minecraft.world.entity.LivingEntity;
 import org.jspecify.annotations.Nullable;
 
-@Environment(EnvType.CLIENT)
+/// @apiNote Only use this on the client side
 public abstract class BaseWildfireScreen extends Screen implements IFancyFontRenderer {
 
     private static final float ENTITY_SCALE = 0.0625F;

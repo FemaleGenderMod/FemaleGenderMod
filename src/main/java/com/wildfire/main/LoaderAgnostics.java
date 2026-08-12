@@ -16,20 +16,32 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.mixins.accessors;
+package com.wildfire.main;
 
+import java.nio.file.Path;
 import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
 
-import java.util.function.Function;
+public class LoaderAgnostics {
 
-@Mixin(EquipmentLayerRenderer.class)
-@Environment(EnvType.CLIENT)
-public interface EquipmentLayerRendererAccessor {
-    @Accessor
-    Function<EquipmentLayerRenderer.TrimSpriteKey, TextureAtlasSprite> getTrimSpriteLookup();
+    private LoaderAgnostics() {
+    }
+
+    public static Path getConfigDir() {
+        return FabricLoader.getInstance().getConfigDir();
+    }
+
+    public static boolean isDevelopmentEnv() {
+        return FabricLoader.getInstance().isDevelopmentEnvironment();
+    }
+
+    public static String getModVersion(String modId) {
+        ModContainer mod = FabricLoader.getInstance().getModContainer(modId).orElseThrow();
+        return mod.getMetadata().getVersion().getFriendlyString();
+    }
+
+    public static boolean onClient() {
+        return FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
+    }
 }

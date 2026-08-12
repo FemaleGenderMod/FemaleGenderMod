@@ -28,7 +28,6 @@ import com.wildfire.main.contributors.Contributors;
 import com.wildfire.main.entitydata.EntityConfigHolder;
 import com.wildfire.main.entitydata.PlayerConfig;
 import com.wildfire.main.entitydata.PlayerConfigHolder;
-import com.wildfire.mixins.accessors.ClientMannequinAccessor;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
@@ -96,7 +95,7 @@ public class FakeGUIPlayer {
     public void tick() {
         entity.get().applyLoadedSkin();
         entity.get().tickCount++; // This allows for playing the breathing animation
-        EntityConfigHolder.getEntity(getEntity()).tickBreastPhysics(getEntity());
+        EntityConfigHolder.getEntity(getEntity()).breastPhysics().tick(getEntity());
     }
 
     @SuppressWarnings("NullableProblems")
@@ -147,7 +146,7 @@ public class FakeGUIPlayer {
             // this is being done as opposed to using data tracker to force a refresh to avoid interfering
             // with other mods that might be injecting into the data tracker update methods to know
             // when real entities in the world are updated
-            ((ClientMannequinAccessor) this).invokeUpdateSkin();
+            updateSkin();
             // workaround for #getId() throwing an error if an id isn't set on 26.2+, which results in the game crashing
             // when attempting to extract the render state for one of these mannequins.
             // the id here doesn't matter given this entity is never spawned in the world, so just set some arbitrary id.
@@ -157,12 +156,11 @@ public class FakeGUIPlayer {
         }
 
         public void applyLoadedSkin() {
-            var accessor = (ClientMannequinAccessor) this;
-            var skinLookup = accessor.getSkinLookup();
-            if(skinLookup != null && skinLookup.isDone()) {
+            //From super.tick, except without the rest of the side effects of tick, and without logging when it failed to look up the skin
+            if (this.skinLookup != null && this.skinLookup.isDone()) {
                 try {
-                    skinLookup.get().ifPresent(accessor::invokeSetSkin);
-                    accessor.setSkinLookup(null);
+                    this.skinLookup.get().ifPresent(this::setSkin);
+                    this.skinLookup = null;
                 } catch(Exception _) {
                 }
             }

@@ -18,12 +18,10 @@
 
 package com.wildfire.gui;
 
+import com.wildfire.client.WildfireClientEventHandler;
 import com.wildfire.gui.screen.BaseWildfireScreen;
-import com.wildfire.main.WildfireEventHandler;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.config.ClientConfig;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -40,7 +38,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import org.jspecify.annotations.Nullable;
 
-@Environment(EnvType.CLIENT)
+/// @apiNote Only use this on the client side
 public class WildfireToast implements Toast, IFancyFontRenderer {
     private static final Identifier TEXTURE = Identifier.withDefaultNamespace("toast/advancement");
     private static final Identifier ICON = WildfireGender.id("bc_ribbon");
@@ -100,7 +98,7 @@ public class WildfireToast implements Toast, IFancyFontRenderer {
         if(client.gui.screen() instanceof BaseWildfireScreen) {
             return true;
         }
-        return WildfireEventHandler.getConfigKeybind().isDown();
+        return WildfireClientEventHandler.CONFIG_KEYBIND.isDown();
     }
 
     public void hide() {

@@ -32,8 +32,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Tooltip;
@@ -49,13 +47,14 @@ import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.CommonColors;
+import net.minecraft.util.Mth;
 import net.minecraft.world.scores.PlayerTeam;
 
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.Nullable;
 
-@Environment(EnvType.CLIENT)
+/// @apiNote Only use this on the client side
 public class WardrobeBrowserScreen extends BaseWildfireScreen {
     private static final Identifier BACKGROUND_MALE = WildfireGender.id("textures/gui/wardrobe_bg_male.png");
     private static final Identifier BACKGROUND_FEMALE = WildfireGender.id("textures/gui/wardrobe_bg_female.png");
@@ -228,7 +227,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
         drawCenteredTextWrapped(graphics, text, this.width / 2, creatorY, 300, 0xFFFF00FF);
 
         // Render a tooltip with the relevant player names when hovered over
-        int lines = (int) Math.ceil(textWidth / 300.0);
+        int lines = Mth.ceil(textWidth / 300.0);
         if(!toList.isEmpty()
                 && mouseX > this.width / 2 - textWidth / 2 && mouseX < this.width / 2 + textWidth / 2
                 && mouseY > creatorY - 2 && mouseY < creatorY + (9 * lines)) {

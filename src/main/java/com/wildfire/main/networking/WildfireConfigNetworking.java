@@ -22,14 +22,8 @@ import com.wildfire.main.WildfireGender;
 import com.wildfire.main.networking.packets.hello.ClientboundSyncHelloPacket;
 import com.wildfire.main.networking.packets.hello.ServerboundSyncHelloPacket;
 import com.wildfire.main.networking.packets.hello.SyncHelloPacket;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents;
-import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.protocol.configuration.ClientConfigurationPacketListener;
 
 /*package-private*/ final class WildfireConfigNetworking {
 
@@ -43,28 +37,6 @@ import net.minecraft.network.protocol.configuration.ClientConfigurationPacketLis
         ServerConfigurationNetworking.registerGlobalReceiver(ServerboundSyncHelloPacket.TYPE, WildfireConfigNetworking::handleServerbound);
     }
 
-    @Environment(EnvType.CLIENT)
-    /*package-private*/ static void registerClient() {
-        ClientConfigurationConnectionEvents.INIT.register(WildfireConfigNetworking::initClient);
-        ClientConfigurationConnectionEvents.START.register(WildfireConfigNetworking::startClient);
-    }
-
-    @Environment(EnvType.CLIENT)
-    private static void initClient(ClientConfigurationPacketListener listener, Minecraft client) {
-        WildfireGender.LOGGER.debug(WildfireSync.MARKER, "Registering client-side config phase receiver");
-        ClientConfigurationNetworking.registerReceiver(ClientboundSyncHelloPacket.TYPE, WildfireConfigNetworking::handleClientbound);
-    }
-
-    @Environment(EnvType.CLIENT)
-    private static void startClient(ClientConfigurationPacketListener listener, Minecraft client) {
-        if (ClientConfigurationNetworking.canSend(ServerboundSyncHelloPacket.TYPE)) {
-            WildfireGender.LOGGER.debug(WildfireSync.MARKER, "Sending hello packet to server");
-            ClientConfigurationNetworking.send(new ServerboundSyncHelloPacket());
-        } else {
-            WildfireGender.LOGGER.debug(WildfireSync.MARKER, "Server does not accept hello packet");
-        }
-    }
-
     private static void handleServerbound(ServerboundSyncHelloPacket packet, ServerConfigurationNetworking.Context context) {
         context.responseSender().sendPacket(new ClientboundSyncHelloPacket());
         int version = packet.version();
@@ -75,21 +47,6 @@ import net.minecraft.network.protocol.configuration.ClientConfigurationPacketLis
             WildfireGender.LOGGER.info(WildfireSync.MARKER, "Received hello packet from client with protocol version {}", version);
         } else {
             WildfireGender.LOGGER.warn(WildfireSync.MARKER, "Client reported an unsupported sync protocol version! Client supports version {} but we expect {}",
-                version, expected
-            );
-        }
-    }
-
-    @Environment(EnvType.CLIENT)
-    private static void handleClientbound(ClientboundSyncHelloPacket packet, ClientConfigurationNetworking.Context context) {
-        int version = packet.version();
-        int expected = SyncHelloPacket.VERSION;
-
-        context.packetContext().set(WildfireSync.VERSION, version);
-        if (version == expected) {
-            WildfireGender.LOGGER.info(WildfireSync.MARKER, "Received hello response from server with protocol version {}", version);
-        } else {
-            WildfireGender.LOGGER.warn(WildfireSync.MARKER, "Server reported an unsupported sync protocol version! Server supports version {} but we expect {}",
                 version, expected
             );
         }

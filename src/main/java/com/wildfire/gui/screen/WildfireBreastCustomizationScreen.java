@@ -24,8 +24,6 @@ import com.wildfire.main.WildfireGender;
 import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.WildfireLang;
 import com.wildfire.main.config.value.ConfigValue;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -43,7 +41,7 @@ import org.jetbrains.annotations.UnknownNullability;
 import java.util.Objects;
 import java.util.UUID;
 
-@Environment(EnvType.CLIENT)
+/// @apiNote Only use this on the client side
 public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
 
     private static final int FULL_WIDTH = 166;

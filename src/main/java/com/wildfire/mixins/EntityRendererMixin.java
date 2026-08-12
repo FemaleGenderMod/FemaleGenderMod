@@ -18,22 +18,25 @@
 
 package com.wildfire.mixins;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import com.wildfire.render.GenderRenderState;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(LivingEntityRenderer.class)
-@Environment(EnvType.CLIENT)
-abstract class LivingEntityRendererMixin {
-    @Inject(method = "extractRenderState(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;F)V", at = @At("TAIL"))
-    public void wildfiregender$captureEntityRenderState(LivingEntity entity, LivingEntityRenderState state, float partialTicks, CallbackInfo ci) {
-        GenderRenderState.update(entity, state, partialTicks);
+/// @apiNote Only applied on the client side
+@Mixin(EntityRenderer.class)
+abstract class EntityRendererMixin {
+    @Inject(method = "createRenderState(Lnet/minecraft/world/entity/Entity;F)Lnet/minecraft/client/renderer/entity/state/EntityRenderState;", at = @At("TAIL"))
+    public void wildfiregender$captureEntityRenderState(Entity entity, float partialTicks, CallbackInfoReturnable<? extends EntityRenderState> ci, @Local(name = "state") EntityRenderState state) {
+        if (entity instanceof LivingEntity livingEntity && state instanceof HumanoidRenderState humanoidState) {
+            GenderRenderState.update(livingEntity, humanoidState, partialTicks);
+        }
     }
 }

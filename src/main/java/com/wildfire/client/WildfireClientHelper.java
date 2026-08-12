@@ -16,24 +16,30 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.events;
+package com.wildfire.client;
 
-import net.fabricmc.fabric.api.event.Event;
-import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.LivingEntity;
+import com.wildfire.api.IGenderArmor;
+import com.wildfire.resources.GenderArmorResourceManager;
+import java.util.Optional;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.ItemStack;
 
-/// Event invoked when **any** [LivingEntity] plays a hurt sound.
-///
 /// @apiNote Only use this on the client side
-@FunctionalInterface
-public interface EntityHurtSoundEvent {
+public class WildfireClientHelper {
 
-    Event<EntityHurtSoundEvent> EVENT = EventFactory.createArrayBacked(EntityHurtSoundEvent.class, listeners -> (entity, source) -> {
-        for (var listener : listeners) {
-            listener.onHurt(entity, source);
+    private WildfireClientHelper() {
+        throw new UnsupportedOperationException();
+    }
+
+    public static IGenderArmor getArmorConfig(ItemStack stack) {
+        if (stack.isEmpty()) {
+            return IGenderArmor.EMPTY;
         }
-    });
-
-    void onHurt(LivingEntity entity, DamageSource source);
+        Optional<IGenderArmor> genderArmor = GenderArmorResourceManager.get(stack);
+        //noinspection OptionalIsPresent - Capturing lambda
+        if (genderArmor.isPresent()) {
+            return genderArmor.get();
+        }
+        return stack.has(DataComponents.EQUIPPABLE) ? IGenderArmor.DEFAULT : IGenderArmor.EMPTY;
+    }
 }

@@ -22,7 +22,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.wildfire.api.impl.BreastArmorTexture;
 import com.wildfire.api.impl.GenderArmor;
-import com.wildfire.main.WildfireHelper;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.TriState;
 import org.jetbrains.annotations.ApiStatus;
@@ -54,25 +53,12 @@ public interface IGenderArmor {
 
     @ApiStatus.Internal
     Codec<IGenderArmor> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            ExtraCodecs.floatRange(0f, 1f)
-                    .optionalFieldOf("resistance", 0.5f)
-                    .forGetter(IGenderArmor::physicsResistance),
-            ExtraCodecs.floatRange(0f, 1f)
-                    .optionalFieldOf("tightness", 0f)
-                    .forGetter(IGenderArmor::tightness),
-            Codec.BOOL
-                    .optionalFieldOf("covers_breasts", true)
-                    .forGetter(IGenderArmor::coversBreasts),
-            Codec.BOOL
-                    .optionalFieldOf("hide_breasts", false)
-                    .forGetter(IGenderArmor::alwaysHidesBreasts),
-            //TODO: Switch to Tristate.CODEC?
-            WildfireHelper.TRISTATE
-                    .optionalFieldOf("render_on_armor_stands", TriState.DEFAULT)
-                    .forGetter(armor -> armor.armorStandsCopySettings() ? TriState.TRUE : TriState.FALSE),
-            IBreastArmorTexture.CODEC
-                    .optionalFieldOf("texture", IBreastArmorTexture.DEFAULT)
-                    .forGetter(IGenderArmor::texture)
+            ExtraCodecs.floatRange(0f, 1f).optionalFieldOf("resistance", 0.5f).forGetter(IGenderArmor::physicsResistance),
+            ExtraCodecs.floatRange(0f, 1f).optionalFieldOf("tightness", 0f).forGetter(IGenderArmor::tightness),
+            Codec.BOOL.optionalFieldOf("covers_breasts", true).forGetter(IGenderArmor::coversBreasts),
+            Codec.BOOL.optionalFieldOf("hide_breasts", false).forGetter(IGenderArmor::alwaysHidesBreasts),
+            TriState.CODEC.optionalFieldOf("render_on_armor_stands", TriState.DEFAULT).forGetter(armor -> armor.armorStandsCopySettings() ? TriState.TRUE : TriState.FALSE),
+            IBreastArmorTexture.CODEC.optionalFieldOf("texture", IBreastArmorTexture.DEFAULT).forGetter(IGenderArmor::texture)
     ).apply(instance, (resistance, tightness, covers, hideBreasts, armorStands, texture) -> {
         if(!covers) {
             return EMPTY;

@@ -24,8 +24,6 @@ import com.wildfire.main.entitydata.PlayerConfigHolder;
 import com.wildfire.main.networking.packets.hello.SyncHelloPacket;
 import com.wildfire.main.networking.packets.sync.ClientboundSyncPacket;
 import com.wildfire.main.networking.packets.sync.ServerboundSyncPacket;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -51,11 +49,11 @@ public final class WildfireSync {
         WildfirePlayNetworking.register();
     }
 
+    /// @apiNote Only call on the client
     @ApiStatus.Internal
-    @Environment(EnvType.CLIENT)
     public static void registerClient() {
-        WildfireConfigNetworking.registerClient();
-        WildfirePlayNetworking.registerClient();
+        WildfireClientConfigNetworking.registerClient();
+        WildfireClientPlayNetworking.registerClient();
     }
 
     public static boolean versionMatches(PacketContextProvider contextProvider) {
@@ -94,7 +92,8 @@ public final class WildfireSync {
     /// Send the client player's configuration to the server for syncing to other players
     ///
     /// @param plr The [`configuration`][PlayerConfig] for the client player
-    @Environment(EnvType.CLIENT)
+    ///
+    /// @apiNote Only call on the client
     public static void sendToServer(PacketContextProvider connection, PlayerConfigHolder plr) {
         if (plr.needsSync && ServerboundSyncPacket.canSend(connection)) {
             WildfireGender.LOGGER.debug(MARKER, "Sending player data to server");

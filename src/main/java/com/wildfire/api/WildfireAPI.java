@@ -21,7 +21,6 @@ package com.wildfire.api;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.config.Configuration;
 import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.main.entitydata.PlayerConfig;

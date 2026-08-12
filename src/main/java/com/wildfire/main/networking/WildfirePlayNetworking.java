@@ -22,16 +22,9 @@ import com.wildfire.main.WildfireGender;
 import com.wildfire.main.entitydata.PlayerConfigHolder;
 import com.wildfire.main.networking.packets.sync.ClientboundSyncPacket;
 import com.wildfire.main.networking.packets.sync.ServerboundSyncPacket;
-import java.util.UUID;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -47,11 +40,6 @@ import net.minecraft.server.network.ServerGamePacketListenerImpl;
         ServerPlayConnectionEvents.INIT.register(WildfirePlayNetworking::initServer);
     }
 
-    @Environment(EnvType.CLIENT)
-    /*package-private*/ static void registerClient() {
-        ClientPlayConnectionEvents.INIT.register(WildfirePlayNetworking::initClient);
-    }
-
     private static void initServer(ServerGamePacketListenerImpl listener, MinecraftServer server) {
         if (WildfireSync.versionMatches(listener)) {
             ServerPlayNetworking.registerReceiver(listener, ServerboundSyncPacket.TYPE, WildfirePlayNetworking::handleServerbound);
@@ -59,15 +47,6 @@ import net.minecraft.server.network.ServerGamePacketListenerImpl;
             WildfireGender.LOGGER.debug(WildfireSync.MARKER, "{} is not using a supported sync protocol version (or doesn't have the mod), not registering receivers",
                 listener.getPlayer()
             );
-        }
-    }
-
-    @Environment(EnvType.CLIENT)
-    private static void initClient(ClientPacketListener listener, Minecraft client) {
-        if (WildfireSync.versionMatches(listener)) {
-            ClientPlayNetworking.registerReceiver(ClientboundSyncPacket.TYPE, WildfirePlayNetworking::handleClientbound);
-        } else {
-            WildfireGender.LOGGER.debug(WildfireSync.MARKER, "Server is not using a supported sync protocol version (or doesn't have the mod), not registering receivers");
         }
     }
 
@@ -82,17 +61,5 @@ import net.minecraft.server.network.ServerGamePacketListenerImpl;
             plr.updateFromPacket(packet.config(), false);
         }
         WildfireSync.sendToAllClients(player, plr);
-    }
-
-    @Environment(EnvType.CLIENT)
-    private static void handleClientbound(ClientboundSyncPacket packet, ClientPlayNetworking.Context context) {
-        UUID uuid = packet.uuid();
-        if (context.player().getUUID().equals(uuid)) {
-            WildfireGender.LOGGER.warn("Ignoring sync packet referring to the client player");
-            return;
-        }
-        WildfireGender.LOGGER.debug(WildfireSync.MARKER, "Received player data for player {}", uuid);
-        PlayerConfigHolder plr = WildfireGender.getOrAddPlayerById(uuid);
-        plr.updateFromPacket(packet.config(), true);
     }
 }
