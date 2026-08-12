@@ -73,6 +73,10 @@ fabricApi {
     }
 }
 
+rootProject.tasks.named("runData").configure {
+    dependsOn(tasks.named("runDatagen"))
+}
+
 //TODO - both: Figure out where to define this. https://modmuss50.github.io/mod-publish-plugin/multi_platform/ might be of some help
 publishMods {
     val modVer: String = sc.properties["mod_version"]

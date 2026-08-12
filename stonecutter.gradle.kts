@@ -10,6 +10,11 @@ plugins {
 stonecutter active "26.2"
 
 tasks.register("generatePackageInfos") {
+    description = "Generates package-info files for any packages that are missing them"
+}
+
+tasks.register("runData") {
+    description = "Run data generation for all loaders and versions"
 }
 
 tasks.register<ValidateJson>("validateJson") {

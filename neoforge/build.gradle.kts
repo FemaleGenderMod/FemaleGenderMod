@@ -69,6 +69,10 @@ tasks.named("createMinecraftArtifacts") {
     dependsOn("stonecutterGenerate")
 }
 
+rootProject.tasks.named("runData").configure {
+    dependsOn(tasks.named("runData"))
+}
+
 val loaderAttribute = Attribute.of("io.github.mcgradleconventions.loader", String::class.java)
 
 listOf(
