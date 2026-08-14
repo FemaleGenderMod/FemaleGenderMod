@@ -1,8 +1,6 @@
 {
-    "key.category.female_gender_mod.generic": "Wildfire's Female Gender Mod",
     "key.female_gender_mod.gender_menu": "性别菜单",
 
-    "female_gender_mod.player_list.title": "Female Gender Mod",
     "female_gender_mod.player_list.settings_button": "设置",
     "female_gender_mod.player_list.sync_status": "同步状态",
     "female_gender_mod.player_list.state.loading": "正在加载数据...",

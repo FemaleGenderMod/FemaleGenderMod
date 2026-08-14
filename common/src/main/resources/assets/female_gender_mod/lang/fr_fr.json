@@ -1,6 +1,4 @@
 {
-    "key.category.female_gender_mod.generic": "Wildfire's Female Gender Mod",
-    "key.female_gender_mod.gender_menu": "Female Gender Menu",
     "key.female_gender_mod.toggle": "Rendu de la poitrine",
     "toast.female_gender_mod.get_started": "Appuyer sur '%s' pour commencer!",
 
@@ -11,7 +9,6 @@
     "female_gender_mod.credits.general": "Général",
     "female_gender_mod.credits.translators": "Traducteurs",
 
-    "female_gender_mod.player_list.title": "Female Gender Mod",
     "female_gender_mod.player_list.settings_button": "Paramètres",
     "female_gender_mod.player_list.sync_status": "Statut de la synchronisation",
     "female_gender_mod.player_list.state.loading": "Chargement des données...",
@@ -29,7 +26,6 @@
     "female_gender_mod.always_show_list.always": "Toujours",
     "female_gender_mod.always_show_list.always.tooltip": "La liste des joueurs synchronisés s'affichera toujours",
 
-    "female_gender_mod.wardrobe.title": "Wildfire's Female Gender Mod",
     "female_gender_mod.breast_customization.tab_customization": "Personnalisation",
     "female_gender_mod.breast_customization.tab_physics": "Physique de la poitrine",
     "female_gender_mod.breast_customization.tab_miscellaneous": "Divers",
@@ -68,8 +64,6 @@
 
     "female_gender_mod.label.enabled": "Activé",
     "female_gender_mod.label.disabled": "Désactivé",
-    "female_gender_mod.label.on": "On",
-    "female_gender_mod.label.off": "Off",
     "female_gender_mod.label.with_creator": "Vous jouez sur un serveur avec le/la créateur.trice de ce mod!",
     "female_gender_mod.label.with_contributor": "Vous jouez sur un serveur avec un.e contributeur.trice de ce mod!",
     "female_gender_mod.label.with_both": "Vous jouez sur un serveur avec le créateur et un.e contributeur.trice de ce mod!",
@@ -79,7 +73,7 @@
 
     "female_gender_mod.cancer_awareness.title": "Hey, c'est le mois de sensibilisation au cancer du sein!",
 
-    "female_gender_mod.first_time_setup.title": "Bienvenue dans Wildfire's Female Gender Mod!!",
+    "female_gender_mod.first_time_setup.title": "Bienvenue dans Female Gender Mod!!",
     "female_gender_mod.first_time_setup.description": "Voulez-vous activer la synchronisation du Cloud pour vos paramètres de genre? Cette fonctionnalité permet à d'autres joueurs de voir votre apparence de genre, même si le serveur n'a pas installé le mod.",
     "female_gender_mod.first_time_setup.notice": "Vous pouvez activer ou désactiver cette fonctionnalité à tout moment dans les paramètres du mod.",
     "female_gender_mod.first_time_setup.enable": "Activer la synchronisation du Cloud",
@@ -88,7 +82,6 @@
     "female_gender_mod.first_time_setup.enable.tooltip.line2": "Vous pouvez supprimer votre profil du Cloud à tout moment dans le menu des paramètres de synchronisation après l'avoir désactivé.",
 
     "female_gender_mod.cloud_settings": "paramètres de synchronisation du Cloud",
-    "female_gender_mod.cloud.tooltip": "Cloud Sync",
     "female_gender_mod.cloud.unavailable.invalid_account": "La synchronisation n'est pas disponible car vous n'êtes pas connecté à un compte microsoft.",
     "female_gender_mod.cloud.unavailable.offline_server": "La synchronisation n'est pas disponible car le serveur auquel vous êtes connecté est en mode hors-ligne.",
     "female_gender_mod.cloud.status": "Statut de la Synchronisation: %s",

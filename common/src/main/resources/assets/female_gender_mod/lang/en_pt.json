@@ -1,6 +1,5 @@
 {
-    "key.category.female_gender_mod.generic": "Za Wildfire Feminine Gender Mod",
-    "key.female_gender_mod.gender_menu": "Female Gender Menu",
+    "key.category.female_gender_mod.generic": "Za Feminine Gender Mod",
     "toast.female_gender_mod.get_started": "Push ze '%s' barrel to get goin!",
 
     "female_gender_mod.player_list.title": "Feminine Menu!!!",
@@ -18,7 +17,6 @@
     "female_gender_mod.always_show_list.mod_ui_only.tooltip": "Ze analyzed matey list vill only show on zis canvas!",
     "female_gender_mod.always_show_list.tab_list_open": "Matey list",
     "female_gender_mod.always_show_list.tab_list_open.tooltip": "Ze analyzed matey list vill show on zis canvas or by pushing the %s barrel!",
-    "female_gender_mod.always_show_list.always": "Always",
     "female_gender_mod.always_show_list.always.tooltip": "Ze analyzed mateys will always sho'",
 
     "female_gender_mod.wardrobe.title": "Comrade Wildfaiah's tit mod",
@@ -50,7 +48,6 @@
 
     "female_gender_mod.breast_customization.dual_physics": "Ze tits disconnected!: %s",
 
-    "female_gender_mod.label.gender": "Gender",
     "female_gender_mod.label.female": "Wohman",
     "female_gender_mod.label.male": "Man",
     "female_gender_mod.label.other": "Unidentified",
@@ -68,7 +65,7 @@
 
     "female_gender_mod.cancer_awareness.title": "Aye matey! It's ze breast cancer awareness month!",
 
-    "female_gender_mod.first_time_setup.title": "Ahoy, matey! Welcome aboard to ze female gender mod by Wildfire!",
+    "female_gender_mod.first_time_setup.title": "Ahoy, matey! Welcome aboard to ze female gender mod!",
     "female_gender_mod.first_time_setup.description": "Would ya like to enable ze sky ship analyzing? sky ship analyzing will make ya able to see mateys tits without ze ship having ze mod!",
     "female_gender_mod.first_time_setup.notice": "Ya can always change em analyzing latah!",
     "female_gender_mod.first_time_setup.enable": "Sky Ship Analyzing iz On",

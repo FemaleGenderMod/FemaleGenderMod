@@ -1,5 +1,5 @@
 {
-    "key.category.female_gender_mod.generic": "Wildfire의 성별 모드",
+    "key.category.female_gender_mod.generic": "성별 모드",
     "key.female_gender_mod.gender_menu": "성별 선택 메뉴",
     "key.female_gender_mod.toggle": "가슴 렌더링 토글",
     "toast.female_gender_mod.get_started": "'%s' 눌러 설정을 엽니다.",
@@ -20,7 +20,7 @@
     "female_gender_mod.always_show_list.tab_list_open.tooltip": "동기화된 플레이어 목록은 이 메뉴에 있는 동안 또는 %s을(를) 누르면 표시됩니다.",
     "female_gender_mod.always_show_list.always": "항상",
     "female_gender_mod.always_show_list.always.tooltip": "동기화된 플레이어 목록은 항상 표시됩니다.",
-    "female_gender_mod.wardrobe.title": "Wildfire의 성별 모드",
+    "female_gender_mod.wardrobe.title": "성별 모드",
     "female_gender_mod.breast_customization.tab_customization": "커스터마이즈",
     "female_gender_mod.breast_customization.tab_physics": "가슴 물리",
     "female_gender_mod.breast_customization.tab_miscellaneous": "기타",

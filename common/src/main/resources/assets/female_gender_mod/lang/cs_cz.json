@@ -1,8 +1,6 @@
 {
-    "key.category.female_gender_mod.generic": "Wildfire's Female Gender Mod",
     "key.female_gender_mod.gender_menu": "Menu ženského pohlaví",
 
-    "female_gender_mod.player_list.title": "Female Gender Mod",
     "female_gender_mod.player_list.settings_button": "Nastavení",
     "female_gender_mod.player_list.sync_status": "Status synchronizace",
     "female_gender_mod.player_list.state.loading": "Načítaní dat...",

@@ -24,8 +24,6 @@
     "female_gender_mod.uv_editor.remove_10": "-10",
     "female_gender_mod.uv_editor.add_20": "+20",
     "female_gender_mod.uv_editor.remove_20": "-20",
-    "female_gender_mod.uv_editor.xpos": "X-Pos",
-    "female_gender_mod.uv_editor.ypos": "Y-Pos",
     "female_gender_mod.uv_editor.width": "Anchura",
     "female_gender_mod.uv_editor.height": "Altura",
     "female_gender_mod.uv_editor.increment_tip.line1": "Manten SHIFT for +10",
@@ -39,7 +37,6 @@
 
     "female_gender_mod.credits.title": "Creditos del mod",
     "female_gender_mod.credits.description": "¡Ésta es la lista de la increíble gente que hizo posible éste mod!",
-    "female_gender_mod.credits.general": "General",
     "female_gender_mod.credits.translators": "Traductores/as",
 
     "female_gender_mod.player_list.title": "Mod del Género Femenino",

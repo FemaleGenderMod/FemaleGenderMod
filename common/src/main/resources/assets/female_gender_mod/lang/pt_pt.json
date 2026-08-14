@@ -101,8 +101,6 @@
 
     "female_gender_mod.label.enabled": "Ligado",
     "female_gender_mod.label.disabled": "Desligado",
-    "female_gender_mod.label.on": "On",
-    "female_gender_mod.label.off": "Off",
     "female_gender_mod.label.with_creator": "Estas a jogar em um servidor com o criador deste Mod!",
     "female_gender_mod.label.with_contributor": "Estas a jogar em um servidor com um contribuidor deste Mod!",
     "female_gender_mod.label.with_both": "Estas a jogar em um servidor com o criador e um contribuidor deste Mod!",
@@ -137,8 +135,6 @@
     "female_gender_mod.cloud.delete": "Apagar",
     "female_gender_mod.cloud.deleted": "Eliminado",
     "female_gender_mod.cloud.delete_failed": "Falha ao Apagar",
-
-    "female_gender_mod.cloud.status_log": "Status Log",
 
     "female_gender_mod.sync_log.authenticating_mojang": "A autenticar com a Mojang...",
     "female_gender_mod.sync_log.authenticating_sync": "A autenticar com a nuvem...",

@@ -1,5 +1,4 @@
 {
-    "key.category.female_gender_mod.generic": "Wildfire's Female Gender Mod",
     "key.female_gender_mod.gender_menu": "Меню",
     "key.female_gender_mod.toggle": "Переключить визуализацию груди",
     "toast.female_gender_mod.get_started": "Нажмите %s чтобы начать!",
@@ -38,7 +37,6 @@
     "female_gender_mod.credits.general": "Общий",
     "female_gender_mod.credits.translators": "Переводчики",
 
-    "female_gender_mod.player_list.title": "Female Gender Mod",
     "female_gender_mod.player_list.settings_button": "Настройки",
     "female_gender_mod.player_list.sync_status": "Состояние синхронизации",
     "female_gender_mod.player_list.state.loading": "Загрузка данных...",
@@ -106,7 +104,6 @@
 
     "female_gender_mod.cancer_awareness.title": "Эй, сегодня месяц повышения осведомленности о раке молочной железы!",
 
-    "female_gender_mod.first_time_setup.title": "Wildfire's Female Gender Mod",
     "female_gender_mod.first_time_setup.description": "Хотите включить синхронизацию с облачным сервером для ваших настроек пола? Эта функция позволяет другим игрокам просматривать ваш настроенный пол, даже если на сервере не установлен мод.",
     "female_gender_mod.first_time_setup.notice": "Эту настройку вы всегда сможете изменить в меню мода.",
     "female_gender_mod.first_time_setup.enable": "Включить синхронизацию",

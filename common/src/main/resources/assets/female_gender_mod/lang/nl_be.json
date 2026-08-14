@@ -1,6 +1,4 @@
 {
-    "key.category.female_gender_mod.generic": "Female Gender Mod",
-    "key.female_gender_mod.gender_menu": "Female Gender Menu",
     "key.female_gender_mod.toggle": "Schakel Borsten Rendering",
     "toast.female_gender_mod.get_started": "Druk op '%s' om te starten!",
 
@@ -11,7 +9,6 @@
     "female_gender_mod.credits.general": "Algemeen",
     "female_gender_mod.credits.translators": "Vertalers",
 
-    "female_gender_mod.player_list.title": "Female Gender Mod",
     "female_gender_mod.player_list.settings_button": "Instellingen",
     "female_gender_mod.player_list.sync_status": "Status Synchroniseren",
     "female_gender_mod.player_list.state.loading": "Data Laden...",
@@ -29,7 +26,6 @@
     "female_gender_mod.always_show_list.always": "Altijd",
     "female_gender_mod.always_show_list.always.tooltip": "De synchroniseerde spelers lijst wordt altijd weergeven",
 
-    "female_gender_mod.wardrobe.title": "Female Gender Mod",
     "female_gender_mod.breast_customization.tab_customization": "Aanpassen",
     "female_gender_mod.breast_customization.tab_physics": "Borst Bewegingen",
     "female_gender_mod.breast_customization.tab_miscellaneous": "Overig",
@@ -61,7 +57,6 @@
 
     "female_gender_mod.breast_customization.dual_physics": "Dubbele Bewegingen: %s",
 
-    "female_gender_mod.label.gender": "Gender",
     "female_gender_mod.label.female": "Vrouwelijk",
     "female_gender_mod.label.male": "Mannelijk",
     "female_gender_mod.label.other": "Anders",
@@ -102,8 +97,6 @@
     "female_gender_mod.cloud.delete": "Verwijder",
     "female_gender_mod.cloud.deleted": "Verwijderd",
     "female_gender_mod.cloud.delete_failed": "Verwijderen mislukt",
-
-    "female_gender_mod.cloud.status_log": "Status Log",
 
     "female_gender_mod.cloud.syncing.success": "Gesynchroniseerd",
     "female_gender_mod.cloud.syncing.fail": "Synchronisatie Niet Gelukt",

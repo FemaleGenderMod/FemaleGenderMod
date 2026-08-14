@@ -1,7 +1,6 @@
 {
     "modmenu.descriptionTranslation.female_gender_mod": "Уенчыларга теләгән җенесне сайларга рөхсәт итә.",
 
-    "key.category.female_gender_mod.generic": "Wildfire's Female Gender Mod",
     "key.female_gender_mod.gender_menu": "Хатын җенесе менюсы",
     "toast.female_gender_mod.get_started": "Башлау өчен «%s» төймәсенә басыгыз!",
 
@@ -14,7 +13,6 @@
     "female_gender_mod.player_list.breast_momentum": "Имчәк моменты: %s%%",
     "female_gender_mod.player_list.female_sounds": "Хатын тавышлары: %s",
 
-    "female_gender_mod.wardrobe.title": "Wildfire's Female Gender Mod",
     "female_gender_mod.breast_customization.tab_customization": "Көйләү",
 
     "female_gender_mod.breast_customization.presets.add_new": "Өстәү...",

@@ -1,5 +1,5 @@
 {
-    "key.category.female_gender_mod.generic": "Wildfire's Weibliche Geschlechts Mod",
+    "key.category.female_gender_mod.generic": "Weibliche Geschlechts Mod",
     "key.female_gender_mod.gender_menu": "Weibliches Geschlechts Menü",
     "key.female_gender_mod.toggle": "Brust Rendering umschalten",
     "toast.female_gender_mod.get_started": "Drücke '%s' um loszulegen!",
@@ -18,8 +18,6 @@
     "female_gender_mod.uv_editor.selection.layer_body": "Innere Ebene",
     "female_gender_mod.uv_editor.selection.layer_jacket": "Äußere Ebene",
 
-    "female_gender_mod.uv_editor.xpos": "X-Pos",
-    "female_gender_mod.uv_editor.ypos": "Y-Pos",
     "female_gender_mod.uv_editor.width": "Breite",
     "female_gender_mod.uv_editor.height": "Höhe",
     "female_gender_mod.uv_editor.increment_tip.line1": "SHIFT gedrückt halten für +10",
@@ -56,7 +54,7 @@
     "female_gender_mod.always_show_list.always": "Immer",
     "female_gender_mod.always_show_list.always.tooltip": "Die Liste der Synchronisierten Spieler wird immer gezeigt",
 
-    "female_gender_mod.wardrobe.title": "Wildfire's Weibliche Geschlechts Mod",
+    "female_gender_mod.wardrobe.title": "Weibliche Geschlechts Mod",
     "female_gender_mod.breast_customization.tab_customization": "Anpassung",
     "female_gender_mod.breast_customization.tab_physics": "Brust Physik",
     "female_gender_mod.breast_customization.tab_miscellaneous": "Weiteres",
@@ -106,7 +104,7 @@
 
     "female_gender_mod.cancer_awareness.title": "Hey, es ist der Brustkrebsmonat!",
 
-    "female_gender_mod.first_time_setup.title": "Willkommen bei Wildfire's Weiblichen Geschlechts Mod!",
+    "female_gender_mod.first_time_setup.title": "Willkommen bei Weiblichen Geschlechts Mod!",
     "female_gender_mod.first_time_setup.description": "Möchtest du die Cloud Synchronizierung aktivieren? Dies erlaubt es anderen Spielern mit der Mod deine Geschlechtseinstellungen zu sehen.",
     "female_gender_mod.first_time_setup.notice": "Dies kannst du später in den Einstellungen jederzeit ändern.",
     "female_gender_mod.first_time_setup.enable": "Aktiviere Cloud Synchronizierung",
@@ -131,8 +129,6 @@
     "female_gender_mod.cloud.delete": "Löschen",
     "female_gender_mod.cloud.deleted": "Gelöscht",
     "female_gender_mod.cloud.delete_failed": "Löschen fehlgeschlagen",
-
-    "female_gender_mod.cloud.status_log": "Status Log",
 
     "female_gender_mod.sync_log.authenticating_mojang": "Authentifiziere mit Mojang...",
     "female_gender_mod.sync_log.authenticating_sync": "Authentifiziere mit Cloud-Sync...",
@@ -160,9 +156,7 @@
     "female_gender_mod.contributor.role.mod_creator": "Female Gender Mod Author",
     "female_gender_mod.contributor.role.mod_creator.short": "Author",
     "female_gender_mod.contributor.role.fabric_maintainer": "Female Gender Mod Maintainer (Fabric)",
-    "female_gender_mod.contributor.role.fabric_maintainer.short": "Maintainer (Fabric)",
     "female_gender_mod.contributor.role.neoforge_maintainer": "Female Gender Mod Maintainer (NeoForge)",
-    "female_gender_mod.contributor.role.neoforge_maintainer.short": "Maintainer (NeoForge)",
     "female_gender_mod.contributor.role.developer": "Female Gender Mod Programmierer",
     "female_gender_mod.contributor.role.developer.short": "Programmierer",
     "female_gender_mod.contributor.role.translator": "Female Gender Mod Übersetzer",

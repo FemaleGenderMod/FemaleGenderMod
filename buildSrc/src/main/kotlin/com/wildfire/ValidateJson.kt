@@ -30,6 +30,7 @@ import org.gradle.api.tasks.*
 import java.io.File
 import java.util.Collections
 import javax.inject.Inject
+import kotlin.collections.sorted
 
 abstract class ValidateJson : DefaultTask() {
 
@@ -75,22 +76,25 @@ abstract class ValidateJson : DefaultTask() {
         }
 
         @Suppress("UNCHECKED_CAST")
-        val rootStrings = (json.parse(rootTranslation.get().asFile) as Map<String, *>).keys
+        val rootMap = json.parse(rootTranslation.get().asFile) as Map<String, *>
+        val rootStrings = rootMap.keys
 
         for (file in translationFiles) {
             if (file.name == "en_us.json") {
                 continue
             }
 
-            val strings = try {
+            val map = try {
                 @Suppress("UNCHECKED_CAST")
-                (json.parse(file) as Map<String, *>).keys
+                (json.parse(file) as Map<String, *>)
             } catch (_: JsonException) {
                 continue
             }
+            val strings = map.keys
 
             val missingFromRoot = strings - rootStrings
             val missingFromTranslation : Collection<String>
+            val identicalToRoot = rootMap.entries.intersect(map.entries)
 
             if (nonExhaustiveLocales.get().contains(file.nameWithoutExtension)) {
                 missingFromTranslation = Collections.emptySet()
@@ -110,6 +114,13 @@ abstract class ValidateJson : DefaultTask() {
             if (missingFromTranslation.isNotEmpty()) {
                 logger.lifecycle("::notice file=${relativePath(file)}::Missing ${missingFromTranslation.size} translation strings")
                 missingFromTranslation.sorted().forEach {
+                    logger.lifecycle("  - $it")
+                }
+            }
+
+            if (identicalToRoot.isNotEmpty()) {
+                logger.lifecycle("::notice file=${relativePath(file)}::Redundant ${identicalToRoot.size} translation strings")
+                identicalToRoot.map { entry -> entry.key }.sorted().forEach {
                     logger.lifecycle("  - $it")
                 }
             }

@@ -1,6 +1,4 @@
 {
-    "key.category.female_gender_mod.generic": "Female Gender Mod",
-    "key.female_gender_mod.gender_menu": "Female Gender Menu",
     "key.female_gender_mod.toggle": "I-toggle and pag-render ng suso",
     "toast.female_gender_mod.get_started": "Pindutin ang %s para magsimula!",
 
@@ -18,8 +16,6 @@
     "female_gender_mod.uv_editor.selection.layer_body": "Layer ng Katawan",
     "female_gender_mod.uv_editor.selection.layer_jacket": "Layer ng Dyaket",
 
-    "female_gender_mod.uv_editor.xpos": "X-Pos",
-    "female_gender_mod.uv_editor.ypos": "Y-Pos",
     "female_gender_mod.uv_editor.width": "Lapad",
     "female_gender_mod.uv_editor.height": "Taas",
     "female_gender_mod.uv_editor.increment_tip.line1": "I-hold ang SHIFT para sa +10",
@@ -38,7 +34,6 @@
     "female_gender_mod.credits.general": "Pangkalahatan",
     "female_gender_mod.credits.translators": "Mga Tagasalin",
 
-    "female_gender_mod.player_list.title": "Female Gender Mod",
     "female_gender_mod.player_list.settings_button": "Mga Setting",
     "female_gender_mod.player_list.sync_status": "Status ng Pag-sync",
     "female_gender_mod.player_list.state.loading": "Nilo-load ang Data...",
@@ -56,7 +51,6 @@
     "female_gender_mod.always_show_list.always": "Palagi",
     "female_gender_mod.always_show_list.always.tooltip": "Ipapakita palagi ang listahan ng mga naka-sync na manlalaro",
 
-    "female_gender_mod.wardrobe.title": "Female Gender Mod",
     "female_gender_mod.breast_customization.tab_customization": "Pagpapasadya",
     "female_gender_mod.breast_customization.tab_physics": "Pisiks ng Suso",
     "female_gender_mod.breast_customization.tab_miscellaneous": "Iba pa",
@@ -164,7 +158,6 @@
     "female_gender_mod.contributor.role.neoforge_maintainer": "Tagapangasiwa ng Female Gender Mod",
     "female_gender_mod.contributor.role.neoforge_maintainer.short": "Tagapangasiwa (NeoForge)",
     "female_gender_mod.contributor.role.developer": "Kontribyutor ng Female Gender Mod",
-    "female_gender_mod.contributor.role.developer.short": "Programmer",
     "female_gender_mod.contributor.role.translator": "Tagasalin ng Female Gender Mod",
     "female_gender_mod.contributor.role.translator.short": "Tagasalin ng Mod",
     "female_gender_mod.contributor.role.mascot": "Maskot ng Female Gender Mod",
