@@ -12,7 +12,7 @@ sourceSets.main {
 neoForge {
     version = sc.properties["dependencies.neo_version"]
 
-    val at = project(":common").file("src/main/resources/META-INF/accesstransformer.cfg")
+    val at = sc.tree["common"]!!.project.file("src/main/resources/META-INF/accesstransformer.cfg")
     //Use the corresponding common project's StoneCutter to process the path, so that it points at the identical absolute path
     // and MDG is able to more reliably re-use the recompiled minecraft
     val commonProject = sc.node.sibling("common")!!.project
