@@ -16,35 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/*
- * From: https://github.com/cosmiclabstudio/multiloader-stonecutter/blob/main/buildSrc/src/main/kotlin/build-extensions.kt
- *
- * License (CC0): https://github.com/cosmiclabstudio/multiloader-stonecutter/blob/main/LICENSE
- */
-
 import dev.kikugie.stonecutter.build.StonecutterBuildExtension
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.*
 
-val Project.mod: ModData get() = ModData(this)
-fun Project.prop(key: String): String? = findProperty(key)?.toString()
-
 val Project.stonecutterBuild get() = extensions.getByType<StonecutterBuildExtension>()
-
-val Project.common get() = requireNotNull(stonecutterBuild.node.sibling("common")) {
-    "No common project for $project"
-}
-val Project.commonProject get() = rootProject.project(stonecutterBuild.current.project)
-val Project.commonMod get() = commonProject.mod
-
-val Project.loader: String? get() = prop("loader")
-
-@JvmInline
-value class ModData(private val project: Project) {
-    val id: String get() = modProp("id")
-    val name: String get() = modProp("name")
-    val version: String get() = modProp("version")
-
-    fun modProp(key: String) = requireNotNull(project.prop("mod.$key")) { "Missing 'mod.$key'" }
-    fun dep(key: String) = requireNotNull(project.prop("deps.$key")?.takeIf { it.isNotEmpty() && it != "" }) { "Missing 'deps.$key'" }
-}

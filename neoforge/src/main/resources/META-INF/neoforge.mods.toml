@@ -8,8 +8,8 @@ issueTrackerURL = "${issue_tracker}"
     displayURL = "https://www.curseforge.com/minecraft/mc-mods/female-gender-neoforge"
     iconFile = "assets/${mod_id}/icon.png"
     bannerFile = "assets/${mod_id}/banner.png"
-    credits = "Arcti_cc, BluelightAmelia, diademiemi, IzzyBizzy45, Kichura, PinguinLars, Powerless001, Crosby"
-    authors = "WildfireRomeo, celeste, pupnewfster"
+    authors = "${authors}"
+    credits = "${contributors}"
     description = "${description}"
 
 [[mixins]]

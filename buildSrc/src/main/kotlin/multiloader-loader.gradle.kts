@@ -16,6 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import gradle.kotlin.dsl.accessors._3c984467cfe6063166439ec0710b6c00.compileOnly
+
 plugins {
     id("multiloader-common")
 }
@@ -31,7 +33,7 @@ val commonResources by configurations.creating {
 }
 
 dependencies {
-    val commonPath = common.hierarchy.toString()
+    val commonPath = stonecutterBuild.node.sibling("common")!!.hierarchy.toString()
     compileOnly(project(path = commonPath)) {
         attributes {
             attribute(

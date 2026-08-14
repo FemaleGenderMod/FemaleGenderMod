@@ -6,10 +6,10 @@ plugins {
 }
 
 neoForge {
-    neoFormVersion = commonMod.dep("neo_form_version")
+    neoFormVersion = "${sc.current.version}-${sc.properties["dependencies.neoform_timestamp"] as String}"
 
-    val at = project(":common").file("src/main/resources/META-INF/accesstransformer.cfg")
-    accessTransformers.from(commonProject.sc.process(at, "build/dev.at").absolutePath)
+    val at = sc.branch.project.file("src/main/resources/META-INF/accesstransformer.cfg")
+    accessTransformers.from(sc.process(at, "build/dev.at").absolutePath)
     validateAccessTransformers = true
 }
 

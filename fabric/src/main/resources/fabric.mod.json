@@ -4,21 +4,8 @@
     "version": "${version}",
     "name": "${mod_name}",
     "description": "${description}",
-    "authors": [
-        "WildfireRomeo",
-        "celeste",
-        "pupnewfster"
-    ],
-    "contributors": [
-        "Arcti_cc",
-        "BluelightAmelia",
-        "diademiemi",
-        "IzzyBizzy45",
-        "Kichura",
-        "PinguinLars",
-        "Powerless001",
-        "Crosby"
-    ],
+    "authors": $authors_list,
+    "contributors": $contributors_list,
     "contact": {
         "sources": "${source_code}",
         "issues": "${issue_tracker}"

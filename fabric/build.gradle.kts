@@ -19,9 +19,9 @@ repositories {
 
 dependencies {
     minecraft("com.mojang:minecraft:${sc.current.version}")
-    implementation("net.fabricmc:fabric-loader:${commonMod.dep("fabric_loader")}")
+    implementation("net.fabricmc:fabric-loader:${sc.properties["dependencies.fabric_loader_version"] as String}")
 
-    implementation(platform("net.fabricmc.fabric-api:fabric-api-bom:${commonMod.dep("fabric_api")}+${sc.current.project}"))
+    implementation(platform("net.fabricmc.fabric-api:fabric-api-bom:${sc.properties["dependencies.fabric_api"] as String}+${sc.current.project}"))
     implementation("net.fabricmc.fabric-api:fabric-data-generation-api-v1")
     implementation("net.fabricmc.fabric-api:fabric-networking-api-v1")
     implementation("net.fabricmc.fabric-api:fabric-key-mapping-api-v1")

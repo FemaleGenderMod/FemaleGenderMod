@@ -10,23 +10,24 @@ sourceSets.main {
 }
 
 neoForge {
-    version = commonMod.dep("neoforge")
+    version = sc.properties["dependencies.neo_version"]
 
     val at = project(":common").file("src/main/resources/META-INF/accesstransformer.cfg")
-    //Use the common project's StoneCutter to process the path, so that it points at the identical absolute path
+    //Use the corresponding common project's StoneCutter to process the path, so that it points at the identical absolute path
     // and MDG is able to more reliably re-use the recompiled minecraft
+    val commonProject = sc.node.sibling("common")!!.project
     accessTransformers.from(commonProject.sc.process(at, "build/dev.at").absolutePath)
     validateAccessTransformers = true
 
     mods {
-        register(commonMod.id) {
+        register(sc.properties["mod_id"]) {
             sourceSet(sourceSets.main.get())
         }
     }
 
     runs {
         configureEach {
-            systemProperty("neoforge.enabledGameTestNamespaces", commonMod.id)
+            systemProperty("neoforge.enabledGameTestNamespaces", sc.properties["mod_id"])
             ideName = "NeoForge ${name.replaceFirstChar(Char::titlecase)} ($path)"
             gameDirectory = file("../../run")
 
@@ -55,7 +56,7 @@ neoForge {
 
             //TODO - Neo: Do we need to pass common in as existing?
             programArguments.addAll("--all", "--output", file("src/generated/resources").absolutePath,
-                "--mod", commonMod.id, "--existing", file("src/main/resources").absolutePath
+                "--mod", sc.properties["mod_id"], "--existing", file("src/main/resources").absolutePath
             )
         }
 

@@ -1,9 +1,37 @@
-loader_version = "0.19.2"
-
 # Mod Properties
 mod_version = "5.0.0-Beta.4"
+mod_license = "LGPL-3.0"
+mod_id = "wildfire_gender"
+mod_description = "Adds extra customization options to the player model by adding breasts for a more feminine appearance"
+#TODO - both: Should this be switched to common? Or better yet maybe exclude the last bit of it?
 maven_group = "com.wildfiregender.main"
+mod_name = "Female Gender Mod"
 archives_base_name = "Female-Gender-Mod"
+java.version = 25
+
+authors = [
+    "WildfireRomeo",
+    "celeste",
+    "pupnewfster"
+]
+contributors = [
+    "Arcti_cc",
+    "BluelightAmelia",
+    "diademiemi",
+    "IzzyBizzy45",
+    "Kichura",
+    "PinguinLars",
+    "Powerless001",
+    "Crosby"
+]
+source_code = "https://github.com/FemaleGenderMod/FemaleGenderMod"
+issue_tracker = "https://github.com/FemaleGenderMod/FemaleGenderMod/issues"
+
+# This is the implementation of the version of minecraft that the 'common' project uses,
+# you can find a list of all versions here: https://projects.neoforged.net/neoforged/neoform
+# If a specific MC version needs a newer version than the initial release one (or needs a snapshot version),
+# override it for the specific project version
+dependencies.neoform_timestamp = "1"
 
 # Note that mod menu may be several versions out of date; this is fine, as we only care about using this
 # for its API, which shouldn't realistically need to be updated often (if ever).
@@ -11,19 +39,26 @@ dependencies.modmenu = "18.0.0-alpha.6"
 debug.load_modmenu = false
 
 publish.type = "BETA"
-# TODO setup curseforge publishing
+# TODO - both setup curseforge publishing
 publish.modrinth = "bcOsQHnC"
 
 ["26.1"]
     dependencies.minecraft = ">=26.1 <26.2"
-    dependencies.fabric = "0.144.3+26.1"
+    dependencies.fabric_api = "0.144.3"
+    dependencies.fabric_loader_version = "0.19.2"
+    dependencies.neo_version = "26.1.2.94"
+    dependencies.min_neo_version = "26.1.2.84"
     publish.version_title = "26.1.x"
     publish.min_version = "26.1"
     publish.max_version = "26.1.2"
 
 ["26.2"]
     dependencies.minecraft = ">=26.2 <26.3"
-    dependencies.fabric = "0.152.1+26.2"
+    dependencies.fabric_api = "0.152.1"
+    dependencies.fabric_loader_version = "0.19.2"
+    dependencies.neoform_timestamp = "2"
+    dependencies.neo_version = "26.2.0.57"
+    dependencies.min_neo_version = "26.2.0.19-beta"
     publish.version_title = "26.2"
     publish.min_version = "26.2"
     publish.max_version = "latest"

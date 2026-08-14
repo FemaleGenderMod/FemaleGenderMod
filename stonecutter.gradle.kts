@@ -18,8 +18,9 @@ tasks.register("runData") {
 }
 
 tasks.register<ValidateJson>("validateJson") {
+    //TODO - Fabric: Check the file from the jar?? The json is invalid until it gets replaced
     criticalFiles.from(
-        "fabric/src/main/resources/fabric.mod.json",
+        //"fabric/src/main/resources/fabric.mod.json",
         "fabric/src/main/resources/wildfire_gender.mixins.json"
     )
     rootTranslation.set(layout.projectDirectory.file(

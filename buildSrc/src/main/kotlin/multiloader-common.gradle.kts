@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import dev.kikugie.stonecutter.data.deserialization.SCList
 import gradle.kotlin.dsl.accessors._3c984467cfe6063166439ec0710b6c00.main
 import gradle.kotlin.dsl.accessors._3c984467cfe6063166439ec0710b6c00.publishing
 import gradle.kotlin.dsl.accessors._3c984467cfe6063166439ec0710b6c00.sourceSets
@@ -25,16 +26,30 @@ plugins {
     `maven-publish`
 }
 
-base {
-    //TODO: This is what jared's multiloader template uses (but do we care about having the extra information?), but maybe the id is similar
-    //archivesName.set("$mod_id-${project.name}-$minecraft_version")
-    archivesName.set(commonMod.name.replace(' ', '-'))
+fun SCList.asListedElements(): String {
+    return joinToString(", ");
 }
 
-version = "${loader}-${commonMod.version}+mc${stonecutterBuild.current.project}"
+fun SCList.asTomlList(): String {
+    return joinToString(
+        separator = ", ",
+        prefix = "[",
+        postfix = "]"
+    ) { "\"$it\"" }
+}
+
+val modName: String = stonecutterBuild.properties["mod_name"]
+val modVersion: String = stonecutterBuild.properties["mod_version"]
+val javaVersion: String = stonecutterBuild.properties["java.version"]
+
+base {
+    archivesName.set(modName.replace(' ', '-'))
+}
+
+version = "${stonecutterBuild.branch.id}-${modVersion}+mc${stonecutterBuild.current.project}"
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(commonProject.prop("java.version")!!))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(javaVersion))
     withSourcesJar()
     withJavadocJar()
 }
@@ -53,9 +68,9 @@ rootProject.tasks.named("generatePackageInfos").configure {
 
 val licenseFile = rootProject.layout.projectDirectory.file("LICENSE")
 tasks.withType<Jar>().configureEach {
-    inputs.property("name", commonMod.name)
+    inputs.property("name", modName)
     from(licenseFile) {
-        rename("LICENSE", "LICENSE_${commonMod.name.replace(' ', '_')}")
+        rename("LICENSE", "LICENSE_${modName.replace(' ', '_')}")
     }
 }
 
@@ -71,17 +86,21 @@ tasks.withType<Javadoc>().configureEach {
 }
 
 tasks.named<Jar>("jar") {
+    var authors = stonecutterBuild.properties.raw("authors").asList().asListedElements()
     manifest.attributes(mapOf(
-        "Specification-Title" to commonMod.name,
-        "Specification-Vendor" to "WildfireRomeo, celeste, pupnewfster",
+        "Specification-Title" to modName,
+        "Specification-Vendor" to authors,
         "Specification-Version" to archiveVersion.get(),
-        "Implementation-Title" to commonMod.name,
-        "Implementation-Vendor" to "WildfireRomeo, celeste, pupnewfster",
+        "Implementation-Title" to modName,
+        "Implementation-Vendor" to authors,
         "Implementation-Version" to archiveVersion.get(),
         "Built-On-Minecraft" to stonecutterBuild.current.version
     ))
-    inputs.property("name", commonMod.name)
+    inputs.property("name", modName)
+    inputs.property("authors", authors)
     inputs.property("version", archiveVersion.get())
+    //TODO: Is this needed? Or does how SC does things not require it
+    //inputs.property("sc_version", stonecutterBuild.current.version)
 }
 
 tasks.named<Jar>("sourcesJar") {
@@ -90,36 +109,37 @@ tasks.named<Jar>("sourcesJar") {
 
 tasks.named<ProcessResources>("processResources") {
     dependsOn(":common:${stonecutterBuild.current.project}:stonecutterGenerate")
+    val authors = stonecutterBuild.properties.raw("authors").asList()
+    val contributors = stonecutterBuild.properties.raw("contributors").asList()
     val expandProps = mapOf(
-        "version" to commonMod.version,
-        "group" to commonMod.modProp("group"),//Else we target the task's group.
+        "version" to modVersion,
         "minecraft_version" to stonecutterBuild.current.version,
         "major_minecraft_version" to stonecutterBuild.current.project,
-        "fabric_version" to commonMod.dep("fabric_api"),
-        "fabric_loader_version" to commonMod.dep("fabric_loader"),
-        "mod_name" to commonMod.name,
-        "mod_id" to commonMod.id,
-        "license" to commonMod.modProp("license"),
-        "source_code" to commonMod.modProp("source"),
-        "issue_tracker" to commonMod.modProp("issue_tracker"),
-        "description" to commonMod.modProp("description"),
-        "neoforge_version" to commonMod.dep("min_neoforge"),
-        "java_version" to commonProject.prop("java.version")
+        "fabric_version" to stonecutterBuild.properties["dependencies.fabric_api"],
+        "fabric_loader_version" to stonecutterBuild.properties["dependencies.fabric_loader_version"],
+        "mod_name" to modName,
+        "mod_id" to stonecutterBuild.properties["mod_id"],
+        "license" to stonecutterBuild.properties["mod_license"],
+        "source_code" to stonecutterBuild.properties["source_code"],
+        "issue_tracker" to stonecutterBuild.properties["issue_tracker"],
+        "description" to stonecutterBuild.properties["mod_description"],
+        "authors" to authors.asListedElements(),
+        "authors_list" to authors.asTomlList(),
+        "contributors" to contributors.asListedElements(),
+        "contributors_list" to contributors.asTomlList(),
+        "neoforge_version" to stonecutterBuild.properties["dependencies.min_neo_version"],
+        "java_version" to javaVersion
     )
-
-    val jsonExpandProps = expandProps.mapValues { (_, value) ->
-        if (value is String) value.replace("\n", "\\n") else value
-    }
+    inputs.properties(expandProps)
 
     filesMatching("META-INF/neoforge.mods.toml") {
         expand(expandProps)
     }
 
-    filesMatching(listOf("pack.mcmeta", "fabric.mod.json", "*.mixins.json")) {
+    val jsonExpandProps = expandProps.mapValues { (_, value) -> value.replace("\n", "\\n") }
+    filesMatching(listOf("fabric.mod.json", "*.mixins.json")) {
         expand(jsonExpandProps)
     }
-
-    inputs.properties(expandProps)
 }
 
 publishing {
