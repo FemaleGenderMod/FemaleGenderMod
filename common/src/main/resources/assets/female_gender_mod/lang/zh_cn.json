@@ -1,0 +1,43 @@
+{
+    "key.category.female_gender_mod.generic": "Wildfire's Female Gender Mod",
+    "key.female_gender_mod.gender_menu": "性别菜单",
+
+    "female_gender_mod.player_list.title": "Female Gender Mod",
+    "female_gender_mod.player_list.settings_button": "设置",
+    "female_gender_mod.player_list.sync_status": "同步状态",
+    "female_gender_mod.player_list.state.loading": "正在加载数据...",
+    "female_gender_mod.player_list.state.synced": "同步玩家",
+    "female_gender_mod.player_list.bounce_multiplier": "反弹系数：%sx",
+    "female_gender_mod.player_list.breast_momentum": "乳房动量：%s%%",
+    "female_gender_mod.player_list.female_sounds": "女性声音：%s",
+
+    "female_gender_mod.wardrobe.title": "自定义菜单",
+    "female_gender_mod.wardrobe.slider.breast_size": "乳房大小：%s%%",
+    "female_gender_mod.wardrobe.slider.separation": "分离：%s",
+    "female_gender_mod.wardrobe.slider.height": "高度：%s",
+    "female_gender_mod.wardrobe.slider.depth": "深度：%s",
+    "female_gender_mod.wardrobe.slider.rotation": "旋转：%s度",
+
+    "female_gender_mod.appearance_settings.title": "外观设置",
+    "female_gender_mod.char_settings.title": "角色设置",
+    "female_gender_mod.char_settings.physics": "乳房物理：%s",
+    "female_gender_mod.char_settings.hide_in_armor": "隐藏在盔甲中：%s",
+    "female_gender_mod.char_settings.hurt_sounds": "女性受伤的声音：%s",
+    "female_gender_mod.tooltip.hurt_sounds": "使女性受伤的声音",
+
+    "female_gender_mod.breast_customization.dual_physics": "对偶物理：%s",
+
+    "female_gender_mod.label.gender": "性别",
+    "female_gender_mod.label.female": "女性",
+    "female_gender_mod.label.male": "男性",
+    "female_gender_mod.label.other": "其他",
+
+    "female_gender_mod.label.enabled": "启用",
+    "female_gender_mod.label.disabled": "禁用",
+    "female_gender_mod.label.with_creator": "您正在与该模组的作者一起在服务器上玩！",
+
+    "female_gender_mod.slider.bounce": "弹跳强度：%s%%",
+    "female_gender_mod.slider.floppy": "乳房动量：%s%%",
+
+    "female_gender_mod.cancer_awareness.title": "嘿，这是乳腺癌宣传月！"
+}

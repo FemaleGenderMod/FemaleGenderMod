@@ -16,9 +16,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.client.gui.screen;
+/*package com.wildfire.client.gui.screen;
 
-/*import com.wildfire.gui.GuiUtils;
+import com.wildfire.gui.GuiUtils;
 import com.wildfire.main.WildfireGender;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -26,12 +26,9 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
-import java.util.UUID;*/
+import java.util.UUID;
 
-/// @apiNote Only use this on the client side
-public class WildfireCloudDetailsScreen /*extends BaseWildfireScreen*/ {
-
-    /*//TODO: PROPER TRANSLATIONS
+public class WildfireCloudDetailsScreen extends BaseWildfireScreen {//TODO: PROPER TRANSLATIONS
 
     private static final Component TITLE = WildfireLang.CLOUD_DETAILS.translate();
 
@@ -90,12 +87,12 @@ public class WildfireCloudDetailsScreen /*extends BaseWildfireScreen*/ {
         GuiUtils.drawCenteredText(ctx, font, TITLE, x, y - 94, 4473924);
 
         if (currentPage == 0) {
-            GuiUtils.drawCenteredTextWrapped(ctx, font, Component.translatable("wildfire_gender.cloud_details.page1"), x, y - 75, 256 - 10, CommonColors.GREEN);
+            GuiUtils.drawCenteredTextWrapped(ctx, font, WildfireLang.CLOUD_DETAILS.page(1), x, y - 75, 256 - 10, CommonColors.GREEN);
         }
     }
 
     @Override
     public void onClose() {
         super.onClose();
-    }*/
-}
+    }
+}*/

@@ -19,6 +19,7 @@
 package com.wildfire.client;
 
 import com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService;
+import com.wildfire.api.WildfireAPI;
 import com.wildfire.common.WildfireGender;
 import com.wildfire.client.render.GenderRenderState;
 import java.util.Objects;
@@ -34,7 +35,7 @@ import org.jspecify.annotations.Nullable;
 public class NeoClientHelper implements ClientHelper {
 
     public static final ContextKey<GenderRenderState> STATE = new ContextKey<>(WildfireGender.id("gender_state"));
-    public static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(Registries.SOUND_EVENT, WildfireGender.MODID);
+    public static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(Registries.SOUND_EVENT, WildfireAPI.MODID);
 
     private static final DeferredHolder<SoundEvent, SoundEvent> FEMALE_HURT = SOUND_EVENTS.register("female_hurt", SoundEvent::createVariableRangeEvent);
 

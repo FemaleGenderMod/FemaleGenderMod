@@ -1,0 +1,184 @@
+{
+    "key.category.female_gender_mod.generic": "女性ジェンダーMod",
+    "key.female_gender_mod.gender_menu": "女性ジェンダーメニュー",
+    "key.female_gender_mod.toggle": "バスト表示の切り替え",
+    "toast.female_gender_mod.get_started": "%sを押して始めましょう！",
+
+    "female_gender_mod.armor.tooltip": "+%s バストサポート",
+
+    "female_gender_mod.uv_editor": "バストテクスチャエディター",
+    "female_gender_mod.uv_editor.reset_defaults_all": "すべてデフォルトUVにリセット",
+    "female_gender_mod.uv_editor.reset_defaults": "デフォルトUVにリセット",
+    "female_gender_mod.uv_editor.no_face_selected": "左側のテクスチャ面を選択して編集してください。",
+    "female_gender_mod.uv_editor.selection.left_breast": "左",
+    "female_gender_mod.uv_editor.selection.right_breast": "右",
+    "female_gender_mod.uv_editor.selection.left_breast_overlay": "左",
+    "female_gender_mod.uv_editor.selection.right_breast_overlay": "右",
+
+    "female_gender_mod.uv_editor.selection.layer_body": "ボディレイヤー",
+    "female_gender_mod.uv_editor.selection.layer_jacket": "ジャケットレイヤー",
+
+    "female_gender_mod.uv_editor.xpos": "X座標",
+    "female_gender_mod.uv_editor.ypos": "Y座標",
+    "female_gender_mod.uv_editor.width": "幅",
+    "female_gender_mod.uv_editor.height": "高さ",
+    "female_gender_mod.uv_editor.increment_tip.line1": "SHIFTを押しながら +10",
+    "female_gender_mod.uv_editor.increment_tip.line2": "SHIFT+CTRLで +20",
+    "female_gender_mod.uv_editor.add": "追加",
+    "female_gender_mod.uv_editor.remove": "削除",
+
+    "female_gender_mod.uv_editor.faces.inner": "内側の面",
+    "female_gender_mod.uv_editor.faces.outer": "外側の面",
+    "female_gender_mod.uv_editor.faces.top": "上面",
+    "female_gender_mod.uv_editor.faces.bottom": "下面",
+    "female_gender_mod.uv_editor.faces.front": "前面",
+
+    "female_gender_mod.credits.title": "Modクレジット",
+    "female_gender_mod.credits.description": "このModを実現してくれた素晴らしい方々の一覧です！",
+    "female_gender_mod.credits.general": "一般",
+    "female_gender_mod.credits.translators": "翻訳者",
+
+    "female_gender_mod.player_list.title": "女性ジェンダーMod",
+    "female_gender_mod.player_list.settings_button": "設定",
+    "female_gender_mod.player_list.sync_status": "同期ステータス",
+    "female_gender_mod.player_list.state.loading": "データ読み込み中...",
+    "female_gender_mod.player_list.state.synced": "同期済みプレイヤー",
+    "female_gender_mod.player_list.bounce_multiplier": "バウンス倍率: %sx",
+    "female_gender_mod.player_list.breast_momentum": "バストの慣性: %s%%",
+    "female_gender_mod.player_list.female_sounds": "女性ボイス: %s",
+    "female_gender_mod.wardrobe.players_using_mod": "同期済みプレイヤー:",
+
+    "female_gender_mod.always_show_list": "同期済みプレイヤーを表示: %s",
+    "female_gender_mod.always_show_list.mod_ui_only": "このメニューのみ",
+    "female_gender_mod.always_show_list.mod_ui_only.tooltip": "同期済みプレイヤーリストはこのメニュー内でのみ表示されます",
+    "female_gender_mod.always_show_list.tab_list_open": "プレイヤーリスト",
+    "female_gender_mod.always_show_list.tab_list_open.tooltip": "同期済みプレイヤーリストはこのメニュー内、または%sを押したときに表示されます",
+    "female_gender_mod.always_show_list.always": "常に表示",
+    "female_gender_mod.always_show_list.always.tooltip": "同期済みプレイヤーリストは常に表示されます",
+
+    "female_gender_mod.wardrobe.title": "女性ジェンダーMod",
+    "female_gender_mod.breast_customization.tab_customization": "カスタマイズ",
+    "female_gender_mod.breast_customization.tab_physics": "バスト物理演算",
+    "female_gender_mod.breast_customization.tab_miscellaneous": "その他",
+
+    "female_gender_mod.breast_customization.presets.add_new": "新しく追加...",
+    "female_gender_mod.breast_customization.presets.delete": "削除",
+
+    "female_gender_mod.wardrobe.slider.breast_size": "バストサイズ: %s%%",
+    "female_gender_mod.wardrobe.slider.separation": "間隔: %s",
+    "female_gender_mod.wardrobe.slider.height": "高さ: %s",
+    "female_gender_mod.wardrobe.slider.depth": "深さ: %s",
+    "female_gender_mod.wardrobe.slider.rotation": "回転: %s°",
+    "female_gender_mod.slider.voice_pitch": "音程: %s%%",
+
+    "female_gender_mod.appearance_settings.title": "キャラクターの個人設定",
+    "female_gender_mod.char_settings.title": "キャラクター設定 OLD",
+    "female_gender_mod.char_settings.physics": "バスト物理演算: %s",
+    "female_gender_mod.char_settings.jump": "ジャンプ",
+    "female_gender_mod.char_settings.jumping": "ジャンプ停止",
+
+    "female_gender_mod.char_settings.override_armor_physics": "防具物理演算: %s",
+    "female_gender_mod.tooltip.override_armor_physics.line1": "有効にすると、装備している防具によるバスト物理演算の軽減・抑制がなくなります。主に防具を非表示にするリソースパックでの使用を想定しています。",
+    "female_gender_mod.tooltip.override_armor_physics.line2": "この設定は自分自身および他のプレイヤーの見た目に影響しますが、他のプレイヤーからの見え方には影響しません。",
+
+    "female_gender_mod.char_settings.hide_in_armor": "防具着用時に非表示: %s",
+    "female_gender_mod.char_settings.show_armor_stat": "防具ツールチップを表示: %s",
+    "female_gender_mod.char_settings.hurt_sounds": "女性ダメージボイス: %s",
+    "female_gender_mod.tooltip.hurt_sounds": "ジェンダーが「女性」または「その他」に設定されている場合、ダメージを受けた際に女性のダメージボイスが再生されます",
+
+    "female_gender_mod.breast_customization.dual_physics": "デュアル物理演算: %s",
+
+    "female_gender_mod.label.gender": "ジェンダー",
+    "female_gender_mod.label.female": "女性",
+    "female_gender_mod.label.male": "男性",
+    "female_gender_mod.label.other": "その他",
+
+    "female_gender_mod.label.enabled": "有効",
+    "female_gender_mod.label.disabled": "無効",
+    "female_gender_mod.label.on": "オン",
+    "female_gender_mod.label.off": "オフ",
+    "female_gender_mod.label.with_creator": "このModの制作者がいるサーバーでプレイしています！",
+    "female_gender_mod.label.with_contributor": "このModの貢献者がいるサーバーでプレイしています！",
+    "female_gender_mod.label.with_both": "このModの制作者と貢献者がいるサーバーでプレイしています！",
+
+    "female_gender_mod.slider.bounce": "強度: %s%%",
+    "female_gender_mod.slider.floppy": "慣性: %s%%",
+
+    "female_gender_mod.cancer_awareness.title": "乳がん啓発月間です！",
+
+    "female_gender_mod.first_time_setup.title": "女性ジェンダーModへようこそ！",
+    "female_gender_mod.first_time_setup.description": "ジェンダー設定のクラウドサーバー同期を有効にしますか？この機能により、サーバーにModがインストールされていない場合でも、他のプレイヤーがあなたのカスタマイズされたジェンダーの外見を確認できます。",
+    "female_gender_mod.first_time_setup.notice": "この設定はModメニューからいつでも変更できます。",
+    "female_gender_mod.first_time_setup.enable": "クラウド同期を有効にする",
+    "female_gender_mod.first_time_setup.disable": "クラウド同期を無効にする",
+    "female_gender_mod.first_time_setup.enable.tooltip.line1": "クラウド同期を有効にすると、現在Modをインストールしていない場合でも、設定が保存され他のプレイヤーに提供されます。",
+    "female_gender_mod.first_time_setup.enable.tooltip.line2": "クラウド同期プロフィールは、無効化した後でもクラウド同期設定メニューからいつでも削除できます。",
+
+    "female_gender_mod.cloud_settings": "クラウド同期サーバー設定",
+    "female_gender_mod.cloud.tooltip": "クラウド同期",
+    "female_gender_mod.cloud.unavailable.invalid_account": "有効なMinecraftアカウントにログインしていないため、クラウド同期は利用できません",
+    "female_gender_mod.cloud.unavailable.offline_server": "接続中のサーバーがオフラインモードのため、クラウド同期は利用できません",
+    "female_gender_mod.cloud.status": "クラウド同期: %s",
+    "female_gender_mod.cloud.automatic": "自動同期: %s",
+    "female_gender_mod.cloud.automatic.tooltip.line1": "有効にすると、変更を加えるたびに設定が自動的にクラウドへ同期されます。",
+    "female_gender_mod.cloud.automatic.tooltip.line2": "無効にしていても、下のボタンから手動で同期できます。",
+
+    "female_gender_mod.cloud.sync": "今すぐ同期",
+    "female_gender_mod.cloud.syncing": "同期中...",
+    "female_gender_mod.cloud.syncing.success": "同期完了",
+    "female_gender_mod.cloud.syncing.fail": "同期失敗",
+
+    "female_gender_mod.cloud.delete": "削除",
+    "female_gender_mod.cloud.deleted": "削除済み",
+    "female_gender_mod.cloud.delete_failed": "削除失敗",
+
+    "female_gender_mod.cloud.status_log": "ステータスログ",
+
+    "female_gender_mod.sync_log.authenticating_mojang": "Mojangで認証中...",
+    "female_gender_mod.sync_log.authenticating_sync": "クラウド同期で認証中...",
+    "female_gender_mod.sync_log.authentication_failed": "認証に失敗しました。",
+    "female_gender_mod.sync_log.reauthenticating": "再認証中...",
+
+    "female_gender_mod.sync_log.failed_to_sync_data": "データの同期に失敗しました。",
+    "female_gender_mod.sync_log.attempting_sync": "プロフィールを同期中...",
+    "female_gender_mod.sync_log.sync_success": "同期に成功しました。",
+    "female_gender_mod.sync_log.sync_too_frequently": "同期の頻度制限に達しました。",
+
+    "female_gender_mod.sync_log.data_deleted": "クラウド同期プロフィールを削除しました。",
+    "female_gender_mod.sync_log.data_deletion_failed": "クラウド同期プロフィールの削除に失敗しました。",
+    "female_gender_mod.sync_log.no_data_to_delete": "クラウド同期プロフィールが見つかりません。",
+
+    "female_gender_mod.sync_log.get_single_profile": "プロフィールを取得中...",
+    "female_gender_mod.sync_log.get_multiple_profiles": "複数のプロフィールを一括取得中...",
+
+    "female_gender_mod.details.next_page": "次のページ",
+    "female_gender_mod.details.prev_page": "前のページ",
+    "female_gender_mod.details.go_back": "戻る",
+
+    "female_gender_mod.cloud_details.title": "クラウド同期サーバー情報",
+
+    "female_gender_mod.contributor.role.mod_creator": "女性ジェンダーMod制作者",
+    "female_gender_mod.contributor.role.mod_creator.short": "Mod制作者",
+    "female_gender_mod.contributor.role.fabric_maintainer": "女性ジェンダーModメンテナー",
+    "female_gender_mod.contributor.role.fabric_maintainer.short": "メンテナー (Fabric)",
+    "female_gender_mod.contributor.role.neoforge_maintainer": "女性ジェンダーModメンテナー",
+    "female_gender_mod.contributor.role.neoforge_maintainer.short": "メンテナー (NeoForge)",
+    "female_gender_mod.contributor.role.developer": "女性ジェンダーMod貢献者",
+    "female_gender_mod.contributor.role.developer.short": "プログラマー",
+    "female_gender_mod.contributor.role.ci_maintainer": "女性ジェンダーMod貢献者",
+    "female_gender_mod.contributor.role.ci_maintainer.short": "CI/CDメンテナー",
+    "female_gender_mod.contributor.role.translator": "女性ジェンダーMod翻訳者",
+    "female_gender_mod.contributor.role.translator.short": "Mod翻訳者",
+    "female_gender_mod.contributor.role.mascot": "女性ジェンダーModマスコット",
+    "female_gender_mod.contributor.role.mascot.short": "Modマスコット",
+    "female_gender_mod.contributor.role.voice_actor_female": "ケイラ・エンバーリン ボイス女優",
+    "female_gender_mod.contributor.role.voice_actor_female.short": "ボイス女優",
+    "female_gender_mod.contributor.role.generic": "女性ジェンダーMod貢献者",
+    "female_gender_mod.contributor.role.generic.short": "貢献者",
+
+    "female_gender_mod.misc.holiday_themes": "ホリデーテーマ: %s",
+    "female_gender_mod.tooltip.holiday_themes.line1": "有効にすると、各ホリデーシーズンに合わせてサンタ帽などのホリデーテーマのアイテムが自動的に表示されます。",
+
+    "female_gender_mod.not_in_world.title": "メインメニューでは利用できません",
+    "female_gender_mod.not_in_world": "ジェンダー設定を変更するには、ワールドに入る必要があります。"
+}

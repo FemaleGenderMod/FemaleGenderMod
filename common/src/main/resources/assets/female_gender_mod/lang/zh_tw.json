@@ -1,0 +1,187 @@
+{
+	"modmenu.nameTranslation.female_gender_mod": "女性性別模組",
+	"modmenu.descriptionTranslation.female_gender_mod": "透過增加胸部為玩家模型添加額外的自訂選項，使其外觀更具女性特徵",
+  
+	"key.category.female_gender_mod.generic": "女性性別模組",
+	"key.female_gender_mod.gender_menu": "女性性別選單",
+	"key.female_gender_mod.toggle": "切換胸部渲染",
+	"toast.female_gender_mod.get_started": "按下 %s 開始使用！",
+
+	"female_gender_mod.armor.tooltip": "+%s 胸部支撐",
+
+	"female_gender_mod.uv_editor": "胸部紋理編輯器",
+	"female_gender_mod.uv_editor.reset_defaults_all": "全部重設為預設 UV",
+	"female_gender_mod.uv_editor.reset_defaults": "重設為預設 UV",
+	"female_gender_mod.uv_editor.no_face_selected": "在左側選擇一個紋理面以進行編輯。",
+	"female_gender_mod.uv_editor.selection.left_breast": "左側",
+	"female_gender_mod.uv_editor.selection.right_breast": "右側",
+	"female_gender_mod.uv_editor.selection.left_breast_overlay": "左側",
+	"female_gender_mod.uv_editor.selection.right_breast_overlay": "右側",
+
+	"female_gender_mod.uv_editor.selection.layer_body": "身體層",
+	"female_gender_mod.uv_editor.selection.layer_jacket": "外套層",
+
+	"female_gender_mod.uv_editor.xpos": "X 座標",
+	"female_gender_mod.uv_editor.ypos": "Y 座標",
+	"female_gender_mod.uv_editor.width": "寬度",
+	"female_gender_mod.uv_editor.height": "高度",
+	"female_gender_mod.uv_editor.increment_tip.line1": "按住 SHIFT 增減 10",
+	"female_gender_mod.uv_editor.increment_tip.line2": "按住 SHIFT+CTRL 增減 20",
+	"female_gender_mod.uv_editor.add": "新增",
+	"female_gender_mod.uv_editor.remove": "移除",
+
+	"female_gender_mod.uv_editor.faces.inner": "內側面",
+	"female_gender_mod.uv_editor.faces.outer": "外側面",
+	"female_gender_mod.uv_editor.faces.top": "頂部面",
+	"female_gender_mod.uv_editor.faces.bottom": "底部面",
+	"female_gender_mod.uv_editor.faces.front": "正面",
+
+	"female_gender_mod.credits.title": "模組製作名單",
+	"female_gender_mod.credits.description": "這些是讓本模組得以實現的出色貢獻者名單！",
+	"female_gender_mod.credits.general": "一般",
+	"female_gender_mod.credits.translators": "翻譯者",
+
+	"female_gender_mod.player_list.title": "女性性別模組",
+	"female_gender_mod.player_list.settings_button": "設定",
+	"female_gender_mod.player_list.sync_status": "同步狀態",
+	"female_gender_mod.player_list.state.loading": "正在載入資料...",
+	"female_gender_mod.player_list.state.synced": "已同步玩家",
+	"female_gender_mod.player_list.bounce_multiplier": "彈性倍率：%sx",
+	"female_gender_mod.player_list.breast_momentum": "胸部動量：%s%%",
+	"female_gender_mod.player_list.female_sounds": "女性聲音：%s",
+	"female_gender_mod.wardrobe.players_using_mod": "已同步的玩家：",
+
+	"female_gender_mod.always_show_list": "顯示已同步的玩家：%s",
+	"female_gender_mod.always_show_list.mod_ui_only": "僅此畫面",
+	"female_gender_mod.always_show_list.mod_ui_only.tooltip": "已同步玩家名單將僅在此選單中顯示",
+	"female_gender_mod.always_show_list.tab_list_open": "玩家名單",
+	"female_gender_mod.always_show_list.tab_list_open.tooltip": "已同步玩家名單將在此選單中或按下 %s 時顯示",
+	"female_gender_mod.always_show_list.always": "總是",
+	"female_gender_mod.always_show_list.always.tooltip": "將始終顯示已同步玩家名單",
+
+	"female_gender_mod.wardrobe.title": "女性性別模組",
+	"female_gender_mod.breast_customization.tab_customization": "自訂",
+	"female_gender_mod.breast_customization.tab_physics": "胸部物理",
+	"female_gender_mod.breast_customization.tab_miscellaneous": "雜項",
+
+	"female_gender_mod.breast_customization.presets.add_new": "新增...",
+	"female_gender_mod.breast_customization.presets.delete": "刪除",
+
+	"female_gender_mod.wardrobe.slider.breast_size": "胸部大小：%s%%",
+	"female_gender_mod.wardrobe.slider.separation": "間距：%s",
+	"female_gender_mod.wardrobe.slider.height": "高度：%s",
+	"female_gender_mod.wardrobe.slider.depth": "深度：%s",
+	"female_gender_mod.wardrobe.slider.rotation": "旋轉角度：%s°",
+	"female_gender_mod.slider.voice_pitch": "音調：%s%%",
+
+	"female_gender_mod.appearance_settings.title": "角色個人化",
+	"female_gender_mod.char_settings.title": "角色設定 (舊)",
+	"female_gender_mod.char_settings.physics": "胸部物理：%s",
+	"female_gender_mod.char_settings.jump": "跳躍",
+	"female_gender_mod.char_settings.jumping": "停止跳躍",
+
+	"female_gender_mod.char_settings.override_armor_physics": "盔甲物理：%s",
+	"female_gender_mod.tooltip.override_armor_physics.line1": "啟用後，胸部物理效果將不再因穿著盔甲而減弱或抑制；這主要用於隱藏盔甲的資源包。",
+	"female_gender_mod.tooltip.override_armor_physics.line2": "這會影響您看到其他玩家及自己的方式，但不會影響其他人看到您的樣子。",
+
+	"female_gender_mod.char_settings.hide_in_armor": "在盔甲中隱藏：%s",
+	"female_gender_mod.char_settings.show_armor_stat": "顯示盔甲提示：%s",
+	"female_gender_mod.char_settings.hurt_sounds": "女性受傷聲音：%s",
+	"female_gender_mod.tooltip.hurt_sounds": "如果您的性別設定為女性或其他，您的角色受到傷害時將播放女性受傷聲音",
+
+	"female_gender_mod.breast_customization.dual_physics": "雙重物理效果：%s",
+
+	"female_gender_mod.label.gender": "性別",
+	"female_gender_mod.label.female": "女性",
+	"female_gender_mod.label.male": "男性",
+	"female_gender_mod.label.other": "其他",
+
+	"female_gender_mod.label.enabled": "已啟用",
+	"female_gender_mod.label.disabled": "已停用",
+	"female_gender_mod.label.on": "開啟",
+	"female_gender_mod.label.off": "關閉",
+	"female_gender_mod.label.with_creator": "您正與本模組的創作者在同一個伺服器遊玩！",
+	"female_gender_mod.label.with_contributor": "您正與本模組的貢獻者在同一個伺服器遊玩！",
+	"female_gender_mod.label.with_both": "您正與本模組的創作者及貢獻者在同一個伺服器遊玩！",
+
+	"female_gender_mod.slider.bounce": "強度：%s%%",
+	"female_gender_mod.slider.floppy": "動量：%s%%",
+
+	"female_gender_mod.cancer_awareness.title": "嘿，現在是國際乳癌防治月！",
+
+	"female_gender_mod.first_time_setup.title": "歡迎使用女性性別模組！",
+	"female_gender_mod.first_time_setup.description": "您是否要為性別設定啟用雲端伺服器同步？此功能允許其他玩家查看您自訂的性別外觀，即使伺服器沒有安裝此模組。",
+	"female_gender_mod.first_time_setup.notice": "您隨時可以在模組選單中更改此設定。",
+	"female_gender_mod.first_time_setup.enable": "啟用雲端同步",
+	"female_gender_mod.first_time_setup.disable": "停用雲端同步",
+	"female_gender_mod.first_time_setup.enable.tooltip.line1": "啟用雲端同步後，即使您目前未安裝該模組，您的設定也會被儲存並提供給其他玩家。",
+	"female_gender_mod.first_time_setup.enable.tooltip.line2": "關閉後，您隨時可以在雲端同步設定選單中刪除您的雲端同步設定檔。",
+
+	"female_gender_mod.cloud_settings": "雲端同步伺服器設定",
+	"female_gender_mod.cloud.tooltip": "雲端同步",
+	"female_gender_mod.cloud.unavailable.invalid_account": "由於您目前未登入有效的 Minecraft 帳號，因此無法使用雲端同步功能",
+	"female_gender_mod.cloud.unavailable.offline_server": "由於您連線的伺服器處於離線模式，因此無法使用雲端同步功能",
+	"female_gender_mod.cloud.status": "雲端同步：%s",
+	"female_gender_mod.cloud.automatic": "自動同步：%s",
+	"female_gender_mod.cloud.automatic.tooltip.line1": "啟用時，任何更改後設定將自動同步到雲端。",
+	"female_gender_mod.cloud.automatic.tooltip.line2": "如果停用此功能，您仍可使用下方按鈕進行手動同步。",
+
+	"female_gender_mod.cloud.sync": "立即同步",
+	"female_gender_mod.cloud.syncing": "同步中...",
+	"female_gender_mod.cloud.syncing.success": "已同步",
+	"female_gender_mod.cloud.syncing.fail": "同步失敗",
+
+	"female_gender_mod.cloud.delete": "刪除",
+	"female_gender_mod.cloud.deleted": "已刪除",
+	"female_gender_mod.cloud.delete_failed": "刪除失敗",
+
+	"female_gender_mod.cloud.status_log": "狀態日誌",
+
+	"female_gender_mod.sync_log.authenticating_mojang": "正在與 Mojang 進行身分驗證...",
+	"female_gender_mod.sync_log.authenticating_sync": "正在驗證雲端同步...",
+	"female_gender_mod.sync_log.authentication_failed": "身分驗證失敗。",
+	"female_gender_mod.sync_log.reauthenticating": "重新驗證中...",
+
+	"female_gender_mod.sync_log.failed_to_sync_data": "同步資料失敗。",
+	"female_gender_mod.sync_log.attempting_sync": "正在同步設定檔...",
+	"female_gender_mod.sync_log.sync_success": "同步成功。",
+	"female_gender_mod.sync_log.sync_too_frequently": "同步過於頻繁，已限制速率。",
+
+	"female_gender_mod.sync_log.data_deleted": "已刪除雲端同步設定檔。",
+	"female_gender_mod.sync_log.data_deletion_failed": "刪除雲端同步設定檔失敗。",
+	"female_gender_mod.sync_log.no_data_to_delete": "找不到雲端同步設定檔。",
+
+	"female_gender_mod.sync_log.get_single_profile": "正在擷取設定檔...",
+	"female_gender_mod.sync_log.get_multiple_profiles": "正在批次擷取設定檔...",
+
+	"female_gender_mod.details.next_page": "下一頁",
+	"female_gender_mod.details.prev_page": "上一頁",
+	"female_gender_mod.details.go_back": "返回",
+
+	"female_gender_mod.cloud_details.title": "雲端同步伺服器資訊",
+
+	"female_gender_mod.contributor.role.mod_creator": "女性性別模組創作者",
+	"female_gender_mod.contributor.role.mod_creator.short": "模組創作者",
+	"female_gender_mod.contributor.role.fabric_maintainer": "女性性別模組維護者",
+	"female_gender_mod.contributor.role.fabric_maintainer.short": "維護者 (Fabric)",
+	"female_gender_mod.contributor.role.neoforge_maintainer": "女性性別模組維護者",
+	"female_gender_mod.contributor.role.neoforge_maintainer.short": "維護者 (NeoForge)",
+	"female_gender_mod.contributor.role.developer": "女性性別模組貢獻者",
+	"female_gender_mod.contributor.role.developer.short": "程式設計師",
+	"female_gender_mod.contributor.role.ci_maintainer": "女性性別模組貢獻者",
+	"female_gender_mod.contributor.role.ci_maintainer.short": "CI/CD 維護者",
+	"female_gender_mod.contributor.role.translator": "女性性別模組翻譯者",
+	"female_gender_mod.contributor.role.translator.short": "模組翻譯者",
+	"female_gender_mod.contributor.role.mascot": "女性性別模組吉祥物",
+	"female_gender_mod.contributor.role.mascot.short": "模組吉祥物",
+	"female_gender_mod.contributor.role.voice_actor_female": "Keira Emberlyn 聲優",
+	"female_gender_mod.contributor.role.voice_actor_female.short": "聲優",
+	"female_gender_mod.contributor.role.generic": "女性性別模組貢獻者",
+	"female_gender_mod.contributor.role.generic.short": "貢獻者",
+
+	"female_gender_mod.misc.holiday_themes": "節日主題：%s",
+	"female_gender_mod.tooltip.holiday_themes.line1": "啟用後，此功能會在相應的節日期間自動展示如聖誕帽等節日主題的裝飾物品。",
+
+	"female_gender_mod.not_in_world.title": "在主選單中無法使用",
+	"female_gender_mod.not_in_world": "您必須進入世界後才能設定您的性別選項。"
+}

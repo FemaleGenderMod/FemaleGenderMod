@@ -1,0 +1,43 @@
+{
+    "key.category.female_gender_mod.generic": "Wildfire's Female Gender Mod",
+    "key.female_gender_mod.gender_menu": "Меню жіночої статі",
+
+    "female_gender_mod.player_list.title": "Female Gender Mod",
+    "female_gender_mod.player_list.settings_button": "Налаштування",
+    "female_gender_mod.player_list.sync_status": "Синхронізація стану",
+    "female_gender_mod.player_list.state.loading": "Завантаження даних...",
+    "female_gender_mod.player_list.state.synced": "Синхронізований гравець",
+    "female_gender_mod.player_list.bounce_multiplier": "Множник пружності: %sx",
+    "female_gender_mod.player_list.breast_momentum": "Імпульс грудей: %s%%",
+    "female_gender_mod.player_list.female_sounds": "Жіночі звуки: %s",
+
+    "female_gender_mod.wardrobe.title": "Меню кастомізації",
+    "female_gender_mod.wardrobe.slider.breast_size": "Розмір грудей: %s%%",
+    "female_gender_mod.wardrobe.slider.separation": "Відстань: %s",
+    "female_gender_mod.wardrobe.slider.height": "Висота: %s",
+    "female_gender_mod.wardrobe.slider.depth": "Глибина: %s",
+    "female_gender_mod.wardrobe.slider.rotation": "Обертання: %s градусів",
+
+    "female_gender_mod.appearance_settings.title": "Параметри зовнішнього вигляду",
+    "female_gender_mod.char_settings.title": "Параметри персонажа",
+    "female_gender_mod.char_settings.physics": "Фізика грудей: %s",
+    "female_gender_mod.char_settings.hide_in_armor": "Приховувати під бронею: %s",
+    "female_gender_mod.char_settings.hurt_sounds": "Жіночі звуки поранення: %s",
+    "female_gender_mod.tooltip.hurt_sounds": "Вмикає жіночі звуки поранення",
+
+    "female_gender_mod.breast_customization.dual_physics": "Подвійна фізика %s",
+
+    "female_gender_mod.label.gender": "Стать",
+    "female_gender_mod.label.female": "Жінка",
+    "female_gender_mod.label.male": "Чоловік",
+    "female_gender_mod.label.other": "Інше",
+
+    "female_gender_mod.label.enabled": "Увімкнено",
+    "female_gender_mod.label.disabled": "Вимкнено",
+    "female_gender_mod.label.with_creator": "Ви граєте на одному ж сервері з творцем цього моду!",
+
+    "female_gender_mod.slider.bounce": "Інтенсивність пружності: %s%%",
+    "female_gender_mod.slider.floppy": "Імпульс грудей: %s%%",
+
+    "female_gender_mod.cancer_awareness.title": "Привіт, сьогодні Місяць боротьби з раком молочної залози!"
+}

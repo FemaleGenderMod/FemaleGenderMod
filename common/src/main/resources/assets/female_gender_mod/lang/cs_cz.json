@@ -1,0 +1,43 @@
+{
+    "key.category.female_gender_mod.generic": "Wildfire's Female Gender Mod",
+    "key.female_gender_mod.gender_menu": "Menu ženského pohlaví",
+
+    "female_gender_mod.player_list.title": "Female Gender Mod",
+    "female_gender_mod.player_list.settings_button": "Nastavení",
+    "female_gender_mod.player_list.sync_status": "Status synchronizace",
+    "female_gender_mod.player_list.state.loading": "Načítaní dat...",
+    "female_gender_mod.player_list.state.synced": "Hráč synchronizován",
+    "female_gender_mod.player_list.bounce_multiplier": "Houpání: %sx",
+    "female_gender_mod.player_list.breast_momentum": "Hybnost: %s%%",
+    "female_gender_mod.player_list.female_sounds": "Ženské zvuky: %s",
+
+    "female_gender_mod.wardrobe.title": "Menu přizpůsobení",
+    "female_gender_mod.wardrobe.slider.breast_size": "Velikost: %s%%",
+    "female_gender_mod.wardrobe.slider.separation": "Mezera: %s",
+    "female_gender_mod.wardrobe.slider.height": "Výška: %s",
+    "female_gender_mod.wardrobe.slider.depth": "Hloubka: %s",
+    "female_gender_mod.wardrobe.slider.rotation": "Natočení: %s°",
+
+    "female_gender_mod.appearance_settings.title": "Nastavení vzhledu",
+    "female_gender_mod.char_settings.title": "Nastavení charakteru",
+    "female_gender_mod.char_settings.physics": "Fyzika prsou: %s",
+    "female_gender_mod.char_settings.hide_in_armor": "Schovat v brnění: %s",
+    "female_gender_mod.char_settings.hurt_sounds": "Ženské zvuky zranění: %s",
+    "female_gender_mod.tooltip.hurt_sounds": "Nahradí normální zvuky zranění za ženské",
+
+    "female_gender_mod.breast_customization.dual_physics": "Dvojí fyzika: %s",
+
+    "female_gender_mod.label.gender": "Pohlaví",
+    "female_gender_mod.label.female": "Žena",
+    "female_gender_mod.label.male": "Muž",
+    "female_gender_mod.label.other": "Jiné",
+
+    "female_gender_mod.label.enabled": "Zapnuto",
+    "female_gender_mod.label.disabled": "Vypnuto",
+    "female_gender_mod.label.with_creator": "Hrajete na serveru s tvůrcem tohohle modu!",
+
+    "female_gender_mod.slider.bounce": "Intenzita houpání: %s%%",
+    "female_gender_mod.slider.floppy": "Hybnost: %s%%",
+
+    "female_gender_mod.cancer_awareness.title": "Hej, právě probíhá měsíc povědomí o rakovině prsu!"
+}

@@ -1,0 +1,155 @@
+{
+    "key.category.female_gender_mod.generic": "Wildfire's Female Gender Mod",
+    "key.female_gender_mod.gender_menu": "Female Gender Menu",
+    "key.female_gender_mod.toggle": "Rendu de la poitrine",
+    "toast.female_gender_mod.get_started": "Appuyer sur '%s' pour commencer!",
+
+    "female_gender_mod.armor.tooltip": "+%s Soutien de la poitrine",
+
+    "female_gender_mod.credits.title": "Crédits du Mod",
+    "female_gender_mod.credits.description": "Ceci est une liste des personnes formidables qui ont rendu ce mod possible!",
+    "female_gender_mod.credits.general": "Général",
+    "female_gender_mod.credits.translators": "Traducteurs",
+
+    "female_gender_mod.player_list.title": "Female Gender Mod",
+    "female_gender_mod.player_list.settings_button": "Paramètres",
+    "female_gender_mod.player_list.sync_status": "Statut de la synchronisation",
+    "female_gender_mod.player_list.state.loading": "Chargement des données...",
+    "female_gender_mod.player_list.state.synced": "Joueur synchronisé",
+    "female_gender_mod.player_list.bounce_multiplier": "Multiplicateur de rebond: %sx",
+    "female_gender_mod.player_list.breast_momentum": "Mouvement de la poitrine: %s%%",
+    "female_gender_mod.player_list.female_sounds": "Sons féminins: %s",
+    "female_gender_mod.wardrobe.players_using_mod": "Joueurs utilisant le mod:",
+
+    "female_gender_mod.always_show_list": "Joueur synchronisé: %s",
+    "female_gender_mod.always_show_list.mod_ui_only": "Cet écran",
+    "female_gender_mod.always_show_list.mod_ui_only.tooltip": "La liste des joueurs synchronisés ne s'affichera que dans ce menu",
+    "female_gender_mod.always_show_list.tab_list_open": "Liste des joueurs",
+    "female_gender_mod.always_show_list.tab_list_open.tooltip": "La liste des joueurs synchronisés s'affichera dans ce menu ou en appuyant sur %s",
+    "female_gender_mod.always_show_list.always": "Toujours",
+    "female_gender_mod.always_show_list.always.tooltip": "La liste des joueurs synchronisés s'affichera toujours",
+
+    "female_gender_mod.wardrobe.title": "Wildfire's Female Gender Mod",
+    "female_gender_mod.breast_customization.tab_customization": "Personnalisation",
+    "female_gender_mod.breast_customization.tab_physics": "Physique de la poitrine",
+    "female_gender_mod.breast_customization.tab_miscellaneous": "Divers",
+
+    "female_gender_mod.breast_customization.presets.add_new": "Ajouter Nouveau...",
+    "female_gender_mod.breast_customization.presets.delete": "Supprimer",
+
+    "female_gender_mod.wardrobe.slider.breast_size": "Taille de la poitrine: %s%%",
+    "female_gender_mod.wardrobe.slider.separation": "séparation: %s",
+    "female_gender_mod.wardrobe.slider.height": "Hauteur: %s",
+    "female_gender_mod.wardrobe.slider.depth": "Profondeur: %s",
+    "female_gender_mod.wardrobe.slider.rotation": "Rotation: %s°",
+    "female_gender_mod.slider.voice_pitch": "Pitch: %s%%",
+
+    "female_gender_mod.appearance_settings.title": "Personnalisation du personnage",
+    "female_gender_mod.char_settings.title": "Paramètres du personnage",
+    "female_gender_mod.char_settings.physics": "Physique de la poitrine: %s",
+    "female_gender_mod.char_settings.jump": "Sauter",
+    "female_gender_mod.char_settings.jumping": "Arrêter de sauter",
+
+    "female_gender_mod.char_settings.override_armor_physics": "Physique de l'armure: %s",
+    "female_gender_mod.tooltip.override_armor_physics.line1": "La physique de la poitrine ne sera plus réduite/supprimée par votre armure équipée lorsque cette option est activée",
+    "female_gender_mod.tooltip.override_armor_physics.line2": "Cette option est destinée à être utilisée avec des packs de ressources/mods qui cachent l'armure, ou tout pack d'armure minimal similaire.",
+
+    "female_gender_mod.char_settings.hide_in_armor": "Cacher dans l'armure: %s",
+    "female_gender_mod.char_settings.show_armor_stat": "Infobulle de l'armure: %s",
+    "female_gender_mod.char_settings.hurt_sounds": "Sons de douleur féminins: %s",
+    "female_gender_mod.tooltip.hurt_sounds": "Votre personnage jouera un son de douleur féminin en cas de dégâts si votre genre est défini sur Féminin ou Autre",
+
+    "female_gender_mod.breast_customization.dual_physics": "Double physique: %s",
+
+    "female_gender_mod.label.gender": "Genre",
+    "female_gender_mod.label.female": "Féminin",
+    "female_gender_mod.label.male": "Masculin",
+    "female_gender_mod.label.other": "Autre",
+
+    "female_gender_mod.label.enabled": "Activé",
+    "female_gender_mod.label.disabled": "Désactivé",
+    "female_gender_mod.label.on": "On",
+    "female_gender_mod.label.off": "Off",
+    "female_gender_mod.label.with_creator": "Vous jouez sur un serveur avec le/la créateur.trice de ce mod!",
+    "female_gender_mod.label.with_contributor": "Vous jouez sur un serveur avec un.e contributeur.trice de ce mod!",
+    "female_gender_mod.label.with_both": "Vous jouez sur un serveur avec le créateur et un.e contributeur.trice de ce mod!",
+
+    "female_gender_mod.slider.bounce": "Intensité: %s%%",
+    "female_gender_mod.slider.floppy": "Momentum: %s%%",
+
+    "female_gender_mod.cancer_awareness.title": "Hey, c'est le mois de sensibilisation au cancer du sein!",
+
+    "female_gender_mod.first_time_setup.title": "Bienvenue dans Wildfire's Female Gender Mod!!",
+    "female_gender_mod.first_time_setup.description": "Voulez-vous activer la synchronisation du Cloud pour vos paramètres de genre? Cette fonctionnalité permet à d'autres joueurs de voir votre apparence de genre, même si le serveur n'a pas installé le mod.",
+    "female_gender_mod.first_time_setup.notice": "Vous pouvez activer ou désactiver cette fonctionnalité à tout moment dans les paramètres du mod.",
+    "female_gender_mod.first_time_setup.enable": "Activer la synchronisation du Cloud",
+    "female_gender_mod.first_time_setup.disable": "Désactiver la synchronisation du Cloud",
+    "female_gender_mod.first_time_setup.enable.tooltip.line1": "Avec la synchronisation activée, votre configuration sera stockée et donnée à d'autres joueurs même si vous n'avez actuellement pas le mod installé.",
+    "female_gender_mod.first_time_setup.enable.tooltip.line2": "Vous pouvez supprimer votre profil du Cloud à tout moment dans le menu des paramètres de synchronisation après l'avoir désactivé.",
+
+    "female_gender_mod.cloud_settings": "paramètres de synchronisation du Cloud",
+    "female_gender_mod.cloud.tooltip": "Cloud Sync",
+    "female_gender_mod.cloud.unavailable.invalid_account": "La synchronisation n'est pas disponible car vous n'êtes pas connecté à un compte microsoft.",
+    "female_gender_mod.cloud.unavailable.offline_server": "La synchronisation n'est pas disponible car le serveur auquel vous êtes connecté est en mode hors-ligne.",
+    "female_gender_mod.cloud.status": "Statut de la Synchronisation: %s",
+    "female_gender_mod.cloud.automatic": "Synchronisation automatique: %s",
+    "female_gender_mod.cloud.automatic.tooltip.line1": "Si activé, votre configuration sera automatiquement synchronisée avec le cloud après toute modification.",
+    "female_gender_mod.cloud.automatic.tooltip.line2": "Vous pouvez toujours synchroniser manuellement avec le bouton ci-dessous si cela est désactivé.",
+    
+    "female_gender_mod.cloud.sync": "Synchroniser maintenant",
+    "female_gender_mod.cloud.syncing": "Synchronisation...",
+    "female_gender_mod.cloud.syncing.success": "Synchronisé",
+    "female_gender_mod.cloud.syncing.fail": "Synchronisation échouée",
+
+    "female_gender_mod.cloud.delete": "Supprimer",
+    "female_gender_mod.cloud.deleted": "Supprimé!",
+    "female_gender_mod.cloud.delete_failed": "Échec de la suppression",
+
+    "female_gender_mod.cloud.status_log": "Historique des Statuts",
+
+    "female_gender_mod.sync_log.authenticating_mojang": "Authentification avec Mojang...",
+    "female_gender_mod.sync_log.authenticating": "Authentification...",
+    "female_gender_mod.sync_log.authentication_failed": "Authentification échouée.",
+    "female_gender_mod.sync_log.reauthenticating": "Ré-authentification...",
+    
+    "female_gender_mod.sync_log.failed_to_sync_data": "La synchronisation a échoué.",
+    "female_gender_mod.sync_log.attempting_sync": "Synchronisation du profil...",
+    "female_gender_mod.sync_log.sync_success": "Synchronisation réussie.",
+    "female_gender_mod.sync_log.sync_too_frequently": "Taux de synchronisation limité.",
+
+    "female_gender_mod.sync_log.data_deleted": "Profil de synchronisation supprimé.",
+    "female_gender_mod.sync_log.data_deletion_failed": "Échec de la suppression du profil de synchronisation.",
+    "female_gender_mod.sync_log.no_data_to_delete": "Aucun profil de synchronisation trouvé.",
+
+    "female_gender_mod.sync_log.get_single_profile": "Récupération du Profil...",
+    "female_gender_mod.sync_log.get_multiple_profiles": "Récupération des Profils...",
+
+    "female_gender_mod.details.next_page": "Page Suivante",
+    "female_gender_mod.details.prev_page": "Page Précédente",
+    "female_gender_mod.details.go_back": "Retour",
+
+    "female_gender_mod.cloud_details.title": "Informations sur le serveur Cloud",
+
+    "female_gender_mod.nametag.creator": "Créateur.trice du Female Gender Mod",
+    "female_gender_mod.contributor.role.mod_creator.short": "Créateur.trice",
+    "female_gender_mod.contributor.role.fabric_maintainer": "Mainteneur.se (Fabric)",
+    "female_gender_mod.contributor.role.fabric_maintainer.short": "Mainteneur.se (Fabric)",
+    "female_gender_mod.contributor.role.neoforge_maintainer": "Mainteneur.se (NeoForge)",
+    "female_gender_mod.contributor.role.neoforge_maintainer.short": "Mainteneur.se (NeoForge)",
+    "female_gender_mod.contributor.role.developer": "contributeur.trice du Female Gender Mod ",
+    "female_gender_mod.contributor.role.developer.short": "contributeur.trice",
+    "female_gender_mod.contributor.role.translator": "Traducteur.trice du Female Gender Mod ",
+    "female_gender_mod.contributor.role.translator.short": "Traducteur.trice",
+    "female_gender_mod.contributor.role.mascot": "Mascotte du Female Gender Mod",
+    "female_gender_mod.contributor.role.mascot.short": "Mascotte du Mod",
+    "female_gender_mod.contributor.role.voice_actor_female": "Comédienne de doublage Keira Emberlyn",
+    "female_gender_mod.contributor.role.voice_actor_female.short": "Comédienne de doublage",
+    "female_gender_mod.contributor.role.generic": "Contributeur.trice du Female Gender Mod",
+    "female_gender_mod.contributor.role.generic.short": "Contributeur.trice",
+
+    "female_gender_mod.misc.holiday_themes": "Cosmétiques estivales: %s",
+    "female_gender_mod.tooltip.holiday_themes.line1": "Lorsque activé, cette fonctionnalité met automatiquement en avant des cosmétiques comme des chapeaux de Noël et d'autres articles thématiques pendant leurs périodes estivales respectives.",
+
+    "female_gender_mod.not_in_world.title": "Indisponible dans le menu principal",
+    "female_gender_mod.not_in_world": "Vous devez être dans un monde pour configurer vos paramètres de genre."
+}

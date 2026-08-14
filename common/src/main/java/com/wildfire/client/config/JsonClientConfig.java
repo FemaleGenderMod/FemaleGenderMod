@@ -19,12 +19,13 @@
 package com.wildfire.client.config;
 
 import com.mojang.serialization.JsonOps;
+import com.wildfire.api.WildfireAPI;
 import com.wildfire.common.config.Configuration;
 import org.jspecify.annotations.Nullable;
 
 class JsonClientConfig implements ClientConfig {
 
-    private final Configuration<ClientConfigInstance> cfgFile = new Configuration<>(".", "female_gender_mod", ClientConfigInstance.CODEC);
+    private final Configuration<ClientConfigInstance> cfgFile = new Configuration<>(".", WildfireAPI.MODID, ClientConfigInstance.CODEC);
     //Note: Theoretically this can never fail so it is safe to use getOrThrow as everything in the codec has orElse(default)
     private ClientConfigInstance config = ClientConfigInstance.CODEC.parse(JsonOps.INSTANCE, JsonOps.INSTANCE.emptyMap()).getOrThrow();
 

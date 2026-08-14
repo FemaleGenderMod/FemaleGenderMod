@@ -21,6 +21,7 @@ package com.wildfire.client;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.wildfire.common.WildfireGender;
 import com.wildfire.common.WildfireHelper;
+import com.wildfire.common.WildfireLang;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.KeyMapping.Category;
 import net.minecraft.resources.Identifier;
@@ -32,12 +33,12 @@ public interface WildfireKeyBindings {
 
     @ApiStatus.Internal
     static KeyMapping createConfigKeyBind(Category category) {
-        return new KeyMapping("key.wildfire_gender.gender_menu", InputConstants.KEY_H, category);
+        return new KeyMapping(WildfireLang.KEY_CONFIG.getTranslationKey(), InputConstants.KEY_H, category);
     }
 
     @ApiStatus.Internal
     static KeyMapping createToggleKeybind(Category category) {
-        return new KeyMapping("key.wildfire_gender.toggle", InputConstants.UNKNOWN.getValue(), category);
+        return new KeyMapping(WildfireLang.KEY_TOGGLE.getTranslationKey(), InputConstants.UNKNOWN.getValue(), category);
     }
 
     WildfireKeyBindings INSTANCE = WildfireHelper.getService(WildfireKeyBindings.class);

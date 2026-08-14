@@ -18,8 +18,17 @@
 
 package com.wildfire.client.resources;
 
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
 import com.wildfire.api.IGenderArmor;
+import com.wildfire.api.WildfireAPI;
 import com.wildfire.common.WildfireGender;
+import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceKey;
@@ -38,13 +47,45 @@ import org.jspecify.annotations.Nullable;
 
 /// @apiNote Only use this on the client side
 public final class GenderArmorResourceManager extends SimpleJsonResourceReloadListener<IGenderArmor> {
-    private GenderArmorResourceManager() {
-        super(IGenderArmor.CODEC, FileToIdConverter.json("wildfire_gender_data"));
-    }
 
+    private static final FileToIdConverter LEGACY_PATH_CONVERTER = FileToIdConverter.json("wildfire_gender_data");
     public static final Identifier ID = WildfireGender.id("armor_data");
+    public static final String PREFIX = WildfireAPI.MODID + "/armor_data";
     public static final GenderArmorResourceManager INSTANCE = new GenderArmorResourceManager();
     private @Unmodifiable Map<Identifier, IGenderArmor> configs = Map.of();
+
+    private GenderArmorResourceManager() {
+        super(IGenderArmor.CODEC, FileToIdConverter.json(PREFIX));
+    }
+
+    @Override
+    protected Map<Identifier, IGenderArmor> prepare(ResourceManager manager, ProfilerFiller profiler) {
+        Map<Identifier, IGenderArmor> result = super.prepare(manager, profiler);
+        handleLegacyFiles(manager, result);
+        return result;
+    }
+
+    @Deprecated(forRemoval = true)
+    private void handleLegacyFiles(ResourceManager manager, Map<Identifier, IGenderArmor> result) {
+        int newSize = result.size();
+        Set<IGenderArmor> legacyElements = new ReferenceOpenHashSet<>();
+        scanDirectory(manager, LEGACY_PATH_CONVERTER, JsonOps.INSTANCE, IGenderArmor.CODEC.validate(armor -> {
+            legacyElements.add(armor);
+            return DataResult.success(armor);
+        }), result);
+        if (newSize != result.size()) {
+            for (final Map.Entry<Identifier, IGenderArmor> entry : result.entrySet()) {
+                if (legacyElements.contains(entry.getValue())) {
+                    WildfireGender.LOGGER.warn("Gender Armor config: '{}' should be moved to the new folder path: '{}'", entry.getKey(), PREFIX);
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void apply(Map<Identifier, IGenderArmor> prepared, ResourceManager manager, ProfilerFiller profiler) {
+        this.configs = Collections.unmodifiableMap(prepared);
+    }
 
     public static @Nullable IGenderArmor get(Identifier model) {
         return INSTANCE.configs.get(model);
@@ -52,13 +93,8 @@ public final class GenderArmorResourceManager extends SimpleJsonResourceReloadLi
 
     public static Optional<IGenderArmor> get(ItemStack item) {
         return Optional.ofNullable(item.get(DataComponents.EQUIPPABLE))
-                .flatMap(Equippable::assetId)
-                .map(ResourceKey::identifier)
-                .map(GenderArmorResourceManager::get);
-    }
-
-    @Override
-    protected void apply(Map<Identifier, IGenderArmor> prepared, ResourceManager manager, ProfilerFiller profiler) {
-        this.configs = Collections.unmodifiableMap(prepared);
+            .flatMap(Equippable::assetId)
+            .map(ResourceKey::identifier)
+            .map(GenderArmorResourceManager::get);
     }
 }

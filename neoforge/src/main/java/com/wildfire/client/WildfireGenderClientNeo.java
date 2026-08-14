@@ -19,6 +19,7 @@
 package com.wildfire.client;
 
 import com.google.common.reflect.TypeToken;
+import com.wildfire.api.WildfireAPI;
 import com.wildfire.client.command.WildfireCommand;
 import com.wildfire.client.config.ClientConfig;
 import com.wildfire.client.gui.SyncedPlayerList;
@@ -62,7 +63,7 @@ import net.neoforged.neoforge.event.RegisterTooltipAppendersEvent;
 import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
-@Mod(value = WildfireGender.MODID, dist = Dist.CLIENT)
+@Mod(value = WildfireAPI.MODID, dist = Dist.CLIENT)
 public class WildfireGenderClientNeo {
 
     public WildfireGenderClientNeo(ModContainer modContainer, IEventBus modEventBus) {

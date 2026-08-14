@@ -42,6 +42,8 @@ public final class WildfireAPI {
 
     private static final Map<Item, IGenderArmor> GENDER_ARMORS = new HashMap<>();
 
+    public static final String MODID = "female_gender_mod";
+
     private static final Codec<Vector2ic> VEC2I_LEGACY_CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.INT.fieldOf("x").forGetter(Vector2ic::x),
             Codec.INT.fieldOf("y").forGetter(Vector2ic::y)
@@ -59,7 +61,7 @@ public final class WildfireAPI {
     ///
     /// @param  uuid  the uuid of the target [Player]
     /// @see	PlayerConfig
-    public static @Nullable PlayerConfigHolder getPlayerById(UUID uuid) {//TODO: This is technically breaking, we could give it a value, but PlayerConfig underwent breaking changes itself
+    public static @Nullable PlayerConfigHolder getPlayerById(UUID uuid) {
         return WildfireGender.getPlayerById(uuid);
     }
 

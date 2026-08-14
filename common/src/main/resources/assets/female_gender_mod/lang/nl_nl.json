@@ -1,0 +1,156 @@
+{
+    "key.category.female_gender_mod.generic": "Female Gender Mod",
+    "key.female_gender_mod.gender_menu": "Female Gender Menu",
+    "key.female_gender_mod.toggle": "Schakel Borsten Rendering",
+    "toast.female_gender_mod.get_started": "Druk op '%s' om te starten!",
+
+    "female_gender_mod.armor.tooltip": "+%s Borst Support",
+
+    "female_gender_mod.credits.title": "Mod Vermeldingen",
+    "female_gender_mod.credits.description": "Dit is een lijst met geweldige mensen die deze mod hebben mogelijk gemaakt!",
+    "female_gender_mod.credits.general": "Algemeen",
+    "female_gender_mod.credits.translators": "Vertalers",
+
+    "female_gender_mod.player_list.title": "Female Gender Mod",
+    "female_gender_mod.player_list.settings_button": "Instellingen",
+    "female_gender_mod.player_list.sync_status": "Status Synchroniseren",
+    "female_gender_mod.player_list.state.loading": "Data Laden...",
+    "female_gender_mod.player_list.state.synced": "Speler Gesynchroniseerd",
+    "female_gender_mod.player_list.bounce_multiplier": "Veerkracht Vermenigvuldiger: %sx",
+    "female_gender_mod.player_list.breast_momentum": "Borst Momentum: %s%%",
+    "female_gender_mod.player_list.female_sounds": "Vrouwelijk Geluiden: %s",
+    "female_gender_mod.wardrobe.players_using_mod": "Spelers die de Mod Gebruiken:",
+
+    "female_gender_mod.always_show_list": "Laat Gesynchroniseerde Spelers Zien: %s",
+    "female_gender_mod.always_show_list.mod_ui_only": "Dit scherm",
+    "female_gender_mod.always_show_list.mod_ui_only.tooltip": "De synchroniseerde spelers lijst wordt alleen in dit menu weergeven",
+    "female_gender_mod.always_show_list.tab_list_open": "Spelers Lijst",
+    "female_gender_mod.always_show_list.tab_list_open.tooltip": "De synchroniseerde spelers lijst wordt weergeven in dit menu of als je op %s drukt",
+    "female_gender_mod.always_show_list.always": "Altijd",
+    "female_gender_mod.always_show_list.always.tooltip": "De synchroniseerde spelers lijst wordt altijd weergeven",
+
+    "female_gender_mod.wardrobe.title": "Female Gender Mod",
+    "female_gender_mod.breast_customization.tab_customization": "Aanpassen",
+    "female_gender_mod.breast_customization.tab_physics": "Borst Bewegingen",
+    "female_gender_mod.breast_customization.tab_miscellaneous": "Overig",
+
+    "female_gender_mod.breast_customization.presets.add_new": "Iets nieuw toevoegen...",
+    "female_gender_mod.breast_customization.presets.delete": "Verwijderen",
+
+    "female_gender_mod.wardrobe.slider.breast_size": "Borst Grote: %s%%",
+    "female_gender_mod.wardrobe.slider.separation": "Tussenruimte: %s",
+    "female_gender_mod.wardrobe.slider.height": "Hoogte: %s",
+    "female_gender_mod.wardrobe.slider.depth": "Diepte: %s",
+    "female_gender_mod.wardrobe.slider.rotation": "Rotatie: %s°",
+    "female_gender_mod.slider.voice_pitch": "Toonhoogte: %s%%",
+
+    "female_gender_mod.appearance_settings.title": "Karakter Personalisatie",
+    "female_gender_mod.char_settings.title": "Karakter Instellingen OUD/OLD",
+    "female_gender_mod.char_settings.physics": "Borst Bewegingen: %s",
+    "female_gender_mod.char_settings.jump": "Spring",
+    "female_gender_mod.char_settings.jumping": "Stop met springen",
+
+    "female_gender_mod.char_settings.override_armor_physics": "Beweegt in Harnas: %s",
+    "female_gender_mod.tooltip.override_armor_physics.line1": "De borst bewegingen zullen niet langer onderdrukt worden bij jouw aangetrokken harnas, als dit aan staat",
+    "female_gender_mod.tooltip.override_armor_physics.line2": "Dit is bedoeld voor het gebruik met bronpakketen die harnas verstoppen of iets in die geest",
+
+    "female_gender_mod.char_settings.hide_in_armor": "Verstop In Harnas: %s",
+    "female_gender_mod.char_settings.show_armor_stat": "Laat Armor Beschrijving Zien: %s",
+    "female_gender_mod.char_settings.hurt_sounds": "Vrouwelijke Pijn Geluiden: %s",
+    "female_gender_mod.tooltip.hurt_sounds": "Jou karakter zal een vrouwelijke pijn geluid spelen als je schade neemt en als je gender is ingesteld op Vrouwelijk of Anders",
+
+    "female_gender_mod.breast_customization.dual_physics": "Dubbele Bewegingen: %s",
+
+    "female_gender_mod.label.gender": "Gender",
+    "female_gender_mod.label.female": "Vrouwelijk",
+    "female_gender_mod.label.male": "Mannelijk",
+    "female_gender_mod.label.other": "Anders",
+
+    "female_gender_mod.label.enabled": "Aan",
+    "female_gender_mod.label.disabled": "Uit",
+    "female_gender_mod.label.on": "Aan",
+    "female_gender_mod.label.off": "Uit",
+    "female_gender_mod.label.with_creator": "Je speelt op een server met de maker van deze mod!",
+    "female_gender_mod.label.with_contributor": "Je speelt op een server met een bijdrager van deze mod!",
+    "female_gender_mod.label.with_both": "Je speelt op een server met de maker en een bijdrager van deze mod!",
+
+    "female_gender_mod.slider.bounce": "Intensiteit: %s%%",
+    "female_gender_mod.slider.floppy": "Momentum: %s%%",
+
+    "female_gender_mod.cancer_awareness.title": "Hé, het is Borst Kanker Aandacht Maand",
+
+    "female_gender_mod.first_time_setup.title": "Welkom bij de Female Gender Mod!",
+    "female_gender_mod.first_time_setup.description": "Wil je de optie aanzetten om je gender instellingen online te Synchroniseren? Hier mee kunnen anderen jouw aangepaste gender uiterlijk, zelfs al heeft de server deze mod niet geïnstalleerd.",
+    "female_gender_mod.first_time_setup.notice": "Je kunt dit later altijd aanpassen in het mod menu.",
+    "female_gender_mod.first_time_setup.enable": "Zet Online Synchronisatie Aan",
+    "female_gender_mod.first_time_setup.disable": "Zet Online Synchronisatie Uit",
+    "female_gender_mod.first_time_setup.enable.tooltip.line1": "Als je online synchronisatie aan hebt staan, dan wordt jouw configuratie opgeslagen en aangeboden aan andere spelers zelfs als je de mod niet hebt geïnstalleerd",
+    "female_gender_mod.first_time_setup.enable.tooltip.line2": "Je kan je online gesynchroniseerde profile op elke moment in het menu verwijderen.",
+
+    "female_gender_mod.cloud_settings": "Online Synchronisatie Instellingen",
+    "female_gender_mod.cloud.tooltip": "Online Synchronisatie",
+    "female_gender_mod.cloud.unavailable.invalid_account": "Online synchronisatie is niet beschikbaar, omdat je niet bent ingelogd in een geldig Minecraft account",
+    "female_gender_mod.cloud.unavailable.offline_server": "Online synchronisatie is niet beschikbaar, want de server waar mee je bent verbondenis in offlinemodus",
+    "female_gender_mod.cloud.status": "Synchroniseren: %s",
+    "female_gender_mod.cloud.automatic": "Automatische Synchronisatie: %s",
+    "female_gender_mod.cloud.automatic.tooltip.line1": "Wanner dit aanstaat, jouw configuratie wordt automatisch online gesynchroniseerd na dat je aanpassingen maakt.",
+
+    "female_gender_mod.cloud.sync": "Synchroniseer",
+    "female_gender_mod.cloud.automatic.tooltip.line2": "Je kan nog steeds manueel synchroniseren met de knop hier onder, als dit uitstaat.",
+    "female_gender_mod.cloud.syncing": "Synchroniseren...",
+
+    "female_gender_mod.cloud.delete": "Verwijder",
+    "female_gender_mod.cloud.deleted": "Verwijderd",
+    "female_gender_mod.cloud.delete_failed": "Verwijderen mislukt",
+
+    "female_gender_mod.cloud.status_log": "Status Log",
+
+    "female_gender_mod.cloud.syncing.success": "Gesynchroniseerd",
+    "female_gender_mod.cloud.syncing.fail": "Synchronisatie Niet Gelukt",
+
+    "female_gender_mod.sync_log.authenticating_mojang": "Verifiëren met Mojang...",
+    "female_gender_mod.sync_log.authenticating_sync": "Verifiëren met online synchronisatie",
+    "female_gender_mod.sync_log.authentication_failed": "Verificatie Gefaald.",
+    "female_gender_mod.sync_log.reauthenticating": "Opnieuw Verifiëren...",
+
+    "female_gender_mod.sync_log.failed_to_sync_data": "Gefaald om Data te Sychroniseren.",
+    "female_gender_mod.sync_log.attempting_sync": "Profiel Sychroniseren...",
+    "female_gender_mod.sync_log.sync_success": "Sychronisatie Gelukt.",
+    "female_gender_mod.sync_log.sync_too_frequently": "Sychronisatie Tarief is Beperkt.",
+
+  "female_gender_mod.sync_log.data_deleted": "Online gesynchroniseerde profilen verwijderd",
+    "female_gender_mod.sync_log.data_deletion_failed": "Het is niet gelukt om online gesynchroniseerde profilen te verwijderen.",
+    "female_gender_mod.sync_log.no_data_to_delete": "Geen online gesynchroniseerde profile gevonden.",
+
+    "female_gender_mod.sync_log.get_single_profile": "Profiel Verzamelen...",
+    "female_gender_mod.sync_log.get_multiple_profiles": "Meedere Profielen Verzamelen...",
+
+    "female_gender_mod.details.next_page": "Volgende Pagina",
+    "female_gender_mod.details.prev_page": "Vorige Pagina",
+    "female_gender_mod.details.go_back": "Ga Terug",
+
+    "female_gender_mod.cloud_details.title": "Online Synchronisatie Server Informatie",
+
+    "female_gender_mod.contributor.role.mod_creator": "Female Gender Mod Maker",
+    "female_gender_mod.contributor.role.mod_creator.short": "Mod Maker",
+    "female_gender_mod.contributor.role.fabric_maintainer": "Female Gender Mod Onderhouder",
+    "female_gender_mod.contributor.role.fabric_maintainer.short": "Onderhouder (Fabric)",
+    "female_gender_mod.contributor.role.neoforge_maintainer": "Female Gender Mod Onderhouder",
+    "female_gender_mod.contributor.role.neoforge_maintainer.short": "Onderhouder (NeoForge)",
+    "female_gender_mod.contributor.role.developer": "Female Gender Mod Bijdrager",
+    "female_gender_mod.contributor.role.developer.short": "Programmeur",
+    "female_gender_mod.contributor.role.translator": "Female Gender Mod Vertaler",
+    "female_gender_mod.contributor.role.translator.short": "Mod Vertaler",
+    "female_gender_mod.contributor.role.mascot": "Female Gender Mod Mascotte",
+    "female_gender_mod.contributor.role.mascot.short": "Mod Mascotte",
+    "female_gender_mod.contributor.role.voice_actor_female": "Keira Emberlyn Stem Actrice",
+    "female_gender_mod.contributor.role.voice_actor_female.short": "Stem Actrice",
+    "female_gender_mod.contributor.role.generic": "Female Gender Mod Bijdrager",
+    "female_gender_mod.contributor.role.generic.short": "Bijdrager",
+
+    "female_gender_mod.misc.holiday_themes": "Feestdagen Thema: %s",
+    "female_gender_mod.tooltip.holiday_themes.line1": "Wanneer aangezet, zal deze functie automatisch cosmetica weergeven zoals Kerst muts en andere feestdagen gerelateerde voorwerpen tijdens die feestdagen.",
+
+    "female_gender_mod.not_in_world.title": "Niet beschikbaar in het hoofd menu",
+    "female_gender_mod.not_in_world": "Je moet in een wereld zijn om je gender instellingen aan te passen."
+}

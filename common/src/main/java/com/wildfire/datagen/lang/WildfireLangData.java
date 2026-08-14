@@ -18,6 +18,7 @@
 
 package com.wildfire.datagen.lang;
 
+import com.wildfire.api.WildfireAPI;
 import com.wildfire.common.WildfireGender;
 import com.wildfire.common.WildfireLang;
 import com.wildfire.common.config.ConfigTranslation;
@@ -49,7 +50,7 @@ public class WildfireLangData {
     }
 
     protected Path getLangFilePath(String locale) {
-        return this.output.getOutputFolder(PackOutput.Target.RESOURCE_PACK).resolve(WildfireGender.MODID).resolve("lang").resolve(locale + ".json");
+        return this.output.getOutputFolder(PackOutput.Target.RESOURCE_PACK).resolve(WildfireAPI.MODID).resolve("lang").resolve(locale + ".json");
     }
 
     private void add(BiConsumer<String, String> builder, String key, String value) {
@@ -323,11 +324,11 @@ public class WildfireLangData {
     }
 
     private void generateConfigTranslations(BiConsumer<String, String> builder) {
-        builder.accept(WildfireGender.MODID + ".configuration.title", "Female Gender Mod Config");
+        builder.accept(WildfireAPI.MODID + ".configuration.title", "Female Gender Mod Config");
 
         String baseConfigFolder = Configuration.CONFIG_DIR.toLowerCase(Locale.ROOT);
         //Config section translation
-        String key = WildfireGender.MODID + ".configuration.section." + baseConfigFolder + ".client.toml";
+        String key = WildfireAPI.MODID + ".configuration.section." + baseConfigFolder + ".client.toml";
         builder.accept(key, "Client Config");
         builder.accept(key + ".title", "Female Gender Mod - Client Config");
 

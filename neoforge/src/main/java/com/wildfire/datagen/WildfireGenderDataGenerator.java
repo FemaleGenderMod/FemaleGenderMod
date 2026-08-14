@@ -18,7 +18,7 @@
 
 package com.wildfire.datagen;
 
-import com.wildfire.common.WildfireGender;
+import com.wildfire.api.WildfireAPI;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -27,7 +27,7 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal//TODO: Split this into its own sourceset so it doesn't get shipped with the mod
-@EventBusSubscriber(modid = WildfireGender.MODID)
+@EventBusSubscriber(modid = WildfireAPI.MODID)
 public class WildfireGenderDataGenerator {
 
     private WildfireGenderDataGenerator() {
@@ -39,6 +39,6 @@ public class WildfireGenderDataGenerator {
         PackOutput output = gen.getPackOutput();
         gen.addProvider(true, new WildfireLangProvider(output));
         gen.addProvider(true, new WildfireSoundsProvider(output));
-        gen.addProvider(true, new WildfireGenderArmorProvider(output, event.getLookupProvider(), WildfireGender.MODID));
+        gen.addProvider(true, new WildfireGenderArmorProvider(output, event.getLookupProvider(), WildfireAPI.MODID));
 	}
 }

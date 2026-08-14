@@ -21,6 +21,7 @@ package com.wildfire.common.entitydata;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.wildfire.api.WildfireAPI;
 import com.wildfire.common.config.value.ConfigKey;
 import com.wildfire.common.config.validator.ConfigRange;
 import net.minecraft.core.component.DataComponents;
@@ -42,7 +43,6 @@ import org.jspecify.annotations.Nullable;
 /// (under the `WildfireGender` key) for compatibility with vanilla clients on servers.
 public record BreastDataComponent(float breastSize, float cleavage, Vector3fc offsets, boolean jacket, @Nullable CustomData nbtComponent) {
 
-    private static final String KEY = "female_gender";
     private static final String LEGACY_KEY = "WildfireGender";
 
     private static final Codec<BreastDataComponent> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -81,7 +81,7 @@ public record BreastDataComponent(float breastSize, float cleavage, Vector3fc of
         }
 
         CompoundTag compoundTag = component.copyTag();
-        return OR_LEGACY.parse(NbtOps.INSTANCE, compoundTag.getCompound(KEY).orElseGet(() -> compoundTag.getCompoundOrEmpty(LEGACY_KEY)))
+        return OR_LEGACY.parse(NbtOps.INSTANCE, compoundTag.getCompound(WildfireAPI.MODID).orElseGet(() -> compoundTag.getCompoundOrEmpty(LEGACY_KEY)))
                 .result()
                 .map(breastDataComponent -> breastDataComponent.withComponent(component))
                 .orElse(null);
@@ -96,7 +96,7 @@ public record BreastDataComponent(float breastSize, float cleavage, Vector3fc of
             if (nbt.contains(LEGACY_KEY)) {//Remove legacy key if it already had it
                 nbt.remove(LEGACY_KEY);
             }
-            nbt.store(KEY, CODEC, this);
+            nbt.store(WildfireAPI.MODID, CODEC, this);
         });
     }
 
@@ -105,9 +105,9 @@ public record BreastDataComponent(float breastSize, float cleavage, Vector3fc of
         CustomData component = stack.get(DataComponents.CUSTOM_DATA);
         if(component != null) {
             CompoundTag compoundTag = component.copyTag();
-            if (compoundTag.contains(KEY) || compoundTag.contains(LEGACY_KEY)) {
+            if (compoundTag.contains(WildfireAPI.MODID) || compoundTag.contains(LEGACY_KEY)) {
                 CustomData.update(DataComponents.CUSTOM_DATA, stack, nbt -> {
-                    nbt.remove(KEY);
+                    nbt.remove(WildfireAPI.MODID);
                     nbt.remove(LEGACY_KEY);
                 });
             }

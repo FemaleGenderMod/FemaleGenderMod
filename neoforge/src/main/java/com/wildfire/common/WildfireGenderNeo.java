@@ -18,6 +18,7 @@
 
 package com.wildfire.common;
 
+import com.wildfire.api.WildfireAPI;
 import com.wildfire.common.entitydata.BreastDataComponent;
 import com.wildfire.common.networking.NeoSync;
 import net.minecraft.core.component.DataComponents;
@@ -36,7 +37,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
-@Mod(WildfireGender.MODID)
+@Mod(WildfireAPI.MODID)
 public class WildfireGenderNeo {
 
     public WildfireGenderNeo(IEventBus modEventBus) {

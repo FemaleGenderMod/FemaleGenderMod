@@ -22,6 +22,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.mojang.logging.LogUtils;
+import com.wildfire.api.WildfireAPI;
 import com.wildfire.client.WildfireGenderClient;
 import com.wildfire.common.entitydata.PlayerConfigHolder;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -34,7 +35,6 @@ import java.time.Duration;
 import java.util.UUID;
 
 public class WildfireGender {
-    public static final String MODID = "wildfire_gender";
     public static final Logger LOGGER = LogUtils.getLogger();
     public static final LoadingCache<UUID, PlayerConfigHolder> CACHE = Util.make(() -> {
         var builder = CacheBuilder.newBuilder();
@@ -75,7 +75,7 @@ public class WildfireGender {
     }
 
     public static Identifier id(String path) {
-        return Identifier.fromNamespaceAndPath(MODID, path);
+        return Identifier.fromNamespaceAndPath(WildfireAPI.MODID, path);
     }
 
     public static <T extends CustomPacketPayload> CustomPacketPayload.Type<T> clientBoundPacket(String path) {

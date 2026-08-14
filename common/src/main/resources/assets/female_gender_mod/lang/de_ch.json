@@ -1,0 +1,43 @@
+{
+    "key.category.female_gender_mod.generic": "Wildfire's Wiiblicher Geschlects Mod",
+    "key.female_gender_mod.gender_menu": "Geschlechtsmenu",
+
+    "female_gender_mod.player_list.title": "Wiiblicher Geschlechts Mod",
+    "female_gender_mod.player_list.settings_button": "Iistellige",
+    "female_gender_mod.player_list.sync_status": "Synchronisierigsstatus",
+    "female_gender_mod.player_list.state.loading": "Lade Spieler..",
+    "female_gender_mod.player_list.state.synced": "Spieler glade!",
+    "female_gender_mod.player_list.bounce_multiplier": "Wackel Multiplikator: %s%%",
+    "female_gender_mod.player_list.breast_momentum": "Brust Schwung: %s%%",
+    "female_gender_mod.player_list.female_sounds": "Wiibliche Soundeffekte: %s",
+
+    "female_gender_mod.wardrobe.title": "Ahpassigsmenu",
+    "female_gender_mod.wardrobe.slider.breast_size": "Brustgrössi: %s%%",
+    "female_gender_mod.wardrobe.slider.separation": "Separierig: %s",
+    "female_gender_mod.wardrobe.slider.height": "Höhi: %s",
+    "female_gender_mod.wardrobe.slider.depth": "Tiefi: %s",
+    "female_gender_mod.wardrobe.slider.rotation": "Drehig: %s degrees",
+
+    "female_gender_mod.appearance_settings.title": "Ussehe",
+    "female_gender_mod.char_settings.title": "Character Iinstellige",
+    "female_gender_mod.char_settings.physics": "Brustphysik: %s",
+    "female_gender_mod.char_settings.hide_in_armor": "Versteckt mit Rüstig: %s",
+    "female_gender_mod.char_settings.hurt_sounds": "Wiibliche Soundeffekte: %s",
+    "female_gender_mod.tooltip.hurt_sounds": "Wiibliche Soundeffekt",
+
+    "female_gender_mod.breast_customization.dual_physics": "Dualphysik: %s",
+
+    "female_gender_mod.label.gender": "Geschlecht",
+    "female_gender_mod.label.female": "Wiiblich",
+    "female_gender_mod.label.male": "Mänlich",
+    "female_gender_mod.label.other": "Anderi",
+
+    "female_gender_mod.label.enabled": "Aktiviert",
+    "female_gender_mod.label.disabled": "Deaktiviert",
+    "female_gender_mod.label.with_creator": "Du spielsch uf nem Server mit dem Programmierer vu dem Mod!",
+
+    "female_gender_mod.slider.bounce": "Wackel Intensität: %sx",
+    "female_gender_mod.slider.floppy": "Brust Schwung: %s%%",
+
+    "female_gender_mod.cancer_awareness.title": "Hey, s'isch Brustkrebsmonet"
+}

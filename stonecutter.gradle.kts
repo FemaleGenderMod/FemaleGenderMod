@@ -18,17 +18,19 @@ tasks.register("runData") {
 }
 
 tasks.register<ValidateJson>("validateJson") {
+    val modId: String = sc.properties["mod_id"]
+    inputs.property("modId", modId)
     //TODO - Fabric: Check the file from the jar?? The json is invalid until it gets replaced
     criticalFiles.from(
         //"fabric/src/main/resources/fabric.mod.json",
-        "fabric/src/main/resources/wildfire_gender.mixins.json"
+        "fabric/src/main/resources/${modId}.mixins.json"
     )
     rootTranslation.set(layout.projectDirectory.file(
-        "fabric/versions/${stonecutter.current?.project}/src/main/generated/assets/wildfire_gender/lang/en_us.json"
+        "fabric/versions/${stonecutter.current?.project}/src/main/generated/assets/${modId}/lang/en_us.json"
     ))
     translationFiles.from(fileTree(layout.projectDirectory) {
-        include("*/versions/*/src/main/generated/assets/wildfire_gender/lang/*.json")
-        include("common/src/main/resources/assets/wildfire_gender/lang/*.json")
+        include("*/versions/*/src/main/generated/assets/${modId}/lang/*.json")
+        include("common/src/main/resources/assets/${modId}/lang/*.json")
     })
     nonExhaustiveLocales.set(setOf(
         //Only generates the relevant overrides as missing lang entries fall back to en_us

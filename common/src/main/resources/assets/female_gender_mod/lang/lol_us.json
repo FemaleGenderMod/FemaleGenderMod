@@ -1,0 +1,43 @@
+{
+    "key.category.female_gender_mod.generic": "Women Gunda Mood",
+    "key.female_gender_mod.gender_menu": "Women Gunda Mano",
+
+    "female_gender_mod.player_list.title": "Women Gunda Mood",
+    "female_gender_mod.player_list.settings_button": "Setinz",
+    "female_gender_mod.player_list.sync_status": "Sinc stauz",
+    "female_gender_mod.player_list.state.loading": "Dawnludin fush...",
+    "female_gender_mod.player_list.state.synced": "Dawnludedd kat",
+    "female_gender_mod.player_list.bounce_multiplier": "Crazy Bouncy: %sx",
+    "female_gender_mod.player_list.breast_momentum": "Haw huvy: %s%%",
+    "female_gender_mod.player_list.female_sounds": "Nyas: %s",
+
+    "female_gender_mod.wardrobe.title": "kat two setinz",
+    "female_gender_mod.wardrobe.slider.breast_size": "Baluon saiz: %s%%",
+    "female_gender_mod.wardrobe.slider.separation": "Wher u goin: %s",
+    "female_gender_mod.wardrobe.slider.height": "Lifd of: %s",
+    "female_gender_mod.wardrobe.slider.depth": "Dats dep: %s",
+    "female_gender_mod.wardrobe.slider.rotation": "How speen: %s digris",
+
+    "female_gender_mod.appearance_settings.title": "Wat u luk laik",
+    "female_gender_mod.char_settings.title": "Wat iz dat sopsoss 2 luk laik",
+    "female_gender_mod.char_settings.physics": "Bouncy-Bouncy: %s",
+    "female_gender_mod.char_settings.hide_in_armor": "Hait shirt plz: %s",
+    "female_gender_mod.char_settings.hurt_sounds": "Women kat oofs: %s",
+    "female_gender_mod.tooltip.hurt_sounds": "Maiks kats oof.",
+
+    "female_gender_mod.breast_customization.dual_physics": "Double bouncy-bouncy: %s",
+
+    "female_gender_mod.label.gender": "Gunda",
+    "female_gender_mod.label.female": "Women",
+    "female_gender_mod.label.male": "MAN",
+    "female_gender_mod.label.other": "ferret",
+
+    "female_gender_mod.label.enabled": "enaibedd",
+    "female_gender_mod.label.disabled": "dissaibedd",
+    "female_gender_mod.label.with_creator": "pett owna iz un serva gg",
+
+    "female_gender_mod.slider.bounce": "Crazy Bouncy: %s%%",
+    "female_gender_mod.slider.floppy": "Haw huvy: %s%%",
+
+    "female_gender_mod.cancer_awareness.title": "Hay, It cancor awarniss mouth!"
+}

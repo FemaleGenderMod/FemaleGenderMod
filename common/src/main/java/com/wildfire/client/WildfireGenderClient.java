@@ -19,6 +19,7 @@
 package com.wildfire.client;
 
 import com.google.gson.JsonObject;
+import com.wildfire.api.WildfireAPI;
 import com.wildfire.common.LoaderAgnostics;
 import com.wildfire.common.WildfireGender;
 import com.wildfire.client.cloud.CloudSync;
@@ -40,12 +41,12 @@ import org.jspecify.annotations.Nullable;
 
 /// @apiNote Only use this on the client side
 public class WildfireGenderClient {
-    private static final Executor LOAD_EXECUTOR = Util.ioPool().forName("wildfire_gender$loadPlayerData");
+    private static final Executor LOAD_EXECUTOR = Util.ioPool().forName(WildfireAPI.MODID + "$loadPlayerData");
 
     //TODO = Neo: Can we migrate the client config file?
     static void tryMigrate() {
         tryMigrate("WildfireGender", Configuration.CONFIG_DIR);
-        tryMigrate(WildfireGender.MODID + ".json", "female_gender_mod.json");
+        tryMigrate("wildfire_gender.json", WildfireAPI.MODID + ".json");
     }
 
     private static void tryMigrate(String oldPath, String newPath) {

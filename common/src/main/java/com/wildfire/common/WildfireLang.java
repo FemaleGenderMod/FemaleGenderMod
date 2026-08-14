@@ -18,6 +18,7 @@
 
 package com.wildfire.common;
 
+import com.wildfire.api.WildfireAPI;
 import java.util.Arrays;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -237,7 +238,7 @@ public enum WildfireLang {
 
     WildfireLang(String path) {
         //TODO: Evaluate changing lang key paths to actually using mojang's toLanguageKey helpers
-        this.translationKey = WildfireGender.MODID + "." + path;
+        this.translationKey = WildfireAPI.MODID + "." + path;
     }
 
     public String getTranslationKey() {

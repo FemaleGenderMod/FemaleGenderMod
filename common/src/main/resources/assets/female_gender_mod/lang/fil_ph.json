@@ -1,0 +1,182 @@
+{
+    "key.category.female_gender_mod.generic": "Female Gender Mod",
+    "key.female_gender_mod.gender_menu": "Female Gender Menu",
+    "key.female_gender_mod.toggle": "I-toggle and pag-render ng suso",
+    "toast.female_gender_mod.get_started": "Pindutin ang %s para magsimula!",
+
+    "female_gender_mod.armor.tooltip": "+%s Suporta sa Suso",
+
+    "female_gender_mod.uv_editor": "Editor ng Tekstura ng Suso",
+    "female_gender_mod.uv_editor.reset_defaults_all": "I-reset lahat sa mga Default na UV",
+    "female_gender_mod.uv_editor.reset_defaults": "I-reset sa mga Default na UV",
+    "female_gender_mod.uv_editor.no_face_selected": "Pumili ng harap ng tekstura sa kaliwa para i-edit ito.",
+    "female_gender_mod.uv_editor.selection.left_breast": "Kaliwa",
+    "female_gender_mod.uv_editor.selection.right_breast": "Kanan",
+    "female_gender_mod.uv_editor.selection.left_breast_overlay": "Kaliwa",
+    "female_gender_mod.uv_editor.selection.right_breast_overlay": "Kanan",
+
+    "female_gender_mod.uv_editor.selection.layer_body": "Layer ng Katawan",
+    "female_gender_mod.uv_editor.selection.layer_jacket": "Layer ng Dyaket",
+
+    "female_gender_mod.uv_editor.xpos": "X-Pos",
+    "female_gender_mod.uv_editor.ypos": "Y-Pos",
+    "female_gender_mod.uv_editor.width": "Lapad",
+    "female_gender_mod.uv_editor.height": "Taas",
+    "female_gender_mod.uv_editor.increment_tip.line1": "I-hold ang SHIFT para sa +10",
+    "female_gender_mod.uv_editor.increment_tip.line2": "SHIFT+CTRL para sa +20",
+    "female_gender_mod.uv_editor.add": "Idagdag",
+    "female_gender_mod.uv_editor.remove": "Tanggalin",
+
+    "female_gender_mod.uv_editor.faces.inner": "Panloob na Harap",
+    "female_gender_mod.uv_editor.faces.outer": "Panlabas na Harap",
+    "female_gender_mod.uv_editor.faces.top": "Itaas na Harap",
+    "female_gender_mod.uv_editor.faces.bottom": "Ibaba na Harap",
+    "female_gender_mod.uv_editor.faces.front": "Unahang Harap",
+
+    "female_gender_mod.credits.title": "Mga Kredito ng Mod",
+    "female_gender_mod.credits.description": "Ito ang listahan ng mga kahanga-hangang tao na ginawang posible ang mod na ito!",
+    "female_gender_mod.credits.general": "Pangkalahatan",
+    "female_gender_mod.credits.translators": "Mga Tagasalin",
+
+    "female_gender_mod.player_list.title": "Female Gender Mod",
+    "female_gender_mod.player_list.settings_button": "Mga Setting",
+    "female_gender_mod.player_list.sync_status": "Status ng Pag-sync",
+    "female_gender_mod.player_list.state.loading": "Nilo-load ang Data...",
+    "female_gender_mod.player_list.state.synced": "Naka-sync na Manlalaro",
+    "female_gender_mod.player_list.bounce_multiplier": "Multiplier ng Talbog: %sx",
+    "female_gender_mod.player_list.breast_momentum": "Momentum mg Suso: %s%%",
+    "female_gender_mod.player_list.female_sounds": "Mga Tunong ng Babae: %s",
+    "female_gender_mod.wardrobe.players_using_mod": "Mga Naka-sync na Manlalaro:",
+
+    "female_gender_mod.always_show_list": "Ipakita ang Mga Naka-sync na Manlalaro: %s",
+    "female_gender_mod.always_show_list.mod_ui_only": "Itong screen",
+    "female_gender_mod.always_show_list.mod_ui_only.tooltip": "Ipapakita lamang ang listahan ng mga naka-sync na manlalaro habang nasa menu na ito.",
+    "female_gender_mod.always_show_list.tab_list_open": "Listahan ng manlalaro",
+    "female_gender_mod.always_show_list.tab_list_open.tooltip": "Ipapakita ang listahan ng mga naka-sync na manlalaro habang nasa menu na ito o sa pagpindot ng %s",
+    "female_gender_mod.always_show_list.always": "Palagi",
+    "female_gender_mod.always_show_list.always.tooltip": "Ipapakita palagi ang listahan ng mga naka-sync na manlalaro",
+
+    "female_gender_mod.wardrobe.title": "Female Gender Mod",
+    "female_gender_mod.breast_customization.tab_customization": "Pagpapasadya",
+    "female_gender_mod.breast_customization.tab_physics": "Pisiks ng Suso",
+    "female_gender_mod.breast_customization.tab_miscellaneous": "Iba pa",
+
+    "female_gender_mod.breast_customization.presets.add_new": "Magdagdag...",
+    "female_gender_mod.breast_customization.presets.delete": "Burahin",
+
+    "female_gender_mod.wardrobe.slider.breast_size": "Laki ng Suso: %s%%",
+    "female_gender_mod.wardrobe.slider.separation": "Paghihiwalay: %s",
+    "female_gender_mod.wardrobe.slider.height": "Taas: %s",
+    "female_gender_mod.wardrobe.slider.depth": "Lalim: %s",
+    "female_gender_mod.wardrobe.slider.rotation": "Pag-ikot: %s°",
+    "female_gender_mod.slider.voice_pitch": "Pitch: %s%%",
+
+    "female_gender_mod.appearance_settings.title": "Pagsasapersonal ng Karakter",
+    "female_gender_mod.char_settings.title": "Mga Setting ng Karakter (LUMA)",
+    "female_gender_mod.char_settings.physics": "Pisiks ng Suso: %s",
+    "female_gender_mod.char_settings.jump": "Tumalon",
+    "female_gender_mod.char_settings.jumping": "Tumigil sa Pagtalon",
+
+    "female_gender_mod.char_settings.override_armor_physics": "Pisiks ng Baluti: %s",
+    "female_gender_mod.tooltip.override_armor_physics.line1": "Hindi na babawasan/papalitan ng anumang sinusuot na baluti ang pisiks ng suso habang naka-enable; ito ay pangunahing inilaan para sa paggamit ng mga resource pack na nagtatago ng mga baluti",
+    "female_gender_mod.tooltip.override_armor_physics.line2": "Inaapektuhan nito kung panno mo nakikita ang ibang mga manlalaro at sarili mo, ngunit hindi inaapektuhan kung paano ka nakikita.",
+
+    "female_gender_mod.char_settings.hide_in_armor": "Itago Sa Baluti: %s",
+    "female_gender_mod.char_settings.show_armor_stat": "Ipakita ang Tooltip ng Baluti: %s",
+    "female_gender_mod.char_settings.hurt_sounds": "Babaeng tunog sa pagkasaktan: %s",
+    "female_gender_mod.tooltip.hurt_sounds": "Tutunog ang iyong karakter ng babaeng tunog sa pagkasaktan kapag nagkaroon ka ng pinsala kung ang iyong kasarian ay nakatakda bilang Babae of Iba",
+
+    "female_gender_mod.breast_customization.dual_physics": "Dual na Pisiks: %s",
+
+    "female_gender_mod.label.gender": "Kasarian",
+    "female_gender_mod.label.female": "Babae",
+    "female_gender_mod.label.male": "Lalaki",
+    "female_gender_mod.label.other": "Iba",
+
+    "female_gender_mod.label.enabled": "Naka-enable",
+    "female_gender_mod.label.disabled": "Naka-disable",
+    "female_gender_mod.label.on": "Nakabukas",
+    "female_gender_mod.label.off": "Nakapatay",
+    "female_gender_mod.label.with_creator": "Naglalaro ka sa isang server kasama ang tagalikha ng mod na ito!",
+    "female_gender_mod.label.with_contributor": "Naglalaro ka sa isang server kasama ang isang kontribyutor ng mod na ito!",
+    "female_gender_mod.label.with_both": "Naglalaro ka sa isang server kasama ang tagalikha at isang kontribyutor ng mod na ito!",
+
+    "female_gender_mod.slider.bounce": "Tindi: %s%%",
+    "female_gender_mod.slider.floppy": "Momentum: %s%%",
+
+    "female_gender_mod.cancer_awareness.title": "Uy, Buwan ng Kamalayan ng Kanser sa Suso ngayon!",
+
+    "female_gender_mod.first_time_setup.title": "Maligayang Pagdating sa Female Gender Mod!",
+    "female_gender_mod.first_time_setup.description": "Gusto mo bang paganahin ang cloud server syncing para sa iyong mga setting ng kasarian? Nagbibigay-daan ang feature na ito na makita ng mga ibang manlalaro ang iyong pinasadyang hitsura ng kasarian, kahit na hindi na-install ng server ang mod na ito.",
+    "female_gender_mod.first_time_setup.notice": "Maaari mong baguhin ang setting na ito mamaya sa mod menu.",
+    "female_gender_mod.first_time_setup.enable": "Paganahin ang Pag-sync sa Cloud",
+    "female_gender_mod.first_time_setup.disable": "Huwag Paganahin ang Pag-sync sa Cloud",
+    "female_gender_mod.first_time_setup.enable.tooltip.line1": "Kapag naka-enable ang pag-sync ng cloud, iniimbak ang iyong pagsasaayos at ibibigay sa ibang mga manlalaro kahit na kasalukuyang hindi mo ininstall ang mod na ito.",
+    "female_gender_mod.first_time_setup.enable.tooltip.line2": "Maaari mong burahin ang iyong profile ng pag-sync ng cloud sa anumang oras sa mga setting ng Pag-sync sa Cloud pagkatapos mo ito patayin.",
+
+    "female_gender_mod.cloud_settings": "Mga Setting sa Pag-Sync sa Cloud",
+    "female_gender_mod.cloud.tooltip": "Pag-sync sa Cloud",
+    "female_gender_mod.cloud.unavailable.invalid_account": "Hindi available ang pag-sync sa cloud dahil kasalukuyang hindi ka naka-sign in sa isang wastong Minecraft account.",
+    "female_gender_mod.cloud.unavailable.offline_server": "Hindi available ang pag-sync sa cloud dahil nakakonekta ka sa isang server na nasa offline mode.",
+    "female_gender_mod.cloud.status": "Pag-sync sa Cloud: %s",
+    "female_gender_mod.cloud.automatic": "Awtomatikong Pag-sync: %s",
+    "female_gender_mod.cloud.automatic.tooltip.line1": "Kapag naka-enable, awtomatikong isi-sync sa cloud ang iyong pagsasaayos pagkatapos gumawa ng anumang pagbabago.",
+    "female_gender_mod.cloud.automatic.tooltip.line2": "Maaari ka pa ring manwal na mag-sync gamit ang button sa ibabaa kung naka-disable ito.",
+
+    "female_gender_mod.cloud.sync": "Mag-sync ngayon",
+    "female_gender_mod.cloud.syncing": "Nagsi-sync...",
+    "female_gender_mod.cloud.syncing.success": "Naka-sync",
+    "female_gender_mod.cloud.syncing.fail": "Nabigo ang Pag-aync",
+
+    "female_gender_mod.cloud.delete": "Burahin",
+    "female_gender_mod.cloud.deleted": "Binura",
+    "female_gender_mod.cloud.delete_failed": "Nabigong burahin",
+
+    "female_gender_mod.cloud.status_log": "Log ng Status",
+
+    "female_gender_mod.sync_log.authenticating_mojang": "Nagpapatunay sa Mojang...",
+    "female_gender_mod.sync_log.authenticating_sync": "Nagpapatunay sa cloud sync...",
+    "female_gender_mod.sync_log.authentication_failed": "Nabigo ang pagpapatunay.",
+    "female_gender_mod.sync_log.reauthenticating": "Nagpapatunay muli...",
+
+    "female_gender_mod.sync_log.failed_to_sync_data": "Nabigong i-sync ang data.",
+    "female_gender_mod.sync_log.attempting_sync": "Sini-sync ang profile...",
+    "female_gender_mod.sync_log.sync_success": "Matagumpay na na-sync.",
+    "female_gender_mod.sync_log.sync_too_frequently": "Na-rate limit ang pag-sync.",
+
+    "female_gender_mod.sync_log.data_deleted": "Binura ang profile ng pag-sync.",
+    "female_gender_mod.sync_log.data_deletion_failed": "Nabigong burahin ang profile ng pag-sync sa cloud.",
+    "female_gender_mod.sync_log.no_data_to_delete": "Walang nahanap na cloud sync profile.",
+
+    "female_gender_mod.sync_log.get_single_profile": "Kinukuha ang profile...",
+    "female_gender_mod.sync_log.get_multiple_profiles": "Kinukuha ang mga profile...",
+
+    "female_gender_mod.details.next_page": "Susunod na pahina",
+    "female_gender_mod.details.prev_page": "Nakaraang Pahina",
+    "female_gender_mod.details.go_back": "Bumalik",
+
+    "female_gender_mod.cloud_details.title": "Impormasyon ng Pag-sync sa Cloud",
+
+    "female_gender_mod.contributor.role.mod_creator": "Tagalikha ng Female Gender Mod",
+    "female_gender_mod.contributor.role.mod_creator.short": "Tagalikha ng Mod",
+    "female_gender_mod.contributor.role.fabric_maintainer": "Tagapangasiwa ng Female Gender Mod",
+    "female_gender_mod.contributor.role.fabric_maintainer.short": "Tagapangasiwa (Fabric)",
+    "female_gender_mod.contributor.role.neoforge_maintainer": "Tagapangasiwa ng Female Gender Mod",
+    "female_gender_mod.contributor.role.neoforge_maintainer.short": "Tagapangasiwa (NeoForge)",
+    "female_gender_mod.contributor.role.developer": "Kontribyutor ng Female Gender Mod",
+    "female_gender_mod.contributor.role.developer.short": "Programmer",
+    "female_gender_mod.contributor.role.translator": "Tagasalin ng Female Gender Mod",
+    "female_gender_mod.contributor.role.translator.short": "Tagasalin ng Mod",
+    "female_gender_mod.contributor.role.mascot": "Maskot ng Female Gender Mod",
+    "female_gender_mod.contributor.role.mascot.short": "Maskot ng Mod",
+    "female_gender_mod.contributor.role.voice_actor_female": "Keira Emberlyn - Aktres sa Boses",
+    "female_gender_mod.contributor.role.voice_actor_female.short": "Aktres sa Boses",
+    "female_gender_mod.contributor.role.generic": "Kontribyutor ng Female Gender Mod",
+    "female_gender_mod.contributor.role.generic.short": "Kontribyutor",
+
+    "female_gender_mod.misc.holiday_themes": "Mga Tema ng Holiday: %s",
+    "female_gender_mod.tooltip.holiday_themes.line1": "Kapag pinagana, awtomatikong ipapakita ng feature na ito ang mga kosmetiko tulad ng mga sumbrero ni Santa at iba pang mga bagay na may temang pang-holiday sa panahon ng kani-kanilang mga holiday.",
+
+    "female_gender_mod.not_in_world.title": "Hindi available sa Main Menu",
+    "female_gender_mod.not_in_world": "Kailangang nasa isa kang mundo para ayusin ang iyong mga setting sa kasarian."
+}

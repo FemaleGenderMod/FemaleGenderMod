@@ -28,6 +28,7 @@ import com.mojang.authlib.HttpAuthenticationService;
 import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.serialization.JsonOps;
 import com.mojang.util.InstantTypeAdapter;
+import com.wildfire.api.WildfireAPI;
 import com.wildfire.common.LoaderAgnostics;
 import com.wildfire.common.WildfireGender;
 import com.wildfire.common.WildfireLang;
@@ -84,7 +85,7 @@ public final class CloudSync {
 
     private static final Object AUTH_LOCK = new Object();
     private static final Object SYNC_LOCK = new Object();
-    private static final Executor EXECUTOR = Util.ioPool().forName("wildfire_gender$cloudSync");
+    private static final Executor EXECUTOR = Util.ioPool().forName(WildfireAPI.MODID + "$cloudSync");
     private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantTypeAdapter()).create();
 
     private static final HttpClient CLIENT = Util.make(() -> {
@@ -100,7 +101,7 @@ public final class CloudSync {
     });
 
     private static final String USER_AGENT =
-            "WildfireGender/" + StringUtils.split(LoaderAgnostics.INSTANCE.getModVersion(WildfireGender.MODID), '+')[0]
+            "WildfireGender/" + StringUtils.split(LoaderAgnostics.INSTANCE.getModVersion(WildfireAPI.MODID), '+')[0]
                     + " Minecraft/" + LoaderAgnostics.INSTANCE.getModVersion("minecraft");
 
     private static final Queue<QueuedFetch> QUEUED = new ConcurrentLinkedDeque<>();

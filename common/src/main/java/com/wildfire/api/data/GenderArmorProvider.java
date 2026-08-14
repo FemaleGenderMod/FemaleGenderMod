@@ -19,6 +19,8 @@
 package com.wildfire.api.data;
 
 import com.wildfire.api.IGenderArmor;
+import com.wildfire.api.WildfireAPI;
+import com.wildfire.client.resources.GenderArmorResourceManager;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
@@ -50,7 +52,7 @@ public abstract class GenderArmorProvider implements DataProvider {
 
     protected GenderArmorProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, String modId) {
         this.registries = registries;
-        this.pathProvider = output.createPathProvider(Target.RESOURCE_PACK, "wildfire_gender_data");
+        this.pathProvider = output.createPathProvider(Target.RESOURCE_PACK, GenderArmorResourceManager.PREFIX);
         this.modId = modId;
     }
 

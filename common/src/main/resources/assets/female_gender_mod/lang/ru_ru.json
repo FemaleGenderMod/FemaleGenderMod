@@ -1,0 +1,182 @@
+{
+    "key.category.female_gender_mod.generic": "Wildfire's Female Gender Mod",
+    "key.female_gender_mod.gender_menu": "Меню",
+    "key.female_gender_mod.toggle": "Переключить визуализацию груди",
+    "toast.female_gender_mod.get_started": "Нажмите %s чтобы начать!",
+
+    "female_gender_mod.armor.tooltip": "+%s Поддержка Груди",
+
+    "female_gender_mod.uv_editor": "Редактор текстуры груди",
+    "female_gender_mod.uv_editor.reset_defaults_all": "Сбросить все параметры UV",
+    "female_gender_mod.uv_editor.reset_defaults": "Сбросить UVs",
+    "female_gender_mod.uv_editor.no_face_selected": "Выберете текстуру ниже чтобы её редактировать.",
+    "female_gender_mod.uv_editor.selection.left_breast": "Левая",
+    "female_gender_mod.uv_editor.selection.right_breast": "Правая",
+    "female_gender_mod.uv_editor.selection.left_breast_overlay": "Левая",
+    "female_gender_mod.uv_editor.selection.right_breast_overlay": "Правая",
+
+    "female_gender_mod.uv_editor.selection.layer_body": "Слой тела",
+    "female_gender_mod.uv_editor.selection.layer_jacket": "Слой куртки",
+
+    "female_gender_mod.uv_editor.xpos": "X-Поз",
+    "female_gender_mod.uv_editor.ypos": "Y-Поз",
+    "female_gender_mod.uv_editor.width": "Толщина",
+    "female_gender_mod.uv_editor.height": "Высота",
+    "female_gender_mod.uv_editor.increment_tip.line1": "Удержи SHIFT на +10",
+    "female_gender_mod.uv_editor.increment_tip.line2": "Удержи SHIFT+CTRL на +20",
+    "female_gender_mod.uv_editor.add": "Добавить",
+    "female_gender_mod.uv_editor.remove": "Убрать",
+
+    "female_gender_mod.uv_editor.faces.inner": "Внутреняя текстура",
+    "female_gender_mod.uv_editor.faces.outer": "Внешняя текстура",
+    "female_gender_mod.uv_editor.faces.top": "Верхняя текстура",
+    "female_gender_mod.uv_editor.faces.bottom": "Нижняя текстура",
+    "female_gender_mod.uv_editor.faces.front": "Передняя текстура",
+
+    "female_gender_mod.credits.title": "Создатели мода",
+    "female_gender_mod.credits.description": "Это список замечательных людей которые помогали с разработкой мода!",
+    "female_gender_mod.credits.general": "Общий",
+    "female_gender_mod.credits.translators": "Переводчики",
+
+    "female_gender_mod.player_list.title": "Female Gender Mod",
+    "female_gender_mod.player_list.settings_button": "Настройки",
+    "female_gender_mod.player_list.sync_status": "Состояние синхронизации",
+    "female_gender_mod.player_list.state.loading": "Загрузка данных...",
+    "female_gender_mod.player_list.state.synced": "Игроки синхронизированы",
+    "female_gender_mod.player_list.bounce_multiplier": "Множитель отскока: %s",
+    "female_gender_mod.player_list.breast_momentum": "Импульс груди: %s%%",
+    "female_gender_mod.player_list.female_sounds": "Женские звуки: %s",
+    "female_gender_mod.wardrobe.players_using_mod": "Игроков использующих мод:",
+
+    "female_gender_mod.always_show_list": "Показать синхронизированных игроков: %s",
+    "female_gender_mod.always_show_list.mod_ui_only": "Этот экран",
+    "female_gender_mod.always_show_list.mod_ui_only.tooltip": "Синхронизированный список игроков будет отображаться только в этом меню.",
+    "female_gender_mod.always_show_list.tab_list_open": "Список игроков",
+    "female_gender_mod.always_show_list.tab_list_open.tooltip": "Синхронизированный список игроков будет отображаться в этом меню или при нажатии %s",
+    "female_gender_mod.always_show_list.always": "Всегда",
+    "female_gender_mod.always_show_list.always.tooltip": "Список синхронизированных игроков будет всегда отображаться",
+
+    "female_gender_mod.wardrobe.title": "Меню кастомизации",
+    "female_gender_mod.breast_customization.tab_customization": "Настройка",
+    "female_gender_mod.breast_customization.tab_physics": "Физика груди",
+    "female_gender_mod.breast_customization.tab_miscellaneous": "Прочее",
+
+    "female_gender_mod.breast_customization.presets.add_new": "Добавить...",
+    "female_gender_mod.breast_customization.presets.delete": "Удалить",
+
+    "female_gender_mod.wardrobe.slider.breast_size": "Размер груди: %s%%",
+    "female_gender_mod.wardrobe.slider.separation": "Расстояние: %s",
+    "female_gender_mod.wardrobe.slider.height": "Высота: %s",
+    "female_gender_mod.wardrobe.slider.depth": "Глубина: %s",
+    "female_gender_mod.wardrobe.slider.rotation": "Вращение: %s градусов",
+    "female_gender_mod.slider.voice_pitch": "Питч: %s%%",
+
+    "female_gender_mod.appearance_settings.title": "Персонализация персонажа",
+    "female_gender_mod.char_settings.title": "Старые настройки персонажа",
+    "female_gender_mod.char_settings.physics": "Физика груди: %s",
+    "female_gender_mod.char_settings.jump": "Прыгать",
+    "female_gender_mod.char_settings.jumping": "Перестать прыгать",
+
+    "female_gender_mod.char_settings.override_armor_physics": "Физика брони: %s",
+    "female_gender_mod.tooltip.override_armor_physics.line1": "При включении этой функции физика груди больше не будет снижаться/подавляться экипированной броней.",
+    "female_gender_mod.tooltip.override_armor_physics.line2": "Это предназначено для использования с наборами ресурсов, скрывающими броню, или любыми аналогичными наборами ресурсов минимальной брони.",
+
+    "female_gender_mod.char_settings.hide_in_armor": "Спрятать в доспехах: %s",
+    "female_gender_mod.char_settings.show_armor_stat": "Подсказки по броне: %s",
+    "female_gender_mod.char_settings.hurt_sounds": "Женские звуки урона: %s",
+    "female_gender_mod.tooltip.hurt_sounds": "Ваш персонаж будет издавать женский звук при получении урона, если ваш пол установлен как Женский или Другой.",
+
+    "female_gender_mod.breast_customization.dual_physics": "Двойная физика: %s",
+
+    "female_gender_mod.label.gender": "Пол",
+    "female_gender_mod.label.female": "Женщина",
+    "female_gender_mod.label.male": "Мужчина",
+    "female_gender_mod.label.other": "Другой",
+
+    "female_gender_mod.label.enabled": "Вкл",
+    "female_gender_mod.label.disabled": "Выкл",
+    "female_gender_mod.label.on": "Вкл.",
+    "female_gender_mod.label.off": "Выкл.",
+    "female_gender_mod.label.with_creator": "Вы играете на одном сервере с создателем этого мода!",
+    "female_gender_mod.label.with_contributor": "Вы играете на сервере с разработчиком этого мода!",
+    "female_gender_mod.label.with_both": "Вы играете на сервере с создателем и разработчиком этого мода!",
+
+    "female_gender_mod.slider.bounce": "Интенсивность: %s%%",
+    "female_gender_mod.slider.floppy": "Импульс: %s%%",
+
+    "female_gender_mod.cancer_awareness.title": "Эй, сегодня месяц повышения осведомленности о раке молочной железы!",
+
+    "female_gender_mod.first_time_setup.title": "Wildfire's Female Gender Mod",
+    "female_gender_mod.first_time_setup.description": "Хотите включить синхронизацию с облачным сервером для ваших настроек пола? Эта функция позволяет другим игрокам просматривать ваш настроенный пол, даже если на сервере не установлен мод.",
+    "female_gender_mod.first_time_setup.notice": "Эту настройку вы всегда сможете изменить в меню мода.",
+    "female_gender_mod.first_time_setup.enable": "Включить синхронизацию",
+    "female_gender_mod.first_time_setup.disable": "Выключить синхронизацию",
+    "female_gender_mod.first_time_setup.enable.tooltip.line1": "С функцией обалака ваша конфигурация будет сохранена и передоваться другим игрокам даже если у вас не установлен мод.",
+    "female_gender_mod.first_time_setup.enable.tooltip.line2": "Вы можете удалить ваши данные в облаке в настройках облака после его выключения.",
+
+    "female_gender_mod.cloud_settings": "Настройки синхронизации",
+    "female_gender_mod.cloud.tooltip": "Облачная синхронизация",
+    "female_gender_mod.cloud.unavailable.invalid_account": "Синхронизация с облаком недоступна, так как вы не вошли в действующую учетную запись Minecraft.",
+    "female_gender_mod.cloud.unavailable.offline_server": "Синхронизация с облаком недоступна, так как вы на пиратском сервере.",
+    "female_gender_mod.cloud.status": "Облачная синхронизация: %s",
+    "female_gender_mod.cloud.automatic": "Авто-синхронизация: %s",
+    "female_gender_mod.cloud.automatic.tooltip.line1": "Если эта функция включена, ваша конфигурация будет автоматически синхронизироваться с облаком после внесения любых изменений.",
+    "female_gender_mod.cloud.automatic.tooltip.line2": "Если эта функция отключена, вы по-прежнему можете выполнить синхронизацию вручную с помощью кнопки ниже.",
+
+    "female_gender_mod.cloud.sync": "Синхронизировать сейчас",
+    "female_gender_mod.cloud.syncing": "Синхронизация...",
+    "female_gender_mod.cloud.syncing.success": "Синхронизировано",
+    "female_gender_mod.cloud.syncing.fail": "Ошибка синхронизации",
+
+    "female_gender_mod.cloud.delete": "Удалить",
+    "female_gender_mod.cloud.deleted": "Удалено",
+    "female_gender_mod.cloud.delete_failed": "Ошибка удалениия",
+
+    "female_gender_mod.cloud.status_log": "Журнал статуса",
+
+    "female_gender_mod.sync_log.authenticating_mojang": "Авторизация Mojang...",
+    "female_gender_mod.sync_log.authenticating_sync": "Авторизация с облаком...",
+    "female_gender_mod.sync_log.authentication_failed": "Ошибка авторизации.",
+    "female_gender_mod.sync_log.reauthenticating": "Повторная авторизация...",
+
+    "female_gender_mod.sync_log.failed_to_sync_data": "Не удалось синхронизировать данные.",
+    "female_gender_mod.sync_log.attempting_sync": "Синхронизация профиля...",
+    "female_gender_mod.sync_log.sync_success": "Синхронизация успешна.",
+
+    "female_gender_mod.sync_log.data_deleted": "Аккаунт в облаке был удалён.",
+    "female_gender_mod.sync_log.data_deletion_failed": "Не удалось удалить аккаунт в облаке.",
+    "female_gender_mod.sync_log.no_data_to_delete": "Аккаунт не найден.",
+    "female_gender_mod.sync_log.sync_too_frequently": "Частота синхронизации ограничена.",
+
+    "female_gender_mod.sync_log.get_single_profile": "Получение профиля...",
+    "female_gender_mod.sync_log.get_multiple_profiles": "Извлечение пакета профилей...",
+
+    "female_gender_mod.details.next_page": "Следующая страница",
+    "female_gender_mod.details.prev_page": "Предыдущая страница",
+    "female_gender_mod.details.go_back": "Назад",
+
+    "female_gender_mod.cloud_details.title": "Информация об облачном синхранизации",
+
+    "female_gender_mod.contributor.role.mod_creator": "Создатель Female Gender Mod",
+    "female_gender_mod.contributor.role.mod_creator.short": "Создатель мода",
+    "female_gender_mod.contributor.role.fabric_maintainer": "Разработчик Female Gender Mod",
+    "female_gender_mod.contributor.role.fabric_maintainer.short": "Разработчик (Fabric)",
+    "female_gender_mod.contributor.role.neoforge_maintainer": "Разработчик Female Gender Mod",
+    "female_gender_mod.contributor.role.neoforge_maintainer.short": "Разработчик (NeoForge)",
+    "female_gender_mod.contributor.role.developer": "Участник Female Gender Mod",
+    "female_gender_mod.contributor.role.developer.short": "Програмист",
+    "female_gender_mod.contributor.role.translator": "Переводчик Female Gender Mod",
+    "female_gender_mod.contributor.role.translator.short": "Переводчик мода",
+    "female_gender_mod.contributor.role.mascot": "Маскот Female Gender Mod",
+    "female_gender_mod.contributor.role.mascot.short": "Маскот мода",
+    "female_gender_mod.contributor.role.voice_actor_female": "Актёр озвучивания Keira Emberlyn",
+    "female_gender_mod.contributor.role.voice_actor_female.short": "Актёр озвучивания",
+    "female_gender_mod.contributor.role.generic": "Участник Female Gender Mod",
+    "female_gender_mod.contributor.role.generic.short": "Участник в разработке",
+
+    "female_gender_mod.misc.holiday_themes": "Празднечные темы: %s",
+    "female_gender_mod.tooltip.holiday_themes.line1": "При включении этой функции автоматически демонстрируется косметика, например, шапки Санты и другие предметы праздничной тематики во время соответствующих праздников.",
+
+    "female_gender_mod.not_in_world.title": "Недоступно в главном меню",
+    "female_gender_mod.not_in_world": "Тебе нужно быть в мире чтобы настроить свой гендер."
+}

@@ -1,0 +1,184 @@
+{
+  "key.category.female_gender_mod.generic": "Әйел Жынысы Моды",
+  "key.female_gender_mod.gender_menu": "Әйел жынысы мәзірі",
+  "key.female_gender_mod.toggle": "Омырау көрсетуді ауыстыру",
+  "toast.female_gender_mod.get_started": "Бастау үшін %s бас!",
+
+  "female_gender_mod.armor.tooltip": "+%s Омырау қолдауы",
+
+  "female_gender_mod.uv_editor": "Омырау текстура өңдегіші",
+  "female_gender_mod.uv_editor.reset_defaults_all": "Барлығын әдепкіге қайтару",
+  "female_gender_mod.uv_editor.reset_defaults": "Әдепкіге қайтару",
+  "female_gender_mod.uv_editor.no_face_selected": "Оны өңдеу үшін сол жақтан текстура бетін таңда.",
+  "female_gender_mod.uv_editor.selection.left_breast": "Сол",
+  "female_gender_mod.uv_editor.selection.right_breast": "Оң",
+  "female_gender_mod.uv_editor.selection.left_breast_overlay": "Сол",
+  "female_gender_mod.uv_editor.selection.right_breast_overlay": "Оң",
+
+  "female_gender_mod.uv_editor.selection.layer_body": "Дене қабаты",
+  "female_gender_mod.uv_editor.selection.layer_jacket": "Киім қабаты",
+
+  "female_gender_mod.uv_editor.xpos": "X-орны",
+  "female_gender_mod.uv_editor.ypos": "Y-орны",
+  "female_gender_mod.uv_editor.width": "Ені",
+  "female_gender_mod.uv_editor.height": "Биіктігі",
+  "female_gender_mod.uv_editor.increment_tip.line1": "+10 үшін SHIFT ұста",
+  "female_gender_mod.uv_editor.increment_tip.line2": "+20 үшін SHIFT+CTRL",
+  "female_gender_mod.uv_editor.add": "Қосу",
+  "female_gender_mod.uv_editor.remove": "Азайту",
+
+  "female_gender_mod.uv_editor.faces.inner": "Ішкі бет",
+  "female_gender_mod.uv_editor.faces.outer": "Сыртқы бет",
+  "female_gender_mod.uv_editor.faces.top": "Үстіңгі бет",
+  "female_gender_mod.uv_editor.faces.bottom": "Астыңғы бет",
+  "female_gender_mod.uv_editor.faces.front": "Алдыңғы бет",
+
+  "female_gender_mod.credits.title": "Мод авторлары",
+  "female_gender_mod.credits.description": "Бұл модты жасауға көмектескен керемет адамдардың тізімі!",
+  "female_gender_mod.credits.general": "Жалпы",
+  "female_gender_mod.credits.translators": "Аудармашылар",
+
+  "female_gender_mod.player_list.title": "Әйел жынысы моды",
+  "female_gender_mod.player_list.settings_button": "Баптау",
+  "female_gender_mod.player_list.sync_status": "Синхрондау күйі",
+  "female_gender_mod.player_list.state.loading": "Деректер жүктелуде...",
+  "female_gender_mod.player_list.state.synced": "Синхрондалған ойыншы",
+  "female_gender_mod.player_list.bounce_multiplier": "Секіру көбейткіші: %sx",
+  "female_gender_mod.player_list.breast_momentum": "Омырау инерциясы: %s%%",
+  "female_gender_mod.player_list.female_sounds": "Әйел дыбыстары: %s",
+  "female_gender_mod.wardrobe.players_using_mod": "Синхрондалған ойыншылар:",
+
+  "female_gender_mod.always_show_list": "Синхрондалған ойыншыларды көрсету: %s",
+  "female_gender_mod.always_show_list.mod_ui_only": "Осы экран",
+  "female_gender_mod.always_show_list.mod_ui_only.tooltip": "Синхрондалған ойыншылар тізімі тек осы мәзірде көрінеді",
+  "female_gender_mod.always_show_list.tab_list_open": "Ойыншылар тізімі",
+  "female_gender_mod.always_show_list.tab_list_open.tooltip": "Синхрондалған ойыншылар тізімі осы мәзірде немесе %s басқанда көрінеді",
+  "female_gender_mod.always_show_list.always": "Әрқашан",
+  "female_gender_mod.always_show_list.always.tooltip": "Синхрондалған ойыншылар тізімі әрқашан көрінеді",
+
+  "female_gender_mod.wardrobe.title": "Әйел жынысы моды",
+  "female_gender_mod.breast_customization.tab_customization": "Өзгерту",
+  "female_gender_mod.breast_customization.tab_physics": "Омырау физикасы",
+  "female_gender_mod.breast_customization.tab_miscellaneous": "Басқада",
+
+  "female_gender_mod.breast_customization.presets.add_new": "Жаңасын қос...",
+  "female_gender_mod.breast_customization.presets.delete": "Жою",
+
+  "female_gender_mod.wardrobe.slider.breast_size": "Омырау өлшемі: %s%%",
+  "female_gender_mod.wardrobe.slider.separation": "Ара қашықтығы: %s",
+  "female_gender_mod.wardrobe.slider.height": "Биіктігі: %s",
+  "female_gender_mod.wardrobe.slider.depth": "Тереңдігі: %s",
+  "female_gender_mod.wardrobe.slider.rotation": "Бұрылуы: %s°",
+  "female_gender_mod.slider.voice_pitch": "Дыбыс биіктігі: %s%%",
+
+  "female_gender_mod.appearance_settings.title": "Кейіпкерді өзгерту",
+  "female_gender_mod.char_settings.title": "Кейіпкер баптаулары ЕСКІ",
+  "female_gender_mod.char_settings.physics": "Омырау физикасы: %s",
+  "female_gender_mod.char_settings.jump": "Секіру",
+  "female_gender_mod.char_settings.jumping": "Секіруді тоқтату",
+
+  "female_gender_mod.char_settings.override_armor_physics": "Сауыт физикасы: %s",
+  "female_gender_mod.tooltip.override_armor_physics.line1": "Қосылған кезде омырау физикасы сауыт кигеннен азаймайды; бұл негізінен сауытты жасыратын ресурс пакеттер үшін арналған.",
+  "female_gender_mod.tooltip.override_armor_physics.line2": "Бұл басқа ойыншыларды және өзіңді қалай көретініңе әсер етеді, бірақ басқалардың сені қалай көретініне әсер етпейді.",
+
+  "female_gender_mod.char_settings.hide_in_armor": "Сауытта жасыру: %s",
+  "female_gender_mod.char_settings.show_armor_stat": "Сауыт түсіндірмесін көрсету: %s",
+  "female_gender_mod.char_settings.hurt_sounds": "Әйел жарақат дыбыстары: %s",
+  "female_gender_mod.tooltip.hurt_sounds": "Жынысың әйел немесе басқа етіп орнатылса, кейіпкер зақым алғанда әйел дауысымен айғайлайды",
+
+  "female_gender_mod.breast_customization.dual_physics": "Қосарлы физика: %s",
+
+  "female_gender_mod.label.gender": "Жынысы",
+  "female_gender_mod.label.female": "Әйел",
+  "female_gender_mod.label.male": "Ер",
+  "female_gender_mod.label.other": "Басқа",
+
+  "female_gender_mod.label.enabled": "Иә",
+  "female_gender_mod.label.disabled": "Жоқ",
+  "female_gender_mod.label.on": "Иә",
+  "female_gender_mod.label.off": "Жоқ",
+  "female_gender_mod.label.with_creator": "Осы модтың авторымен бірге ойнап жатырсың!",
+  "female_gender_mod.label.with_contributor": "Осы модтың үлес қосушысымен бірге ойнап жатырсың!",
+  "female_gender_mod.label.with_both": "Осы модтың авторы мен үлес қосушысымен бірге ойнап жатырсың!",
+
+  "female_gender_mod.slider.bounce": "Қарқындылығы: %s%%",
+  "female_gender_mod.slider.floppy": "Инерциясы: %s%%",
+
+  "female_gender_mod.cancer_awareness.title": "Омырау қатерлі ісігіне қарсы күрес айы!",
+
+  "female_gender_mod.first_time_setup.title": "Әйел жынысы модына қош келдіңіз!",
+  "female_gender_mod.first_time_setup.description": "Жыныс баптауларын бұлтқа синхрондауды қосқың келе ме? Бұ басқа ойыншыларға сенің омырау көрінісіңді көруге мүмкіндік береді, тіпті серверде мод болмаған жағдайдың өзінде.",
+  "female_gender_mod.first_time_setup.notice": "Бұл баптауды кез келген уақытта мод мәзірінен өзгерте аласың.",
+  "female_gender_mod.first_time_setup.enable": "Бұлтқа синхрондауды қос",
+  "female_gender_mod.first_time_setup.disable": "Бұлтқа синхрондауды өшір",
+  "female_gender_mod.first_time_setup.enable.tooltip.line1": "Бұлтқа синхрондау қосылған кезде, баптауларың сақталып, басқа ойыншыларға беріледі, тіпті сенде мод болмаған жағдайдың өзінде.",
+  "female_gender_mod.first_time_setup.enable.tooltip.line2": "Бұлтқа синхрондау деректерін кез келген уақытта өшіріп, бұлтта сақталған баптауларды жоя аласың.",
+
+  "female_gender_mod.cloud_settings": "Бұлтқа синхрондау баптаулары",
+  "female_gender_mod.cloud.tooltip": "Бұлтқа синхрондау",
+  "female_gender_mod.cloud.unavailable.invalid_account": "Бұлтқа синхрондау қолжетімсіз, өйткені дұрыс Minecraft тіркелгісімен кірмегенсің",
+  "female_gender_mod.cloud.unavailable.offline_server": "Бұлтқа синхрондау қолжетімсіз, өйткені сіз қосылған сервер офлайн режимде",
+  "female_gender_mod.cloud.status": "Бұлтқа синхрондау: %s",
+  "female_gender_mod.cloud.automatic": "Автоматты синхрондау: %s",
+  "female_gender_mod.cloud.automatic.tooltip.line1": "Қосылған кезде, баптау өзгертілгеннен кейін автоматты түрде бұлтқа синхрондалады.",
+  "female_gender_mod.cloud.automatic.tooltip.line2": "Бұл өшірулі болса да, төмендегі батырмамен қолмен синхрондай аласың.",
+
+  "female_gender_mod.cloud.sync": "Қазір синхронда",
+  "female_gender_mod.cloud.syncing": "Синхрондалуда...",
+  "female_gender_mod.cloud.syncing.success": "Синхрондалды",
+  "female_gender_mod.cloud.syncing.fail": "Синхрондау сәтсіз",
+
+  "female_gender_mod.cloud.delete": "Жою",
+  "female_gender_mod.cloud.deleted": "Жойылды",
+  "female_gender_mod.cloud.delete_failed": "Жою сәтсіз",
+
+  "female_gender_mod.cloud.status_log": "Мод күйі журналы",
+
+  "female_gender_mod.sync_log.authenticating_mojang": "Mojang-пен аутентификация...",
+  "female_gender_mod.sync_log.authenticating_sync": "Бұлтпен аутентификация...",
+  "female_gender_mod.sync_log.authentication_failed": "Аутентификация сәтсіз.",
+  "female_gender_mod.sync_log.reauthenticating": "Қайта аутентификация...",
+
+  "female_gender_mod.sync_log.failed_to_sync_data": "Деректерді синхрондау сәтсіз.",
+  "female_gender_mod.sync_log.attempting_sync": "Деректер синхрондалуда...",
+  "female_gender_mod.sync_log.sync_success": "Синхрондау сәтті.",
+  "female_gender_mod.sync_log.sync_too_frequently": "Тым жиі синхрондау.",
+
+  "female_gender_mod.sync_log.data_deleted": "Бұлт синхрондау деректері жойылды.",
+  "female_gender_mod.sync_log.data_deletion_failed": "Бұлт синхрондау деректерін жою сәтсіз.",
+  "female_gender_mod.sync_log.no_data_to_delete": "Бұлт синхрондау деректері табылмады.",
+
+  "female_gender_mod.sync_log.get_single_profile": "Деректер алынуда...",
+  "female_gender_mod.sync_log.get_multiple_profiles": "Деректер тобы алынуда...",
+
+  "female_gender_mod.details.next_page": "Келесі бет",
+  "female_gender_mod.details.prev_page": "Алдыңғы бет",
+  "female_gender_mod.details.go_back": "Артқа қайту",
+
+  "female_gender_mod.cloud_details.title": "Бұлт синхрондау сервері туралы",
+
+  "female_gender_mod.contributor.role.mod_creator": "Әйел жынысы моды авторы",
+  "female_gender_mod.contributor.role.mod_creator.short": "Мод авторы",
+  "female_gender_mod.contributor.role.fabric_maintainer": "Әйел жынысы моды жауаптысы",
+  "female_gender_mod.contributor.role.fabric_maintainer.short": "Жауапты (Fabric)",
+  "female_gender_mod.contributor.role.neoforge_maintainer": "Әйел жынысы моды жауаптысы",
+  "female_gender_mod.contributor.role.neoforge_maintainer.short": "Жауапты (NeoForge)",
+  "female_gender_mod.contributor.role.developer": "Әйел жынысы моды жасаушысы",
+  "female_gender_mod.contributor.role.developer.short": "Жасаушы",
+  "female_gender_mod.contributor.role.ci_maintainer": "Әйел жынысы моды үлес қосушысы",
+  "female_gender_mod.contributor.role.ci_maintainer.short": "Жауапты (CI/CD)",
+  "female_gender_mod.contributor.role.translator": "Әйел жынысы моды аудармашысы",
+  "female_gender_mod.contributor.role.translator.short": "Аудармашы",
+  "female_gender_mod.contributor.role.mascot": "Әйел жынысы моды талисманы",
+  "female_gender_mod.contributor.role.mascot.short": "Мод талисманы",
+  "female_gender_mod.contributor.role.voice_actor_female": "Әйел дыбысы - Keira Emberlyn",
+  "female_gender_mod.contributor.role.voice_actor_female.short": "Әйел дыбысы",
+  "female_gender_mod.contributor.role.generic": "Әйел жынысы моды үлес қосушысы",
+  "female_gender_mod.contributor.role.generic.short": "Үлес қосушы",
+
+  "female_gender_mod.misc.holiday_themes": "Мереке тақырыптары: %s",
+  "female_gender_mod.tooltip.holiday_themes.line1": "Қосылған кезде, бұл мүмкіндік Аяз-ата қалпағын және басқада мереке заттарын мереке кезінде автоматты түрде көрсетеді.",
+
+  "female_gender_mod.not_in_world.title": "Басты мәзірде қолжетімсіз",
+  "female_gender_mod.not_in_world": "Жыныс баптауларын өзгерту үшін әлемде болуың керек."
+}

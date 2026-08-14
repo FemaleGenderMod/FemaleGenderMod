@@ -18,6 +18,7 @@
 
 package com.wildfire.common.networking;
 
+import com.wildfire.api.WildfireAPI;
 import com.wildfire.common.WildfireGender;
 import com.wildfire.common.networking.packets.hello.AbstractHelloConfigurationTask;
 import com.wildfire.common.networking.packets.hello.ClientboundSyncHelloPacket;
@@ -44,7 +45,7 @@ public class NeoSync {
     }
 
     private static void registerPackets(RegisterPayloadHandlersEvent event) {
-        PayloadRegistrar registrar = event.registrar(WildfireGender.MODID).optional();
+        PayloadRegistrar registrar = event.registrar(WildfireAPI.MODID).optional();
         //Client to server
         WildfireGender.LOGGER.debug(WildfireSync.MARKER, "Registering server-side config phase receiver");
         registrar.configurationToServer(ServerboundSyncHelloPacket.TYPE, ServerboundSyncHelloPacket.STREAM_CODEC, (packet, context) -> {
