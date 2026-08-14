@@ -60,8 +60,9 @@ tasks.withType<Jar>().configureEach {
 }
 
 tasks.withType<Javadoc>().configureEach {
-    options.encoding = "UTF-8"
     val opts = options as StandardJavadocDocletOptions
+    opts.encoding = "UTF-8"
+    opts.addBooleanOption("-no-fonts", true)
     opts.tags = (opts.tags ?: mutableListOf()).apply {
         add("apiNote:a:API Note:")
         add("implSpec:a:Implementation Requirements:")
