@@ -22,6 +22,7 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.wildfire.client.command.ClientCommandHelper;
+import java.util.Objects;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.commands.CommandSourceStack;
@@ -58,11 +59,11 @@ public class NeoCommandHelper implements ClientCommandHelper<CommandSourceStack>
 
     @Override
     public LocalPlayer getPlayer(final CommandSourceStack source) {
-        //TODO - Neo: Validate this
         if (source.getEntity() instanceof LocalPlayer player) {
+            //Note: This should almost always be true
             return player;
         }
-        return getMinecraft(source).player;
+        return Objects.requireNonNull(getMinecraft(source).player, "No player!?");
     }
 
     @Override

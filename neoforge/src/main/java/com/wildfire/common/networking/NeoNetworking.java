@@ -45,7 +45,6 @@ public class NeoNetworking implements WildfireNetworking {
 
     @Override
     public boolean canSyncToServer(Connection connection) {
-        //TODO - Neo: Test this
         if (connection.getPacketListener() instanceof ICommonPacketListener listener) {
             return listener.hasChannel(ServerboundSyncPacket.TYPE) && versionMatches(connection);
         }

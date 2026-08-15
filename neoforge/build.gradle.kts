@@ -12,7 +12,8 @@ sourceSets.main {
 neoForge {
     version = sc.properties["dependencies.neo_version"]
 
-    val at = sc.tree["common"]!!.project.file("src/main/resources/META-INF/accesstransformer.cfg")
+    val common = sc.tree["common"]!!.project
+    val at = common.file("src/main/resources/META-INF/accesstransformer.cfg")
     //Use the corresponding common project's StoneCutter to process the path, so that it points at the identical absolute path
     // and MDG is able to more reliably re-use the recompiled minecraft
     val commonProject = sc.node.sibling("common")!!.project
@@ -54,9 +55,9 @@ neoForge {
         register("data") {
             clientData()
 
-            //TODO - Neo: Do we need to pass common in as existing?
             programArguments.addAll("--all", "--output", file("src/generated/resources").absolutePath,
-                "--mod", sc.properties["mod_id"], "--existing", file("src/main/resources").absolutePath
+                "--mod", sc.properties["mod_id"], "--existing", file("src/main/resources").absolutePath,
+                "--existing", common.file("src/main/resources").absolutePath
             )
         }
 

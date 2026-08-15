@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.util.Optional;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
+import net.neoforged.fml.i18n.MavenVersionTranslator;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
@@ -40,13 +41,13 @@ public class LoaderAgnosticsNeo implements LoaderAgnostics {
 
     @Override
     public String getModVersion(String modId) {
-        //TODO - Neo: Test this
         Optional<? extends ModContainer> containerById = ModList.get().getModContainerById(modId);
         if (containerById.isEmpty()) {
             return "unknown";
         }
         ArtifactVersion version = containerById.get().getModInfo().getVersion();
-        return version.getMajorVersion() + "." + version.getMinorVersion() + "." + version.getIncrementalVersion();
+        //Effectively the same as just calling version.toString(), but matches what the mod list screen does
+        return MavenVersionTranslator.artifactVersionToString(version);
     }
 
     @Override

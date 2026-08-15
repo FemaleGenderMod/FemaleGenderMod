@@ -92,9 +92,10 @@ public class FakeGUIPlayer {
     }
 
     public void tick() {
-        entity.get().applyLoadedSkin();
-        entity.get().tickCount++; // This allows for playing the breathing animation
-        EntityConfigHolder.getEntity(getEntity()).breastPhysics().tick(getEntity());
+        GUIMannequin entity = this.entity.get();
+        entity.applyLoadedSkin();
+        entity.tickCount++; // This allows for playing the breathing animation
+        EntityConfigHolder.getEntity(entity).breastPhysics().tick(entity);
     }
 
     @SuppressWarnings("NullableProblems")
