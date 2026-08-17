@@ -77,6 +77,32 @@ rootProject.tasks.named("runData").configure {
     dependsOn(tasks.named("runDatagen"))
 }
 
+val loaderAttribute = Attribute.of(
+    "io.github.mcgradleconventions.loader",
+    String::class.java
+)
+
+listOf("apiElements", "runtimeElements", "sourcesElements", "javadocElements", "includeInternal", "modCompileClasspath").forEach { variant ->
+    configurations.named(variant) {
+        attributes {
+            attribute(loaderAttribute, "fabric")
+        }
+    }
+}
+
+sourceSets.configureEach {
+    listOf(
+        compileClasspathConfigurationName,
+        runtimeClasspathConfigurationName
+    ).forEach { variant ->
+        configurations.named(variant) {
+            attributes {
+                attribute(loaderAttribute, "fabric")
+            }
+        }
+    }
+}
+
 //TODO - both: Figure out where to define this. https://modmuss50.github.io/mod-publish-plugin/multi_platform/ might be of some help
 publishMods {
     val modVer: String = sc.properties["mod_version"]

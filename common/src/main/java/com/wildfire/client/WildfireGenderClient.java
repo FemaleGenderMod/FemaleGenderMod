@@ -43,7 +43,6 @@ import org.jspecify.annotations.Nullable;
 public class WildfireGenderClient {
     private static final Executor LOAD_EXECUTOR = Util.ioPool().forName(WildfireAPI.MODID + "$loadPlayerData");
 
-    //TODO = Neo: Can we migrate the client config file?
     static void tryMigrate() {
         tryMigrate("WildfireGender", Configuration.CONFIG_DIR);
         tryMigrate("wildfire_gender.json", WildfireAPI.MODID + ".json");
