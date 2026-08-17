@@ -106,7 +106,7 @@ public class WildfireGenderClientFabric implements ClientModInitializer {
     }
 
     /// Attach breast render layers to players and armor stands
-    void registerRenderLayers(EntityType<? extends LivingEntity> entityType, LivingEntityRenderer<?, ?, ?> entityRenderer,
+    private void registerRenderLayers(EntityType<? extends LivingEntity> entityType, LivingEntityRenderer<?, ?, ?> entityRenderer,
         LivingEntityRenderLayerRegistrationCallback.RegistrationHelper registrationHelper, EntityRendererProvider.Context context) {
         if (entityRenderer instanceof AvatarRenderer<?> playerRenderer) {
             WildfireClientEventHandler.addAvatarRenderLayers(playerRenderer, context.getEquipmentRenderer(), (_, layer) -> registrationHelper.register(layer));

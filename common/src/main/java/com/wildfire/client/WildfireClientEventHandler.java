@@ -113,10 +113,7 @@ public final class WildfireClientEventHandler {
     }
 
     static void renderTooltip(ItemStack item, Consumer<Component> tooltipAppender, @Nullable Player player) {
-        if (player == null || !ClientConfig.config().armorStat().get()) {
-            return;
-        }
-        if (ClientConfig.config().overrideArmorPhysics().get()) {
+        if (player == null || !ClientConfig.config().armorStat().get() || ClientConfig.config().overrideArmorPhysics().get()) {
             return;
         }
         var equippableComponent = item.get(DataComponents.EQUIPPABLE);

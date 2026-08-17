@@ -41,6 +41,7 @@ import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.util.TriState;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -58,8 +59,7 @@ import net.neoforged.neoforge.client.event.RenderNameTagEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.tooltip.TooltipLocation;
-import net.neoforged.neoforge.event.RegisterTooltipAppendersEvent;
+import net.neoforged.neoforge.event.AddAttributeTooltipsEvent;
 import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
@@ -68,7 +68,6 @@ public class WildfireGenderClientNeo {
 
     public WildfireGenderClientNeo(ModContainer modContainer, IEventBus modEventBus) {
         WildfireGenderClient.tryMigrate();
-
         ClientConfig.INSTANCE.load(modContainer);
 
         modEventBus.addListener(RegisterKeyMappingsEvent.class, this::registerKeybindings);
@@ -77,13 +76,19 @@ public class WildfireGenderClientNeo {
         modEventBus.addListener(RegisterGuiLayersEvent.class, this::registerOverlays);
         modEventBus.addListener(RegisterRenderStateModifiersEvent.class, this::registerRenderStateModifiers);
         modEventBus.addListener(EntityRenderersEvent.AddLayers.class, this::addLayers);
-        //TODO - Neo: Can we get this rendering with the attributes? Similar to fabric
-        modEventBus.addListener(RegisterTooltipAppendersEvent.class, event -> event.registerAppender(TooltipLocation.PRE_ITEM_INFO,
-            (stack, _, _, player, _, builder) -> {
-                //TODO - Neo: Only display this if the tooltip display isn't hiding attributes? (Does fabric already do that?)
-                WildfireClientEventHandler.renderTooltip(stack, builder, player);
-            }));
 
+        //Note: Unlike fabric's mixin this ends up after all attribute tooltips instead of at the tail end of the chest equipment group,
+        // but as chestplates are highly unlikely to have attributes for other slots, this is fine and allows us to avoid mixins
+        NeoForge.EVENT_BUS.addListener(AddAttributeTooltipsEvent.class, event -> {
+            if (event.shouldShow()) {//Only add the tooltip if the display is showing attribute modifiers
+                Player player = event.getContext().player();
+                //Note: this event is also fired on the logical server, so we just validate that we only add it on the client side, as the values
+                // are based on client side settings
+                if (player != null && player.level().isClientSide()) {
+                    WildfireClientEventHandler.renderTooltip(event.getStack(), event::addTooltipLines, player);
+                }
+            }
+        });
         NeoForge.EVENT_BUS.addListener(RegisterClientCommandsEvent.class, this::registerClientCommands);
         NeoForge.EVENT_BUS.addListener(ClientPlayerNetworkEvent.LoggingIn.class, _ -> WildfireClientEventHandler.clientJoin(Minecraft.getInstance()));
         NeoForge.EVENT_BUS.addListener(ClientPlayerNetworkEvent.LoggingOut.class, _ -> WildfireClientEventHandler.clientDisconnect());

@@ -23,7 +23,6 @@ import java.util.Objects;
 import net.minecraft.util.TriState;
 import org.jspecify.annotations.Nullable;
 
-//TODO: Move to client package?
 public interface ClientConfig {
 
     //Get the service loader provided one, or fall back to using a json config (for cases like fabric)

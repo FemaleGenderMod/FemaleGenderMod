@@ -53,11 +53,10 @@ public class WildfireGenderClient {
         Path oldFile = LoaderAgnostics.INSTANCE.getConfigDir().resolve(oldPath);
         Path newFile = LoaderAgnostics.INSTANCE.getConfigDir().resolve(newPath);
 
-        if(Files.notExists(oldFile)) {
+        if (Files.notExists(oldFile)) {
             WildfireGender.LOGGER.debug("{} doesn't exist, nothing to migrate", oldPath);
             return;
-        }
-        if(Files.exists(oldFile) && Files.exists(newFile)) {
+        } else if (Files.exists(oldFile) && Files.exists(newFile)) {
             WildfireGender.LOGGER.warn("Cannot migrate {} to {} as both exist", oldPath, oldPath);
             return;
         }
