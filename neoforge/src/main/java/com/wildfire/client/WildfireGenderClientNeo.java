@@ -104,9 +104,8 @@ public class WildfireGenderClientNeo {
             }
         });
         NeoForge.EVENT_BUS.addListener(EntityLeaveLevelEvent.class, event -> {
-            if (event.getLevel().isClientSide()) {
-                //TODO - Neo: Should this check if it is a living entity?
-                WildfireClientEventHandler.onEntityUnload(event.getEntity(), event.getLevel());
+            if (event.getLevel().isClientSide() && event.getEntity() instanceof LivingEntity entity && EntityConfig.isSupportedEntity(entity)) {
+                WildfireClientEventHandler.onEntityUnload(entity, event.getLevel());
             }
         });
 
