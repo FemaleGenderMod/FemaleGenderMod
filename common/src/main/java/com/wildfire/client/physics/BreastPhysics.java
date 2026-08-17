@@ -108,7 +108,7 @@ public class BreastPhysics {
     // as such, the best we can get here is marking this method as such.
     /// @apiNote Only call this on the client side, or the implementation will crash
     public void update(LivingEntity entity, IGenderArmor armor) {
-        boolean armorPhysicsOverride = ClientConfig.config().overrideArmorPhysics().get();
+        boolean armorPhysicsOverride = ClientConfig.config().overrides().armorPhysics().get();
         // always suppress the full physics calculations on armor stands
         if(entity instanceof ArmorStand || entityConfig.forceSimplifiedPhysics) {
             simplifiedTick(armor, armorPhysicsOverride);

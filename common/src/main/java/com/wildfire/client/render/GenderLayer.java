@@ -91,9 +91,9 @@ public class GenderLayer<STATE extends HumanoidRenderState, MODEL extends Humano
     /// @return `true` if rendering should continue
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     protected boolean setupRender(STATE entityState, GenderRenderState genderState) {
-        if (ClientConfig.config().disableRendering().get()) return false;
+        if (ClientConfig.config().overrides().disableRendering().get()) return false;
 
-        boolean armorPhysicsOverride = ClientConfig.config().overrideArmorPhysics().get();
+        boolean armorPhysicsOverride = ClientConfig.config().overrides().armorPhysics().get();
         isChestplateOccupied = genderState.armor.coversBreasts() && !armorPhysicsOverride;
         if (genderState.armor.alwaysHidesBreasts() || !genderState.showBreastsInArmor && isChestplateOccupied) {
             //If the armor always hides breasts or there is armor and the player configured breasts

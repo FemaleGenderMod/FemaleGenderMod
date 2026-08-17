@@ -22,7 +22,6 @@ import com.wildfire.common.WildfireGender;
 import net.minecraft.network.chat.Component;
 import org.jspecify.annotations.Nullable;
 
-//TODO - both: Implement this
 public enum GenderConfigTranslations implements ConfigTranslation {
     CLIENT_FIRST_TIME_LOAD("client.first_time_load", "First Time Setup", "Should the first time setup screen be displayed"),
     CLIENT_SHOW_TOAST("client.show_toast", "Show Toast", "Should a toast be displayed directing how to get started with the mod"),

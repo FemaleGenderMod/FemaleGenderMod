@@ -232,11 +232,11 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .active(plr.breasts().physics().enabled()));
 
         ref.overridePhysics = addButton(builder -> builder
-                .message(() -> WildfireLang.CHAR_SETTINGS_OVERRIDE_PHYSICS.translate(ClientConfig.config().overrideArmorPhysics().get() ? ENABLED : DISABLED))
+                .message(() -> WildfireLang.CHAR_SETTINGS_OVERRIDE_PHYSICS.translate(ClientConfig.config().overrides().armorPhysics().get() ? ENABLED : DISABLED))
                 .position(this.width / 2 - 36, tabOffsetY + 70)
                 .size(FULL_WIDTH, 20)
                 .onPress(button -> {
-                    if (ClientConfig.config().overrideArmorPhysics().update(ConfigValue.TOGGLE)) {
+                    if (ClientConfig.config().overrides().armorPhysics().update(ConfigValue.TOGGLE)) {
                         ClientConfig.INSTANCE.save();
                         button.updateMessage();
                     }

@@ -84,8 +84,8 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
                 .size(128, 20)
                 .onPress(button -> {
                     final var config = ClientConfig.config();
-                    config.cloudSyncEnabled().update(true);
-                    config.automaticCloudSync().update(true);
+                    config.cloudSync().enabled().update(true);
+                    config.cloudSync().automatic().update(true);
                     config.firstTimeLoad().update(false);
 
                     button.active = false;
@@ -106,8 +106,8 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
                 .size(128, 20)
                 .onPress(_ -> {
                     final var config = ClientConfig.config();
-                    config.cloudSyncEnabled().update(false);
-                    config.automaticCloudSync().update(false);
+                    config.cloudSync().enabled().update(false);
+                    config.cloudSync().automatic().update(false);
                     config.firstTimeLoad().update(false);
 
                     //~ if >=26.2 'minecraft.setScreen' -> 'minecraft.gui.setScreen'

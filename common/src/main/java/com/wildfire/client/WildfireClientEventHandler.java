@@ -98,7 +98,7 @@ public final class WildfireClientEventHandler {
     }
 
     static void renderTooltip(ItemStack item, Consumer<Component> tooltipAppender, @Nullable Player player) {
-        if (player == null || !ClientConfig.config().armorStat().get() || ClientConfig.config().overrideArmorPhysics().get()) {
+        if (player == null || !ClientConfig.config().armorStat().get() || ClientConfig.config().overrides().armorPhysics().get()) {
             return;
         }
         var equippableComponent = item.get(DataComponents.EQUIPPABLE);
@@ -168,7 +168,7 @@ public final class WildfireClientEventHandler {
 
         //~ if >=26.2 'client.screen' -> 'client.gui.screen()' {
         if (WildfireKeyBindings.INSTANCE.toggleKey().consumeClick() && client.gui.screen() == null) {
-            ClientConfig.config().disableRendering().update(ConfigValue.TOGGLE);
+            ClientConfig.config().overrides().disableRendering().update(ConfigValue.TOGGLE);
             ClientConfig.INSTANCE.save();
         }
         if (WildfireKeyBindings.INSTANCE.configKey().consumeClick() && client.gui.screen() == null) {
@@ -194,6 +194,8 @@ public final class WildfireClientEventHandler {
 
     /// Tick breast physics on entity tick
     static void onEntityTick(LivingEntity entity) {
+        //Note: We don't need to check if the entity is frozen as far as /tick is concerned,
+        // as the tick event shouldn't happen in the first place if the entity is frozen
         if (EntityConfig.isSupportedEntity(entity)) {
             EntityConfigHolder<?> cfg = EntityConfigHolder.getEntity(entity);
             if (entity instanceof ArmorStand) {

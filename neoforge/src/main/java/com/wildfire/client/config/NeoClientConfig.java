@@ -22,7 +22,6 @@ import com.wildfire.common.WildfireGender;
 import com.wildfire.common.config.Configuration;
 import com.wildfire.common.config.GenderConfigTranslations;
 import com.wildfire.common.config.enums.ShowPlayerListMode;
-import com.wildfire.common.config.enums.SyncVerbosity;
 import com.wildfire.common.config.value.ConfigKey;
 import com.wildfire.common.config.value.ConfigValue;
 import java.util.concurrent.ExecutorService;
@@ -56,25 +55,24 @@ public class NeoClientConfig implements ClientConfig {
         ConfigValue<ShowPlayerListMode> playerListMode = createConfigValue(builder, ClientConfigInstance.PLAYER_LIST_MODE, "playerListMode", GenderConfigTranslations.CLIENT_PLAYER_LIST_MODE);
         ConfigValue<Boolean> hideOwnContributorNameTag = createConfigValue(builder, ClientConfigInstance.HIDE_OWN_CONTRIBUTOR_TAG, "hideOwnContributorNameTag", GenderConfigTranslations.CLIENT_HIDE_OWN_CONTRIBUTOR_TAG);
 
-
         applyToBuilder(GenderConfigTranslations.CLIENT_CLOUD_SYNC, builder).push("cloud_sync");
-        ConfigValue<Boolean> cloudSync = createConfigValue(builder, ClientConfigInstance.CLOUD_SYNC_ENABLED, "enabled", GenderConfigTranslations.CLIENT_CLOUD_SYNC_ENABLED);
-        ConfigValue<Boolean> automaticCloudSync = createConfigValue(builder, ClientConfigInstance.AUTOMATIC_CLOUD_SYNC, "automatic", GenderConfigTranslations.CLIENT_CLOUD_SYNC_AUTOMATIC);
-        ConfigValue<String> cloudServer = createConfigValue(builder, ClientConfigInstance.CLOUD_SERVER, "server", GenderConfigTranslations.CLIENT_CLOUD_SYNC_SERVER);
-        ConfigValue<SyncVerbosity> syncLogVerbosity = createConfigValue(builder, ClientConfigInstance.SYNC_VERBOSITY, "logVerbosity", GenderConfigTranslations.CLIENT_CLOUD_SYNC_LOG_VERBOSITY);
+        CloudSyncConfig cloudSync = new CloudSyncConfig(
+            createConfigValue(builder, CloudSyncConfig.CLOUD_SYNC_ENABLED, "enabled", GenderConfigTranslations.CLIENT_CLOUD_SYNC_ENABLED),
+            createConfigValue(builder, CloudSyncConfig.AUTOMATIC_CLOUD_SYNC, "automatic", GenderConfigTranslations.CLIENT_CLOUD_SYNC_AUTOMATIC),
+            createConfigValue(builder, CloudSyncConfig.CLOUD_SERVER, "server", GenderConfigTranslations.CLIENT_CLOUD_SYNC_SERVER),
+            createConfigValue(builder, CloudSyncConfig.SYNC_VERBOSITY, "logVerbosity", GenderConfigTranslations.CLIENT_CLOUD_SYNC_LOG_VERBOSITY)
+        );
         builder.pop();//End cloud_sync
 
         applyToBuilder(GenderConfigTranslations.CLIENT_OVERRIDE, builder).push("override");
-        ConfigValue<Boolean> armorPhysicsOverride = createConfigValue(builder, ClientConfigInstance.ARMOR_PHYSICS_OVERRIDE, "armorPhysics", GenderConfigTranslations.CLIENT_OVERRIDE_ARMOR_PHYSICS);
-
-        ConfigValue<Boolean> disableRendering = createConfigValue(builder, ClientConfigInstance.DISABLE_RENDERING, "disableRendering", GenderConfigTranslations.CLIENT_OVERRIDE_DISABLE_RENDERING);
-        ConfigValue<Boolean> disableSoundReplacement = createConfigValue(builder, ClientConfigInstance.DISABLE_SOUND_REPLACEMENT, "disableSoundReplacement", GenderConfigTranslations.CLIENT_OVERRIDE_DISABLE_SOUND_REPLACEMENT);
+        ConfigOverrides overrides = new ConfigOverrides(
+            createConfigValue(builder, ConfigOverrides.ARMOR_PHYSICS_OVERRIDE, "armorPhysics", GenderConfigTranslations.CLIENT_OVERRIDE_ARMOR_PHYSICS),
+            createConfigValue(builder, ConfigOverrides.DISABLE_RENDERING, "disableRendering", GenderConfigTranslations.CLIENT_OVERRIDE_DISABLE_RENDERING),
+            createConfigValue(builder, ConfigOverrides.DISABLE_SOUND_REPLACEMENT, "disableSoundReplacement", GenderConfigTranslations.CLIENT_OVERRIDE_DISABLE_SOUND_REPLACEMENT)
+        );
         builder.pop();//End override
 
-        configInstance = new ClientConfigInstance(firstTimeLoad, showToast, armorStat, playerListMode, hideOwnContributorNameTag,
-            cloudSync, automaticCloudSync, cloudServer, syncLogVerbosity,
-            armorPhysicsOverride, disableRendering, disableSoundReplacement
-        );
+        configInstance = new ClientConfigInstance(firstTimeLoad, showToast, armorStat, playerListMode, hideOwnContributorNameTag, cloudSync, overrides);
         configSpec = builder.build();
     }
 

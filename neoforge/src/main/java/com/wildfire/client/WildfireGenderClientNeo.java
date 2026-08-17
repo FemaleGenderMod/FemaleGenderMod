@@ -110,7 +110,6 @@ public class WildfireGenderClientNeo {
             SyncedPlayerList.onTick(minecraft);
         });
         NeoForge.EVENT_BUS.addListener(EntityTickEvent.Post.class, event -> {
-            //TODO - both: Should we be checking level.tickRateManager().isEntityFrozen(living) ??
             if (event.getEntity() instanceof LivingEntity living && living.level().isClientSide()) {
                 WildfireClientEventHandler.onEntityTick(living);
             }
@@ -192,7 +191,7 @@ public class WildfireGenderClientNeo {
     }
 
     private void onPlaySound(PlayLevelSoundEvent.AtEntity event) {
-        if (ClientConfig.config().disableSoundReplacement().get()) {
+        if (ClientConfig.config().overrides().disableSoundReplacement().get()) {
             return;
         }
         Holder<SoundEvent> soundHolder = event.getSound();

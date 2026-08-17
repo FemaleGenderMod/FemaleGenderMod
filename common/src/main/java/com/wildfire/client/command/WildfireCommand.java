@@ -191,7 +191,7 @@ public class WildfireCommand {
     public static <SOURCE extends SharedSuggestionProvider> int setLogLevel(CommandContext<SOURCE> ctx, ClientCommandHelper<SOURCE> helper) {
         SyncVerbosity level = ctx.getArgument("level", SyncVerbosity.class);
 
-        if (ClientConfig.config().syncVerbosity().update(level)) {//Should always be true
+        if (ClientConfig.config().cloudSync().logVerbosity().update(level)) {//Should always be true
             ClientConfig.INSTANCE.save();
 
             send(ctx, helper, WildfireLang.COMMAND_LOG_LEVEL.translate(level));

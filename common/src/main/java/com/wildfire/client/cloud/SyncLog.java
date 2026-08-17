@@ -33,7 +33,7 @@ public final class SyncLog {
     public static final List<Entry> SYNC_LOG = new ArrayList<>();
 
     public static SyncVerbosity verbosity() {
-        return ClientConfig.config().syncVerbosity().get();
+        return ClientConfig.config().cloudSync().logVerbosity().get();
     }
 
     public static void add(WildfireLang langEntry, SyncVerbosity verbosity) {

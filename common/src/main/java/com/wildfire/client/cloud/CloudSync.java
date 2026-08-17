@@ -149,12 +149,12 @@ public final class CloudSync {
 
     /// @return `true` if syncing is enabled; this will always return `false` if [`syncing is unavailable`][#isAvailable()].
     public static boolean isEnabled() {
-        return isAvailable() && ClientConfig.config().cloudSyncEnabled().get();
+        return isAvailable() && ClientConfig.config().cloudSync().enabled().get();
     }
 
     /// @return The URL of the sync server currently being used
     public static String getCloudServer() {
-        String url = ClientConfig.config().cloudServer().get();
+        String url = ClientConfig.config().cloudSync().server().get();
         return url.isBlank() ? DEFAULT_CLOUD_URL : url;
     }
 

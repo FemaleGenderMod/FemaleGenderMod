@@ -36,7 +36,7 @@ public interface ClientHelper {
 
     @Nullable
     default Holder<SoundEvent> hurtSound(Gender gender) {
-        if (ClientConfig.config().disableSoundReplacement().get()) {
+        if (ClientConfig.config().overrides().disableSoundReplacement().get()) {
             return null;
         }
         return switch (gender) {
