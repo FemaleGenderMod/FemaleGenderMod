@@ -31,6 +31,11 @@ import com.wildfire.common.LoaderAgnostics;
 import com.wildfire.common.WildfireGender;
 import com.wildfire.common.entitydata.EntityConfig;
 import com.wildfire.common.entitydata.EntityConfigHolder;
+import com.wildfire.common.entitydata.PlayerConfigHolder;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.entity.ArmorStandRenderer;
@@ -39,11 +44,15 @@ import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
+import net.minecraft.core.Holder;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.TriState;
+import net.minecraft.world.damagesource.DamageEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelType;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -60,11 +69,14 @@ import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddAttributeTooltipsEvent;
+import net.neoforged.neoforge.event.PlayLevelSoundEvent;
 import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 @Mod(value = WildfireAPI.MODID, dist = Dist.CLIENT)
 public class WildfireGenderClientNeo {
+
+    private Set<SoundEvent> hurtSounds = Collections.emptySet();
 
     public WildfireGenderClientNeo(ModContainer modContainer, IEventBus modEventBus) {
         WildfireGenderClient.tryMigrate();
@@ -121,6 +133,7 @@ public class WildfireGenderClientNeo {
         //Note: We intentionally only register the sound events on the client, as if the client has extra sound events it works
         // but if the server has extra, then the connection fails
         NeoClientHelper.SOUND_EVENTS.register(modEventBus);
+        NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, PlayLevelSoundEvent.AtEntity.class, this::onPlaySound);
     }
 
     private void renderNameTag(RenderNameTagEvent.DoRender event) {
@@ -143,7 +156,6 @@ public class WildfireGenderClientNeo {
     }
 
     private void registerOverlays(RegisterGuiLayersEvent event) {
-        //TODO - Neo: Fabric does MISC_OVERLAYS, what is the equivalent of that. Also does this render if the tab list isn't displayed?
         event.registerAbove(VanillaGuiLayers.TAB_LIST, WildfireGender.id("player_list"), WildfireClientEventHandler::renderHud);
     }
 
@@ -176,6 +188,38 @@ public class WildfireGenderClientNeo {
         //~ if >=26.2 'net.minecraft.world.entity.EntityType' -> 'net.minecraft.world.entity.EntityTypes'
         if (event.getRenderer(net.minecraft.world.entity.EntityTypes.ARMOR_STAND) instanceof ArmorStandRenderer armorStandRenderer) {
             WildfireClientEventHandler.addArmorStandRenderLayers(armorStandRenderer, equipmentRenderer, LivingEntityRenderer::addLayer);
+        }
+    }
+
+    private void onPlaySound(PlayLevelSoundEvent.AtEntity event) {
+        if (ClientConfig.config().disableSoundReplacement().get()) {
+            return;
+        }
+        Holder<SoundEvent> soundHolder = event.getSound();
+        if (soundHolder != null) {
+            if (hurtSounds.isEmpty()) {
+                hurtSounds = Arrays.stream(DamageEffects.values()).map(DamageEffects::sound).collect(Collectors.toUnmodifiableSet());
+            }
+            if (hurtSounds.contains(soundHolder.value()) && event.getEntity() instanceof Player p && p.level().isClientSide()) {
+                //Cancel as we handle all hurt sounds manually so that we can
+                if (p.hurtTime == p.hurtDuration && p.hurtTime > 0) {
+                    //Note: We check hurtTime == hurtDuration and hurtTime > 0 or otherwise when the server sends a hurt sound to the client
+                    // and the client will check itself instead of the player who was damaged.
+                    PlayerConfigHolder plr = WildfireGender.getPlayerById(p.getUUID());
+                    if (plr != null && plr.sounds().hurt().get()) {
+                        Holder<SoundEvent> soundOverride = ClientHelper.INSTANCE.hurtSound(plr.gender().get());
+                        if (soundOverride != null) {
+                            //If the player who produced the hurt sound is a female sound replace it
+                            //TODO - Neo: Do we want to add an extra config to allow playing the sound in addition like fabric does, instead of just all out replacing it?
+                            // It sort of sounds like it plays with instead of instead anyway? At least the thud and stuff still exists
+                            event.setSound(soundOverride);
+                            //Note: Vanilla uses + 1 for the pitch of hurt sounds, but we allow configuring the change, so we need to subtract that adjustment
+                            float pitchAdjustment = plr.sounds().voicePitch().get() - 1;
+                            event.setNewPitch(event.getNewPitch() + pitchAdjustment);
+                        }
+                    }
+                }
+            }
         }
     }
 }

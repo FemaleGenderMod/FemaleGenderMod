@@ -86,7 +86,8 @@ public class WildfireGenderClientFabric implements ClientModInitializer {
         ClientPlayConnectionEvents.JOIN.register((_, _, client) -> WildfireClientEventHandler.clientJoin(client));
         LivingEntityRenderLayerRegistrationCallback.EVENT.register(this::registerRenderLayers);
         HudElementRegistry.attachElementAfter(
-            //TODO - Fabric: Should this be PLAYER_LIST ?? to render just after the player list
+            //Note: The reason this can't use PLAYER_LIST as the target is because fabric inherits the visibility requirements of the element
+            // so then it wouldn't render properly when set to ALL
             VanillaHudElements.MISC_OVERLAYS,
             WildfireGender.id("player_list"),
             WildfireClientEventHandler::renderHud

@@ -24,6 +24,7 @@ import com.wildfire.common.WildfireGender;
 import com.wildfire.client.render.GenderRenderState;
 import java.util.Objects;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.context.ContextKey;
@@ -40,8 +41,8 @@ public class NeoClientHelper implements ClientHelper {
     private static final DeferredHolder<SoundEvent, SoundEvent> FEMALE_HURT = SOUND_EVENTS.register("female_hurt", SoundEvent::createVariableRangeEvent);
 
     @Override
-    public SoundEvent femaleHurt() {
-        return FEMALE_HURT.get();
+    public Holder<SoundEvent> femaleHurt() {
+        return FEMALE_HURT;
     }
 
     @Nullable

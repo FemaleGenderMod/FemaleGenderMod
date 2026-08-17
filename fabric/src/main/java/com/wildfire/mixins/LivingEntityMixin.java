@@ -47,7 +47,6 @@ abstract class LivingEntityMixin extends Entity {
         )
     )
     public void wildfiregender$playGenderHurtSound(DamageSource damageSource, CallbackInfo ci) {
-        //TODO - Neo: Implement an equivalent to this
         EntityHurtSoundEvent.EVENT.invoker().onHurt((LivingEntity)(Object)this, damageSource);
     }
 

@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -169,10 +170,10 @@ public class PlayerConfigHolder extends EntityConfigHolder<PlayerConfig> {
     /// @apiNote Only call this on the client side as sounds are only registered on the client.
     public void tryPlayHurtSound(Player player) {
         if (sounds().hurt().get()) {
-            SoundEvent hurtSound = ClientHelper.INSTANCE.hurtSound(gender().get());
+            Holder<SoundEvent> hurtSound = ClientHelper.INSTANCE.hurtSound(gender().get());
             if (hurtSound != null) {
                 float pitchVariation = (player.getRandom().nextFloat() - player.getRandom().nextFloat()) * 0.2F;
-                player.playSound(hurtSound, 1f, pitchVariation + sounds().voicePitch().get());
+                player.playSound(hurtSound.value(), 1f, pitchVariation + sounds().voicePitch().get());
             }
         }
     }

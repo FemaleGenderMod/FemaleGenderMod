@@ -22,6 +22,7 @@ import com.wildfire.client.ClientHelper;
 import com.wildfire.common.WildfireGender;
 import com.wildfire.common.WildfireLang;
 import java.util.function.BiConsumer;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 
@@ -30,7 +31,7 @@ public class WildfireSoundData {
     private WildfireSoundData() {
     }
 
-    public static <RESULT> void generateSounds(BiConsumer<SoundEvent, RESULT> builder, SoundCreator<RESULT> soundCreator) {
+    public static <RESULT> void generateSounds(BiConsumer<Holder<SoundEvent>, RESULT> builder, SoundCreator<RESULT> soundCreator) {
         builder.accept(ClientHelper.INSTANCE.femaleHurt(), soundCreator.create(
             WildfireLang.HURT_SOUND_SUBTITLE.getTranslationKey(),
             WildfireGender.id("female_damage"),

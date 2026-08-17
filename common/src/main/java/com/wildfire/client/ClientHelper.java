@@ -24,6 +24,7 @@ import com.wildfire.common.WildfireHelper;
 import com.wildfire.client.render.GenderRenderState;
 import com.wildfire.common.config.enums.Gender;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
+import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
 import org.jspecify.annotations.Nullable;
 
@@ -31,10 +32,10 @@ public interface ClientHelper {
 
     ClientHelper INSTANCE = WildfireHelper.getService(ClientHelper.class);
 
-    SoundEvent femaleHurt();
+    Holder<SoundEvent> femaleHurt();
 
     @Nullable
-    default SoundEvent hurtSound(Gender gender) {
+    default Holder<SoundEvent> hurtSound(Gender gender) {
         if (ClientConfig.config().disableSoundReplacement().get()) {
             return null;
         }

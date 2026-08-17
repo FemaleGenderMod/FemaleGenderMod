@@ -25,6 +25,7 @@ import com.wildfire.client.render.GenderRenderState;
 import java.util.Objects;
 import net.fabricmc.fabric.api.client.rendering.v1.RenderStateDataKey;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvent;
@@ -33,15 +34,17 @@ import org.jspecify.annotations.Nullable;
 public class FabricClientHelper implements ClientHelper {
 
     public static final RenderStateDataKey<GenderRenderState> STATE = RenderStateDataKey.create(() -> "GenderRenderState");
-    private static final SoundEvent FEMALE_HURT = SoundEvent.createVariableRangeEvent(WildfireGender.id("female_hurt"));
+    @Nullable
+    private static Holder<SoundEvent> FEMALE_HURT;
 
     public static void registerSounds() {
-        Registry.register(BuiltInRegistries.SOUND_EVENT, FEMALE_HURT.location(), FEMALE_HURT);
+        SoundEvent femaleHurt = SoundEvent.createVariableRangeEvent(WildfireGender.id("female_hurt"));
+        FEMALE_HURT = Registry.registerForHolder(BuiltInRegistries.SOUND_EVENT, femaleHurt.location(), femaleHurt);
     }
 
     @Override
-    public SoundEvent femaleHurt() {
-        return FEMALE_HURT;
+    public Holder<SoundEvent> femaleHurt() {
+        return Objects.requireNonNull(FEMALE_HURT, "Hurt sound not registered yet");
     }
 
     @Override
