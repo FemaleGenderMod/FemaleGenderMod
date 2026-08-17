@@ -45,6 +45,7 @@ import net.minecraft.client.model.object.armorstand.ArmorStandArmorModel;
 import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.ArmorStandRenderer;
+import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
@@ -61,6 +62,7 @@ import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
 /// @apiNote Only use this on the client side
@@ -74,42 +76,25 @@ public final class WildfireClientEventHandler {
 
     static void onPlayerNametag(AvatarRenderState state, SubmitNodeCollector nodeCollector, PoseStack matrixStack, CameraRenderState camera) {
         var genderRenderState = ClientHelper.INSTANCE.getRenderState(state);
-        if (genderRenderState == null) {
-            return;
+        if (genderRenderState != null && genderRenderState.nametag != null && state.nameTagAttachment != null) {
+            matrixStack.pushPose();
+            matrixStack.scale(0.5f, 0.5f, 0.5f);
+            nodeCollector.submitNameTag(
+                matrixStack,
+                //Shift the text positioning upwards slightly
+                new Vec3(state.nameTagAttachment.x, (state.nameTagAttachment.y + 0.05) * 2, state.nameTagAttachment.z),
+                state.showExtraEars ? -10 : 0,
+                genderRenderState.nametag,
+                !state.isDiscrete,
+                state.lightCoords,
+                //? if <26.2
+                //state.distanceToCameraSq,
+                camera
+            );
+            matrixStack.popPose();
+            // shift the rest of the name tag up a little bit. This is akin to what vanilla does when rendering the score, but with a different multiplier (in this case 2.15)
+            matrixStack.translate(0f, 2.15F * 1.15F * EntityRenderer.NAMETAG_SCALE, 0f);
         }
-
-        Component nametag = genderRenderState.nametag;
-        if (nametag == null) {
-            return;
-        }
-
-        matrixStack.pushPose();
-        //TODO - both: Try to base this off of EntityRenderState#nameTagAttachment which should help position it appropriately
-        float translationAmt = switch (state.pose) {
-            case CROUCHING -> 0.8f;
-            case SLEEPING -> 0.125f;
-            case SWIMMING, FALL_FLYING -> 0.3f;
-            case SITTING -> 0.275f; //not tested; sitting on a pig doesn't work apparently
-            default -> 0.95f;
-        };
-        matrixStack.translate(0f, translationAmt, 0f);
-        matrixStack.scale(0.5f, 0.5f, 0.5f);
-
-        nodeCollector.submitNameTag(
-            matrixStack,
-            state.nameTagAttachment,
-            state.showExtraEars ? -10 : 0,
-            nametag,
-            !state.isDiscrete,
-            state.lightCoords,
-            //? if <26.2
-            //state.distanceToCameraSq,
-            camera
-        );
-
-        matrixStack.popPose();
-        // shift the rest of the name tag up a little bit
-        matrixStack.translate(0f, 2.15F * 1.15F * 0.025F, 0f);
     }
 
     static void renderTooltip(ItemStack item, Consumer<Component> tooltipAppender, @Nullable Player player) {

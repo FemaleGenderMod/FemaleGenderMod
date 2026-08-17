@@ -19,7 +19,6 @@
 package com.wildfire.api.data;
 
 import com.wildfire.api.IGenderArmor;
-import com.wildfire.api.WildfireAPI;
 import com.wildfire.client.resources.GenderArmorResourceManager;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.CachedOutput;
@@ -44,11 +43,6 @@ public abstract class GenderArmorProvider implements DataProvider {
     private final CompletableFuture<HolderLookup.Provider> registries;
     private final PathProvider pathProvider;
     private final String modId;
-
-    //TODO - Fabric
-    /*protected GenderArmorProvider(net.fabricmc.fabric.api.datagen.v1.FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
-        this(output, registries, output.getModId());
-    }*/
 
     protected GenderArmorProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, String modId) {
         this.registries = registries;
