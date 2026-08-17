@@ -37,7 +37,11 @@ import org.jspecify.annotations.Nullable;
 
 public class NeoClientConfig implements ClientConfig {
 
-    private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
+    private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor(r -> {
+        Thread result = new Thread(r, "Female-Gender-Mod-Client-Config-Saver");
+        result.setDaemon(true);
+        return result;
+    });
 
     private final ModConfigSpec configSpec;
     private final ClientConfigInstance configInstance;
@@ -99,10 +103,15 @@ public class NeoClientConfig implements ClientConfig {
 
     @Override
     public void load(@Nullable Object data) {
-        //TODO - Neo: If there is a json config file, load from it/make the migration handle loading it?
         if (data instanceof ModContainer modContainer) {
             modContainer.registerConfig(Type.CLIENT, configSpec, Configuration.CONFIG_DIR + "/client.toml");
             modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+            //TODO - Neo: If there is a json config file, load from it/make the migration handle loading it?
+            //Try to migrate the json file
+            /*File jsonFile = LoaderAgnostics.INSTANCE.getConfigDir().resolve(WildfireAPI.MODID + ".json").toFile();
+            if (jsonFile.exists()) {
+
+            }*/
         }
     }
 
