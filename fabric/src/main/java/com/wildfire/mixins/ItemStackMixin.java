@@ -21,7 +21,7 @@ package com.wildfire.mixins;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.wildfire.client.events.ArmorStatsTooltipEvent;
+import com.wildfire.client.WildfireClientEventHandler;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -57,10 +57,9 @@ abstract class ItemStackMixin {
         original.call(instance, slot, consumers);
         if(slot == EquipmentSlotGroup.CHEST && first.isFalse()) {
             var item = (ItemStack)(Object)this;
-            if(item.get(DataComponents.EQUIPPABLE) == null) {
-                return;
+            if (item.get(DataComponents.EQUIPPABLE) != null) {
+                WildfireClientEventHandler.renderTooltip(item, consumer, player);
             }
-            ArmorStatsTooltipEvent.EVENT.invoker().appendTooltips(item, consumer, player);
         }
     }
 }

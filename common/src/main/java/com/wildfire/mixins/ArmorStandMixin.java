@@ -19,7 +19,8 @@
 package com.wildfire.mixins;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import com.wildfire.common.events.ArmorStandInteractEvents;
+import com.wildfire.common.WildfireEventHandler;
+import com.wildfire.common.entitydata.BreastDataComponent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -51,7 +52,7 @@ abstract class ArmorStandMixin extends LivingEntity {
             return stack;
         }
 
-        ArmorStandInteractEvents.EQUIP.invoker().onEquip(player, stack);
+        WildfireEventHandler.onEquipArmorStand(player, stack);
 
         return stack;
     }
@@ -67,7 +68,10 @@ abstract class ArmorStandMixin extends LivingEntity {
     )
     public ItemStack wildfiregender$removeBreastDataOnReplace(ItemStack stack, @Local(argsOnly = true) Player player) {
         if(!player.level().isClientSide()) {
-            ArmorStandInteractEvents.REMOVE.invoker().onRemove(stack);
+            // this (and the onBreak hook) don't have the same chest slot item guarantee as the above event purely because the only use case
+            // we have for this event is removing our nbt from the removed items, which is already only applicable to chest slot items,
+            // and safely no-ops otherwise
+            BreastDataComponent.removeFromStack(stack);
         }
         return stack;
     }
@@ -82,7 +86,7 @@ abstract class ArmorStandMixin extends LivingEntity {
     )
     public ItemStack wildfiregender$removeBreastDataOnBreak(ItemStack stack) {
         if(!level().isClientSide()) {
-            ArmorStandInteractEvents.REMOVE.invoker().onRemove(stack);
+            BreastDataComponent.removeFromStack(stack);
         }
         return stack;
     }

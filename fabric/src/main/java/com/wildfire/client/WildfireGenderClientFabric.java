@@ -19,15 +19,10 @@
 package com.wildfire.client;
 
 import com.wildfire.client.command.WildfireCommand;
-import com.wildfire.client.events.ArmorStatsTooltipEvent;
-import com.wildfire.client.events.EntityHurtSoundEvent;
-import com.wildfire.client.events.EntityTickEvent;
-import com.wildfire.client.events.PlayerNametagRenderEvent;
 import com.wildfire.client.gui.SyncedPlayerList;
 import com.wildfire.common.LoaderAgnostics;
 import com.wildfire.common.WildfireGender;
 import com.wildfire.client.config.ClientConfig;
-import com.wildfire.common.entitydata.PlayerConfigHolder;
 import com.wildfire.common.networking.FabricSync;
 import com.wildfire.client.render.debug.GenderDebugHudEntry;
 import com.wildfire.client.render.debug.PhysicsDebugHudEntry;
@@ -50,7 +45,6 @@ import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 
 public class WildfireGenderClientFabric implements ClientModInitializer {
 
@@ -92,17 +86,6 @@ public class WildfireGenderClientFabric implements ClientModInitializer {
             WildfireGender.id("player_list"),
             WildfireClientEventHandler::renderHud
         );
-        ArmorStatsTooltipEvent.EVENT.register(WildfireClientEventHandler::renderTooltip);
-        EntityHurtSoundEvent.EVENT.register((entity, _) -> {
-            if (entity instanceof Player player && player.level().isClientSide()) {
-                PlayerConfigHolder genderPlayer = WildfireGender.getPlayerById(player.getUUID());
-                if (genderPlayer != null) {
-                    genderPlayer.tryPlayHurtSound(player);
-                }
-            }
-        });
-        EntityTickEvent.EVENT.register(WildfireClientEventHandler::onEntityTick);
-        PlayerNametagRenderEvent.EVENT.register(WildfireClientEventHandler::onPlayerNametag);
         ClientTickEvents.END_CLIENT_TICK.register(SyncedPlayerList::onTick);
     }
 

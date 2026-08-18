@@ -6,13 +6,6 @@
     "mixins": [
         "ArmorStandMixin"
     ],
-    "client": [
-        "AvatarRendererMixin",
-        "EntityRendererMixin",
-        "ItemStackMixin",
-        "LivingEntityMixin",
-        "accessors.YggdrasilMinecraftSessionServiceAccessor"
-    ],
     "injectors": {
         "defaultRequire": 1
     },

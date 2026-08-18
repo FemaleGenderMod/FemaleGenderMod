@@ -18,8 +18,6 @@
 
 package com.wildfire.common;
 
-import com.wildfire.common.events.ArmorStandInteractEvents;
-import com.wildfire.common.entitydata.BreastDataComponent;
 import com.wildfire.common.networking.FabricSync;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
@@ -32,7 +30,5 @@ public class WildfireGenderFabric implements ModInitializer {
         FabricSync.register();
         EntityTrackingEvents.START_TRACKING.register(WildfireEventHandler::onBeginTracking);
         ServerPlayConnectionEvents.DISCONNECT.register((handler, _) -> WildfireEventHandler.playerDisconnected(handler.getPlayer()));
-        ArmorStandInteractEvents.EQUIP.register(WildfireEventHandler::onEquipArmorStand);
-        ArmorStandInteractEvents.REMOVE.register(BreastDataComponent::removeFromStack);
     }
 }

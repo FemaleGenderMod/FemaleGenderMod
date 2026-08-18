@@ -33,7 +33,9 @@ tasks.register<ValidateJson>("validateJson") {
     //TODO - Fabric: Check the file from the jar?? The json is invalid until it gets replaced
     criticalFiles.from(
         //"fabric/src/main/resources/fabric.mod.json",
-        "fabric/src/main/resources/${modId}.mixins.json"
+        "common/src/main/resources/${modId}.mixins.json",
+        "fabric/src/main/resources/${modId}.fabric.mixins.json",
+        "neoforge/src/main/resources/${modId}.neo.mixins.json"
     )
     rootTranslation.set(layout.projectDirectory.file(
         "fabric/versions/${stonecutter.current?.project}/src/main/generated/assets/${modId}/lang/en_us.json"

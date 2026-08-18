@@ -21,7 +21,7 @@ package com.wildfire.mixins;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.wildfire.client.events.PlayerNametagRenderEvent;
+import com.wildfire.client.WildfireClientEventHandler;
 import com.wildfire.common.LoaderAgnostics;
 import com.wildfire.client.config.ClientConfig;
 import net.minecraft.client.model.HumanoidModel;
@@ -70,6 +70,6 @@ abstract class AvatarRendererMixin extends LivingEntityRenderer<Avatar, AvatarRe
         final CameraRenderState camera,
         CallbackInfo ci
     ) {
-        PlayerNametagRenderEvent.EVENT.invoker().onRenderNameTag(state, collector, poseStack, camera);
+        WildfireClientEventHandler.onPlayerNametag(state, collector, poseStack, camera);
     }
 }

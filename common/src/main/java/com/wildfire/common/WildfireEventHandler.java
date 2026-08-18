@@ -51,7 +51,7 @@ public final class WildfireEventHandler {
     }
 
     /// Apply player settings to chestplates equipped onto armor stands
-    static void onEquipArmorStand(Player player, ItemStack item) {
+    public static void onEquipArmorStand(Player player, ItemStack item) {
         PlayerConfigHolder playerConfig = WildfireGender.getPlayerById(player.getUUID());
         if(playerConfig == null) {
             // while we shouldn't have our tag on the stack still, we're still checking to catch any armor

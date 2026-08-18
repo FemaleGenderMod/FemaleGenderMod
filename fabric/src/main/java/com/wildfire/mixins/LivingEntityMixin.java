@@ -18,12 +18,14 @@
 
 package com.wildfire.mixins;
 
-import com.wildfire.client.events.EntityHurtSoundEvent;
-import com.wildfire.client.events.EntityTickEvent;
+import com.wildfire.client.WildfireClientEventHandler;
+import com.wildfire.common.WildfireGender;
+import com.wildfire.common.entitydata.PlayerConfigHolder;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -47,12 +49,18 @@ abstract class LivingEntityMixin extends Entity {
         )
     )
     public void wildfiregender$playGenderHurtSound(DamageSource damageSource, CallbackInfo ci) {
-        EntityHurtSoundEvent.EVENT.invoker().onHurt((LivingEntity)(Object)this, damageSource);
+        if ((LivingEntity)(Object)this instanceof Player player && player.level().isClientSide()) {
+            PlayerConfigHolder genderPlayer = WildfireGender.getPlayerById(player.getUUID());
+            if (genderPlayer != null) {
+                genderPlayer.tryPlayHurtSound(player);
+            }
+        }
     }
 
     @Inject(method = "tick", at = @At("TAIL"))
     public void wildfiregender$onTick(CallbackInfo ci) {
         if(!level().isClientSide()) return; // ignore ticks from the singleplayer integrated server
-        EntityTickEvent.EVENT.invoker().onTick((LivingEntity)(Object)this);
+        //Note that this event may not be consistently invoked for every entity, such as if other mods (e.g. EntityCulling) cancel the entity tick.
+        WildfireClientEventHandler.onEntityTick((LivingEntity)(Object)this);
     }
 }
