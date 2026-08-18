@@ -47,7 +47,6 @@ public class FabricSync {
         PayloadTypeRegistry.serverboundConfiguration().register(ServerboundSyncHelloPacket.TYPE, ServerboundSyncHelloPacket.STREAM_CODEC);
         PayloadTypeRegistry.clientboundConfiguration().register(ServerboundSyncHelloPacket.TYPE, ServerboundSyncHelloPacket.STREAM_CODEC);
 
-        //TODO - Fabric: Do we need to try and figure out a time to do this as registerReceiver similar to how the client used to do it
         WildfireGender.LOGGER.debug(WildfireSync.MARKER, "Registering server-side config phase receiver");
         ServerConfigurationNetworking.registerGlobalReceiver(ServerboundSyncHelloPacket.TYPE, (packet, context) -> {
             packet.handle(version -> context.packetContext().set(FabricNetworking.VERSION, version));
@@ -55,6 +54,8 @@ public class FabricSync {
         });
 
         ServerConfigurationConnectionEvents.CONFIGURE.register((listener, _) -> {
+            //TODO - Neo: This currently returns false from neo clients due to https://github.com/neoforged/NeoForge/issues/1913
+            // Once https://github.com/neoforged/NeoForge/pull/3417 is merged and backported to 26.1, we should bump the min Neo versions
             if (ServerConfigurationNetworking.canSend(listener, ClientboundSyncHelloPacket.TYPE)) {
                 listener.addTask(new HelloConfigurationTask());
             } else {
@@ -89,12 +90,6 @@ public class FabricSync {
                 packet.handle(context.responseSender()::sendPacket, version -> context.packetContext().set(FabricNetworking.VERSION, version))
             );
         });
-
-        //TODO - Fabric: Validate the above works properly
-        /*WildfireGender.LOGGER.debug(WildfireSync.MARKER, "Registering client-side config phase receiver");
-        ClientConfigurationNetworking.registerGlobalReceiver(ClientboundSyncHelloPacket.TYPE, (packet, context) ->
-            packet.handle(context.responseSender()::sendPacket, version -> context.packetContext().set(FabricNetworking.VERSION, version))
-        );*/
 
         //Play
         ClientPlayConnectionEvents.INIT.register((listener, _) -> {

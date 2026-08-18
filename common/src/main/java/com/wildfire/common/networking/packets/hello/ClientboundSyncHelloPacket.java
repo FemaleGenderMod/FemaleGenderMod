@@ -45,9 +45,9 @@ public record ClientboundSyncHelloPacket(int version) implements SyncHelloPacket
         replySender.accept(new ServerboundSyncHelloPacket());
         versionSetter.accept(version);
         if (version == VERSION) {
-            WildfireGender.LOGGER.info(WildfireSync.MARKER, "Received hello response from server with protocol version {}", version);
+            WildfireGender.LOGGER.info(WildfireSync.MARKER, "Received hello packet from server with protocol version {}", version);
         } else {
-            WildfireGender.LOGGER.warn(WildfireSync.MARKER, "Server reported an unsupported sync protocol version! Server supports version {} but we expect {}",
+            WildfireGender.LOGGER.warn(WildfireSync.MARKER, "Server is using an unsupported sync protocol version! Server supports version {} but we expect {}",
                 version, VERSION
             );
         }
