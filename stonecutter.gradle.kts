@@ -6,6 +6,15 @@ plugins {
     id("net.neoforged.moddev") version "2.0.143" apply false
     id("net.fabricmc.fabric-loom") version "1.17-SNAPSHOT" apply false
     id("me.modmuss50.mod-publish-plugin") version "2.2.0" apply false
+    id("idea")
+}
+
+idea {
+    module {
+        // Tell IDEA to always download sources/javadoc artifacts from Maven.
+        isDownloadJavadoc = true
+        isDownloadSources = true
+    }
 }
 
 stonecutter active "26.2"
