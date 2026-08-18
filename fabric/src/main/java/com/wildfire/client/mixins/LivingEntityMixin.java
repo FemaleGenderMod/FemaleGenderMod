@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.mixins;
+package com.wildfire.client.mixins;
 
 import com.wildfire.client.WildfireClientEventHandler;
 import com.wildfire.common.WildfireGender;
@@ -48,7 +48,7 @@ abstract class LivingEntityMixin extends Entity {
             target = "Lnet/minecraft/world/entity/LivingEntity;playSound(Lnet/minecraft/sounds/SoundEvent;FF)V"
         )
     )
-    public void wildfiregender$playGenderHurtSound(DamageSource damageSource, CallbackInfo ci) {
+    public void playGenderHurtSound(DamageSource damageSource, CallbackInfo ci) {
         if ((LivingEntity)(Object)this instanceof Player player && player.level().isClientSide()) {
             PlayerConfigHolder genderPlayer = WildfireGender.getPlayerById(player.getUUID());
             if (genderPlayer != null) {
@@ -58,7 +58,7 @@ abstract class LivingEntityMixin extends Entity {
     }
 
     @Inject(method = "tick", at = @At("TAIL"))
-    public void wildfiregender$onTick(CallbackInfo ci) {
+    public void onTick(CallbackInfo ci) {
         if(!level().isClientSide()) return; // ignore ticks from the singleplayer integrated server
         //Note that this event may not be consistently invoked for every entity, such as if other mods (e.g. EntityCulling) cancel the entity tick.
         WildfireClientEventHandler.onEntityTick((LivingEntity)(Object)this);

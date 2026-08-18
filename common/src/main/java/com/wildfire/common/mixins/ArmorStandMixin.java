@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.mixins;
+package com.wildfire.common.mixins;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.wildfire.common.WildfireEventHandler;
@@ -47,7 +47,7 @@ abstract class ArmorStandMixin extends LivingEntity {
         ),
         index = 1
     )
-    public ItemStack wildfiregender$attachBreastData(ItemStack stack, @Local(argsOnly = true) EquipmentSlot slot, @Local(argsOnly = true) Player player) {
+    public ItemStack attachBreastData(ItemStack stack, @Local(argsOnly = true) EquipmentSlot slot, @Local(argsOnly = true) Player player) {
         if(level().isClientSide() || slot != EquipmentSlot.CHEST || stack.isEmpty()) {
             return stack;
         }
@@ -66,7 +66,7 @@ abstract class ArmorStandMixin extends LivingEntity {
         ),
         index = 1
     )
-    public ItemStack wildfiregender$removeBreastDataOnReplace(ItemStack stack, @Local(argsOnly = true) Player player) {
+    public ItemStack removeBreastDataOnReplace(ItemStack stack, @Local(argsOnly = true) Player player) {
         if(!player.level().isClientSide()) {
             // this (and the onBreak hook) don't have the same chest slot item guarantee as the above event purely because the only use case
             // we have for this event is removing our nbt from the removed items, which is already only applicable to chest slot items,
@@ -84,7 +84,7 @@ abstract class ArmorStandMixin extends LivingEntity {
         ),
         index = 2
     )
-    public ItemStack wildfiregender$removeBreastDataOnBreak(ItemStack stack) {
+    public ItemStack removeBreastDataOnBreak(ItemStack stack) {
         if(!level().isClientSide()) {
             BreastDataComponent.removeFromStack(stack);
         }

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.mixins;
+package com.wildfire.client.mixins;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -46,7 +46,7 @@ abstract class AvatarRendererMixin extends LivingEntityRenderer<Avatar, AvatarRe
     }
 
     @ModifyReturnValue(method = "shouldShowName(Lnet/minecraft/world/entity/Avatar;D)Z", at = @At("RETURN"))
-    public boolean wildfiregender$forceLabel(boolean original, @Local(argsOnly = true) Avatar entity) {
+    public boolean forceLabel(boolean original, @Local(argsOnly = true) Avatar entity) {
         if (LoaderAgnostics.INSTANCE.isDevelopmentEnv()) {
             if(entity instanceof LocalPlayer && ClientConfig.INSTANCE.displayOwnNameTag()) {
                 return true;
@@ -63,7 +63,7 @@ abstract class AvatarRendererMixin extends LivingEntityRenderer<Avatar, AvatarRe
             shift = At.Shift.AFTER
         )
     )
-    public void wildfiregender$renderNametag(
+    public void renderNametag(
         final AvatarRenderState state,
         final PoseStack poseStack,
         final SubmitNodeCollector collector,

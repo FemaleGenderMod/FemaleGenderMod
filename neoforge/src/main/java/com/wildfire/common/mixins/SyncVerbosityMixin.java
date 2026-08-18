@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.mixins;
+package com.wildfire.common.mixins;
 
 import com.wildfire.common.config.enums.SyncVerbosity;
 import net.neoforged.neoforge.common.TranslatableEnum;

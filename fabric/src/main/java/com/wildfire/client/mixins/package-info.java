@@ -17,6 +17,6 @@
  */
 
 @NullMarked
-package com.wildfire.mixins.accessors;
+package com.wildfire.client.mixins;
 
 import org.jspecify.annotations.NullMarked;

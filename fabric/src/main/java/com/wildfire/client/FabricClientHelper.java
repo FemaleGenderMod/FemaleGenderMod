@@ -20,7 +20,7 @@ package com.wildfire.client;
 
 import com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService;
 import com.wildfire.common.WildfireGender;
-import com.wildfire.mixins.accessors.YggdrasilMinecraftSessionServiceAccessor;
+import com.wildfire.client.mixins.accessors.YggdrasilMinecraftSessionServiceAccessor;
 import com.wildfire.client.render.GenderRenderState;
 import java.util.Objects;
 import net.fabricmc.fabric.api.client.rendering.v1.RenderStateDataKey;

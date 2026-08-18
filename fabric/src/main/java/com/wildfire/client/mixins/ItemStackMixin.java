@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.mixins;
+package com.wildfire.client.mixins;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -44,7 +44,7 @@ import java.util.function.Consumer;
 abstract class ItemStackMixin {
     @SuppressWarnings("LocalMayUseName") // mixinextras seems to have issues with argsOnly named locals
     @WrapOperation(method = "addAttributeTooltips", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;forEachModifier(Lnet/minecraft/world/entity/EquipmentSlotGroup;Lorg/apache/commons/lang3/function/TriConsumer;)V"))
-    public void wildfiregender$appendPhysicsStats(
+    public void appendPhysicsStats(
         ItemStack instance,
         EquipmentSlotGroup slot,
         @SuppressWarnings("NameDoesntMatchTargetClass") // name conflicts with our @Local consumer

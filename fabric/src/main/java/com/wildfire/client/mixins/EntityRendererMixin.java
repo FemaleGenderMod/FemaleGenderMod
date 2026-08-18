@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.mixins;
+package com.wildfire.client.mixins;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.wildfire.client.FabricClientHelper;
@@ -37,7 +37,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(EntityRenderer.class)
 abstract class EntityRendererMixin {
     @Inject(method = "createRenderState(Lnet/minecraft/world/entity/Entity;F)Lnet/minecraft/client/renderer/entity/state/EntityRenderState;", at = @At("TAIL"))
-    public void wildfiregender$captureEntityRenderState(Entity entity, float partialTicks, CallbackInfoReturnable<? extends EntityRenderState> ci, @Local(name = "state") EntityRenderState state) {
+    public void captureEntityRenderState(Entity entity, float partialTicks, CallbackInfoReturnable<? extends EntityRenderState> ci, @Local(name = "state") EntityRenderState state) {
         if (entity instanceof LivingEntity livingEntity && state instanceof HumanoidRenderState humanoidState) {
             if (EntityConfig.isSupportedEntity(livingEntity)) {
                 var config = EntityConfigHolder.getEntity(livingEntity);

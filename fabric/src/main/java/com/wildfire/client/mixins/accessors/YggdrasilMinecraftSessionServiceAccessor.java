@@ -16,7 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-@NullMarked
-package com.wildfire.mixins;
+package com.wildfire.client.mixins.accessors;
 
-import org.jspecify.annotations.NullMarked;
+import com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
+
+/// @apiNote Only applied on the client side
+@Mixin(YggdrasilMinecraftSessionService.class)
+public interface YggdrasilMinecraftSessionServiceAccessor {
+    @Accessor String getBaseUrl();
+}
