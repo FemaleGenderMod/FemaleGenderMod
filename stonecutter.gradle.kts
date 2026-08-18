@@ -1,3 +1,4 @@
+import com.wildfire.ATtoCTConverter
 import com.wildfire.ValidateJson
 
 plugins {
@@ -18,7 +19,7 @@ tasks.register("runData") {
 }
 
 tasks.register<ValidateJson>("validateJson") {
-    val modId: String = sc.properties["mod_id"]
+    val modId: String = stonecutter.properties["mod_id"]
     inputs.property("modId", modId)
     //TODO - Fabric: Check the file from the jar?? The json is invalid until it gets replaced
     criticalFiles.from(
@@ -40,4 +41,10 @@ tasks.register<ValidateJson>("validateJson") {
         //Exact matches such as "N" does not generate the duplicate file
         "en_ud"
     ))
+}
+
+tasks.register<ATtoCTConverter>("convertATtoCT") {
+    atPath = layout.projectDirectory.file("common/src/main/resources/META-INF/accesstransformer.cfg")
+    //outputFile = objectFactory.fileProperty().convention(projectLayout.buildDirectory.file('changelog.md'))
+    ctPath = layout.projectDirectory.file("fabric/src/main/resources/${stonecutter.properties["mod_id"] as String}.classtweaker")
 }

@@ -62,9 +62,31 @@ loom {
         runDirectory = file("../../run")
     }
 
-    //TODO - Fabric: Generate the access widener file automatically from the AT file?
-    val aw = sc.tree["common"]!!.project.file("src/main/resources/${sc.properties["mod_id"] as String}.accesswidener")
-    accessWidenerPath = sc.process(aw, "build/dev.aw")
+    //TODO: Can we have the convertATtoCT task run automatically for configuration? For building we can ensure the file is at least up to date
+    val aw = sc.branch.project.file("src/main/resources/${sc.properties["mod_id"] as String}.classtweaker")
+    if (aw.exists()) {
+        accessWidenerPath = sc.process(aw, "build/dev.ct")
+    } else {
+        println("No class tweaker file present. Please run validateAccessWidener")
+    }
+}
+
+//TODO - Fabric: Re-evaluate these task configurations
+val convertATs = rootProject.tasks.named("convertATtoCT")
+
+tasks.named("validateAccessWidener").configure {
+    //Ensure that the CT file is up to date when trying to validate access wideners
+    dependsOn(convertATs)
+}
+tasks.named("sourcesJar").configure {//Ensure AWs are validated for the source jar, and are updated if necessary
+    dependsOn(tasks.named("validateAccessWidener"))
+}
+tasks.named<ProcessResources>("processResources").configure {
+    mustRunAfter(convertATs)
+    exclude("META-INF/accesstransformer.cfg")
+}
+tasks.named("stonecutterPrepare").configure {
+    mustRunAfter(convertATs)
 }
 
 fabricApi {
