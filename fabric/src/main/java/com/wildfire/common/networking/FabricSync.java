@@ -54,8 +54,6 @@ public class FabricSync {
         });
 
         ServerConfigurationConnectionEvents.CONFIGURE.register((listener, _) -> {
-            //TODO - Neo: This currently returns false from neo clients due to https://github.com/neoforged/NeoForge/issues/1913
-            // Once https://github.com/neoforged/NeoForge/pull/3417 is merged and backported to 26.1, we should bump the min Neo versions
             if (ServerConfigurationNetworking.canSend(listener, ClientboundSyncHelloPacket.TYPE)) {
                 listener.addTask(new HelloConfigurationTask());
             } else {

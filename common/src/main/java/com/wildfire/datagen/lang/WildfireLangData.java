@@ -319,6 +319,9 @@ public class WildfireLangData {
         add(builder, WildfireLang.COMMAND_ENTITIES, "Entities (Class: %1$s):");
 
         generateConfigTranslations(builder);
+        //TODO: Should this just be defined for neo? Might make it harder for people translating to find all the relevant strings
+        add(builder, "neoforge.screen.mods.info.description." + WildfireAPI.MODID,
+            "Adds extra customization options to the player model by adding breasts for a more feminine appearance");
 
         // intentionally omitted as they aren't used anywhere:
     }
