@@ -15,16 +15,16 @@
     "environment": "*",
     "entrypoints": {
         "main": [
-            "com.wildfire.common.WildfireGenderFabric"
+            "com.wildfire.fabric.common.WildfireGenderFabric"
         ],
         "client": [
-            "com.wildfire.client.WildfireGenderClientFabric"
+            "com.wildfire.fabric.client.WildfireGenderClientFabric"
         ],
         "modmenu": [
-            "com.wildfire.client.compat.ModMenuIntegration"
+            "com.wildfire.fabric.client.compat.ModMenuIntegration"
         ],
         "fabric-datagen": [
-          "com.wildfire.datagen.WildfireGenderDataGenerator"
+          "com.wildfire.fabric.datagen.WildfireGenderDataGenerator"
         ]
     },
     "mixins": [

@@ -6,8 +6,6 @@ plugins {
 
 sourceSets.main {
     resources.srcDir("src/generated/resources")
-    //Exclude package info's from the neo project so that when merging it doesn't fail due to duplicate package info files
-    java.exclude("**/package-info.java")
 }
 
 neoForge {

@@ -122,7 +122,7 @@ public final class WildfireClientEventHandler {
         tooltipAppender.accept(WildfireLang.ARMOR_TOOLTIP.translateColored(TextColor.LIGHT_PURPLE, formatted));
     }
 
-    static void renderHud(GuiGraphicsExtractor context, DeltaTracker tickCounter) {
+    public static void renderHud(GuiGraphicsExtractor context, DeltaTracker tickCounter) {
         var client = Minecraft.getInstance();
         //~ if >=26.2 'client.screen' -> 'client.gui.screen()'
         if (client.gui.screen() instanceof WardrobeBrowserScreen) {
@@ -138,14 +138,14 @@ public final class WildfireClientEventHandler {
     }
 
     /// Remove (non-player) entities from the client cache when they're unloaded
-    static void onEntityUnload(Entity entity, Level world) {
+    public static void onEntityUnload(Entity entity, Level world) {
         // note that we don't attempt to unload players; they're instead only ever unloaded once we leave a world,
         // or once they disconnect
         EntityConfigHolder.CACHE.invalidate(entity.getUUID());
     }
 
     /// Perform various actions that should happen once per client tick, such as syncing client player settings to the server.
-    static void onClientTick(Minecraft client) {
+    public static void onClientTick(Minecraft client) {
         if (client.level == null || client.player == null) {
             return;
         }
@@ -178,12 +178,12 @@ public final class WildfireClientEventHandler {
     }
 
     /// Clears all caches when the client player disconnects from a server/closes a singleplayer world
-    static void clientDisconnect() {
+    public static void clientDisconnect() {
         WildfireGender.CACHE.invalidateAll();
         EntityConfigHolder.CACHE.invalidateAll();
     }
 
-    static void clientJoin(Minecraft client) {
+    public static void clientJoin(Minecraft client) {
         if (client.player != null && ClientConfig.config().showToast().get()) {
             var button = WildfireKeyBindings.INSTANCE.configKey().getTranslatedKeyMessage();
             //~ if >=26.2 'client.getToastManager()' -> 'client.gui.toastManager()'
@@ -205,7 +205,7 @@ public final class WildfireClientEventHandler {
         }
     }
 
-    static void addAvatarRenderLayers(@Nullable AvatarRenderer<?> avatarRenderer, EquipmentLayerRenderer equipmentRenderer,
+    public static void addAvatarRenderLayers(@Nullable AvatarRenderer<?> avatarRenderer, EquipmentLayerRenderer equipmentRenderer,
         BiConsumer<AvatarRenderer<?>, RenderLayer<AvatarRenderState, PlayerModel>> registration) {
         if (avatarRenderer != null) {
             registration.accept(avatarRenderer, new GenderLayer<>(avatarRenderer));
@@ -214,7 +214,7 @@ public final class WildfireClientEventHandler {
         }
     }
 
-    static void addArmorStandRenderLayers(ArmorStandRenderer armorStandRenderer, EquipmentLayerRenderer equipmentRenderer,
+    public static void addArmorStandRenderLayers(ArmorStandRenderer armorStandRenderer, EquipmentLayerRenderer equipmentRenderer,
         BiConsumer<ArmorStandRenderer, RenderLayer<ArmorStandRenderState, ArmorStandArmorModel>> registration) {
         registration.accept(armorStandRenderer, new GenderArmorLayer<>(armorStandRenderer, equipmentRenderer));
     }

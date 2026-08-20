@@ -29,8 +29,8 @@ import org.jetbrains.annotations.ApiStatus;
 import java.util.concurrent.CompletableFuture;
 
 @ApiStatus.Internal
-class WildfireGenderArmorProvider extends GenderArmorProvider {
-	WildfireGenderArmorProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, String modid) {
+public class WildfireGenderArmorProvider extends GenderArmorProvider {
+    public WildfireGenderArmorProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, String modid) {
 		super(output, registries, modid);
 	}
 

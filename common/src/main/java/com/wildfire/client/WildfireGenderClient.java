@@ -43,7 +43,7 @@ import org.jspecify.annotations.Nullable;
 public class WildfireGenderClient {
     private static final Executor LOAD_EXECUTOR = Util.ioPool().forName(WildfireAPI.MODID + "$loadPlayerData");
 
-    static void tryMigrate() {
+    public static void tryMigrate() {
         tryMigrate("WildfireGender", Configuration.CONFIG_DIR);
         tryMigrate("wildfire_gender.json", WildfireAPI.MODID + ".json");
     }

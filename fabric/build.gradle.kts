@@ -5,11 +5,6 @@ plugins {
     id("me.modmuss50.mod-publish-plugin")
 }
 
-sourceSets.main {
-    //Exclude package info's from the fabric project so that when merging it doesn't fail due to duplicate package info files
-    java.exclude("**/package-info.java")
-}
-
 repositories {
     maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1") { name = "DevAuth" }
     maven("https://maven.terraformersmc.com/") { name = "Terraformers" }

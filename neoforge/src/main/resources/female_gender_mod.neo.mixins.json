@@ -1,7 +1,7 @@
 {
     "required": true,
     "minVersion": "0.8",
-    "package": "com.wildfire.common.mixins",
+    "package": "com.wildfire.neoforge.common.mixins",
     "compatibilityLevel": "JAVA_${java_version}",
     "mixins": [
         "ShowPlayerListModeMixin",

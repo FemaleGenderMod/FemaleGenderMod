@@ -29,11 +29,11 @@ import net.minecraft.network.codec.ByteBufCodecs;
 
 public record CloudSyncConfig(ConfigValue<Boolean> enabled, ConfigValue<Boolean> automatic, ConfigValue<String> server, ConfigValue<SyncVerbosity> logVerbosity) {
 
-    static final ConfigKey<Boolean> CLOUD_SYNC_ENABLED = ConfigKey.DEFAULT_FALSE;
-    static final ConfigKey<Boolean> AUTOMATIC_CLOUD_SYNC = ConfigKey.DEFAULT_FALSE;
+    public static final ConfigKey<Boolean> CLOUD_SYNC_ENABLED = ConfigKey.DEFAULT_FALSE;
+    public static final ConfigKey<Boolean> AUTOMATIC_CLOUD_SYNC = ConfigKey.DEFAULT_FALSE;
     /// @see CloudSync#DEFAULT_CLOUD_URL for the actual default
-    static final ConfigKey<String> CLOUD_SERVER = new ConfigKey<>("", Codec.STRING, ByteBufCodecs.STRING_UTF8);
-    static final ConfigKey<SyncVerbosity> SYNC_VERBOSITY = new ConfigKey<>(SyncVerbosity.DEFAULT, SyncVerbosity.CODEC_OR_LEGACY, SyncVerbosity.STREAM_CODEC);
+    public static final ConfigKey<String> CLOUD_SERVER = new ConfigKey<>("", Codec.STRING, ByteBufCodecs.STRING_UTF8);
+    public static final ConfigKey<SyncVerbosity> SYNC_VERBOSITY = new ConfigKey<>(SyncVerbosity.DEFAULT, SyncVerbosity.CODEC_OR_LEGACY, SyncVerbosity.STREAM_CODEC);
 
     public static final MapCodec<CloudSyncConfig> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
         CLOUD_SYNC_ENABLED.codecOrDefault("cloud_sync").forGetter(config -> config.enabled.get()),

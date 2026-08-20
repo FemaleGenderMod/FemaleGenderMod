@@ -26,9 +26,9 @@ import com.wildfire.common.config.value.ConfigValue;
 //TODO: Do we want to rename disable rendering and disable sound replacement to not have disable in the field name?
 public record ConfigOverrides(ConfigValue<Boolean> armorPhysics, ConfigValue<Boolean> disableRendering, ConfigValue<Boolean> disableSoundReplacement) {
 
-    static final ConfigKey<Boolean> ARMOR_PHYSICS_OVERRIDE = ConfigKey.DEFAULT_FALSE;
-    static final ConfigKey<Boolean> DISABLE_RENDERING = ConfigKey.DEFAULT_FALSE;
-    static final ConfigKey<Boolean> DISABLE_SOUND_REPLACEMENT = ConfigKey.DEFAULT_FALSE;
+    public static final ConfigKey<Boolean> ARMOR_PHYSICS_OVERRIDE = ConfigKey.DEFAULT_FALSE;
+    public static final ConfigKey<Boolean> DISABLE_RENDERING = ConfigKey.DEFAULT_FALSE;
+    public static final ConfigKey<Boolean> DISABLE_SOUND_REPLACEMENT = ConfigKey.DEFAULT_FALSE;
 
     public static final MapCodec<ConfigOverrides> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
         ARMOR_PHYSICS_OVERRIDE.codecOrDefault("armor_physics_override").forGetter(config -> config.armorPhysics.get()),

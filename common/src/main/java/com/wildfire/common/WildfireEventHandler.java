@@ -32,12 +32,12 @@ public final class WildfireEventHandler {
     }
 
     /// Removes a disconnecting player from the cache on a server
-    static void playerDisconnected(Player player) {
+    public static void playerDisconnected(Player player) {
         WildfireGender.CACHE.invalidate(player.getUUID());
     }
 
     /// Send a sync packet when a player enters the render distance of another player
-    static void onBeginTracking(Entity tracked, ServerPlayer syncTo) {
+    public static void onBeginTracking(Entity tracked, ServerPlayer syncTo) {
         if(tracked instanceof Player toSync) {
             PlayerConfigHolder genderToSync = WildfireGender.getPlayerById(toSync.getUUID());
             if(genderToSync == null) return;
