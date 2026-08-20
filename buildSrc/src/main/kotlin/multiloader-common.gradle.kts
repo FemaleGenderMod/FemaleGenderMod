@@ -27,15 +27,11 @@ plugins {
 }
 
 fun SCList.asListedElements(): String {
-    return joinToString(", ");
+    return joinToString(", ")
 }
 
 fun SCList.asTomlList(): String {
-    return joinToString(
-        separator = ", ",
-        prefix = "[",
-        postfix = "]"
-    ) { "\"$it\"" }
+    return joinToString("\", \"")
 }
 
 val modName: String = stonecutterBuild.properties["mod_name"]
