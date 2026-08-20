@@ -191,8 +191,8 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
     }
 
     @Override
-    public void onClose() {
+    public void removed() {
         ClientConfig.INSTANCE.save();
-        super.onClose();
+        super.removed();
     }
 }

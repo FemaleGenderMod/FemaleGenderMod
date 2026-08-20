@@ -167,8 +167,8 @@ public final class WildfireClientEventHandler {
         }
 
         //~ if >=26.2 'client.screen' -> 'client.gui.screen()' {
-        if (WildfireKeyBindings.INSTANCE.toggleKey().consumeClick() && client.gui.screen() == null) {
-            ClientConfig.config().overrides().disableRendering().update(ConfigValue.TOGGLE);
+        if (WildfireKeyBindings.INSTANCE.toggleKey().consumeClick() && client.gui.screen() == null &&
+            ClientConfig.config().overrides().disableRendering().update(ConfigValue.TOGGLE)) {//Update should always succeed, but validate it just in case
             ClientConfig.INSTANCE.save();
         }
         if (WildfireKeyBindings.INSTANCE.configKey().consumeClick() && client.gui.screen() == null) {

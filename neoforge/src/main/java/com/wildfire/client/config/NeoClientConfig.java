@@ -115,8 +115,6 @@ public class NeoClientConfig implements ClientConfig {
 
     @Override
     public void save() {
-        //TODO - both: Implement/Re-evaluate if we can just call save on the ConfigValues and whether some guis are meant to only save on close
-        // At which point we potentially should be rolling them back?
         EXECUTOR.submit(new ConfigSaver(configSpec));
     }
 
