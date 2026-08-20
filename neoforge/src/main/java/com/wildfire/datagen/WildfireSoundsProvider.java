@@ -18,7 +18,6 @@
 
 package com.wildfire.datagen;
 
-import com.wildfire.api.WildfireAPI;
 import java.util.Arrays;
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.common.data.SoundDefinition;
@@ -27,8 +26,8 @@ import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 class WildfireSoundsProvider extends SoundDefinitionsProvider {
-	WildfireSoundsProvider(PackOutput output) {
-		super(output, WildfireAPI.MODID);
+	WildfireSoundsProvider(PackOutput output, String modId) {
+		super(output, modId);
 	}
 
 	@Override

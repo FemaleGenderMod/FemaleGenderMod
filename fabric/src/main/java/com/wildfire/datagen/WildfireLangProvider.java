@@ -33,7 +33,7 @@ class WildfireLangProvider extends FabricLanguageProvider {
 
     WildfireLangProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
         super(output, registries);
-        this.langData = new WildfireLangData(output);
+        this.langData = new WildfireLangData(output, output.getModId());
     }
 
     @Override

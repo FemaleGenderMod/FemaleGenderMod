@@ -18,7 +18,6 @@
 
 package com.wildfire.datagen;
 
-import com.wildfire.api.WildfireAPI;
 import com.wildfire.datagen.lang.WildfireLangData;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.data.CachedOutput;
@@ -31,9 +30,9 @@ class WildfireLangProvider extends LanguageProvider {
 
     private final WildfireLangData langData;
 
-    WildfireLangProvider(PackOutput output) {
-        super(output, WildfireAPI.MODID, "en_us");
-        this.langData = new WildfireLangData(output);
+    WildfireLangProvider(PackOutput output, String modId) {
+        super(output, modId, "en_us");
+        this.langData = new WildfireLangData(output, modId);
     }
 
     @Override

@@ -222,6 +222,7 @@
   "key.category.female_gender_mod.generic": "Female Gender Mod",
   "key.female_gender_mod.gender_menu": "Female Gender Menu",
   "key.female_gender_mod.toggle": "Toggle Breast Rendering",
+  "modmenu.descriptionTranslation.female_gender_mod": "Adds extra customization options to the player model by adding breasts for a more feminine appearance",
   "neoforge.screen.mods.info.description.female_gender_mod": "Adds extra customization options to the player model by adding breasts for a more feminine appearance",
   "toast.female_gender_mod.get_started": "Press %1$s to get started!"
 }

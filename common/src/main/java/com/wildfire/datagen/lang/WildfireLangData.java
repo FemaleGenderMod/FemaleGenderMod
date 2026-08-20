@@ -18,7 +18,6 @@
 
 package com.wildfire.datagen.lang;
 
-import com.wildfire.api.WildfireAPI;
 import com.wildfire.common.WildfireGender;
 import com.wildfire.common.WildfireLang;
 import com.wildfire.common.config.ConfigTranslation;
@@ -38,9 +37,11 @@ public class WildfireLangData {
 
     private final ConvertibleLanguageProvider[] altProviders;
     private final PackOutput output;
+    private final String modId;
 
-    public WildfireLangData(PackOutput output) {
+    public WildfireLangData(PackOutput output, String modId) {
         this.output = output;
+        this.modId = modId;
         altProviders = new ConvertibleLanguageProvider[]{
             new UpsideDownLanguageProvider(),
             new NonAmericanLanguageProvider("en_au"),
@@ -50,7 +51,7 @@ public class WildfireLangData {
     }
 
     protected Path getLangFilePath(String locale) {
-        return this.output.getOutputFolder(PackOutput.Target.RESOURCE_PACK).resolve(WildfireAPI.MODID).resolve("lang").resolve(locale + ".json");
+        return this.output.getOutputFolder(PackOutput.Target.RESOURCE_PACK).resolve(modId).resolve("lang").resolve(locale + ".json");
     }
 
     private void add(BiConsumer<String, String> builder, String key, String value) {
@@ -86,6 +87,11 @@ public class WildfireLangData {
     private void addCommand(BiConsumer<String, String> builder, WildfireLang lang, String usage, String description) {
         add(builder, lang, usage);
         add(builder, lang.getTranslationKey() + ".description", description);
+    }
+
+    private void addDescription(BiConsumer<String, String> builder, String description) {
+        add(builder, "modmenu.descriptionTranslation." + modId, description);
+        add(builder, "neoforge.screen.mods.info.description." + modId, description);
     }
 
     private void add(BiConsumer<String, String> builder, WildfireLang lang, String... translations) {
@@ -319,19 +325,17 @@ public class WildfireLangData {
         add(builder, WildfireLang.COMMAND_ENTITIES, "Entities (Class: %1$s):");
 
         generateConfigTranslations(builder);
-        //TODO: Should this just be defined for neo? Might make it harder for people translating to find all the relevant strings
-        add(builder, "neoforge.screen.mods.info.description." + WildfireAPI.MODID,
-            "Adds extra customization options to the player model by adding breasts for a more feminine appearance");
+        addDescription(builder, "Adds extra customization options to the player model by adding breasts for a more feminine appearance");
 
         // intentionally omitted as they aren't used anywhere:
     }
 
     private void generateConfigTranslations(BiConsumer<String, String> builder) {
-        builder.accept(WildfireAPI.MODID + ".configuration.title", "Female Gender Mod Config");
+        builder.accept(modId + ".configuration.title", "Female Gender Mod Config");
 
         String baseConfigFolder = Configuration.CONFIG_DIR.toLowerCase(Locale.ROOT);
         //Config section translation
-        String key = WildfireAPI.MODID + ".configuration.section." + baseConfigFolder + ".client.toml";
+        String key = modId + ".configuration.section." + baseConfigFolder + ".client.toml";
         builder.accept(key, "Client Config");
         builder.accept(key + ".title", "Female Gender Mod - Client Config");
 
