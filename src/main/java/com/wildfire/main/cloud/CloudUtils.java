@@ -40,6 +40,7 @@ public final class CloudUtils {
 
     static boolean hasTheSessionServiceBeenTamperedWith() {
         var sessionService = getSessionService();
+
         // minecraft normally uses yggdrasil here; if this is not the case, either mojang has made some serious
         // changes to sessions, or someone is replacing this with something that shouldn't be here.
         if(sessionService.getClass() != YggdrasilMinecraftSessionService.class) {
@@ -58,16 +59,12 @@ public final class CloudUtils {
     }
 
     @SuppressWarnings("SameParameterValue")
-    private static void logSessionTamperWarning(String message) {
-        if(loggedSessionTamperWarning) return;
-        WildfireGender.LOGGER.info(message);
-        loggedSessionTamperWarning = true;
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    private static void logSessionTamperWarning(String message, Object arg1) {
-        if(loggedSessionTamperWarning) return;
-        WildfireGender.LOGGER.info(message, arg1);
+    private static void logSessionTamperWarning(String message, Object... args) {
+        if(loggedSessionTamperWarning) {
+            return;
+        }
+        WildfireGender.LOGGER.info(message, args);
+        WildfireGender.LOGGER.info("Cloud sync will be unavailable for this session");
         loggedSessionTamperWarning = true;
     }
 }

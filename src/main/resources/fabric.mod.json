@@ -1,7 +1,7 @@
 {
     "schemaVersion": 1,
     "id": "wildfire_gender",
-    "version": "${version}+${minecraft_version}",
+    "version": "${version}",
     "name": "Female Gender Mod",
     "description": "Adds extra customization options to the player model by adding breasts for a more feminine appearance",
     "authors": [
@@ -35,6 +35,9 @@
         ],
         "modmenu": [
             "com.wildfire.compat.ModMenuIntegration"
+        ],
+        "fabric-datagen": [
+          "com.wildfire.datagen.WildfireGenderDataGenerator"
         ]
     },
     "mixins": [

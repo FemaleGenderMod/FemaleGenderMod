@@ -37,6 +37,7 @@ abstract class ArmorStandMixin extends LivingEntity {
         super(entityType, world);
     }
 
+    @SuppressWarnings("LocalMayUseName")
     @ModifyArg(
         method = "swapItem",
         at = @At(
@@ -55,6 +56,7 @@ abstract class ArmorStandMixin extends LivingEntity {
         return stack;
     }
 
+    @SuppressWarnings("LocalMayUseName")
     @ModifyArg(
         method = "swapItem",
         at = @At(

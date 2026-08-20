@@ -18,12 +18,28 @@
 
 package com.wildfire.main.uvs;
 
+import com.google.common.base.Preconditions;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
+import java.util.List;
+
 public record UVQuad(int x1, int y1, int x2, int y2) {
-    public static final StreamCodec<ByteBuf, UVQuad> PACKET_CODEC = StreamCodec.composite(
+    public static final UVQuad UNUSED = new UVQuad(0, 0, 0, 0);
+
+    public static final Codec<UVQuad> CODEC = Codec.INT.listOf(4, 4).xmap(UVQuad::fromIntList, UVQuad::toIntList);
+    public static final Codec<UVQuad> LEGACY_CONFIG_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        Codec.INT.fieldOf("x1").forGetter(UVQuad::x1),
+        Codec.INT.fieldOf("y1").forGetter(UVQuad::y1),
+        Codec.INT.fieldOf("x2").forGetter(UVQuad::x2),
+        Codec.INT.fieldOf("y2").forGetter(UVQuad::y2)
+    ).apply(instance, UVQuad::new));
+    public static final Codec<UVQuad> OR_LEGACY = CODEC.withAlternative(LEGACY_CONFIG_CODEC);
+
+    public static final StreamCodec<ByteBuf, UVQuad> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT, UVQuad::x1,
             ByteBufCodecs.VAR_INT, UVQuad::y1,
             ByteBufCodecs.VAR_INT, UVQuad::x2,
@@ -45,5 +61,14 @@ public record UVQuad(int x1, int y1, int x2, int y2) {
 
     public UVQuad addY2(int y2) {
         return new UVQuad(x1, y1, x2, this.y2 + y2);
+    }
+
+    public List<Integer> toIntList() {
+        return List.of(x1, y1, x2, y2);
+    }
+
+    public static UVQuad fromIntList(List<Integer> list) {
+        Preconditions.checkArgument(list.size() == 4, "Expected exactly 4 integer elements, got %s instead", list.size());
+        return new UVQuad(list.get(0), list.get(1), list.get(2), list.get(3));
     }
 }

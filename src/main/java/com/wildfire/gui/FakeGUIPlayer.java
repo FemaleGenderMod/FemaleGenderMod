@@ -19,40 +19,51 @@
 package com.wildfire.gui;
 
 import com.google.common.base.Suppliers;
-import com.google.gson.JsonObject;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.cloud.CloudSync;
+import com.wildfire.main.config.enums.Gender;
 import com.wildfire.main.contributors.Contributor;
+import com.wildfire.main.contributors.Contributor.Role;
 import com.wildfire.main.contributors.Contributors;
-import com.wildfire.main.entitydata.EntityConfig;
+import com.wildfire.main.entitydata.EntityConfigHolder;
 import com.wildfire.main.entitydata.PlayerConfig;
-import com.wildfire.mixins.accessors.ClientMannequinAccessor;
+import com.wildfire.main.entitydata.PlayerConfigHolder;
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.ClientMannequin;
 import net.minecraft.client.renderer.PlayerSkinRenderCache;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.UUID;
-import java.util.concurrent.ExecutionException;
-import java.util.function.Supplier;
+import org.jspecify.annotations.Nullable;
 
 public class FakeGUIPlayer {
+
+    public static final Consumer<PlayerConfig> FEMALE_CHANGES = config -> {
+        //The settings that need to be changed away from default
+        config.gender.update(Gender.FEMALE);
+        config.breasts.yOffset().update(-0.2F);
+        config.breasts.physics().uniboob().update(false);
+        config.breasts.cleavage().update(0.05F);
+        config.holidayThemes.update(false);
+    };
 
     private final String name;
     private final UUID uuid;
     private final Supplier<GUIMannequin> entity;
-    private final @Nullable String description;
+    private final @Nullable Component description;
 
-    public FakeGUIPlayer(String name, UUID uuid, @Nullable String description, @Nullable JsonObject defaultGenderSettings) {
+    public FakeGUIPlayer(String name, UUID uuid, @Nullable Component description, @Nullable Consumer<PlayerConfig> defaultGenderSettings) {
         this.name = name;
         this.uuid = uuid;
-        this.entity = createPlayerSupplier(uuid, defaultGenderSettings);
+        this.entity = createPlayerSupplier(this.uuid, this.name, defaultGenderSettings);
         this.description = description;
     }
 
-    public FakeGUIPlayer(String name, UUID uuid, @Nullable JsonObject defaultGenderSettings) {
+    public FakeGUIPlayer(String name, UUID uuid, @Nullable Consumer<PlayerConfig> defaultGenderSettings) {
         this(name, uuid, null, defaultGenderSettings);
     }
 
@@ -68,36 +79,40 @@ public class FakeGUIPlayer {
         return name;
     }
 
-    public @Nullable Contributor.Role getRole() {
+    public Contributor.@Nullable Role getRole() {
         return Contributors.getRole(uuid);
     }
 
     public Contributor.Role getRoleOrGeneric() {
-        var role = getRole();
+        Role role = getRole();
         return role == null ? Contributor.Role.GENERIC : role;
     }
 
-    public @Nullable String getDescription() {
+    public @Nullable Component getDescription() {
         return description;
     }
 
     public void tick() {
         entity.get().applyLoadedSkin();
         entity.get().tickCount++; // This allows for playing the breathing animation
-        EntityConfig.getEntity(getEntity()).tickBreastPhysics(getEntity());
+        EntityConfigHolder.getEntity(getEntity()).breastPhysics().tick(getEntity());
     }
 
-    private static Supplier<GUIMannequin> createPlayerSupplier(final UUID uuid, final @Nullable JsonObject defaultGenderData) {
+    @SuppressWarnings("NullableProblems")
+    private static Supplier<GUIMannequin> createPlayerSupplier(final UUID uuid, final String name, final @Nullable Consumer<PlayerConfig> defaultGenderData) {
         return Suppliers.memoize(() -> {
             var client = Minecraft.getInstance();
             assert client.level != null;
 
             var entity = new GUIMannequin(client.level, client.playerSkinRenderCache(), ResolvableProfile.createUnresolved(uuid));
+            //Set the custom name in case it is relevant for player rendering (for example Dinnerbone or Grumm).
+            // As it is possible a mod adds other names to render upside down, so we might be as compatible as possible
+            entity.setCustomName(Component.literal(name));
 
-            PlayerConfig config;
+            PlayerConfigHolder config;
             try {
                 // while we don't have proper support for mannequins right now, we can most certainly fake it
-                config = (PlayerConfig) EntityConfig.CACHE.get(entity.getUUID(), () -> new PlayerConfig(entity.getUUID()));
+                config = (PlayerConfigHolder) EntityConfigHolder.CACHE.get(entity.getUUID(), () -> new PlayerConfigHolder(entity.getUUID()));
             } catch(ExecutionException | ClassCastException _) {
                 return entity;
             }
@@ -110,7 +125,8 @@ public class FakeGUIPlayer {
                     if(json != null) {
                         config.updateFromJson(json);
                     } else if(defaultGenderData != null) {
-                        config.updateFromJson(defaultGenderData);
+                        //Apply changes compared to the default configs
+                        defaultGenderData.accept(config.config());
                     }
                 });
             } else {
@@ -130,16 +146,21 @@ public class FakeGUIPlayer {
             // this is being done as opposed to using data tracker to force a refresh to avoid interfering
             // with other mods that might be injecting into the data tracker update methods to know
             // when real entities in the world are updated
-            ((ClientMannequinAccessor) this).invokeUpdateSkin();
+            updateSkin();
+            // workaround for #getId() throwing an error if an id isn't set on 26.2+, which results in the game crashing
+            // when attempting to extract the render state for one of these mannequins.
+            // the id here doesn't matter given this entity is never spawned in the world, so just set some arbitrary id.
+            // the proper fix would be to extract the render state ourselves, but doing so would make keeping up with
+            // updates more complex when we could just take the quick and easy way out.
+            this.setId(1);
         }
 
         public void applyLoadedSkin() {
-            var accessor = (ClientMannequinAccessor) this;
-            var skinLookup = accessor.getSkinLookup();
-            if(skinLookup != null && skinLookup.isDone()) {
+            //From super.tick, except without the rest of the side effects of tick, and without logging when it failed to look up the skin
+            if (this.skinLookup != null && this.skinLookup.isDone()) {
                 try {
-                    skinLookup.get().ifPresent(accessor::invokeSetSkin);
-                    accessor.setSkinLookup(null);
+                    this.skinLookup.get().ifPresent(this::setSkin);
+                    this.skinLookup = null;
                 } catch(Exception _) {
                 }
             }

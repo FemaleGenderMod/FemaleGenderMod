@@ -19,26 +19,23 @@
 package com.wildfire.main;
 
 import com.google.gson.JsonObject;
+import com.wildfire.client.WildfireClientEventHandler;
 import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.config.Configuration;
 import com.wildfire.main.contributors.Contributors;
-import com.wildfire.main.entitydata.PlayerConfig;
+import com.wildfire.main.entitydata.PlayerConfigHolder;
 import com.wildfire.main.networking.WildfireSync;
 import com.wildfire.render.debug.GenderDebugHudEntry;
 import com.wildfire.render.debug.PhysicsDebugHudEntry;
 import com.wildfire.resources.GenderArmorResourceManager;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.debug.DebugScreenEntries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackType;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -46,8 +43,9 @@ import java.nio.file.Path;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import org.jspecify.annotations.Nullable;
 
-@Environment(EnvType.CLIENT)
+/// @apiNote Only use this on the client side
 public class WildfireGenderClient implements ClientModInitializer {
     private static final Executor LOAD_EXECUTOR = Util.ioPool().forName("wildfire_gender$loadPlayerData");
 
@@ -56,23 +54,23 @@ public class WildfireGenderClient implements ClientModInitializer {
         tryMigrate("WildfireGender", Configuration.CONFIG_DIR);
         tryMigrate("wildfire_gender.json", "female_gender_mod.json");
 
-        ClientConfig.INSTANCE.load();
+        ClientConfig.load();
         WildfireSounds.register();
         WildfireSync.registerClient();
-        WildfireEventHandler.registerClientEvents();
+        WildfireClientEventHandler.registerClientEvents();
         ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(GenderArmorResourceManager.ID, GenderArmorResourceManager.INSTANCE);
         DebugScreenEntries.register(GenderDebugHudEntry.SELF, new GenderDebugHudEntry(true));
         DebugScreenEntries.register(GenderDebugHudEntry.OTHER, new GenderDebugHudEntry(false));
         // only register this in dev env, as this likely isn't going to be very useful anywhere else.
-        if(FabricLoader.getInstance().isDevelopmentEnvironment()) {
+        if (LoaderAgnostics.isDevelopmentEnv()) {
             DebugScreenEntries.register(PhysicsDebugHudEntry.ID, new PhysicsDebugHudEntry());
         }
         WildfireCommand.init();
     }
 
     private static void tryMigrate(String oldPath, String newPath) {
-        Path oldFile = FabricLoader.getInstance().getConfigDir().resolve(oldPath);
-        Path newFile = FabricLoader.getInstance().getConfigDir().resolve(newPath);
+        Path oldFile = LoaderAgnostics.getConfigDir().resolve(oldPath);
+        Path newFile = LoaderAgnostics.getConfigDir().resolve(newPath);
 
         if(Files.notExists(oldFile)) {
             WildfireGender.LOGGER.debug("{} doesn't exist, nothing to migrate", oldPath);
@@ -91,7 +89,7 @@ public class WildfireGenderClient implements ClientModInitializer {
         }
     }
 
-    public static CompletableFuture<@Nullable PlayerConfig> loadGenderInfo(UUID uuid, boolean markForSync, boolean bypassQueue) {
+    public static CompletableFuture<@Nullable PlayerConfigHolder> loadGenderInfo(UUID uuid, boolean markForSync, boolean bypassQueue) {
         var cache = WildfireGender.getPlayerById(uuid);
         if(cache == null) {
             return CompletableFuture.completedFuture(null);
@@ -99,12 +97,12 @@ public class WildfireGenderClient implements ClientModInitializer {
         return loadGenderInfo(cache, markForSync, bypassQueue);
     }
 
-    public static CompletableFuture<PlayerConfig> loadGenderInfo(PlayerConfig player, boolean markForSync, boolean bypassQueue) {
+    public static CompletableFuture<PlayerConfigHolder> loadGenderInfo(PlayerConfigHolder player, boolean markForSync, boolean bypassQueue) {
         return CompletableFuture.supplyAsync(() -> {
             var uuid = player.uuid;
             if(player.hasLocalConfig()) {
                 player.loadFromDisk(markForSync);
-            } else if(player.syncStatus == PlayerConfig.SyncStatus.UNKNOWN) {
+            } else if(player.syncStatus == PlayerConfigHolder.SyncStatus.UNKNOWN) {
                 JsonObject data;
                 try {
                     var future = bypassQueue ? CloudSync.getProfile(uuid) : CloudSync.queueFetch(uuid);
@@ -115,7 +113,7 @@ public class WildfireGenderClient implements ClientModInitializer {
                 }
                 // make sure the server we're connected to hasn't provided player data while we were fetching data from
                 // the sync server
-                if(data != null && player.syncStatus == PlayerConfig.SyncStatus.UNKNOWN) {
+                if(data != null && player.syncStatus == PlayerConfigHolder.SyncStatus.UNKNOWN) {
                     player.updateFromJson(data);
                     if(markForSync) {
                         player.needsSync = true;
@@ -127,9 +125,11 @@ public class WildfireGenderClient implements ClientModInitializer {
     }
 
     public static @Nullable Component getNametag(UUID uuid) {
-        var clientPlayer = Minecraft.getInstance().player;
-        if(ClientConfig.INSTANCE.get(ClientConfig.HIDE_OWN_CONTRIBUTOR_TAG) && clientPlayer != null && uuid.equals(clientPlayer.getUUID())) {
-            return null;
+        if (ClientConfig.config().hideOwnContributorTag.get()) {
+            var clientPlayer = Minecraft.getInstance().player;
+            if (clientPlayer != null && uuid.equals(clientPlayer.getUUID())) {
+                return null;
+            }
         }
 
         return Contributors.getNametag(uuid);

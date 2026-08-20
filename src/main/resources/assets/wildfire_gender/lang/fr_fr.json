@@ -70,8 +70,6 @@
     "wildfire_gender.label.disabled": "Désactivé",
     "wildfire_gender.label.on": "On",
     "wildfire_gender.label.off": "Off",
-    "wildfire_gender.label.yes": "Oui",
-    "wildfire_gender.label.no": "Non",
     "wildfire_gender.label.with_creator": "Vous jouez sur un serveur avec le/la créateur.trice de ce mod!",
     "wildfire_gender.label.with_contributor": "Vous jouez sur un serveur avec un.e contributeur.trice de ce mod!",
     "wildfire_gender.label.with_both": "Vous jouez sur un serveur avec le créateur et un.e contributeur.trice de ce mod!",

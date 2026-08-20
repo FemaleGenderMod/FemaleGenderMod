@@ -1,0 +1,5 @@
+- Added support for 26.2
+- Slightly tweaked how the breast model is rendered to improve compatibility with shaders and the Glowing effect
+- The breast model now follows the root model transformation, which should fix various issues with certain EMF resource packs
+- Fixed some minor inconsistencies in the GUI textures
+- Added translations for Portuguese, Traditional Chinese, Japanese, and Kazakh

@@ -18,12 +18,10 @@
 
 package com.wildfire.gui;
 
+import com.wildfire.client.WildfireClientEventHandler;
 import com.wildfire.gui.screen.BaseWildfireScreen;
-import com.wildfire.main.WildfireEventHandler;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.config.ClientConfig;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -34,16 +32,16 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.CommonColors;
 import net.minecraft.util.FormattedCharSequence;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import org.jspecify.annotations.Nullable;
 
-@Environment(EnvType.CLIENT)
-public class WildfireToast implements Toast {
+/// @apiNote Only use this on the client side
+public class WildfireToast implements Toast, IFancyFontRenderer {
     private static final Identifier TEXTURE = Identifier.withDefaultNamespace("toast/advancement");
-    private static final Identifier ICON = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/bc_ribbon.png");
+    private static final Identifier ICON = WildfireGender.id("bc_ribbon");
     private final List<FormattedCharSequence> text;
     private Visibility visibility = Visibility.SHOW;
 
@@ -64,14 +62,15 @@ public class WildfireToast implements Toast {
     public void update(ToastManager manager, long time) {
         if(shouldHide()) {
             hide();
-            ClientConfig.INSTANCE.set(ClientConfig.SHOW_TOAST, false);
-            CompletableFuture.runAsync(ClientConfig.INSTANCE::save);
+            if (ClientConfig.config().showToast.update(false)) {
+                CompletableFuture.runAsync(ClientConfig::save);
+            }
         }
     }
 
     @Override
     public int height() {
-        return 7 + this.getTextHeight() + 3;
+        return 7 + getTextHeight() + 3;
     }
 
     private int getTextHeight() {
@@ -81,26 +80,34 @@ public class WildfireToast implements Toast {
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, Font font, long fullyVisibleForMs) {
         int i = this.height();
-        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, 0, this.width(), i);
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, 0, width(), i);
 
-        graphics.blit(RenderPipelines.GUI_TEXTURED, ICON, 6, 6, 0, 0, 20, 20, 20, 20, 20, 20);
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, ICON, 6, 6, 20, 20);
         int j = this.text.size() * 11;
-        int k = 7 + (this.getTextHeight() - j) / 2;
+        int lineY = 7 + (getTextHeight() - j) / 2;
 
-        for(int l = 0; l < this.text.size(); l++) {
-            graphics.text(font, this.text.get(l), 30, k + l * 11, 0xFFFFFFFF, false);
+        for (FormattedCharSequence line : text) {
+            drawScrollingString(graphics, line, 26, lineY, TextAlignment.RELATIVE, CommonColors.WHITE, width() - 35, 2, false, fullyVisibleForMs);
+            lineY += 11;
         }
     }
 
     private boolean shouldHide() {
         Minecraft client = Minecraft.getInstance();
-        if(client.screen instanceof BaseWildfireScreen) {
+        //~ if >=26.2 'client.screen' -> 'client.gui.screen()'
+        if(client.gui.screen() instanceof BaseWildfireScreen) {
             return true;
         }
-        return WildfireEventHandler.getConfigKeybind().isDown();
+        return WildfireClientEventHandler.CONFIG_KEYBIND.isDown();
     }
 
     public void hide() {
         this.visibility = Visibility.HIDE;
+    }
+
+    @Override
+    public long getTimeOpened() {
+        //Unused
+        return 0;
     }
 }

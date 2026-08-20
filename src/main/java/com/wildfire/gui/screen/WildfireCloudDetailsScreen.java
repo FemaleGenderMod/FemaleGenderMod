@@ -18,12 +18,8 @@
 
 package com.wildfire.gui.screen;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-
 /*import com.wildfire.gui.GuiUtils;
 import com.wildfire.main.WildfireGender;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -32,23 +28,23 @@ import net.minecraft.resources.Identifier;
 
 import java.util.UUID;*/
 
-@Environment(EnvType.CLIENT)
+/// @apiNote Only use this on the client side
 public class WildfireCloudDetailsScreen /*extends BaseWildfireScreen*/ {
 
     /*//TODO: PROPER TRANSLATIONS
 
-    private static final Component TITLE = Component.translatable("wildfire_gender.cloud_details.title");
+    private static final Component TITLE = WildfireLang.CLOUD_DETAILS.translate();
 
-    private static final Component PAGE_1 = Component.translatable("wildfire_gender.cloud_details.title").withStyle(ChatFormatting.UNDERLINE);
+    private static final Component PAGE_1 = WildfireLang.CLOUD_DETAILS.translate().withStyle(style -> style.withUnderlined(true));
 
-    private static final Component NEXT_PAGE = Component.translatable("wildfire_gender.details.next_page");
-    private static final Component PREV_PAGE = Component.translatable("wildfire_gender.details.prev_page");
-    private static final Identifier BACKGROUND = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/details_page.png");
+    private static final Component NEXT_PAGE = WildfireLang.DETAILS_NEXT_PAGE.translate();
+    private static final Component PREV_PAGE = WildfireLang.DETAILS_PREV_PAGE.translate();
+    private static final Identifier BACKGROUND = WildfireGender.id("textures/gui/details_page.png");
 
     private int currentPage = 0;
 
     public WildfireCloudDetailsScreen(Screen parent, UUID uuid) {
-        super(Component.translatable("wildfire_gender.cloud_settings"), parent, uuid);
+        super(WildfireLang.CLOUD_SETTINGS.translate(), parent, uuid);
     }
 
     @Override
@@ -94,7 +90,7 @@ public class WildfireCloudDetailsScreen /*extends BaseWildfireScreen*/ {
         GuiUtils.drawCenteredText(ctx, font, TITLE, x, y - 94, 4473924);
 
         if (currentPage == 0) {
-            GuiUtils.drawCenteredTextWrapped(ctx, font, Component.translatable("wildfire_gender.cloud_details.page1"), x, y - 75, 256 - 10, 0x00FF00);
+            GuiUtils.drawCenteredTextWrapped(ctx, font, Component.translatable("wildfire_gender.cloud_details.page1"), x, y - 75, 256 - 10, CommonColors.GREEN);
         }
     }
 

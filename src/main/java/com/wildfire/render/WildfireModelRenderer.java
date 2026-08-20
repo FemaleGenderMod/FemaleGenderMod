@@ -19,17 +19,45 @@
 package com.wildfire.render;
 
 import com.google.common.base.Preconditions;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.wildfire.main.uvs.UVDirection;
 import com.wildfire.main.uvs.UVLayout;
 import com.wildfire.main.uvs.UVQuad;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.joml.Vector3fc;
+import org.joml.Vector4f;
 
-@Environment(EnvType.CLIENT)
+/// @apiNote Only use this on the client side
 public final class WildfireModelRenderer {
     private WildfireModelRenderer() {
         throw new UnsupportedOperationException();
+    }
+
+    public static void renderBox(WildfireModelRenderer.ModelBox model, PoseStack.Pose entry, VertexConsumer vertexConsumer,
+                                 int light, int overlay, int color) {
+        Matrix4f matrix4f = entry.pose();
+        Matrix3f matrix3f = entry.normal();
+        for(var quad : model.quads) {
+
+            //Make sure UVs aren't set to zero. If they are, the textures screw up. Don't render the quad at all.
+            if(quad.uvs[0] == 0.0F && quad.uvs[1] == 0.0F && quad.uvs[2] == 0.0F && quad.uvs[3] == 0.0F) continue;
+
+            Vector3f vector3f = new Vector3f(quad.normal.x(), quad.normal.y(), quad.normal.z()).mul(matrix3f);
+            float normalX = vector3f.x;
+            float normalY = vector3f.y;
+            float normalZ = vector3f.z;
+            for (var vertex : quad.vertexPositions) {
+                float j = vertex.x() / 16.0F;
+                float k = vertex.y() / 16.0F;
+                float l = vertex.z() / 16.0F;
+                Vector4f vector4f = new Vector4f(j, k, l, 1.0F).mul(matrix4f);
+                vertexConsumer.addVertex(vector4f.x(), vector4f.y(), vector4f.z(), color, vertex.u(), vertex.v(),
+                    overlay, light, normalX, normalY, normalZ);
+            }
+        }
     }
 
     public static class ModelBox {
@@ -47,21 +75,21 @@ public final class WildfireModelRenderer {
             this.posX1 = x;
             this.posY1 = y;
             this.posZ1 = z;
-            this.posX2 = x + (float) dx;
-            this.posY2 = y + (float) dy;
-            this.posZ2 = z + (float) dz;
+            this.posX2 = x + dx;
+            this.posY2 = y + dy;
+            this.posZ2 = z + dz;
             this.quads = new TexturedQuad[quads];
             this.dynamicUvLayouts = dynamicUvLayouts;
 
-            float f = x + (float) dx;
-            float f1 = y + (float) dy;
-            float f2 = z + (float) dz;
-            x = x - delta;
-            y = y - delta;
-            z = z - delta;
-            f = f + delta;
-            f1 = f1 + delta;
-            f2 = f2 + delta;
+            float f = x + dx;
+            float f1 = y + dy;
+            float f2 = z + dz;
+            x -= delta;
+            y -= delta;
+            z -= delta;
+            f += delta;
+            f1 += delta;
+            f2 += delta;
 
             initQuads(tW, tH, dx, dy, dz, quads,
                     new PositionTextureVertex(f, y, z, 0.0F, 8.0F),

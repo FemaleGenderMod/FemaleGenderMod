@@ -34,8 +34,6 @@
 
     "wildfire_gender.label.enabled": "Zapnuto",
     "wildfire_gender.label.disabled": "Vypnuto",
-    "wildfire_gender.label.yes": "Ano",
-    "wildfire_gender.label.no": "Ne",
     "wildfire_gender.label.with_creator": "Hrajete na serveru s tvůrcem tohohle modu!",
 
     "wildfire_gender.slider.bounce": "Intenzita houpání: %s%%",

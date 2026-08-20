@@ -5,3 +5,17 @@ accessible class net/minecraft/client/renderer/entity/layers/EquipmentLayerRende
 accessible method net/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer$TrimSpriteKey <init> (Lnet/minecraft/world/item/equipment/trim/ArmorTrim;Lnet/minecraft/client/resources/model/EquipmentClientInfo$LayerType;Lnet/minecraft/resources/ResourceKey;)V
 accessible method net/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer getColorForLayer (Lnet/minecraft/client/resources/model/EquipmentClientInfo$Layer;I)I
 accessible method net/minecraft/client/gui/screens/inventory/InventoryScreen extractRenderState (Lnet/minecraft/world/entity/LivingEntity;)Lnet/minecraft/client/renderer/entity/state/EntityRenderState;
+extendable method net/minecraft/client/model/Model renderToBuffer (Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;III)V
+
+accessible field net/minecraft/client/gui/components/PlayerTabOverlay visible Z
+accessible field net/minecraft/client/gui/components/PlayerTabOverlay footer Lnet/minecraft/network/chat/Component;
+accessible field net/minecraft/client/gui/components/PlayerTabOverlay header Lnet/minecraft/network/chat/Component;
+accessible method net/minecraft/client/gui/components/PlayerTabOverlay getPlayerInfos ()Ljava/util/List;
+
+#Note: For Neo these ClientMannequin AWs can be protected, they don't have to be public
+accessible field net/minecraft/client/entity/ClientMannequin skinLookup Ljava/util/concurrent/CompletableFuture;
+accessible method net/minecraft/client/entity/ClientMannequin setSkin (Lnet/minecraft/world/entity/player/PlayerSkin;)V
+accessible method net/minecraft/client/entity/ClientMannequin updateSkin ()V
+
+#? if <26.2
+#accessible method net/minecraft/client/Minecraft isMultiplayerServer ()Z

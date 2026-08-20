@@ -21,8 +21,6 @@ package com.wildfire.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.config.ClientConfig;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.model.geom.PartNames;
@@ -38,14 +36,13 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.SpecialDates;
 
-import java.util.Calendar;
-
-@Environment(EnvType.CLIENT)
+/// @apiNote Only use this on the client side
 public class HolidayFeaturesRenderer extends RenderLayer<AvatarRenderState, PlayerModel> {
-    private static final Identifier SANTA_HAT_TEXTURE = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/santa_hat.png");
+    private static final Identifier SANTA_HAT_TEXTURE = WildfireGender.id("textures/santa_hat.png");
     private static final HumanoidModel<AvatarRenderState> SANTA_HAT_MODEL = new SantaHatModel();
-    private static final boolean christmas = isAroundChristmas();
+    private static final boolean christmas = SpecialDates.isExtendedChristmas();
 
     public HolidayFeaturesRenderer(RenderLayerParent<AvatarRenderState, PlayerModel> context) {
         super(context);
@@ -62,7 +59,7 @@ public class HolidayFeaturesRenderer extends RenderLayer<AvatarRenderState, Play
     private void renderSantaHat(AvatarRenderState state, PoseStack matrixStack, SubmitNodeCollector renderQueue, int light) {
         if(state.isInvisible) return;
         if(!state.showHat) return;
-        if(!ClientConfig.INSTANCE.get(ClientConfig.HOLIDAY_COSMETICS).toBoolean(christmas)) return;
+        if(!ClientConfig.HOLIDAY_COSMETICS.toBoolean(christmas)) return;
 
         matrixStack.pushPose();
         int overlay = LivingEntityRenderer.getOverlayCoords(state, 0);
@@ -78,18 +75,13 @@ public class HolidayFeaturesRenderer extends RenderLayer<AvatarRenderState, Play
         matrixStack.popPose();
     }
 
-    public static boolean isAroundChristmas() {
-        Calendar calendar = Calendar.getInstance();
-        return calendar.get(Calendar.MONTH) == Calendar.DECEMBER && calendar.get(Calendar.DATE) >= 24 && calendar.get(Calendar.DATE) <= 26;
-    }
-
     private static class SantaHatModel extends PlayerModel {
         public SantaHatModel() {
             super(createSantaHat().bakeRoot(), false);
         }
 
         private static LayerDefinition createSantaHat() {
-            var root = PlayerModel.createMesh(CubeDeformation.NONE, false);
+            var root = createMesh(CubeDeformation.NONE, false);
             var clearedRoot = root.getRoot().clearRecursively();
             var headPart = clearedRoot.getChild(PartNames.HEAD);
             headPart.addOrReplaceChild("santa_hat", CubeListBuilder.create().texOffs(0, 0).addBox(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, CubeDeformation.NONE), PartPose.ZERO);
