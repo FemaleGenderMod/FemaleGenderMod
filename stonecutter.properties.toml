@@ -3,8 +3,7 @@ mod_version = "5.0.0-Beta.4"
 mod_license = "LGPL-3.0"
 mod_id = "female_gender_mod"
 mod_description = "Adds extra customization options to the player model by adding breasts for a more feminine appearance"
-#TODO - both: Should this be switched to common? Or better yet maybe exclude the last bit of it?
-maven_group = "com.wildfiregender.main"
+maven_group = "com.wildfiregender"
 mod_name = "Female Gender Mod"
 archives_base_name = "Female-Gender-Mod"
 java.version = 25
