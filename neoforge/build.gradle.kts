@@ -1,6 +1,7 @@
 plugins {
     id("multiloader-loader")
     id("net.neoforged.moddev")
+    id("me.modmuss50.mod-publish-plugin")
 }
 
 sourceSets.main {
@@ -85,7 +86,7 @@ listOf(
 ).forEach { variant ->
     configurations.named(variant) {
         attributes {
-            attribute(loaderAttribute, "neoforge")
+            attribute(loaderAttribute, sc.branch.project.property("loader") as String)
         }
     }
 }
@@ -98,8 +99,20 @@ sourceSets.configureEach {
     ).forEach { variant ->
         configurations.named(variant) {
             attributes {
-                attribute(loaderAttribute, "neoforge")
+                attribute(loaderAttribute, sc.branch.project.property("loader") as String)
             }
         }
+    }
+}
+
+publishMods {
+    dryRun = performDryRun
+    modrinth {
+        from(modrinthOps, basePublishingOps)
+        additionalFile(tasks.sourcesJar.flatMap { it.archiveFile }) { type.set(SOURCES_JAR) }
+        additionalFile(tasks.javadocJar.flatMap { it.archiveFile }) { type.set(JAVADOC_JAR) }
+    }
+    curseforge {
+        from(cfOps, basePublishingOps)
     }
 }

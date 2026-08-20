@@ -17,7 +17,60 @@
  */
 
 import dev.kikugie.stonecutter.build.StonecutterBuildExtension
+import me.modmuss50.mpp.ModPublishExtension
+import me.modmuss50.mpp.ReleaseType
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.*
+import org.gradle.api.tasks.bundling.Jar
+import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.named
 
 val Project.stonecutterBuild get() = extensions.getByType<StonecutterBuildExtension>()
+
+private val Project.modPublishExtension get() = extensions.getByType<ModPublishExtension>()
+
+private val Project.modrinthToken get() = providers.environmentVariable("MODRINTH_TOKEN")
+private val Project.cfToken get() = providers.environmentVariable("CURSEFORGE_TOKEN")
+
+val Project.performDryRun get() = modrinthToken.getOrNull() == null && cfToken.getOrNull() == null
+
+val Project.basePublishingOps get() = modPublishExtension.publishOptions {
+    val loader = stonecutterBuild.branch.project.property("loader") as String
+    val modVer: String = stonecutterBuild.properties["mod_version"]
+    val verTitle: String = stonecutterBuild.properties["publish.version_title"]
+    val loaderName : String = if (loader == "fabric") "Fabric" else "NeoForge"
+
+    displayName.set("$modVer for $loaderName $verTitle")
+    //Note: The version is set automatically, but maybe we want to set it to the modVer instead?
+    //version.set(project.version as String)
+    changelog.set(providers.fileContents(rootProject.layout.projectDirectory.file("CHANGELOG.md")).asText)
+    type.set(ReleaseType.of(stonecutterBuild.properties["publish.type"]))
+    modLoaders.add(loader)
+    file.set(tasks.named<Jar>("jar").flatMap { it.archiveFile })
+    additionalFiles.from(
+        tasks.named<Jar>("sourcesJar").flatMap { it.archiveFile },
+        tasks.named<Jar>("javadocJar").flatMap { it.archiveFile }
+    )
+}
+
+//TODO - Neo: Technically neo min version is different just because of min neo version required being only on 26.1.2
+val Project.modrinthOps get() = modPublishExtension.modrinthOptions {
+    accessToken.set(modrinthToken)
+    projectId.set(stonecutterBuild.properties["publish.modrinth"] as String)
+    environment.set(CLIENT_ONLY_SERVER_OPTIONAL)
+    minecraftVersionRange {
+        start.set(stonecutterBuild.properties["publish.min_version"] as String)
+        end.set(stonecutterBuild.properties["publish.max_version"] as String)
+    }
+}
+
+val Project.cfOps get() = modPublishExtension.curseforgeOptions {
+    accessToken.set(cfToken)
+    projectId.set(stonecutterBuild.properties["publish.curseforge"] as String)
+    projectSlug.set("female-gender")
+    client.set(true)
+    server.set(true)
+    minecraftVersionRange {
+        start.set(stonecutterBuild.properties["publish.min_version"] as String)
+        end.set(stonecutterBuild.properties["publish.max_version"] as String)
+    }
+}

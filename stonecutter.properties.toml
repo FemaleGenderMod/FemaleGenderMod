@@ -39,7 +39,7 @@ dependencies.modmenu = "18.0.0-alpha.6"
 debug.load_modmenu = false
 
 publish.type = "BETA"
-# TODO - both setup curseforge publishing
+publish.curseforge = "456319"
 publish.modrinth = "bcOsQHnC"
 
 ["26.1"]

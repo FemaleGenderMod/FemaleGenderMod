@@ -1,5 +1,3 @@
-import org.gradle.kotlin.dsl.creating
-
 plugins {
     id("multiloader-common")
     id("net.neoforged.moddev")
@@ -58,16 +56,19 @@ val loaderAttribute = Attribute.of("io.github.mcgradleconventions.loader", Strin
 listOf("apiElements", "runtimeElements", "sourcesElements", "javadocElements").forEach { variant ->
     configurations.named(variant) {
         attributes {
-            attribute(loaderAttribute, "common")
+            attribute(loaderAttribute, sc.branch.project.property("loader") as String)
         }
     }
 }
 
 sourceSets.configureEach {
-    listOf(compileClasspathConfigurationName, runtimeClasspathConfigurationName).forEach { variant ->
+    listOf(
+        compileClasspathConfigurationName,
+        runtimeClasspathConfigurationName
+    ).forEach { variant ->
         configurations.named(variant) {
             attributes {
-                attribute(loaderAttribute, "common")
+                attribute(loaderAttribute, sc.branch.project.property("loader") as String)
             }
         }
     }

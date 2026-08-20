@@ -16,7 +16,9 @@ val rootProps = Properties().apply {
 }
 
 val stonecutterVersion: String = rootProps.getProperty("stonecutter_version")
+val modPublishVersion: String = rootProps.getProperty("mod_publish_version")
 
 dependencies {
     implementation("dev.kikugie:stonecutter:${stonecutterVersion}")
+    implementation("me.modmuss50.mod-publish-plugin:me.modmuss50.mod-publish-plugin.gradle.plugin:${modPublishVersion}")
 }

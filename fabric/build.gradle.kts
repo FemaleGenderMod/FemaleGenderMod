@@ -1,5 +1,3 @@
-import me.modmuss50.mpp.ReleaseType
-
 plugins {
     id("multiloader-loader")
     // plugin versions are defined in stonecutter.gradle.kts
@@ -107,7 +105,7 @@ val loaderAttribute = Attribute.of(
 listOf("apiElements", "runtimeElements", "sourcesElements", "javadocElements", "includeInternal", "modCompileClasspath").forEach { variant ->
     configurations.named(variant) {
         attributes {
-            attribute(loaderAttribute, "fabric")
+            attribute(loaderAttribute, sc.branch.project.property("loader") as String)
         }
     }
 }
@@ -119,35 +117,22 @@ sourceSets.configureEach {
     ).forEach { variant ->
         configurations.named(variant) {
             attributes {
-                attribute(loaderAttribute, "fabric")
+                attribute(loaderAttribute, sc.branch.project.property("loader") as String)
             }
         }
     }
 }
 
-//TODO - both: Figure out where to define this. https://modmuss50.github.io/mod-publish-plugin/multi_platform/ might be of some help
 publishMods {
-    val modVer: String = sc.properties["mod_version"]
-    val minVer: String = sc.properties["publish.min_version"]
-    val maxVer: String = sc.properties["publish.max_version"]
-    val verTitle: String = sc.properties["publish.version_title"]
-
-    file = tasks.jar.get().archiveFile
-    displayName = "$modVer for $verTitle"
-    version = project.version as String
-    changelog = providers.fileContents(rootProject.layout.projectDirectory.file("CHANGELOG.md")).asText
-    type = ReleaseType.of(sc.properties["publish.type"])
-    modLoaders.add("fabric")
-
-    dryRun = providers.environmentVariable("MODRINTH_TOKEN").getOrNull() == null
-
+    dryRun = performDryRun
     modrinth {
-        projectId = property("publish.modrinth").toString()
-        accessToken = providers.environmentVariable("MODRINTH_TOKEN")
-        minecraftVersionRange {
-            start = minVer
-            end = maxVer
-        }
+        from(modrinthOps, basePublishingOps)
+        additionalFile(tasks.sourcesJar.flatMap { it.archiveFile }) { type.set(SOURCES_JAR) }
+        additionalFile(tasks.javadocJar.flatMap { it.archiveFile }) { type.set(JAVADOC_JAR) }
+        requires("fabric-api")
+    }
+    curseforge {
+        from(cfOps, basePublishingOps)
         requires("fabric-api")
     }
 }

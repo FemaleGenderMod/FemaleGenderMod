@@ -5,7 +5,6 @@ plugins {
     id("dev.kikugie.stonecutter")
     id("net.neoforged.moddev") version "2.0.143" apply false
     id("net.fabricmc.fabric-loom") version "1.17-SNAPSHOT" apply false
-    id("me.modmuss50.mod-publish-plugin") version "2.2.0" apply false
     id("idea")
 }
 
@@ -56,6 +55,11 @@ tasks.register<ValidateJson>("validateJson") {
 
 tasks.register<ATtoCTConverter>("convertATtoCT") {
     atPath = layout.projectDirectory.file("common/src/main/resources/META-INF/accesstransformer.cfg")
-    //outputFile = objectFactory.fileProperty().convention(projectLayout.buildDirectory.file('changelog.md'))
     ctPath = layout.projectDirectory.file("fabric/src/main/resources/${stonecutter.properties["mod_id"] as String}.classtweaker")
+}
+
+tasks.register("publishMods") {
+    description = "Publish mod to both platforms, for both loaders, and all versions"
+    group = "publishing"
+    dependsOn(stonecutter.tasks.named("publishMods") { branch.id == "fabric" || branch.id == "neoforge" })
 }
