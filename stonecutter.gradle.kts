@@ -1,4 +1,5 @@
 import com.wildfire.ATtoCTConverter
+import com.wildfire.OptimizePng
 import com.wildfire.ValidateJson
 
 plugins {
@@ -24,6 +25,12 @@ tasks.register("generatePackageInfos") {
 
 tasks.register("runData") {
     description = "Run data generation for all loaders and versions"
+}
+
+tasks.register<OptimizePng>("optimizePng") {
+    inputFiles.from(fileTree(layout.projectDirectory) {
+        include("*/src/main/resources/**/*.png")
+    })
 }
 
 tasks.register<ValidateJson>("validateJson") {
