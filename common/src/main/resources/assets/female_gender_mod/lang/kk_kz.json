@@ -176,9 +176,6 @@
   "female_gender_mod.contributor.role.generic": "Әйел жынысы моды үлес қосушысы",
   "female_gender_mod.contributor.role.generic.short": "Үлес қосушы",
 
-  "female_gender_mod.misc.holiday_themes": "Мереке тақырыптары: %s",
-  "female_gender_mod.tooltip.holiday_themes.line1": "Қосылған кезде, бұл мүмкіндік Аяз-ата қалпағын және басқада мереке заттарын мереке кезінде автоматты түрде көрсетеді.",
-
   "female_gender_mod.not_in_world.title": "Басты мәзірде қолжетімсіз",
   "female_gender_mod.not_in_world": "Жыныс баптауларын өзгерту үшін әлемде болуың керек."
 }

@@ -317,18 +317,6 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                         button.updateMessage();
                     }
                 }));
-
-        addButton(builder -> builder
-                .message(() -> WildfireLang.HOLIDAY_THEMES.translate(plr.holidayThemes().get() ? ENABLED : DISABLED))
-                .position(this.width / 2 - 36, tabOffsetY + 94)
-                .size(FULL_WIDTH, 20)
-                .onPress(button -> {
-                    if (plr.holidayThemes().update(ConfigValue.TOGGLE)) {
-                        plr.save();
-                        button.updateMessage();
-                    }
-                })
-                .tooltip(Tooltip.create(WildfireLang.HOLIDAY_THEMES_TOOLTIP.line(1))));
     }
 
     @Override

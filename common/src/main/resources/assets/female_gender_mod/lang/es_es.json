@@ -175,9 +175,6 @@
     "female_gender_mod.contributor.role.generic": "Contribuidor/a del mod del género",
     "female_gender_mod.contributor.role.generic.short": "Contribuidor/a",
 
-    "female_gender_mod.misc.holiday_themes": "Temas Festivos: %s",
-    "female_gender_mod.tooltip.holiday_themes.line1": "Al activarse, ésta opción te dará accesorios festivos de acuerdo a la festividad.",
-
     "female_gender_mod.not_in_world.title": "No disponible en el menú príncipal.",
     "female_gender_mod.not_in_world": "Debes entrar a un mundo para configurar tu género."
 }

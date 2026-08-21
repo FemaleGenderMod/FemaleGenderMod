@@ -168,9 +168,6 @@
     "female_gender_mod.contributor.role.generic": "Female Gender Mod Mitwirkender",
     "female_gender_mod.contributor.role.generic.short": "Mitwirkender",
 
-    "female_gender_mod.misc.holiday_themes": "Feiertag Themes: %s",
-    "female_gender_mod.tooltip.holiday_themes.line1": "Wenn aktiviert, werden automatisch Skins wie Weihnachtsmützen oder andere Dinge während der entsprechenden Feiertage angezeigt.",
-
     "female_gender_mod.not_in_world.title": "Im Hauptmenü nicht verfügbar",
     "female_gender_mod.not_in_world": "Du musst in einer Welt sein, um deine Einstellungen zu ändern."
 }

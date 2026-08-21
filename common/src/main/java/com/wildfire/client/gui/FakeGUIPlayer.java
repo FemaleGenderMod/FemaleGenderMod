@@ -47,7 +47,6 @@ public class FakeGUIPlayer {
         config.breasts.yOffset().update(-0.2F);
         config.breasts.physics().uniboob().update(false);
         config.breasts.cleavage().update(0.05F);
-        config.holidayThemes.update(false);
     };
 
     private final String name;

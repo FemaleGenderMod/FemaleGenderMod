@@ -178,8 +178,6 @@ public enum WildfireLang {
     KEIRA("misc.keira_emberlyn"),
     MISC_F("misc.f"),
     MISC_GM("misc.gm"),
-    HOLIDAY_THEMES("misc.holiday_themes"),
-    HOLIDAY_THEMES_TOOLTIP("tooltip.holiday_themes"),
 
     NOT_IN_WORLD("not_in_world"),
     NOT_IN_WORLD_TITLE("not_in_world.title"),

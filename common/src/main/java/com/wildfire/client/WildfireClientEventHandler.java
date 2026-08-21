@@ -34,7 +34,6 @@ import com.wildfire.common.entitydata.PlayerConfigHolder;
 import com.wildfire.common.networking.WildfireSync;
 import com.wildfire.client.render.GenderArmorLayer;
 import com.wildfire.client.render.GenderLayer;
-import com.wildfire.client.render.HolidayFeaturesRenderer;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import net.minecraft.client.DeltaTracker;
@@ -210,7 +209,6 @@ public final class WildfireClientEventHandler {
         if (avatarRenderer != null) {
             registration.accept(avatarRenderer, new GenderLayer<>(avatarRenderer));
             registration.accept(avatarRenderer, new GenderArmorLayer<>(avatarRenderer, equipmentRenderer));
-            registration.accept(avatarRenderer, new HolidayFeaturesRenderer(avatarRenderer));
         }
     }
 

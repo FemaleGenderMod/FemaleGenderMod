@@ -90,7 +90,5 @@
     "female_gender_mod.details.prev_page": "이전 페이지",
     "female_gender_mod.cloud_details.title": "클라우드 동기화 서버 정보",
     "female_gender_mod.nametag.creator": "여성 성별 모드 제작자",
-    "female_gender_mod.nametag.contributor": "여성 성별 모드 기여자",
-    "female_gender_mod.misc.holiday_themes": "기념일 테마: %s",
-    "female_gender_mod.tooltip.holiday_themes.line1": "활성화 시, 이 기능은 각 기념일마다 산타 모자와 같은 의상 및 기타 기념일 테마 아이템을 자동으로 표시합니다."
+    "female_gender_mod.nametag.contributor": "여성 성별 모드 기여자"
 }

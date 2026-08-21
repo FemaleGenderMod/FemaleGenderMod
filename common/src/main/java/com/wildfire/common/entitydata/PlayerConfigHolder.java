@@ -183,9 +183,6 @@ public class PlayerConfigHolder extends EntityConfigHolder<PlayerConfig> {
     public final Sounds sounds() {
         return config.sounds;
     }
-    public final ConfigValue<Boolean> holidayThemes() {//TODO: This doesn't seem to do anything other than be visible in the UI?
-        return config.holidayThemes;
-    }
     public final ConfigValue<Boolean> showBreastsInArmor() {
         return config.showBreastsInArmor;
     }

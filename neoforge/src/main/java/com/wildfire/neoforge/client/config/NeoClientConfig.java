@@ -30,7 +30,6 @@ import com.wildfire.common.config.value.ConfigKey;
 import com.wildfire.common.config.value.ConfigValue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import net.minecraft.util.TriState;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.config.ModConfig.Type;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
@@ -120,16 +119,6 @@ public class NeoClientConfig implements ClientConfig {
     @Override
     public void save() {
         EXECUTOR.submit(new ConfigSaver(configSpec));
-    }
-
-    @Override
-    public TriState holidayCosmetics() {
-        return ClientConfig.super.holidayCosmetics();
-    }
-
-    @Override
-    public boolean displayOwnNameTag() {
-        return ClientConfig.super.displayOwnNameTag();
     }
 
     private static class ConfigSaver implements Runnable {

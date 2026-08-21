@@ -171,9 +171,6 @@
     "female_gender_mod.contributor.role.generic": "Участник Female Gender Mod",
     "female_gender_mod.contributor.role.generic.short": "Участник в разработке",
 
-    "female_gender_mod.misc.holiday_themes": "Празднечные темы: %s",
-    "female_gender_mod.tooltip.holiday_themes.line1": "При включении этой функции автоматически демонстрируется косметика, например, шапки Санты и другие предметы праздничной тематики во время соответствующих праздников.",
-
     "female_gender_mod.not_in_world.title": "Недоступно в главном меню",
     "female_gender_mod.not_in_world": "Тебе нужно быть в мире чтобы настроить свой гендер."
 }

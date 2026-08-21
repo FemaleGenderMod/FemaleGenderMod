@@ -20,7 +20,6 @@ package com.wildfire.client.config;
 
 import com.wildfire.common.WildfireHelper;
 import java.util.Objects;
-import net.minecraft.util.TriState;
 import org.jspecify.annotations.Nullable;
 
 public interface ClientConfig {
@@ -39,10 +38,6 @@ public interface ClientConfig {
     void save();
 
     // region Debug options
-    default TriState holidayCosmetics() {
-        return ClientConfigInstance.HOLIDAY_COSMETICS;
-    }
-
     default boolean displayOwnNameTag() {
         return ClientConfigInstance.DISPLAY_OWN_NAMETAG;
     }

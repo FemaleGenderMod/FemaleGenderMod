@@ -176,9 +176,6 @@
     "female_gender_mod.contributor.role.generic": "女性ジェンダーMod貢献者",
     "female_gender_mod.contributor.role.generic.short": "貢献者",
 
-    "female_gender_mod.misc.holiday_themes": "ホリデーテーマ: %s",
-    "female_gender_mod.tooltip.holiday_themes.line1": "有効にすると、各ホリデーシーズンに合わせてサンタ帽などのホリデーテーマのアイテムが自動的に表示されます。",
-
     "female_gender_mod.not_in_world.title": "メインメニューでは利用できません",
     "female_gender_mod.not_in_world": "ジェンダー設定を変更するには、ワールドに入る必要があります。"
 }

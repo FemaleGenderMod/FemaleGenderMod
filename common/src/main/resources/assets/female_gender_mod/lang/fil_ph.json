@@ -167,9 +167,6 @@
     "female_gender_mod.contributor.role.generic": "Kontribyutor ng Female Gender Mod",
     "female_gender_mod.contributor.role.generic.short": "Kontribyutor",
 
-    "female_gender_mod.misc.holiday_themes": "Mga Tema ng Holiday: %s",
-    "female_gender_mod.tooltip.holiday_themes.line1": "Kapag pinagana, awtomatikong ipapakita ng feature na ito ang mga kosmetiko tulad ng mga sumbrero ni Santa at iba pang mga bagay na may temang pang-holiday sa panahon ng kani-kanilang mga holiday.",
-
     "female_gender_mod.not_in_world.title": "Hindi available sa Main Menu",
     "female_gender_mod.not_in_world": "Kailangang nasa isa kang mundo para ayusin ang iyong mga setting sa kasarian."
 }

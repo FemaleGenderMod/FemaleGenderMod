@@ -289,9 +289,6 @@ public class WildfireLangData {
         add(builder, WildfireLang.KEIRA, "Keira Emberlyn:");
         add(builder, WildfireLang.MISC_F, "F");
         add(builder, WildfireLang.MISC_GM, "GM");
-        add(builder, WildfireLang.HOLIDAY_THEMES, "Holiday Themes: %1$s");
-        //TODO: This is like this to support the legacy translation key of one line. But maybe we should change it?
-        add(builder, WildfireLang.HOLIDAY_THEMES_TOOLTIP, new String[]{"When enabled, this feature automatically showcases cosmetics like Santa hats and other holiday-themed items during their respective holidays."});
 
         add(builder, WildfireLang.NOT_IN_WORLD_TITLE, "Unavailable in Main Menu");
         add(builder, WildfireLang.NOT_IN_WORLD, "You need to be in a world to configure your gender settings.");

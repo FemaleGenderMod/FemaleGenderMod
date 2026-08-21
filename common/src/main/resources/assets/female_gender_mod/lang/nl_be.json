@@ -141,9 +141,6 @@
     "female_gender_mod.contributor.role.generic": "Female Gender Mod Bijdrager",
     "female_gender_mod.contributor.role.generic.short": "Bijdrager",
 
-    "female_gender_mod.misc.holiday_themes": "Feestdagen Thema: %s",
-    "female_gender_mod.tooltip.holiday_themes.line1": "Wanneer aangezet, zal deze functie automatisch cosmetica weergeven zoals Kerst muts en andere feestdagen gerelateerde voorwerpen tijdens die feestdagen.",
-
     "female_gender_mod.not_in_world.title": "Niet beschikbaar in het hoofd menu",
     "female_gender_mod.not_in_world": "Je moet in een wereld zijn om je gender instellingen aan te passen."
 }

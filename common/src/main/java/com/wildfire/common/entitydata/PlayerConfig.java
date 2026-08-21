@@ -33,12 +33,10 @@ import net.minecraft.network.codec.StreamCodec;
 public class PlayerConfig extends EntityConfig {
 
     private static final ConfigKey<Boolean> SHOW_IN_ARMOR = ConfigKey.DEFAULT_TRUE;
-    private static final ConfigKey<Boolean> HOLIDAY_THEMES = ConfigKey.DEFAULT_TRUE;
 
     public static final Codec<PlayerConfig> CODEC = RecordCodecBuilder.create(instance -> codecGroup(instance)
         .and(Sounds.CODEC_OR_LEGACY.forGetter(config -> config.sounds))
         .and(SHOW_IN_ARMOR.codecOrDefault("show_in_armor").forGetter(config -> config.showBreastsInArmor.get()))
-        .and(HOLIDAY_THEMES.codecOrDefault("holiday_themes").forGetter(config -> config.holidayThemes.get()))
         .apply(instance, PlayerConfig::new));
     // remember to update SyncHelloPacket.VERSION when modifying this codec if the changes result in a change
     // to the underlying packet structure
@@ -50,7 +48,6 @@ public class PlayerConfig extends EntityConfig {
         //From PlayerConfig
         Sounds.STREAM_CODEC, config -> config.sounds,
         SHOW_IN_ARMOR.streamCodec(), config -> config.showBreastsInArmor.get(),
-        HOLIDAY_THEMES.streamCodec(), config -> config.holidayThemes.get(),
         PlayerConfig::new
     );
     public static final StreamCodec<ByteBuf, PlayerConfig> COMPACT_STREAM_CODEC = new StreamCodec<>() {
@@ -80,8 +77,7 @@ public class PlayerConfig extends EntityConfig {
         //Note: it is safe to use the newer codec syntax here as the cloud server doesn't care about UVs
         UVs.CODEC_OR_LEGACY.forGetter(config -> config.uvs),
         Sounds.LEGACY_CODEC.forGetter(config -> config.sounds),
-        SHOW_IN_ARMOR.codecOrDefault("show_in_armor").forGetter(config -> config.showBreastsInArmor.get()),
-        HOLIDAY_THEMES.codecOrDefault("holiday_themes").forGetter(config -> config.holidayThemes.get())
+        SHOW_IN_ARMOR.codecOrDefault("show_in_armor").forGetter(config -> config.showBreastsInArmor.get())
     ).apply(instance, PlayerConfig::new));
 
     public static PlayerConfig createDefault() {
@@ -90,13 +86,11 @@ public class PlayerConfig extends EntityConfig {
     }
 
     public final ConfigValue<Boolean> showBreastsInArmor;
-    public final ConfigValue<Boolean> holidayThemes;
     public final Sounds sounds;
 
-    private PlayerConfig(Gender gender, Breasts breasts, UVs uvs, Sounds sounds, boolean showBreastsInArmor, boolean holidayThemes) {
+    private PlayerConfig(Gender gender, Breasts breasts, UVs uvs, Sounds sounds, boolean showBreastsInArmor) {
         this.sounds = sounds;
         this.showBreastsInArmor = SHOW_IN_ARMOR.createValueHandler(showBreastsInArmor);
-        this.holidayThemes = HOLIDAY_THEMES.createValueHandler(holidayThemes);
         super(gender, breasts, uvs);
     }
 }

@@ -179,9 +179,6 @@
 	"female_gender_mod.contributor.role.generic": "女性性別模組貢獻者",
 	"female_gender_mod.contributor.role.generic.short": "貢獻者",
 
-	"female_gender_mod.misc.holiday_themes": "節日主題：%s",
-	"female_gender_mod.tooltip.holiday_themes.line1": "啟用後，此功能會在相應的節日期間自動展示如聖誕帽等節日主題的裝飾物品。",
-
 	"female_gender_mod.not_in_world.title": "在主選單中無法使用",
 	"female_gender_mod.not_in_world": "您必須進入世界後才能設定您的性別選項。"
 }

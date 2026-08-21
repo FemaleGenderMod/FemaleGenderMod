@@ -178,9 +178,6 @@
     "female_gender_mod.contributor.role.generic": "Contribuidor/a do Mod",
     "female_gender_mod.contributor.role.generic.short": "Contribuidor",
 
-    "female_gender_mod.misc.holiday_themes": "Temas festivos: %s",
-    "female_gender_mod.tooltip.holiday_themes.line1": "Quando ativado, esta funcionalidade automaticamente mostra cosmeticos como Pai Natal e outros quando essas festas acontecerem.",
-
     "female_gender_mod.not_in_world.title": "Não dísponivel no menu",
     "female_gender_mod.not_in_world": "Precisas estar em um mundo para mudar as definições de gênero, entra em um!"
 }

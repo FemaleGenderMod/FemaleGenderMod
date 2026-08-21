@@ -57,7 +57,6 @@ public class GenderRenderState {
     public final float floppyMultiplier;
     public final boolean showBreastsInArmor;
     public final boolean hasJacketLayer;
-    public final boolean hasHolidayThemes;
 
     public final UVLayout leftBreastUVLayout;
     public final UVLayout rightBreastUVLayout;
@@ -91,16 +90,8 @@ public class GenderRenderState {
 
         if (entityConfig.config() instanceof PlayerConfig playerConfig) {
             this.showBreastsInArmor = playerConfig.showBreastsInArmor.get();
-            if (entityConfig.uuid.version() == 4) {
-                // Real players always have a UUID of version 4; if this isn't the case, then this is undeniably
-                // an NPC player entity.
-                this.hasHolidayThemes = playerConfig.holidayThemes.get();
-            } else {
-                this.hasHolidayThemes = false;
-            }
         } else {
             this.showBreastsInArmor = true;
-            this.hasHolidayThemes = false;
         }
 
         this.leftBreastUVLayout = entityConfig.uvs().skin().left().get().copy();

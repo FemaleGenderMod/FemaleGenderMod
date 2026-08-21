@@ -23,7 +23,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.wildfire.common.config.enums.ShowPlayerListMode;
 import com.wildfire.common.config.value.ConfigKey;
 import com.wildfire.common.config.value.ConfigValue;
-import net.minecraft.util.TriState;
 
 public record ClientConfigInstance(
     ConfigValue<Boolean> firstTimeLoad, ConfigValue<Boolean> showToast, ConfigValue<Boolean> armorStat, ConfigValue<ShowPlayerListMode> playerListMode,
@@ -31,7 +30,6 @@ public record ClientConfigInstance(
 ) {
 
     // region Debug options
-    public static TriState HOLIDAY_COSMETICS = TriState.DEFAULT;
     public static boolean DISPLAY_OWN_NAMETAG = false;
     // endregion
 
