@@ -166,15 +166,14 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .step(0.1)
                 .mouseStep(0.1));
 
-
         addButton(builder -> builder
-                .message(WildfireLang.UV_EDITOR::translate)
-                .position(this.width / 2 - 36, this.height / 2 + 43)
-                .size(120, 15)
-                .onPress(_ -> {
-                    //~ if >=26.2 'minecraft.setScreen' -> 'minecraft.gui.setScreen'
-                    minecraft.gui.setScreen(new WildfireBreastUVEditorScreen(this, playerUUID));
-                }));
+            .message(WildfireLang.UV_EDITOR::translate)
+            .position(this.width / 2 - 36, tabOffsetY + 70)
+            .size(FULL_WIDTH, 20)
+            .onPress(_ -> {
+                //~ if >=26.2 'minecraft.setScreen' -> 'minecraft.gui.setScreen'
+                minecraft.gui.setScreen(new WildfireBreastUVEditorScreen(this, playerUUID));
+            }));
     }
 
     private void initPhysicsTab(final int tabOffsetY) {
@@ -363,9 +362,9 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
     }*/
 
     private enum Tab {
-        CUSTOMIZATION(BACKGROUND_CUSTOMIZATION, 80),
+        CUSTOMIZATION(BACKGROUND_CUSTOMIZATION, 104),
         PHYSICS(BACKGROUND_PHYSICS, 104),
-        MISC(BACKGROUND_MISC, 128),
+        MISC(BACKGROUND_MISC, 104),
         ;
 
         final Identifier background;
