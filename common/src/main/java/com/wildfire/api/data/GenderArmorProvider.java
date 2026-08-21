@@ -19,7 +19,7 @@
 package com.wildfire.api.data;
 
 import com.wildfire.api.IGenderArmor;
-import com.wildfire.client.resources.GenderArmorResourceManager;
+import com.wildfire.api.WildfireAPI;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
@@ -39,6 +39,7 @@ import net.minecraft.world.item.equipment.EquipmentAsset;
 
 public abstract class GenderArmorProvider implements DataProvider {
 
+    public static final String PREFIX = WildfireAPI.MODID + "/armor_data";
     private final Map<Identifier, IGenderArmor> armorConfigs = new HashMap<>();
     private final CompletableFuture<HolderLookup.Provider> registries;
     private final PathProvider pathProvider;
@@ -46,7 +47,7 @@ public abstract class GenderArmorProvider implements DataProvider {
 
     protected GenderArmorProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, String modId) {
         this.registries = registries;
-        this.pathProvider = output.createPathProvider(Target.RESOURCE_PACK, GenderArmorResourceManager.PREFIX);
+        this.pathProvider = output.createPathProvider(Target.RESOURCE_PACK, PREFIX);
         this.modId = modId;
     }
 

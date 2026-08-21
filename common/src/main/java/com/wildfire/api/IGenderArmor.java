@@ -22,7 +22,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.wildfire.api.impl.BreastArmorTexture;
 import com.wildfire.api.impl.GenderArmor;
-import com.wildfire.common.entitydata.BreastDataComponent;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.TriState;
 import org.jetbrains.annotations.ApiStatus;
@@ -125,9 +124,9 @@ public interface IGenderArmor {
     /// 		 armor stands, and render the relevant breast settings on the armor stand.
     ///
     /// @implNote Defaults to returning `true` if this armor [`covers the breasts`][#coversBreasts()]
-    /// 		   (and [`doesn't hide them`][#alwaysHidesBreasts()]), and [`has		   complete physics resistance`][#physicsResistance()].
+    /// 		   (and [`doesn't hide them`][#alwaysHidesBreasts()]), and [`has complete physics resistance`][#physicsResistance()].
     ///
-    /// @see BreastDataComponent
+    /// @see com.wildfire.common.entitydata.BreastDataComponent
     default boolean armorStandsCopySettings() {
         return !alwaysHidesBreasts() && coversBreasts() && physicsResistance() == 1f;
     }

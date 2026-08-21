@@ -16,12 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.common.config.uvs;
+package com.wildfire.api.uvs;
 
 import com.mojang.serialization.Codec;
-import com.wildfire.common.WildfireLang;
+import com.wildfire.api.WildfireAPI;
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -34,31 +33,27 @@ import net.minecraft.util.StringRepresentable;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 import java.util.function.IntFunction;
-import org.jspecify.annotations.Nullable;
 
 public enum UVDirection implements StringRepresentable {
-    EAST("east", null, WildfireLang.UV_DIRECTION_EAST, CommonColors.RED, new Vec3i(1, 0, 0)),
-    WEST("west", null, WildfireLang.UV_DIRECTION_WEST, CommonColors.GREEN, new Vec3i(-1, 0, 0)),
-    DOWN("down", WildfireLang.UV_EDITOR_FACE_BOTTOM, WildfireLang.UV_DIRECTION_DOWN, CommonColors.BLUE, new Vec3i(0, -1, 0)),
-    UP("up", WildfireLang.UV_EDITOR_FACE_TOP, WildfireLang.UV_DIRECTION_UP, 0xFF00FFFF, new Vec3i(0, 1, 0)),
-    NORTH("north", WildfireLang.UV_EDITOR_FACE_FRONT, WildfireLang.UV_DIRECTION_NORTH, 0xFFFF00FF, new Vec3i(0, 0, -1));
+    EAST("east", CommonColors.RED, new Vec3i(1, 0, 0)),
+    WEST("west", CommonColors.GREEN, new Vec3i(-1, 0, 0)),
+    DOWN("down", CommonColors.BLUE, new Vec3i(0, -1, 0)),
+    UP("up", 0xFF00FFFF, new Vec3i(0, 1, 0)),
+    NORTH("north", 0xFFFF00FF, new Vec3i(0, 0, -1));
 
-    @Nullable
-    private final WildfireLang name;
-    private final WildfireLang shortName;
+    private final Component shortName;
     private final String saveName;
     private final int baseColor;
     private final Vector3fc floatVector;
 
     public static final IntFunction<UVDirection> BY_ID = ByIdMap.continuous(UVDirection::ordinal, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
-    public static final Codec<UVDirection> NAME_CODEC = StringRepresentable.fromEnum(UVDirection::values);
+    public static final Codec<UVDirection> CODEC = StringRepresentable.fromEnum(UVDirection::values);
     public static final StreamCodec<ByteBuf, UVDirection> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, UVDirection::ordinal);
 
-    UVDirection(String saveName, @Nullable WildfireLang name, WildfireLang shortName, int baseColor, Vec3i vector) {
-        this.name = name;
+    UVDirection(String saveName, int baseColor, Vec3i vector) {
         this.saveName = saveName;
-        this.shortName = shortName;
         this.baseColor = baseColor;
+        this.shortName = Component.translatable(getShortTranslationKey());
         this.floatVector = new Vector3f(vector.getX(), vector.getY(), vector.getZ());
     }
 
@@ -72,22 +67,25 @@ public enum UVDirection implements StringRepresentable {
         return new Vector3f(this.floatVector);
     }
 
-    public MutableComponent getDirectionText(BreastTypes type) {
-        if (this == EAST || this == WEST) {
-            WildfireLang langEntry = (type == BreastTypes.LEFT || type == BreastTypes.LEFT_OVERLAY)
-                    ? WildfireLang.UV_EDITOR_FACE_INNER
-                    : WildfireLang.UV_EDITOR_FACE_OUTER;
-            return langEntry.translate();
-        }
-        return Objects.requireNonNull(name, "Name should not be null unless it is covered by a case above").translate();
+    public FaceDirection getDirection(BreastTypes type) {
+        return switch (this) {
+            case EAST, WEST -> type.isLeft() ? FaceDirection.INNER : FaceDirection.OUTER;
+            case DOWN -> FaceDirection.BOTTOM;
+            case UP -> FaceDirection.TOP;
+            case NORTH -> FaceDirection.FRONT;
+        };
     }
 
-    public String getSaveName() {
-        return saveName;
+    public MutableComponent getDirectionText(BreastTypes type) {
+        return Component.translatable(getDirection(type).getTranslationKey());
+    }
+
+    public String getShortTranslationKey() {
+        return WildfireAPI.MODID + ".uv.direction." + saveName + ".short";
     }
 
     public Component getShortName() {
-        return shortName.translate();
+        return shortName;
     }
 
     @Override

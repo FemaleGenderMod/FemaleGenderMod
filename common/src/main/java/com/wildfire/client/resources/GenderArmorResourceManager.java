@@ -22,6 +22,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import com.wildfire.api.IGenderArmor;
 import com.wildfire.api.WildfireAPI;
+import com.wildfire.api.data.GenderArmorProvider;
 import com.wildfire.common.WildfireGender;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import java.util.ArrayList;
@@ -50,12 +51,11 @@ public final class GenderArmorResourceManager extends SimpleJsonResourceReloadLi
 
     private static final FileToIdConverter LEGACY_PATH_CONVERTER = FileToIdConverter.json("wildfire_gender_data");
     public static final Identifier ID = WildfireGender.id("armor_data");
-    public static final String PREFIX = WildfireAPI.MODID + "/armor_data";
     public static final GenderArmorResourceManager INSTANCE = new GenderArmorResourceManager();
     private @Unmodifiable Map<Identifier, IGenderArmor> configs = Map.of();
 
     private GenderArmorResourceManager() {
-        super(IGenderArmor.CODEC, FileToIdConverter.json(PREFIX));
+        super(IGenderArmor.CODEC, FileToIdConverter.json(GenderArmorProvider.PREFIX));
     }
 
     @Override
@@ -76,7 +76,7 @@ public final class GenderArmorResourceManager extends SimpleJsonResourceReloadLi
         if (newSize != result.size()) {
             for (final Map.Entry<Identifier, IGenderArmor> entry : result.entrySet()) {
                 if (legacyElements.contains(entry.getValue())) {
-                    WildfireGender.LOGGER.warn("Gender Armor config: '{}' should be moved to the new folder path: '{}'", entry.getKey(), PREFIX);
+                    WildfireGender.LOGGER.warn("Gender Armor config: '{}' should be moved to the new folder path: '{}'", entry.getKey(), GenderArmorProvider.PREFIX);
                 }
             }
         }

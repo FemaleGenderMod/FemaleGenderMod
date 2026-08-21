@@ -16,11 +16,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.common.config.uvs;
+package com.wildfire.common.config;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.wildfire.api.uvs.UVLayout;
+import com.wildfire.api.uvs.UVQuad;
 import com.wildfire.common.WildfireHelper;
 import com.wildfire.common.config.value.ConfigKey;
 import com.wildfire.common.config.value.ConfigValue;

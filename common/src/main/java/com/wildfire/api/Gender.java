@@ -16,10 +16,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.common.config.enums;
+package com.wildfire.api;
 
 import com.mojang.serialization.Codec;
-import com.wildfire.common.WildfireLang;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
@@ -34,9 +33,9 @@ import net.minecraft.util.StringRepresentable;
 public enum Gender implements StringRepresentable {
     // NOTE: The order of these should remain unchanged! Changing these WILL modify player configs!
     //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor' {
-    FEMALE("female", WildfireLang.LABEL_FEMALE.translateColored(TextColor.LIGHT_PURPLE), true),
-    MALE("male", WildfireLang.LABEL_MALE.translateColored(TextColor.BLUE), false),
-    OTHER("other", WildfireLang.LABEL_OTHER.translateColored(TextColor.GREEN), true);
+    FEMALE("female", TextColor.LIGHT_PURPLE, true),
+    MALE("male", TextColor.BLUE, false),
+    OTHER("other", TextColor.GREEN, true);
     //~}
 
     public static final IntFunction<Gender> BY_ID = ByIdMap.continuous(Gender::ordinal, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
@@ -49,9 +48,11 @@ public enum Gender implements StringRepresentable {
     private final Component name;
     private final boolean canHaveBreasts;
 
-    Gender(String saveName, Component name, boolean canHaveBreasts) {
+    //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor'
+    Gender(String saveName, TextColor nameColor, boolean canHaveBreasts) {
         this.saveName = saveName;
-        this.name = name;
+        //~ if >=26.2 'withStyle' -> 'withColor'
+        this.name = Component.translatable(getTranslationKey()).withColor(nameColor);
         this.canHaveBreasts = canHaveBreasts;
     }
 
@@ -74,5 +75,9 @@ public enum Gender implements StringRepresentable {
             case FEMALE -> OTHER;
             case OTHER -> MALE;
         };
+    }
+
+    public String getTranslationKey() {
+        return WildfireAPI.MODID + ".label." + saveName;
     }
 }

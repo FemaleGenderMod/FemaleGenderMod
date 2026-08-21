@@ -47,17 +47,6 @@ public enum WildfireLang {
     UV_EDITOR_ADD("uv_editor.add"),
     UV_EDITOR_REMOVE("uv_editor.remove"),
 
-    UV_EDITOR_FACE_INNER("uv_editor.faces.inner"),
-    UV_EDITOR_FACE_OUTER("uv_editor.faces.outer"),
-    UV_EDITOR_FACE_TOP("uv_editor.faces.top"),
-    UV_EDITOR_FACE_BOTTOM("uv_editor.faces.bottom"),
-    UV_EDITOR_FACE_FRONT("uv_editor.faces.front"),
-    UV_DIRECTION_EAST("uv.direction.east.short"),
-    UV_DIRECTION_WEST("uv.direction.west.short"),
-    UV_DIRECTION_DOWN("uv.direction.down.short"),
-    UV_DIRECTION_UP("uv.direction.up.short"),
-    UV_DIRECTION_NORTH("uv.direction.north.short"),
-
     UV_SELECTED_DIRECTION("uv.selected_direction"),
     UV_QUAD("uv.quad"),
 
@@ -116,9 +105,6 @@ public enum WildfireLang {
     CHAR_SETTINGS_OVERRIDE_PHYSICS_TOOLTIP("tooltip.override_armor_physics"),
 
     LABEL_GENDER("label.gender"),
-    LABEL_FEMALE("label.female"),
-    LABEL_MALE("label.male"),
-    LABEL_OTHER("label.other"),
     LABEL_ENABLED("label.enabled"),
     LABEL_DISABLED("label.disabled"),
     LABEL_ON("label.on"),

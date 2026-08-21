@@ -16,14 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.api.impl;
+@NullMarked
+package com.wildfire.api.uvs;
 
-import com.wildfire.api.IBreastArmorTexture;
-import com.wildfire.api.uvs.UVMap;
-import org.joml.Vector2ic;
-
-/// Default record implementation of [IBreastArmorTexture] used for resource pack entries
-///
-/// @see IBreastArmorTexture
-public record BreastArmorTexture(Vector2ic textureSize, UVMap uvs) implements IBreastArmorTexture {
-}
+import org.jspecify.annotations.NullMarked;

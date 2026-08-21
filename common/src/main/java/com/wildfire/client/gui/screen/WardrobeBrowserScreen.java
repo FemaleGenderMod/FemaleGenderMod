@@ -23,7 +23,7 @@ import com.wildfire.common.WildfireGender;
 import com.wildfire.common.WildfireLang;
 import com.wildfire.client.cloud.CloudSync;
 import com.wildfire.client.config.ClientConfig;
-import com.wildfire.common.config.enums.Gender;
+import com.wildfire.api.Gender;
 import com.wildfire.common.config.enums.ShowPlayerListMode;
 import com.wildfire.client.contributors.Contributors;
 import java.time.Month;

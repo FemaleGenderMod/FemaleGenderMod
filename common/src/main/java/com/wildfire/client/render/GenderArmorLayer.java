@@ -22,7 +22,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.wildfire.api.IBreastArmorTexture;
 import com.wildfire.client.ClientHelper;
 import com.wildfire.common.WildfireGender;
-import com.wildfire.common.config.uvs.UVMap;
+import com.wildfire.api.uvs.UVMap;
 import com.wildfire.client.render.WildfireModelRenderer.BreastModelBox;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.SubmitNodeCollector;

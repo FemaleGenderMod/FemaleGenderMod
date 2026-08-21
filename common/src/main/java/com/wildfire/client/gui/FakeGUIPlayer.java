@@ -21,7 +21,7 @@ package com.wildfire.client.gui;
 import com.google.common.base.Suppliers;
 import com.wildfire.common.WildfireGender;
 import com.wildfire.client.cloud.CloudSync;
-import com.wildfire.common.config.enums.Gender;
+import com.wildfire.api.Gender;
 import com.wildfire.client.contributors.Contributor.Role;
 import com.wildfire.client.contributors.Contributors;
 import com.wildfire.common.entitydata.EntityConfigHolder;

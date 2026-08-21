@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.common.config.uvs;
+package com.wildfire.api.uvs;
 
 import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
@@ -32,8 +32,8 @@ import org.jspecify.annotations.Nullable;
 
 public class UVLayout {
     /// @apiNote Any layouts returned from this codec are [`immutable`][Immutable]
-    public static final Codec<UVLayout> CODEC = Codec.unboundedMap(UVDirection.NAME_CODEC, UVQuad.CODEC).xmap(UVLayout::createImmutable, UVLayout::getQuads);
-    public static final Codec<UVLayout> MUTABLE_CONFIG_CODEC = Codec.unboundedMap(UVDirection.NAME_CODEC, UVQuad.OR_LEGACY).xmap(UVLayout::new, UVLayout::getQuads);
+    public static final Codec<UVLayout> CODEC = Codec.unboundedMap(UVDirection.CODEC, UVQuad.CODEC).xmap(UVLayout::createImmutable, UVLayout::getQuads);
+    public static final Codec<UVLayout> MUTABLE_CONFIG_CODEC = Codec.unboundedMap(UVDirection.CODEC, UVQuad.OR_LEGACY).xmap(UVLayout::new, UVLayout::getQuads);
     public static final StreamCodec<ByteBuf, UVLayout> STREAM_CODEC = ByteBufCodecs.map(
         _ -> new EnumMap<>(UVDirection.class),
         UVDirection.STREAM_CODEC,

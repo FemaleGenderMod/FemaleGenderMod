@@ -16,7 +16,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-@NullMarked
-package com.wildfire.common.config.uvs;
+package com.wildfire.api.uvs;
 
-import org.jspecify.annotations.NullMarked;
+import com.mojang.serialization.Codec;
+import com.wildfire.api.WildfireAPI;
+import net.minecraft.util.StringRepresentable;
+
+public enum FaceDirection implements StringRepresentable {
+    INNER("inner"),
+    OUTER("outer"),
+    TOP("top"),
+    BOTTOM("bottom"),
+    FRONT("front");
+
+    public static final Codec<UVDirection> CODEC = StringRepresentable.fromEnum(UVDirection::values);
+
+    private final String saveName;
+
+    FaceDirection(String saveName) {
+        this.saveName = saveName;
+    }
+
+    @Override
+    public String getSerializedName() {
+        return saveName;
+    }
+
+    public String getTranslationKey() {
+        return WildfireAPI.MODID + ".uv_editor.faces." + saveName;
+    }
+}

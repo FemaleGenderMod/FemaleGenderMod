@@ -22,10 +22,10 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.wildfire.common.config.Configuration;
-import com.wildfire.common.config.enums.Gender;
+import com.wildfire.api.Gender;
 import com.wildfire.common.config.value.ConfigKey;
 import com.wildfire.common.config.value.ConfigValue;
-import com.wildfire.common.config.uvs.UVs;
+import com.wildfire.common.config.UVs;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 

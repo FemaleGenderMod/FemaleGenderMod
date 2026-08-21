@@ -18,6 +18,9 @@
 
 package com.wildfire.datagen.lang;
 
+import com.wildfire.api.Gender;
+import com.wildfire.api.uvs.FaceDirection;
+import com.wildfire.api.uvs.UVDirection;
 import com.wildfire.common.WildfireGender;
 import com.wildfire.common.WildfireLang;
 import com.wildfire.common.config.ConfigTranslation;
@@ -130,16 +133,16 @@ public class WildfireLangData {
         add(builder, WildfireLang.UV_EDITOR_ADD, "Add");
         add(builder, WildfireLang.UV_EDITOR_REMOVE, "Remove");
 
-        add(builder, WildfireLang.UV_EDITOR_FACE_INNER, "Inner Face");
-        add(builder, WildfireLang.UV_EDITOR_FACE_OUTER, "Outer Face");
-        add(builder, WildfireLang.UV_EDITOR_FACE_TOP, "Top Face");
-        add(builder, WildfireLang.UV_EDITOR_FACE_BOTTOM, "Bottom Face");
-        add(builder, WildfireLang.UV_EDITOR_FACE_FRONT, "Front Face");
-        add(builder, WildfireLang.UV_DIRECTION_EAST, "E");
-        add(builder, WildfireLang.UV_DIRECTION_WEST, "W");
-        add(builder, WildfireLang.UV_DIRECTION_DOWN, "D");
-        add(builder, WildfireLang.UV_DIRECTION_UP, "U");
-        add(builder, WildfireLang.UV_DIRECTION_NORTH, "N");
+        add(builder, FaceDirection.INNER.getTranslationKey(), "Inner Face");
+        add(builder, FaceDirection.OUTER.getTranslationKey(), "Outer Face");
+        add(builder, FaceDirection.TOP.getTranslationKey(), "Top Face");
+        add(builder, FaceDirection.BOTTOM.getTranslationKey(), "Bottom Face");
+        add(builder, FaceDirection.FRONT.getTranslationKey(), "Front Face");
+        add(builder, UVDirection.EAST.getShortTranslationKey(), "E");
+        add(builder, UVDirection.WEST.getShortTranslationKey(), "W");
+        add(builder, UVDirection.DOWN.getShortTranslationKey(), "D");
+        add(builder, UVDirection.UP.getShortTranslationKey(), "U");
+        add(builder, UVDirection.NORTH.getShortTranslationKey(), "N");
 
         add(builder, WildfireLang.UV_SELECTED_DIRECTION, "%1$s (%2$s)");
         add(builder, WildfireLang.UV_QUAD, "[%1$s, %2$s, %3$s, %4$s]");
@@ -196,9 +199,9 @@ public class WildfireLangData {
         add(builder, WildfireLang.CHAR_SETTINGS_OVERRIDE_PHYSICS, "Armor Physics: %1$s");
 
         add(builder, WildfireLang.LABEL_GENDER, "Gender");
-        add(builder, WildfireLang.LABEL_FEMALE, "Female");
-        add(builder, WildfireLang.LABEL_MALE, "Male");
-        add(builder, WildfireLang.LABEL_OTHER, "Other");
+        add(builder, Gender.FEMALE.getTranslationKey(), "Female");
+        add(builder, Gender.MALE.getTranslationKey(), "Male");
+        add(builder, Gender.OTHER.getTranslationKey(), "Other");
 
         add(builder, WildfireLang.LABEL_ENABLED, "Enabled");
         add(builder, WildfireLang.LABEL_DISABLED, "Disabled");

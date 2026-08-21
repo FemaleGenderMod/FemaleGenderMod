@@ -22,7 +22,7 @@ import com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService;
 import com.wildfire.client.config.ClientConfig;
 import com.wildfire.common.WildfireHelper;
 import com.wildfire.client.render.GenderRenderState;
-import com.wildfire.common.config.enums.Gender;
+import com.wildfire.api.Gender;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;

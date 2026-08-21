@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.common.config.uvs;
+package com.wildfire.api.uvs;
 
 import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
@@ -31,7 +31,7 @@ public record UVQuad(int x1, int y1, int x2, int y2) {
     public static final UVQuad UNUSED = new UVQuad(0, 0, 0, 0);
 
     public static final Codec<UVQuad> CODEC = Codec.INT.listOf(4, 4).xmap(UVQuad::fromIntList, UVQuad::toIntList);
-    public static final Codec<UVQuad> LEGACY_CONFIG_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    private static final Codec<UVQuad> LEGACY_CONFIG_CODEC = RecordCodecBuilder.create(instance -> instance.group(
         Codec.INT.fieldOf("x1").forGetter(UVQuad::x1),
         Codec.INT.fieldOf("y1").forGetter(UVQuad::y1),
         Codec.INT.fieldOf("x2").forGetter(UVQuad::x2),

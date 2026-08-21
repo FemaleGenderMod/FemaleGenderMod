@@ -20,10 +20,10 @@ package com.wildfire.client.gui.screen;
 
 import com.wildfire.common.WildfireGender;
 import com.wildfire.common.WildfireLang;
-import com.wildfire.common.config.uvs.BreastTypes;
-import com.wildfire.common.config.uvs.UVDirection;
-import com.wildfire.common.config.uvs.UVLayout;
-import com.wildfire.common.config.uvs.UVQuad;
+import com.wildfire.api.uvs.BreastTypes;
+import com.wildfire.api.uvs.UVDirection;
+import com.wildfire.api.uvs.UVLayout;
+import com.wildfire.api.uvs.UVQuad;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
