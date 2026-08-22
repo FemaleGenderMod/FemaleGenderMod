@@ -90,16 +90,16 @@ public class NeoClientConfig implements ClientConfig {
         configSpec = builder.build();
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked", "rawtypes", "ConstantValue"})
     private static <TYPE> ConfigValue<TYPE> createConfigValue(ModConfigSpec.Builder builder, ConfigKey<TYPE> key, String name, GenderConfigTranslations translation) {
         applyToBuilder(translation, builder);
-        //TODO: If we add cases where the default value uses the supplier instead of a constant, we need to change the below cases to support the supplier
         TYPE defaultValue = key.defaultValue();
         //TODO: If we ever need to validate things for some values, add variants that call the builder properly
         ModConfigSpec.ConfigValue<TYPE> configValue = switch (defaultValue) {
+            //Note: Booleans and Enums can make use of the actual default, as there is no need for them to be lazily created to ensure a fresh instance
             case Boolean val -> (ModConfigSpec.ConfigValue<TYPE>) builder.define(name, val.booleanValue());
             case Enum<?> val -> (ModConfigSpec.ConfigValue<TYPE>) builder.defineEnum(name, (Enum) val);
-            default -> builder.define(name, defaultValue);
+            default -> builder.define(name, key::defaultValue, o -> o != null && defaultValue.getClass().isAssignableFrom(o.getClass()));
         };
         return new NeoBackedConfigValue<>(key.validator(), configValue);
     }
@@ -116,13 +116,18 @@ public class NeoClientConfig implements ClientConfig {
     @Override
     public void load(@Nullable Object data) {
         if (data instanceof ModContainer modContainer) {
-            modContainer.registerConfig(Type.CLIENT, configSpec, Configuration.CONFIG_DIR + "/client.toml");
+            String fileName = Configuration.CONFIG_DIR + "/client.toml";
+            modContainer.registerConfig(Type.CLIENT, configSpec, fileName);
             modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
-            //TODO - Neo: If there is a json config file, load from it/make the migration handle loading it?
-            //Try to migrate the json file
-            /*File jsonFile = LoaderAgnostics.INSTANCE.getConfigDir().resolve(WildfireAPI.MODID + ".json").toFile();
+            //Check if a json file exists and if so try to migrate it
+            /*Path baseConfigDir = LoaderAgnostics.INSTANCE.getConfigDir();
+            File jsonFile = baseConfigDir.resolve(WildfireAPI.MODID + ".json").toFile();
             if (jsonFile.exists()) {
-
+                File tomlFile = baseConfigDir.resolve(fileName).toFile();
+                if (!tomlFile.exists()) {
+                    //Note: We only try to migrate the json config to a toml file if the json one doesn't exist
+                    //TODO - Neo: If there is a json config file, load from it/make the migration handle loading it?
+                }
             }*/
         }
     }

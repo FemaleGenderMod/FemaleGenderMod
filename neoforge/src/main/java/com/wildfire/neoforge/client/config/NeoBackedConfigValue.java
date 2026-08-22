@@ -18,8 +18,8 @@
 
 package com.wildfire.neoforge.client.config;
 
+import com.wildfire.common.WildfireGender;
 import com.wildfire.common.config.validator.ConfigValidator;
-import com.wildfire.common.config.value.ConfigKey;
 import com.wildfire.common.config.value.ConfigValue;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
@@ -59,8 +59,7 @@ public class NeoBackedConfigValue<TYPE> implements ConfigValue<TYPE> {
             this.neoValue.set(newValue);
             return true;
         }
-        //TODO: Do we care about having a logging message? If so where should we get the key name from
-        //WildfireGender.LOGGER.warn("Failed to update config '{}' to value: {}", key.key(), value);
+        WildfireGender.LOGGER.warn("Failed to update config '{}' to value: {}", String.join(".", neoValue.getPath()), newValue);
         return false;
     }
 
