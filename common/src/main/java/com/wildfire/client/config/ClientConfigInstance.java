@@ -29,10 +29,6 @@ public record ClientConfigInstance(
     ConfigValue<Boolean> hideOwnContributorTag, CloudSyncConfig cloudSync, ConfigOverrides overrides
 ) {
 
-    // region Debug options
-    public static boolean DISPLAY_OWN_NAMETAG = false;
-    // endregion
-
     public static final ConfigKey<Boolean> FIRST_TIME_LOAD = ConfigKey.DEFAULT_TRUE;
     public static final ConfigKey<Boolean> SHOW_TOAST = ConfigKey.DEFAULT_TRUE;
     public static final ConfigKey<ShowPlayerListMode> PLAYER_LIST_MODE = new ConfigKey<>(ShowPlayerListMode.MOD_UI_ONLY, ShowPlayerListMode.CODEC_OR_LEGACY, ShowPlayerListMode.STREAM_CODEC);

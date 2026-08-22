@@ -22,6 +22,7 @@ import com.wildfire.client.config.ClientConfig;
 import com.wildfire.client.config.ClientConfigInstance;
 import com.wildfire.client.config.CloudSyncConfig;
 import com.wildfire.client.config.ConfigOverrides;
+import com.wildfire.common.LoaderAgnostics;
 import com.wildfire.common.WildfireGender;
 import com.wildfire.common.config.Configuration;
 import com.wildfire.common.config.GenderConfigTranslations;
@@ -30,6 +31,7 @@ import com.wildfire.common.config.value.ConfigKey;
 import com.wildfire.common.config.value.ConfigValue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.BooleanSupplier;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.config.ModConfig.Type;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
@@ -47,9 +49,18 @@ public class NeoClientConfig implements ClientConfig {
 
     private final ModConfigSpec configSpec;
     private final ClientConfigInstance configInstance;
+    private final BooleanSupplier displayOwnNametag;
 
     public NeoClientConfig() {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
+
+        // region Debug options
+        if (LoaderAgnostics.INSTANCE.isDevelopmentEnv()) {
+            displayOwnNametag = builder.define("displayOwnNametag", false);
+        } else {
+            displayOwnNametag = () -> false;
+        }
+        // endregion
 
         ConfigValue<Boolean> firstTimeLoad = createConfigValue(builder, ClientConfigInstance.FIRST_TIME_LOAD, "firstTimeLoad", GenderConfigTranslations.CLIENT_FIRST_TIME_LOAD);
         ConfigValue<Boolean> showToast = createConfigValue(builder, ClientConfigInstance.SHOW_TOAST, "showToast", GenderConfigTranslations.CLIENT_SHOW_TOAST);
@@ -115,6 +126,13 @@ public class NeoClientConfig implements ClientConfig {
             }*/
         }
     }
+
+    // region Debug options
+    @Override
+    public boolean displayOwnNameTag() {
+        return displayOwnNametag.getAsBoolean();
+    }
+    // endregion
 
     @Override
     public void save() {

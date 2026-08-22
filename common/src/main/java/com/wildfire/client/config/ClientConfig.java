@@ -38,8 +38,6 @@ public interface ClientConfig {
     void save();
 
     // region Debug options
-    default boolean displayOwnNameTag() {
-        return ClientConfigInstance.DISPLAY_OWN_NAMETAG;
-    }
+    boolean displayOwnNameTag();
     // endregion
 }
