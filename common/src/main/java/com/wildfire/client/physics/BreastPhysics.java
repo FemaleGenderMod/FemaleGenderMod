@@ -34,6 +34,7 @@ import net.minecraft.world.entity.animal.equine.AbstractHorse;
 import net.minecraft.world.entity.animal.pig.Pig;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.monster.Strider;
+import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.minecraft.world.entity.vehicle.minecart.Minecart;
 import net.minecraft.world.phys.Vec3;
@@ -192,10 +193,10 @@ public class BreastPhysics {
 
         this.targetBounceX = -calcRotation(entity, bounceIntensity) / 10f;
 
-        float f2 = (float) entity.getDeltaMovement().lengthSqr() / 0.2F;
-        f2 = f2 * f2 * f2;
-        if(f2 < 1.0F) f2 = 1.0F;
-        this.targetBounceY += Mth.cos(entity.walkAnimation.position() * 0.6662F + (float)Math.PI) * 0.5F * entity.walkAnimation.speed() * 0.5F / f2;
+        float speedValue = (float) entity.getDeltaMovement().lengthSqr() / 0.2F;
+        speedValue = Mth.cube(speedValue);
+        if (speedValue < 1.0F) speedValue = 1.0F;
+        this.targetBounceY += Mth.cos(entity.walkAnimation.position() * 0.6662F + Mth.PI) * 0.5F * entity.walkAnimation.speed() * 0.5F / speedValue;
     }
 
     private void tickPose(final LivingEntity entity, final float bounceIntensity) {
@@ -213,18 +214,19 @@ public class BreastPhysics {
     private void tickVehicle(LivingEntity entity, RandomSource random, final float bounceIntensity, final float breastWeight) {
         switch (entity.getVehicle()) {
             case Boat boat -> {
-                int rowTime = (int) boat.getRowingTime(0, entity.walkAnimation.position());
-                int rowTime2 = (int) boat.getRowingTime(1, entity.walkAnimation.position());
+                //TODO: Why is this casting to int?
+                int leftTime = (int) boat.getRowingTime(AbstractBoat.PADDLE_LEFT, entity.walkAnimation.position());
+                int rightTime = (int) boat.getRowingTime(AbstractBoat.PADDLE_RIGHT, entity.walkAnimation.position());
 
-                float rotationL = (float) Mth.clampedLerp(-(float)Math.PI / 3F, -0.2617994F, (double) ((Mth.sin(-rowTime2) + 1.0F) / 2.0F));
-                float rotationR = (float) Mth.clampedLerp(-(float)Math.PI / 4F, (float)Math.PI / 4F, (double) ((Mth.sin(-rowTime + 1.0F) + 1.0F) / 2.0F));
+                float rotationL = Mth.clampedLerp(-Mth.PI / 3F, -Mth.PI / 12F, (Mth.sin(-rightTime) + 1.0F) / 2.0F);
+                float rotationR = Mth.clampedLerp(-Mth.PI / 4F, Mth.PI / 4F, (Mth.sin(-leftTime + 1.0F) + 1.0F) / 2.0F);
                 if(rotationL < -1 || rotationR < -0.6f) {
                     this.targetBounceY = bounceIntensity / 3.25f;
                 }
             }
             case Minecart cart -> {
                 float speed = (float) cart.getDeltaMovement().lengthSqr();
-                if (random.nextDouble() * speed < 0.5f && speed > 0.2f) {
+                if (speed > 0.2F && random.nextDouble() * speed < 0.5F) {
                     this.targetBounceY = (random.nextBoolean() ? -bounceIntensity : bounceIntensity) / 6f;
                     this.targetBounceY += breastWeight;
                 }
@@ -244,10 +246,13 @@ public class BreastPhysics {
                 }
             }
             case Strider strider -> {
-                double heightOffset = strider.getBbHeight() - 0.19 + (
-                    0.12F * Mth.cos(strider.walkAnimation.position() * 1.5f) * 2F * Math.min(0.25F, strider.walkAnimation.speed())
-                );
-                this.targetBounceY += ((float) (heightOffset * 3f) - 4.5f) * bounceIntensity;
+                //From Strider#getPassengerAttachmentPoint (client side handling)
+                float animSpeed = Math.min(0.25F, strider.walkAnimation.speed());
+                float animPos = strider.walkAnimation.position();
+                float offset = 0.12F * Mth.cos(animPos * 1.5F) * 2F * animSpeed;
+                //TODO: How do we factor the height offset into it, can we just use the passenger attachment point?
+                double heightOffset = strider.getBbHeight() - 0.19 + offset;
+                this.targetBounceY += ((float) (heightOffset * 3f) - 4.5F) * bounceIntensity;
             }
             case null, default -> {}
         }
