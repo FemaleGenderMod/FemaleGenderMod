@@ -21,10 +21,9 @@ package com.wildfire.fabric.datagen;
 import com.wildfire.datagen.WildfireGenderArmorProvider;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
-import org.jetbrains.annotations.ApiStatus;
 
-@ApiStatus.Internal // TODO does fabric support splitting this into its own compile time-only module?
 public class WildfireGenderDataGenerator implements DataGeneratorEntrypoint {
+
 	@Override
 	public void onInitializeDataGenerator(FabricDataGenerator dataGen) {
 		var pack = dataGen.createPack();

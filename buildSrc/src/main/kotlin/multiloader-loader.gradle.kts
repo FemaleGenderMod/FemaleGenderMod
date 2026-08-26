@@ -17,6 +17,8 @@
  */
 
 import gradle.kotlin.dsl.accessors._3c984467cfe6063166439ec0710b6c00.compileOnly
+import gradle.kotlin.dsl.accessors._3c984467cfe6063166439ec0710b6c00.main
+import gradle.kotlin.dsl.accessors._3c984467cfe6063166439ec0710b6c00.sourceSets
 
 plugins {
     id("multiloader-common")
@@ -32,19 +34,44 @@ val commonResources by configurations.creating {
     isCanBeConsumed = false
 }
 
-dependencies {
-    val commonPath = stonecutterBuild.node.sibling("common")!!.hierarchy.toString()
-    compileOnly(project(path = commonPath)) {
-        attributes {
-            attribute(
-                Attribute.of("io.github.mcgradleconventions.loader", String::class.java),
-                "common"
-            )
+val commonDataJava by configurations.creating {
+    extendsFrom(commonJava)
+    isCanBeResolved = true
+    isCanBeConsumed = false
+}
+
+sourceSets.main {
+    resources {
+        //Add the generated main module resources
+        srcDir("src/generated/resources")
+        //But exclude the cache of the generated data from what gets built
+        exclude(".cache")
+    }
+}
+
+
+val commonPath = stonecutterBuild.node.sibling("common")!!.hierarchy.toString()
+
+sourceSets.configureEach {
+    //println("Adding $name sourceset to $loader for mc version ${stonecutterBuild.current.project}")
+    if (name == "datagen") {
+        java.srcDir(commonDataJava)
+        tasks.named<JavaCompile>(compileJavaTaskName) {
+            dependsOn(commonDataJava)
+            source(commonDataJava)
         }
     }
+}
 
+dependencies {
+    compileOnly(project(path = commonPath)) {
+        attributes {
+            attribute(loaderAttribute, "common")
+        }
+    }
     commonJava(project(path = commonPath, configuration = "commonJava"))
     commonResources(project(path = commonPath, configuration = "commonResources"))
+    commonDataJava(project(path = commonPath, configuration = "commonDataJava"))
 }
 
 tasks.named<JavaCompile>("compileJava") {
@@ -63,9 +90,6 @@ tasks.named<Javadoc>("javadoc") {
 }
 
 tasks.named<Jar>("sourcesJar") {
-    dependsOn(commonJava)
-    from(commonJava)
-
-    dependsOn(commonResources)
-    from(commonResources)
+    dependsOn(commonJava, commonResources)
+    from(commonJava, commonResources)
 }

@@ -4,12 +4,29 @@ plugins {
     id("me.modmuss50.mod-publish-plugin")
 }
 
-sourceSets.main {
-    resources.srcDir("src/generated/resources")
+val dataSourceSet = sourceSets.named("datagen")
+
+// These source-sets only exist for the sake of assembling a dependency graph
+// for IntelliJ. Each of these will become an IntelliJ module when the project is imported,
+// and will be set as the "main module" for the IntelliJ runs. A compile dependency
+// on the other source sets is enough, since runtime classpath is managed by MDG anyway.
+val runMain = sourceSets.register("runMain") {
+    val main = sourceSets.main.get()
+    compileClasspath += main.output
+    runtimeClasspath += main.runtimeClasspath
+}
+val runData = sourceSets.register("runData") {
+    val mainRun = runMain.get()
+    val data = dataSourceSet.get()
+    compileClasspath += mainRun.compileClasspath + data.output
+    runtimeClasspath += mainRun.runtimeClasspath + data.runtimeClasspath
 }
 
 neoForge {
-    version = sc.properties["dependencies.neo_version"]
+    enable {
+        version = sc.properties["dependencies.neo_version"]
+        enabledSourceSets = sourceSets // All source sets use Minecraft code
+    }
 
     val common = sc.tree["common"]!!.project
     val at = common.file("src/main/resources/META-INF/accesstransformer.cfg")
@@ -19,10 +36,12 @@ neoForge {
     accessTransformers.from(commonProject.sc.process(at, "build/dev.at").absolutePath)
     validateAccessTransformers = true
 
-    mods {
-        register(sc.properties["mod_id"]) {
-            sourceSet(sourceSets.main.get())
-        }
+    val mod = mods.register(sc.properties["mod_id"]) {
+        modSourceSets.add(sourceSets.main)
+    }
+    val dataMod = mods.register("${sc.properties["mod_id"] as String}_data") {
+        modSourceSets.set(mod.get().modSourceSets)
+        modSourceSets.add(dataSourceSet)
     }
 
     runs {
@@ -37,6 +56,9 @@ neoForge {
                 // doesn't detect IntelliJ properly or Eclipse's ANSI console plugin.
                 systemProperties.put("terminal.ansi", forceAnsi.get())
             }
+
+            sourceSet = runMain
+            loadedMods.add(mod.get())
         }
 
         register("client") {
@@ -53,6 +75,9 @@ neoForge {
 
         register("data") {
             clientData()
+            loadedMods.empty()
+            loadedMods.add(dataMod.get())
+            sourceSet = runData
 
             programArguments.addAll("--all", "--output", file("src/generated/resources").absolutePath,
                 "--mod", sc.properties["mod_id"], "--existing", file("src/main/resources").absolutePath,
@@ -74,31 +99,10 @@ rootProject.tasks.named("runData").configure {
     dependsOn(tasks.named("runData"))
 }
 
-val loaderAttribute = Attribute.of("io.github.mcgradleconventions.loader", String::class.java)
-
-listOf(
-    "apiElements",
-    "runtimeElements",
-    "sourcesElements",
-    "javadocElements"
-).forEach { variant ->
-    configurations.named(variant) {
-        attributes {
-            attribute(loaderAttribute, sc.branch.project.property("loader") as String)
-        }
-    }
-}
-
 sourceSets.configureEach {
-    listOf(
-        compileClasspathConfigurationName,
-        runtimeClasspathConfigurationName,
-        getTaskName(null, "jarJar")
-    ).forEach { variant ->
-        configurations.named(variant) {
-            attributes {
-                attribute(loaderAttribute, sc.branch.project.property("loader") as String)
-            }
+    configurations.named(getTaskName(null, "jarJar")) {
+        attributes {
+            attribute(loaderAttribute, loader)
         }
     }
 }

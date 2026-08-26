@@ -25,9 +25,7 @@ import net.minecraft.data.PackOutput;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
-import org.jetbrains.annotations.ApiStatus;
 
-@ApiStatus.Internal//TODO: Split this into its own sourceset so it doesn't get shipped with the mod
 @EventBusSubscriber(modid = WildfireAPI.MODID)
 public class WildfireGenderDataGenerator {
 

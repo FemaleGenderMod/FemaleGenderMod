@@ -33,9 +33,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.PackOutput;
-import org.jetbrains.annotations.ApiStatus;
 
-@ApiStatus.Internal
 public class WildfireLangData {
 
     private final ConvertibleLanguageProvider[] altProviders;

@@ -20,6 +20,7 @@ import dev.kikugie.stonecutter.data.deserialization.SCList
 import gradle.kotlin.dsl.accessors._3c984467cfe6063166439ec0710b6c00.main
 import gradle.kotlin.dsl.accessors._3c984467cfe6063166439ec0710b6c00.publishing
 import gradle.kotlin.dsl.accessors._3c984467cfe6063166439ec0710b6c00.sourceSets
+import neoforge.GeneratePackageInfos
 
 plugins {
     `java-library`
@@ -42,7 +43,7 @@ base {
     archivesName.set(modName.replace(' ', '-'))
 }
 
-version = "${stonecutterBuild.branch.id}-${modVersion}+mc${stonecutterBuild.current.project}"
+version = "${loader}-${modVersion}+mc${stonecutterBuild.current.project}"
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(javaVersion))
@@ -50,16 +51,34 @@ java {
     withJavadocJar()
 }
 
-val generatePackageInfos = tasks.register<neoforge.GeneratePackageInfos>("generatePackageInfos") {
-    files.from(sourceSets.main.get().java.srcDirTrees)
+val generatePackageInfos = tasks.register<GeneratePackageInfos>("generatePackageInfos")
+
+if (loader != "fabric") {
+    sourceSets.register("datagen")
 }
 
-tasks.named("test").configure {//Ensure validateJson has to be ran in order for build to pass
+sourceSets.configureEach {
+    if (name == "datagen") {
+        //Datagen has no input resources
+        resources.setSrcDirs(listOf<String>())
+        compileClasspath += sourceSets.main.get().output
+        runtimeClasspath += sourceSets.main.get().runtimeClasspath
+    }
+    generatePackageInfos.configure { files.from(java.srcDirTrees) }
+    listOf(
+        compileClasspathConfigurationName,
+        runtimeClasspathConfigurationName
+    ).forEach { variant ->
+        configurations.named(variant) {
+            attributes {
+                attribute(loaderAttribute, loader)
+            }
+        }
+    }
+}
+
+tasks.named("test").configure {//Ensure validateJson has to be run in order for build to pass
     dependsOn(rootProject.tasks.named("validateJson"))
-}
-
-rootProject.tasks.named("generatePackageInfos").configure {
-    dependsOn(generatePackageInfos)
 }
 
 val licenseFile = rootProject.layout.projectDirectory.file("LICENSE")
@@ -143,6 +162,14 @@ publishing {
         register<MavenPublication>("mavenJava") {
             artifactId = base.archivesName.get()
             from(components["java"])
+        }
+    }
+}
+
+listOf("apiElements", "runtimeElements", "sourcesElements", "javadocElements").forEach { variant ->
+    configurations.named(variant) {
+        attributes {
+            attribute(loaderAttribute, loader)
         }
     }
 }

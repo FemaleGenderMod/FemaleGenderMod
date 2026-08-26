@@ -4,7 +4,10 @@ plugins {
 }
 
 neoForge {
-    neoFormVersion = "${sc.current.version}-${sc.properties["dependencies.neoform_timestamp"] as String}"
+    enable {
+        neoFormVersion = "${sc.current.version}-${sc.properties["dependencies.neoform_timestamp"] as String}"
+        enabledSourceSets = sourceSets // All source sets use Minecraft code
+    }
 
     val at = sc.branch.project.file("src/main/resources/META-INF/accesstransformer.cfg")
     accessTransformers.from(sc.process(at, "build/dev.at").absolutePath)
@@ -23,53 +26,26 @@ dependencies {
     annotationProcessor(mixinExtras)
 }
 
-val commonJava: Configuration by configurations.creating {
+val commonJava by configurations.registering {
     isCanBeResolved = false
     isCanBeConsumed = true
+    outgoing.artifacts(sourceSets.main.map { it.java.sourceDirectories.files })
+
 }
 
-val commonResources: Configuration by configurations.creating {
+val commonResources by configurations.registering {
     isCanBeResolved = false
     isCanBeConsumed = true
+    outgoing.artifacts(sourceSets.main.map { it.resources.sourceDirectories.files })
+}
+
+val commonDataJava by configurations.registering {
+    extendsFrom(commonJava)
+    isCanBeResolved = false
+    isCanBeConsumed = true
+    outgoing.artifacts(sourceSets.named("datagen").map { it.java.sourceDirectories.files })
 }
 
 tasks.named("createMinecraftArtifacts") {
     dependsOn("stonecutterGenerate")
-}
-
-artifacts {
-    afterEvaluate {
-        val mainSourceSet = sourceSets.main.get()
-
-        mainSourceSet.java.sourceDirectories.files.forEach {
-            add(commonJava.name, it)
-        }
-
-        mainSourceSet.resources.sourceDirectories.files.forEach {
-            add(commonResources.name, it)
-        }
-    }
-}
-
-val loaderAttribute = Attribute.of("io.github.mcgradleconventions.loader", String::class.java)
-
-listOf("apiElements", "runtimeElements", "sourcesElements", "javadocElements").forEach { variant ->
-    configurations.named(variant) {
-        attributes {
-            attribute(loaderAttribute, sc.branch.project.property("loader") as String)
-        }
-    }
-}
-
-sourceSets.configureEach {
-    listOf(
-        compileClasspathConfigurationName,
-        runtimeClasspathConfigurationName
-    ).forEach { variant ->
-        configurations.named(variant) {
-            attributes {
-                attribute(loaderAttribute, sc.branch.project.property("loader") as String)
-            }
-        }
-    }
 }

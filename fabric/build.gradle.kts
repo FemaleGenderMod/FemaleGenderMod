@@ -84,6 +84,8 @@ tasks.named("stonecutterPrepare").configure {
 
 fabricApi {
     configureDataGeneration {
+        createSourceSet = true
+        modId = "${sc.properties["mod_id"] as String}_data"
         client = true
     }
 }
@@ -92,28 +94,10 @@ rootProject.tasks.named("runData").configure {
     dependsOn(tasks.named("runDatagen"))
 }
 
-val loaderAttribute = Attribute.of(
-    "io.github.mcgradleconventions.loader",
-    String::class.java
-)
-
-listOf("apiElements", "runtimeElements", "sourcesElements", "javadocElements", "includeInternal", "modCompileClasspath").forEach { variant ->
+listOf("includeInternal", "modCompileClasspath").forEach { variant ->
     configurations.named(variant) {
         attributes {
-            attribute(loaderAttribute, sc.branch.project.property("loader") as String)
-        }
-    }
-}
-
-sourceSets.configureEach {
-    listOf(
-        compileClasspathConfigurationName,
-        runtimeClasspathConfigurationName
-    ).forEach { variant ->
-        configurations.named(variant) {
-            attributes {
-                attribute(loaderAttribute, sc.branch.project.property("loader") as String)
-            }
+            attribute(loaderAttribute, loader)
         }
     }
 }

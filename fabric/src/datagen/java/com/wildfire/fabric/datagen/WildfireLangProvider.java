@@ -24,9 +24,7 @@ import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.CachedOutput;
-import org.jetbrains.annotations.ApiStatus;
 
-@ApiStatus.Internal
 class WildfireLangProvider extends FabricLanguageProvider {
 
     private final WildfireLangData langData;

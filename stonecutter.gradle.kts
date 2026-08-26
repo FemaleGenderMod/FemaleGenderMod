@@ -21,6 +21,7 @@ stonecutter active "26.2"
 
 tasks.register("generatePackageInfos") {
     description = "Generates package-info files for any packages that are missing them"
+    dependsOn(stonecutter.tasks.named("generatePackageInfos") { branch.id.isNotEmpty() })
 }
 
 tasks.register("runData") {

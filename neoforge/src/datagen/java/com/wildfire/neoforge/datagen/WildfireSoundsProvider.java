@@ -18,30 +18,20 @@
 
 package com.wildfire.neoforge.datagen;
 
-import com.wildfire.datagen.lang.WildfireLangData;
-import java.util.concurrent.CompletableFuture;
-import net.minecraft.data.CachedOutput;
+import com.wildfire.datagen.WildfireSoundData;
+import java.util.Arrays;
 import net.minecraft.data.PackOutput;
-import net.neoforged.neoforge.common.data.LanguageProvider;
-import org.jetbrains.annotations.ApiStatus;
+import net.neoforged.neoforge.common.data.SoundDefinition;
+import net.neoforged.neoforge.common.data.SoundDefinitionsProvider;
 
-@ApiStatus.Internal
-class WildfireLangProvider extends LanguageProvider {
+class WildfireSoundsProvider extends SoundDefinitionsProvider {
+	WildfireSoundsProvider(PackOutput output, String modId) {
+		super(output, modId);
+	}
 
-    private final WildfireLangData langData;
-
-    WildfireLangProvider(PackOutput output, String modId) {
-        super(output, modId, "en_us");
-        this.langData = new WildfireLangData(output, modId);
-    }
-
-    @Override
-    protected void addTranslations() {
-        langData.generateTranslations(this::add);
-    }
-
-    @Override
-    public CompletableFuture<?> run(CachedOutput cache) {
-        return super.run(cache).thenCompose(_ -> langData.run(cache));
-    }
+	@Override
+    public void registerSounds() {
+        WildfireSoundData.generateSounds(this::add, (subtitleTranslationKey, sounds) -> definition().subtitle(subtitleTranslationKey)
+            .with(Arrays.stream(sounds).map(SoundDefinitionsProvider::sound).toArray(SoundDefinition.Sound[]::new)));
+	}
 }
