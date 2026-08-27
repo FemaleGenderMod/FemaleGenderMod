@@ -19,6 +19,14 @@ idea {
 
 stonecutter active "26.2"
 
+tasks.named<Wrapper>("wrapper") {
+    //Define wrapper values here so as to not have to always do so when updating gradlew.properties
+    gradleVersion = "9.7.1"
+    distributionSha256Sum = "92c1a136d76b5017732a66d2e0a648ebff00dd3687d8bff0d0047a1bd904fdf2"
+    //Note: We use the all distribution to make it easier to modify build scripts by being able to view the javadocs
+    distributionType = Wrapper.DistributionType.ALL
+}
+
 tasks.register("generatePackageInfos") {
     description = "Generates package-info files for any packages that are missing them"
     dependsOn(stonecutter.tasks.named("generatePackageInfos") { branch.id.isNotEmpty() })

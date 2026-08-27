@@ -16,9 +16,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import gradle.kotlin.dsl.accessors._3c984467cfe6063166439ec0710b6c00.compileOnly
-import gradle.kotlin.dsl.accessors._3c984467cfe6063166439ec0710b6c00.main
-import gradle.kotlin.dsl.accessors._3c984467cfe6063166439ec0710b6c00.sourceSets
+import gradle.kotlin.dsl.accessors._04dc8d3a90e2cfd35b03275ab207a42a.compileOnly
+import gradle.kotlin.dsl.accessors._04dc8d3a90e2cfd35b03275ab207a42a.main
+import gradle.kotlin.dsl.accessors._04dc8d3a90e2cfd35b03275ab207a42a.sourceSets
 
 plugins {
     id("multiloader-common")
