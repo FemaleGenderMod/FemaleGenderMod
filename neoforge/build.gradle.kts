@@ -34,7 +34,8 @@ neoForge {
     // and MDG is able to more reliably re-use the recompiled minecraft
     val commonProject = sc.node.sibling("common")!!.project
     accessTransformers.from(commonProject.sc.process(at, "build/dev.at").absolutePath)
-    validateAccessTransformers = true
+    //Note: We don't bother validating ATs as that is already done in the common branch
+    //validateAccessTransformers = true
 
     val mod = mods.register(sc.properties["mod_id"]) {
         modSourceSets.add(sourceSets.main)
@@ -89,10 +90,6 @@ neoForge {
             server()
         }
     }
-}
-
-tasks.named("createMinecraftArtifacts") {
-    dependsOn("stonecutterGenerate")
 }
 
 rootProject.tasks.named("runData").configure {

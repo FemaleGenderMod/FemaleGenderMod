@@ -81,6 +81,11 @@ tasks.named("test").configure {//Ensure validateJson has to be run in order for 
     dependsOn(rootProject.tasks.named("validateJson"))
 }
 
+//For common and Neo, ensure that the minecraft artifacts occur after stonecutter generates stuff
+tasks.matching { it.name == "createMinecraftArtifacts" }.configureEach {
+    dependsOn("stonecutterGenerate")
+}
+
 val licenseFile = rootProject.layout.projectDirectory.file("LICENSE")
 tasks.withType<Jar>().configureEach {
     inputs.property("name", modName)

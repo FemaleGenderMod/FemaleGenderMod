@@ -26,26 +26,15 @@ dependencies {
     annotationProcessor(mixinExtras)
 }
 
-val commonJava by configurations.registering {
-    isCanBeResolved = false
-    isCanBeConsumed = true
-    outgoing.artifacts(sourceSets.main.map { it.java.sourceDirectories.files })
-
-}
-
-val commonResources by configurations.registering {
-    isCanBeResolved = false
-    isCanBeConsumed = true
-    outgoing.artifacts(sourceSets.main.map { it.resources.sourceDirectories.files })
-}
-
-val commonDataJava by configurations.registering {
-    extendsFrom(commonJava)
-    isCanBeResolved = false
-    isCanBeConsumed = true
-    outgoing.artifacts(sourceSets.named("datagen").map { it.java.sourceDirectories.files })
-}
-
-tasks.named("createMinecraftArtifacts") {
-    dependsOn("stonecutterGenerate")
+configurations {
+    val commonJava = consumable("commonJava") {
+        outgoing.artifacts(sourceSets.main.map { it.java.sourceDirectories.files })
+    }
+    consumable("commonResources") {
+        outgoing.artifacts(sourceSets.main.map { it.resources.sourceDirectories.files })
+    }
+    consumable("commonDataJava") {
+        extendsFrom(commonJava)
+        outgoing.artifacts(sourceSets.named("datagen").map { it.java.sourceDirectories.files })
+    }
 }

@@ -24,17 +24,15 @@ plugins {
     id("multiloader-common")
 }
 
-val commonJava by configurations.creating {
+val commonJava = configurations.register("commonJava") {
     isCanBeResolved = true
     isCanBeConsumed = false
 }
-
-val commonResources by configurations.creating {
+val commonResources = configurations.register("commonResources") {
     isCanBeResolved = true
     isCanBeConsumed = false
 }
-
-val commonDataJava by configurations.creating {
+val commonDataJava = configurations.register("commonDataJava") {
     extendsFrom(commonJava)
     isCanBeResolved = true
     isCanBeConsumed = false
@@ -49,13 +47,14 @@ sourceSets.main {
     }
 }
 
-
 val commonPath = stonecutterBuild.node.sibling("common")!!.hierarchy.toString()
 
 sourceSets.configureEach {
     //println("Adding $name sourceset to $loader for mc version ${stonecutterBuild.current.project}")
     if (name == "datagen") {
-        java.srcDir(commonDataJava)
+        dependencies {
+            add(implementationConfigurationName, project(path = commonPath, configuration = "commonDataJava"))
+        }
         tasks.named<JavaCompile>(compileJavaTaskName) {
             dependsOn(commonDataJava)
             source(commonDataJava)
