@@ -20,12 +20,10 @@
 package com.wildfire.client.contributors;
 
 import com.google.common.base.Preconditions;
-import com.google.gson.annotations.SerializedName;
 import com.wildfire.common.WildfireLang;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
-
 import org.jspecify.annotations.Nullable;
 
 /// @apiNote Only use this on the client side
@@ -33,19 +31,15 @@ public record Contributor(
     // TODO this technically supports multiple roles due to this using a bitmask, but any additional roles other than
     //		the topmost one defined in Role is currently ignored
     int roles,
-    @Nullable Integer color,//TODO: Can this be moved to a TextColor or does that break serializiation
+    @Nullable TextColor color,
     @Nullable String name,
-    @SerializedName("show_in_credits")
-    @Nullable Boolean showInCredits
+    boolean showInCredits
 ) {
 
     private static final TextColor DEFAULT_COLOR = TextColor.GOLD;
 
     public TextColor getColor() {
-        if (color != null) {
-            return TextColor.fromRgb(color);
-        }
-        return getRole().getColor();
+        return color == null ? getRole().getColor() : color;
     }
 
     public Component asText() {

@@ -50,8 +50,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
 
     //General contributor list
     private final FakeGUIPlayer[] C_GENERAL = Contributors.getContributors().entrySet().stream()
-            .filter(it -> it.getValue().name() != null)
-            .filter(it -> Boolean.TRUE.equals(it.getValue().showInCredits()))
+            .filter(it -> it.getValue().name() != null && it.getValue().showInCredits())
             .filter(it -> it.getValue().getRole() != Role.TRANSLATOR) // exclude translators
             .sorted(Comparator.comparing(it -> it.getValue().name()))
             .sorted(Comparator.comparing(it -> it.getValue().getRole()))
@@ -60,8 +59,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
 
     //Translator list
     private final FakeGUIPlayer[] C_TRANSLATORS = Contributors.getContributors().entrySet().stream()
-            .filter(it -> it.getValue().name() != null)
-            .filter(it -> Boolean.TRUE.equals(it.getValue().showInCredits()))
+            .filter(it -> it.getValue().name() != null && it.getValue().showInCredits())
             .filter(it -> it.getValue().getRole() == Role.TRANSLATOR) // only have translators
             .sorted(Comparator.comparing(it -> it.getValue().name()))
             .sorted(Comparator.comparing(it -> it.getValue().getRole()))

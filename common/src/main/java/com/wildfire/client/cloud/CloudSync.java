@@ -29,17 +29,26 @@ import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.serialization.JsonOps;
 import com.mojang.util.InstantTypeAdapter;
 import com.wildfire.api.WildfireAPI;
+import com.wildfire.client.config.ClientConfig;
+import com.wildfire.client.contributors.Contributor;
+import com.wildfire.client.contributors.ContributorDeserializer;
 import com.wildfire.common.LoaderAgnostics;
 import com.wildfire.common.WildfireGender;
 import com.wildfire.common.WildfireLang;
-import com.wildfire.client.config.ClientConfig;
 import com.wildfire.common.config.enums.SyncVerbosity;
-import com.wildfire.client.contributors.Contributor;
 import com.wildfire.common.entitydata.PlayerConfig;
 import com.wildfire.common.entitydata.PlayerConfigHolder;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import java.math.BigInteger;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -50,25 +59,16 @@ import java.util.Optional;
 import java.util.Queue;
 import java.util.Random;
 import java.util.UUID;
-import net.minecraft.util.Util;
-import net.minecraft.client.Minecraft;
-import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Blocking;
-
-import java.math.BigInteger;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.Util;
+import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Blocking;
 import org.jspecify.annotations.Nullable;
 
 /// Utility class for managing syncing player data to/from the cloud, even if the current connected server doesn't
@@ -86,7 +86,10 @@ public final class CloudSync {
     private static final Object AUTH_LOCK = new Object();
     private static final Object SYNC_LOCK = new Object();
     private static final Executor EXECUTOR = Util.ioPool().forName(WildfireAPI.MODID + "$cloudSync");
-    private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantTypeAdapter()).create();
+    private static final Gson GSON = new GsonBuilder()
+        .registerTypeAdapter(Instant.class, new InstantTypeAdapter())
+        .registerTypeAdapter(Contributor.class, new ContributorDeserializer())
+        .create();
 
     private static final HttpClient CLIENT = Util.make(() -> {
         var builder = HttpClient.newBuilder();
