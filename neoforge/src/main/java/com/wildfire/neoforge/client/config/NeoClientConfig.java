@@ -94,12 +94,14 @@ public class NeoClientConfig implements ClientConfig {
     private static <TYPE> ConfigValue<TYPE> createConfigValue(ModConfigSpec.Builder builder, ConfigKey<TYPE> key, String name, GenderConfigTranslations translation) {
         applyToBuilder(translation, builder);
         TYPE defaultValue = key.defaultValue();
-        //TODO: If we ever need to validate things for some values, add variants that call the builder properly
         ModConfigSpec.ConfigValue<TYPE> configValue = switch (defaultValue) {
             //Note: Booleans and Enums can make use of the actual default, as there is no need for them to be lazily created to ensure a fresh instance
             case Boolean val -> (ModConfigSpec.ConfigValue<TYPE>) builder.define(name, val.booleanValue());
             case Enum<?> val -> (ModConfigSpec.ConfigValue<TYPE>) builder.defineEnum(name, (Enum) val);
-            default -> builder.define(name, key::defaultValue, o -> o != null && defaultValue.getClass().isAssignableFrom(o.getClass()));
+            default -> {
+                Class<?> keyType = defaultValue.getClass();
+                yield builder.define(name, key::defaultValue, o -> o != null && keyType.isAssignableFrom(o.getClass()) && key.validate((TYPE) keyType.cast(o)));
+            }
         };
         return new NeoBackedConfigValue<>(key.validator(), configValue);
     }
