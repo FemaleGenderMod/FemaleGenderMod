@@ -1,6 +1,6 @@
 name: Feature Request
 description: File a feature request.
-type: feature
+type: Feature
 body:
   - type: textarea
     id: describe-it

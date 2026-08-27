@@ -1,4 +1,4 @@
-﻿name: Build Fabric mod with Gradle
+﻿name: Build multiloader mod with Gradle
 on: [pull_request, push]
 permissions:
   contents: read
@@ -35,4 +35,6 @@ jobs:
         path: |
           fabric/versions/*/build/libs/*.jar
           neoforge/versions/*/build/libs/*.jar
+          !**/*-sources.jar
+          !**/*-javadoc.jar
         if-no-files-found: error
