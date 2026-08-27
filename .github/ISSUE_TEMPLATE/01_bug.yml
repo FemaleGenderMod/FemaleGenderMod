@@ -1,6 +1,6 @@
 name: Bug Report
 description: File a bug report.
-labels: ["Bug"]
+type: bug
 body:
   - type: dropdown
     id: mod-loader
@@ -16,14 +16,14 @@ body:
     id: version
     attributes:
       label: "What Minecraft & mod version are you using?"
-      placeholder: "Minecraft 1.x.y, Female Gender Mod x.y.z"
+      placeholder: "Minecraft 26.2, Female Gender Mod 5.0.0"
     validations:
       required: true
 
   - type: input
-    id: modloader-version
+    id: mod-loader-version
     attributes:
-      label: "What Fabric / NeoForge version are you using?"
+      label: "What loader version are you using?"
       description: |
         If you're using Fabric, please also include the relevant Fabric API version.
       placeholder: "Fabric Loader 0.x.y, Fabric API 0.x.y"
@@ -49,7 +49,7 @@ body:
       required: true
 
   - type: textarea
-    id: repo-steps
+    id: repro-steps
     attributes:
       label: "Steps to reproduce this issue"
       description: |
