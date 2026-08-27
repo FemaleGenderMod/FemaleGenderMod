@@ -53,6 +53,7 @@ loom {
         // by default loom will use versions/*/run for the run dir, so instead tell it to use the
         // run dir in the project root directory
         runDirectory = file("../../run")
+        preferGradleTask = true
     }
 
     //TODO: Can we have the convertATtoCT task run automatically for configuration? For building we can ensure the file is at least up to date
