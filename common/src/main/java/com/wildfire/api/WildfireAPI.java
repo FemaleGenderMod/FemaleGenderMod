@@ -51,8 +51,11 @@ public final class WildfireAPI {
     ///
     /// @param uuid the uuid of the target [Player]
     ///
+    /// @deprecated This method should not be considered stable in its current form, and will likely have more breaking changes made to it in the near future.
+    ///
     /// @apiNote This method will not load a player's config if they aren't already cached, and will only return the config of players the mod has already loaded.
     /// @see PlayerConfigHolder
+    @Deprecated
     public static @Nullable PlayerConfigHolder getPlayerById(UUID uuid) {
         return WildfireGender.getPlayerById(uuid);
     }
@@ -61,7 +64,10 @@ public final class WildfireAPI {
     ///
     /// @param uuid the uuid of the target [Player].
     ///
+    /// @deprecated This method should not be considered stable in its current form, and will likely have more breaking changes made to it in the near future.
+    ///
     /// @see Gender
+    @Deprecated
     public static Gender getPlayerGender(UUID uuid) {
         PlayerConfigHolder cfg = getPlayerById(uuid);
         if (cfg == null) {
