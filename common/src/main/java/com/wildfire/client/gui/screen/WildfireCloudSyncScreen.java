@@ -46,10 +46,8 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
 
     private static final Identifier BACKGROUND = WildfireGender.id("textures/gui/sync_bg_v2.png");
 
-    //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor' {
     private static final Component ENABLED = WildfireLang.LABEL_ENABLED.translateColored(TextColor.GREEN);
     private static final Component DISABLED = WildfireLang.LABEL_DISABLED.translateColored(TextColor.RED);
-    //~}
 
     protected WildfireCloudSyncScreen(Screen parent, UUID uuid) {
         super(WildfireLang.CLOUD_SETTINGS.translate(), parent, uuid);
@@ -106,7 +104,6 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
         ref.btnSyncNow.setVisible(CloudSync.isEnabled());
 
         ref.btnDelete = addButton(builder -> builder
-                //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor'
                 .message(() -> WildfireLang.CLOUD_DELETE.translateColored(TextColor.RED))
                 .position(xPos + 98, yPos + 42)
                 .size(60, 15)

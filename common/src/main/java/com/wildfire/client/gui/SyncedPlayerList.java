@@ -68,7 +68,6 @@ public final class SyncedPlayerList {
         }
         int screenWidth = graphics.guiWidth();
         int width = screenWidth;
-        //~ if >=26.2 'getTabList' -> 'hud.getTabList'
         if (Minecraft.getInstance().gui.hud.getTabList().visible) {
             //Where it starts drawing, given we start at 0, this works for calculating the width
             int maxLineWidth = getTabOverlayMaxLineWidth(screenWidth);
@@ -86,7 +85,6 @@ public final class SyncedPlayerList {
             return;
         }
 
-        //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor'
         var header = WildfireLang.WARDROBE_PLAYERS_USING.translateColored(TextColor.AQUA);
         fontRenderer.drawScrollingString(graphics, header, 0, 5, TextAlignment.LEFT, CommonColors.WHITE, titleWidth, 5, false);
 
@@ -125,8 +123,9 @@ public final class SyncedPlayerList {
             }
 
             var color = Contributors.getColor(entry.getProfile().id());
-            //~ if >=26.2 'fromRgb(0xFFFFFF)' -> 'WHITE'
+            //~ color_as_rgb !named_text_color *Replace as RGB*
             list.add(new SyncedPlayer(entry.getProfile().name(), color == null ? TextColor.WHITE : color, config.gender().get()));
+            //~ !color_as_rgb named_text_color *End Replace as RGB*
 
             if(list.size() >= 40) {
                 break;
@@ -150,7 +149,6 @@ public final class SyncedPlayerList {
         if (mc.level == null) {
             return 0;
         }
-        //~ if >=26.2 'getTabList' -> 'hud.getTabList'
         PlayerTabOverlay tabList = mc.gui.hud.getTabList();
 
         Scoreboard scoreboard = mc.level.getScoreboard();

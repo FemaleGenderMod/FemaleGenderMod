@@ -87,7 +87,6 @@ public class PlayerConfigHolder extends EntityConfigHolder<PlayerConfig> {
         var client = Minecraft.getInstance();
         if(client.player == null || !this.uuid.equals(client.player.getUUID())) return;
         if(!needsCloudSync) return;
-        //~ if >=26.2 'client.screen' -> 'client.gui.screen()'
         if(client.gui.screen() instanceof BaseWildfireScreen) return;
         if(!ClientConfig.config().cloudSync().automatic().get()) return;
         if(CloudSync.syncOnCooldown()) return;

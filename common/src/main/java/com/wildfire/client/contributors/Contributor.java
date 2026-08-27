@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+//~ color_as_rgb !named_text_color *disable replacing with ChatFormatting, and instead enable replacing with RGB representation for this file*
 package com.wildfire.client.contributors;
 
 import com.google.common.base.Preconditions;
@@ -38,7 +39,6 @@ public record Contributor(
     @Nullable Boolean showInCredits
 ) {
 
-    //~ if >=26.2 'fromRgb(0xFFAA00)' -> 'GOLD'
     private static final TextColor DEFAULT_COLOR = TextColor.GOLD;
 
     public TextColor getColor() {
@@ -67,7 +67,6 @@ public record Contributor(
     }
 
     public enum Role {
-        //~ if >=26.2 '0xFF55FF' -> 'TextColor.LIGHT_PURPLE'
         MOD_CREATOR(0, WildfireLang.CONTRIBUTOR_ROLE_MOD_CREATOR, TextColor.LIGHT_PURPLE),
         FABRIC_MAINTAINER(1, WildfireLang.CONTRIBUTOR_ROLE_FABRIC_MAINTAINER, 0xA78FFF),
         NEOFORGE_MAINTAINER(2, WildfireLang.CONTRIBUTOR_ROLE_NEO_MAINTAINER, 0xA78FFF),

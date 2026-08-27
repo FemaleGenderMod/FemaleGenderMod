@@ -135,12 +135,10 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
                         .renderer((button, ctx, _, _, _) -> {
                             int increment = getPositionIncrement();
                             int color = (switch (increment) {
-                                //~ if >=26.2 'fromRgb(0x55FFFF)' -> 'AQUA'
                                 case 10 -> TextColor.AQUA;
-                                //~ if >=26.2 'fromRgb(0x5555FF)' -> 'BLUE'
                                 case 20 -> TextColor.BLUE;
-                                //~ if >=26.2 'fromRgb(0xFFFFFF)' -> 'WHITE'
                                 default -> TextColor.WHITE;
+                                //~ if >=26.2 'getColor()' -> 'getValue()'
                             }).getValue();
                             ctx.blitSprite(RenderPipelines.GUI_TEXTURED,
                                     isAdd ? TEXTURE_ADD : TEXTURE_SUBTRACT,
@@ -244,7 +242,6 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
         if(selectedDirection == null) {
             drawCenteredTextWrapped(graphics, WildfireLang.UV_EDITOR_NO_FACE.translate(), positionBoxX, 60, 70, 0xFF888888);
         } else {
-            //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
             drawScrollingString(graphics, selectedDirection.getDirectionText(selectedBreastIndex).withColor(TextColor.GOLD), positionBoxX - 40, 37,
                 TextAlignment.CENTER, CommonColors.WHITE, 80, 2, false);
 
@@ -253,12 +250,10 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
             drawScrollingString(graphics, WildfireLang.UV_EDITOR_WIDTH.translate(), positionBoxX - 35, 55 + 2 * 14, TextAlignment.LEFT, CommonColors.WHITE, 45, 0, false);
             drawScrollingString(graphics, WildfireLang.UV_EDITOR_HEIGHT.translate(), positionBoxX - 35, 55 + 3 * 14, TextAlignment.LEFT, CommonColors.WHITE, 45, 0, false);
 
-            //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.' {
             drawScaledScrollingString(graphics, WildfireLang.UV_EDITOR_INCREMENT.line(1).withColor(TextColor.AQUA), positionBoxX - 40, 109,
                 TextAlignment.LEFT, CommonColors.WHITE, 80, 2, false, 0.75F);
             drawScaledScrollingString(graphics, WildfireLang.UV_EDITOR_INCREMENT.line(2).withColor(TextColor.BLUE), positionBoxX - 40, 119,
                 TextAlignment.LEFT, CommonColors.WHITE, 80, 2, false, 0.75F);
-            //~}
         }
 
         int modelScale = 120;
@@ -297,10 +292,8 @@ public class WildfireBreastUVEditorScreen extends BaseWildfireScreen {
 
                 if(mouseX >= rectX1 && mouseX <= rectX2 && mouseY >= rectY1 && mouseY <= rectY2) {
                     List<FormattedCharSequence> array = new ArrayList<>();
-                    //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor' {
                     array.add(WildfireLang.UV_SELECTED_DIRECTION.translateColored(TextColor.GOLD, direction.getDirectionText(selectedBreastIndex), faceName).getVisualOrderText());
                     array.add(WildfireLang.UV_QUAD.translateColored(TextColor.AQUA, quad.x1(), quad.y1(), quad.x2(), quad.y2()).getVisualOrderText());
-                    //~}
                     graphics.setTooltipForNextFrame(array, mouseX, mouseY);
                 }
 

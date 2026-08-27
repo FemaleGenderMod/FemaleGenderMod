@@ -178,3 +178,24 @@ listOf("apiElements", "runtimeElements", "sourcesElements", "javadocElements").f
         }
     }
 }
+
+stonecutterBuild.replacements {
+    string(stonecutterBuild.current.parsed >= "26.2") {
+        replace("setScreen(", "gui.setScreen(")
+        replace("getToastManager(", "gui.toastManager(")
+        replace("getTabList(", "hud.getTabList(")
+        replace(".screen ", ".gui.screen() ")
+        replace("EntityType", "EntityTypes")
+    }
+    string(stonecutterBuild.current.parsed >= "26.2", "color_as_rgb") {
+        replace("TextColor.fromRgb(0xFFAA00)", "TextColor.GOLD")
+        replace("TextColor.fromRgb(0xFF55FF)", "TextColor.LIGHT_PURPLE")
+        replace("TextColor.fromRgb(0xFFFFFF)", "TextColor.WHITE")
+    }
+    regex(stonecutterBuild.current.parsed >= "26.2", "!named_text_color") {
+        replace("withStyle\\(net\\.minecraft\\.ChatFormatting\\.([A-Z_]+)", "withColor(TextColor.$1",
+            "withColor\\(TextColor\\.([A-Z_]+)", "withStyle(net.minecraft.ChatFormatting.$1")
+        replace("net\\.minecraft\\.ChatFormatting\\.([A-Z_]+)", "TextColor.$1",
+            "TextColor\\.([A-Z_]+)", "net.minecraft.ChatFormatting.$1")
+    }
+}

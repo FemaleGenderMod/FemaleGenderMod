@@ -52,6 +52,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.TriState;
 import net.minecraft.world.damagesource.DamageEffects;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelType;
@@ -188,8 +189,7 @@ public class WildfireGenderClientNeo {
             WildfireClientEventHandler.addAvatarRenderLayers(event.getPlayerRenderer(skin), equipmentRenderer, LivingEntityRenderer::addLayer);
             WildfireClientEventHandler.addAvatarRenderLayers(event.getMannequinRenderer(skin), equipmentRenderer, LivingEntityRenderer::addLayer);
         }
-        //~ if >=26.2 'net.minecraft.world.entity.EntityType' -> 'net.minecraft.world.entity.EntityTypes'
-        if (event.getRenderer(net.minecraft.world.entity.EntityTypes.ARMOR_STAND) instanceof ArmorStandRenderer armorStandRenderer) {
+        if (event.getRenderer(EntityTypes.ARMOR_STAND) instanceof ArmorStandRenderer armorStandRenderer) {
             WildfireClientEventHandler.addArmorStandRenderLayers(armorStandRenderer, equipmentRenderer, LivingEntityRenderer::addLayer);
         }
     }

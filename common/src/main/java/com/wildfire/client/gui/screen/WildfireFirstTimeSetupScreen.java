@@ -52,10 +52,8 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
     private static final Component NOTICE = WildfireLang.FIRST_TIME_NOTICE.translate();
     private static final int SCREEN_WIDTH = 274;
 
-    //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor' {
     private static final Component ENABLE_CLOUD_SYNCING = WildfireLang.FIRST_TIME_ENABLE.translateColored(TextColor.GREEN);
     private static final Component DISABLE_CLOUD_SYNCING = WildfireLang.FIRST_TIME_DISABLE.translateColored(TextColor.RED);
-    //~}
 
     private static final Identifier BACKGROUND = WildfireGender.id("textures/gui/first_time_bg.png");
 
@@ -93,7 +91,6 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
                     ref.no.setActive(false);
 
                     final var nextScreen = new WardrobeBrowserScreen(null, playerUUID);
-                    //~ if >=26.2 'setScreen' -> 'gui.setScreen'
                     doInitialSync().thenRun(() -> minecraft.execute(() -> minecraft.gui.setScreen(nextScreen)));
                 })
                 .tooltip(Tooltip.create(WildfireLang.FIRST_TIME_ENABLE_TOOLTIP.line(1)
@@ -110,7 +107,6 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
                     config.cloudSync().automatic().update(false);
                     config.firstTimeLoad().update(false);
 
-                    //~ if >=26.2 'minecraft.setScreen' -> 'minecraft.gui.setScreen'
                     minecraft.gui.setScreen(new WardrobeBrowserScreen(null, playerUUID));
                 }));
     }
@@ -168,7 +164,6 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 
         drawScrollingString(graphics, getTitle(), x - (SCREEN_WIDTH / 2), y - 24, TextAlignment.CENTER, CommonColors.DARK_GRAY, SCREEN_WIDTH, 6, false);
 
-        //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor'
         drawScrollingString(graphics, WildfireLang.KEIRA.translateColored(TextColor.LIGHT_PURPLE), x - 63, y - 10, TextAlignment.CENTER, CommonColors.WHITE, 191, 0, false);
 
         //TODO: Vertical scroll bar for longer text?

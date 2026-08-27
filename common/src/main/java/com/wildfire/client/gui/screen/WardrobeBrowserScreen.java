@@ -80,7 +80,6 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
     }
 
     public static void open(Minecraft client, LocalPlayer player) {
-        //~ if >=26.2 'setScreen' -> 'gui.setScreen'
         client.gui.setScreen(create(player, null));
     }
 
@@ -119,10 +118,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
                 .message(() -> WildfireLang.GENERIC_ELLIPSIS_SUFFIX.translate(WildfireLang.APPEARANCE_SETTINGS_TITLE))
                 .position(this.width / 2 - 36, this.height / 2 - 63)
                 .size(157, 20)
-                .onPress(_ -> {
-                    //~ if >=26.2 'setScreen' -> 'gui.setScreen'
-                    client.gui.setScreen(new WildfireBreastCustomizationScreen(this, this.playerUUID));
-                })
+                .onPress(_ -> client.gui.setScreen(new WildfireBreastCustomizationScreen(this, this.playerUUID)))
                 .active(plr.gender().get().canHaveBreasts()));
 
         addButton(builder -> {
@@ -132,10 +128,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
             builder.renderer((button, ctx, _, _, _) ->
                 ctx.blitSprite(RenderPipelines.GUI_TEXTURED, CLOUD_ICON, button.getX() + 2, button.getY() + 2, 20, 14)
             );
-            builder.onPress(_ -> {
-                //~ if >=26.2 'setScreen' -> 'gui.setScreen'
-                client.gui.setScreen(new WildfireCloudSyncScreen(this, this.playerUUID));
-            });
+            builder.onPress(_ -> client.gui.setScreen(new WildfireCloudSyncScreen(this, this.playerUUID)));
             var cloudUnavailable = CloudSync.unavailableReason();
             if(cloudUnavailable != null) {
                 builder.tooltip(Tooltip.create(cloudUnavailable.text()));
@@ -149,10 +142,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
                 .message(() -> WildfireLang.GENERIC_ELLIPSIS_SUFFIX.translate(WildfireLang.CREDITS_TITLE))
                 .position(this.width / 2 + 2, this.height / 2 + 33)
                 .size(78, 15)
-                .onPress(_ -> {
-                    //~ if >=26.2 'setScreen' -> 'gui.setScreen'
-                    client.gui.setScreen(new WildfireCreditsScreen(this, this.playerUUID));
-                }));
+                .onPress(_ -> client.gui.setScreen(new WildfireCreditsScreen(this, this.playerUUID))));
 
         /*this.addDrawableChild(new WildfireButton(this.width / 2 + 111, y - 63, 9, 9, Text.literal("X"),
             button -> close(), text -> GuiUtils.doneNarrationText()));*/

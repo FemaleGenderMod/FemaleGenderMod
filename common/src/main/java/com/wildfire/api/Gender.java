@@ -20,7 +20,9 @@ package com.wildfire.api;
 
 import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
+import java.util.function.UnaryOperator;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -32,11 +34,9 @@ import net.minecraft.util.StringRepresentable;
 
 public enum Gender implements StringRepresentable {
     // NOTE: The order of these should remain unchanged! Changing these WILL modify player configs!
-    //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor' {
-    FEMALE("female", TextColor.LIGHT_PURPLE, true),
-    MALE("male", TextColor.BLUE, false),
-    OTHER("other", TextColor.GREEN, true);
-    //~}
+    FEMALE("female", name -> name.withColor(TextColor.LIGHT_PURPLE), true),
+    MALE("male", name -> name.withColor(TextColor.BLUE), false),
+    OTHER("other", name -> name.withColor(TextColor.GREEN), true);
 
     public static final IntFunction<Gender> BY_ID = ByIdMap.continuous(Gender::ordinal, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
     public static final Codec<Gender> CODEC = StringRepresentable.fromEnum(Gender::values);
@@ -48,11 +48,9 @@ public enum Gender implements StringRepresentable {
     private final Component name;
     private final boolean canHaveBreasts;
 
-    //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor'
-    Gender(String saveName, TextColor nameColor, boolean canHaveBreasts) {
+    Gender(String saveName, UnaryOperator<MutableComponent> formatting, boolean canHaveBreasts) {
         this.saveName = saveName;
-        //~ if >=26.2 'withStyle' -> 'withColor'
-        this.name = Component.translatable(getTranslationKey()).withColor(nameColor);
+        this.name = formatting.apply(Component.translatable(getTranslationKey()));
         this.canHaveBreasts = canHaveBreasts;
     }
 

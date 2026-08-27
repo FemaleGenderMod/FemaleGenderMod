@@ -62,12 +62,10 @@ import org.jetbrains.annotations.UnknownNullability;
 /// @apiNote Only use this on the client side
 public class WildfireCommand {
 
-    //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor' {
     private static final Component COMMAND_PREFIX = WildfireLang.GENERIC_BRACKETS.translateColored(TextColor.GRAY, WildfireLang.GENERIC_CONCAT.translate(
         WildfireLang.MISC_F.translateColored(TextColor.LIGHT_PURPLE),
         WildfireLang.MISC_GM.translateColored(TextColor.WHITE)
     ));
-    //~}
 
     public static <SOURCE extends SharedSuggestionProvider> void register(CommandDispatcher<SOURCE> dispatcher, ClientCommandHelper<SOURCE> helper) {
         var debug = helper.literalArgumentBuilder("debug")
@@ -94,7 +92,7 @@ public class WildfireCommand {
                 .executes(ctx -> {
                     Minecraft client = helper.getMinecraft(ctx.getSource());
                     client.execute(() -> {
-                        //~ if >=26.2 'client.setScreen' -> 'client.gui.setScreen'
+
                         client.schedule(() -> client.gui.setScreen(new WildfireFirstTimeSetupScreen(null, helper.getPlayer(ctx.getSource()).getUUID())));
                     });
                     return Command.SINGLE_SUCCESS;
@@ -147,11 +145,8 @@ public class WildfireCommand {
         lines.add(WildfireLang.GENERIC_SPACE.translate(COMMAND_PREFIX, header.translate().withStyle(style -> style.withUnderlined(true))));
 
         for (WildfireLang langEntry : usageToDescription) {
-            //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor' {
             lines.add(WildfireLang.GENERIC_SPACE.translate(COMMAND_PREFIX, WildfireLang.GENERIC_DASH_EXPLANATION.translateColored(TextColor.GRAY,
                 langEntry.translateColored(TextColor.AQUA),
-                //~}
-                //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
                 langEntry.translateDescription().withColor(TextColor.WHITE)
             )));
 
@@ -293,7 +288,6 @@ public class WildfireCommand {
         var config = WildfireGender.getOrAddPlayerById(player.getUUID());
         var component = BreastDataComponent.fromPlayer(player, config);
         if (component == null) {
-            //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor'
             helper.sendFailure(ctx.getSource(), WildfireLang.COMMAND_ARMOR_STAND_NO_COMPONENT.translateColored(TextColor.RED));
             return 0;
         }

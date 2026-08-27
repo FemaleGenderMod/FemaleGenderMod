@@ -20,10 +20,11 @@ package com.wildfire.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.wildfire.api.IBreastArmorTexture;
-import com.wildfire.client.ClientHelper;
-import com.wildfire.common.WildfireGender;
 import com.wildfire.api.uvs.UVMap;
+import com.wildfire.client.ClientHelper;
 import com.wildfire.client.render.WildfireModelRenderer.BreastModelBox;
+import com.wildfire.common.WildfireGender;
+import java.util.Objects;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
@@ -33,11 +34,10 @@ import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.equipment.Equippable;
 import org.jetbrains.annotations.UnknownNullability;
-
-import java.util.Objects;
 import org.joml.Vector2ic;
 
 /// @apiNote Only use this on the client side
@@ -70,8 +70,7 @@ public class GenderArmorLayer<STATE extends HumanoidRenderState, MODEL extends H
     }
 
     private boolean isArmorStand(STATE state) {
-        //~ if >=26.2 'net.minecraft.world.entity.EntityType' -> 'net.minecraft.world.entity.EntityTypes'
-        return state.entityType == net.minecraft.world.entity.EntityTypes.ARMOR_STAND;
+        return state.entityType == EntityTypes.ARMOR_STAND;
     }
 
     private void renderArmor(STATE state, GenderRenderState genderState, PoseStack poseStack, SubmitNodeCollector nodeCollector, int lightCoords, int overlayCoords, BreastSide side) {

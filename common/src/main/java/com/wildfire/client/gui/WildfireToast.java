@@ -94,7 +94,6 @@ public class WildfireToast implements Toast, IFancyFontRenderer {
 
     private boolean shouldHide() {
         Minecraft client = Minecraft.getInstance();
-        //~ if >=26.2 'client.screen' -> 'client.gui.screen()'
         if(client.gui.screen() instanceof BaseWildfireScreen) {
             return true;
         }

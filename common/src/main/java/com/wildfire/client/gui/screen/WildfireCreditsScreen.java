@@ -223,13 +223,11 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
 
             if (mouseX > xP - 24 && mouseX < xP + 23 && mouseY > yP + 22 && mouseY < yP + 31) {
                 List<Component> txtList = new ArrayList<>();
-                //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor'
                 txtList.add(WildfireLang.GENERIC_DASH_EXPLANATION.translateColored(TextColor.DARK_GRAY,
                     role.withColor(Component.literal(creditBox.getName())),
                     role.withColor(role.shortName()))
                 );
                 if (creditBox.getDescription() != null) {
-                    //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
                     txtList.add(creditBox.getDescription().copy().withColor(TextColor.GRAY));
                 }
                 graphics.setComponentTooltipForNextFrame(font, txtList, mouseX, mouseY);

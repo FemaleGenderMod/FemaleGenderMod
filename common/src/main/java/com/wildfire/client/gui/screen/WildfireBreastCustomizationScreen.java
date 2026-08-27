@@ -49,10 +49,8 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
     private static final int FULL_WIDTH = 166;
     private static final int HALF_WIDTH = FULL_WIDTH / 2 - 2;
 
-    //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor' {
     private static final Component ENABLED = WildfireLang.LABEL_ENABLED.translateColored(TextColor.GREEN);
     private static final Component DISABLED = WildfireLang.LABEL_DISABLED.translateColored(TextColor.RED);
-    //~}
 
     private static final Identifier BACKGROUND_FEMALE = WildfireGender.id("textures/gui/breast_customization.png");
     private static final Identifier BACKGROUND_OTHER = WildfireGender.id("textures/gui/breast_customization_other.png");
@@ -170,10 +168,7 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
             .message(WildfireLang.UV_EDITOR::translate)
             .position(this.width / 2 - 36, tabOffsetY + 70)
             .size(FULL_WIDTH, 20)
-            .onPress(_ -> {
-                //~ if >=26.2 'minecraft.setScreen' -> 'minecraft.gui.setScreen'
-                minecraft.gui.setScreen(new WildfireBreastUVEditorScreen(this, playerUUID));
-            }));
+            .onPress(_ -> minecraft.gui.setScreen(new WildfireBreastUVEditorScreen(this, playerUUID))));
     }
 
     private void initPhysicsTab(final int tabOffsetY) {

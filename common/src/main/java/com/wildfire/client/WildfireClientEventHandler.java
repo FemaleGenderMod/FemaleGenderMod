@@ -19,27 +19,26 @@
 package com.wildfire.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.wildfire.client.cloud.CloudSync;
+import com.wildfire.client.config.ClientConfig;
 import com.wildfire.client.gui.SyncedPlayerList;
 import com.wildfire.client.gui.WildfireToast;
 import com.wildfire.client.gui.screen.WardrobeBrowserScreen;
+import com.wildfire.client.render.GenderArmorLayer;
+import com.wildfire.client.render.GenderLayer;
 import com.wildfire.common.WildfireGender;
 import com.wildfire.common.WildfireHelper;
 import com.wildfire.common.WildfireLang;
-import com.wildfire.client.cloud.CloudSync;
-import com.wildfire.client.config.ClientConfig;
 import com.wildfire.common.config.value.ConfigValue;
 import com.wildfire.common.entitydata.EntityConfig;
 import com.wildfire.common.entitydata.EntityConfigHolder;
 import com.wildfire.common.entitydata.PlayerConfigHolder;
 import com.wildfire.common.networking.WildfireSync;
-import com.wildfire.client.render.GenderArmorLayer;
-import com.wildfire.client.render.GenderLayer;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.components.toasts.ToastManager;
 import net.minecraft.client.model.object.armorstand.ArmorStandArmorModel;
 import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -117,13 +116,11 @@ public final class WildfireClientEventHandler {
         }
 
         String formatted = WildfireHelper.toFormattedPercent(config.physicsResistance()) + "%";
-        //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor'
         tooltipAppender.accept(WildfireLang.ARMOR_TOOLTIP.translateColored(TextColor.LIGHT_PURPLE, formatted));
     }
 
     public static void renderHud(GuiGraphicsExtractor context, DeltaTracker tickCounter) {
         var client = Minecraft.getInstance();
-        //~ if >=26.2 'client.screen' -> 'client.gui.screen()'
         if (client.gui.screen() instanceof WardrobeBrowserScreen) {
             SyncedPlayerList.resetTimer();
             return;
@@ -165,7 +162,6 @@ public final class WildfireClientEventHandler {
             }
         }
 
-        //~ if >=26.2 'client.screen' -> 'client.gui.screen()' {
         if (WildfireKeyBindings.INSTANCE.toggleKey().consumeClick() && client.gui.screen() == null &&
             ClientConfig.config().overrides().disableRendering().update(ConfigValue.TOGGLE)) {//Update should always succeed, but validate it just in case
             ClientConfig.INSTANCE.save();
@@ -173,7 +169,6 @@ public final class WildfireClientEventHandler {
         if (WildfireKeyBindings.INSTANCE.configKey().consumeClick() && client.gui.screen() == null) {
             WardrobeBrowserScreen.open(client, client.player);
         }
-        //~}
     }
 
     /// Clears all caches when the client player disconnects from a server/closes a singleplayer world
@@ -185,9 +180,7 @@ public final class WildfireClientEventHandler {
     public static void clientJoin(Minecraft client) {
         if (client.player != null && ClientConfig.config().showToast().get()) {
             var button = WildfireKeyBindings.INSTANCE.configKey().getTranslatedKeyMessage();
-            //~ if >=26.2 'client.getToastManager()' -> 'client.gui.toastManager()'
-            ToastManager toastManager = client.gui.toastManager();
-            toastManager.addToast(new WildfireToast(Minecraft.getInstance().font, WildfireLang.PLAYER_LIST_TITLE.translate(), WildfireLang.TOAST_GET_STARTED.translate(button)));
+            client.gui.toastManager().addToast(new WildfireToast(Minecraft.getInstance().font, WildfireLang.PLAYER_LIST_TITLE.translate(), WildfireLang.TOAST_GET_STARTED.translate(button)));
         }
     }
 
