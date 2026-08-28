@@ -47,27 +47,30 @@ sourceSets.main {
     }
 }
 
-val commonPath = stonecutterBuild.node.sibling("common")!!.hierarchy.toString()
-
-sourceSets.configureEach {
-    //println("Adding $name sourceset to $loader for mc version ${stonecutterBuild.current.project}")
-    if (name == "datagen") {
-        dependencies {
-            add(implementationConfigurationName, project(path = commonPath, configuration = "commonDataJava"))
-        }
-        tasks.named<JavaCompile>(compileJavaTaskName) {
-            dependsOn(commonDataJava)
-            source(commonDataJava)
-        }
-    }
+// These source-sets only exist for the sake of assembling a dependency graph
+// for IntelliJ. Each of these will become an IntelliJ module when the project is imported,
+// and will be set as the "main module" for the IntelliJ runs. A compile dependency
+// on the other source sets is enough, since runtime classpath is managed by MDG anyway.
+val runMain = sourceSets.register("runMain") {
+    val main = sourceSets.main.get()
+    compileClasspath += main.output
+    runtimeClasspath += main.runtimeClasspath
+}
+val runData = sourceSets.register("runData") {
+    val mainRun = runMain.get()
+    val data = sourceSets.named("datagen").get()
+    compileClasspath += mainRun.compileClasspath + data.output
+    runtimeClasspath += mainRun.runtimeClasspath + data.runtimeClasspath
 }
 
 dependencies {
+    val commonPath = stonecutterBuild.node.sibling("common")!!.hierarchy.toString()
     compileOnly(project(path = commonPath)) {
         attributes {
             attribute(loaderAttribute, "common")
         }
     }
+    add("datagenImplementation", project(path = commonPath, configuration = "commonDataJava"))
     commonJava(project(path = commonPath, configuration = "commonJava"))
     commonResources(project(path = commonPath, configuration = "commonResources"))
     commonDataJava(project(path = commonPath, configuration = "commonDataJava"))
@@ -91,4 +94,9 @@ tasks.named<Javadoc>("javadoc") {
 tasks.named<Jar>("sourcesJar") {
     dependsOn(commonJava, commonResources)
     from(commonJava, commonResources)
+}
+
+tasks.named<JavaCompile>("compileDatagenJava") {
+    dependsOn(commonDataJava)
+    source(commonDataJava)
 }

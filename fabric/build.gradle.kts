@@ -41,10 +41,31 @@ java {
     targetCompatibility = JavaVersion.VERSION_25
 }
 
+val dataSourceSet = sourceSets.named("datagen") {
+    compileClasspath += sourceSets.main.get().compileClasspath
+}
+configurations.datagenCompileClasspath.configure {
+    extendsFrom(configurations.compileClasspath.get())
+}
+configurations.datagenRuntimeClasspath.configure {
+    extendsFrom(configurations.runtimeClasspath.get())
+}
+
 loom {
     decompilers {
         named("vineflower") {
             options.put("mark-corresponding-synthetics", "1")
+        }
+    }
+
+    val modId : String = sc.properties["mod_id"]
+    mods {
+        create(modId) {
+            sourceSet("runMain")
+        }
+        create("${modId}_data") {
+            sourceSet("runData")
+            modFiles.forEach { println("File: ${it.absolutePath}") }
         }
     }
 
@@ -54,10 +75,15 @@ loom {
         // run dir in the project root directory
         runDirectory = file("../../run")
         preferGradleTask = true
+        if (name == "datagen") {
+            sourceSet.set("runData")
+        } else {
+            sourceSet.set("runMain")
+        }
     }
 
     //TODO: Can we have the convertATtoCT task run automatically for configuration? For building we can ensure the file is at least up to date
-    val aw = sc.branch.project.file("src/main/resources/${sc.properties["mod_id"] as String}.classtweaker")
+    val aw = sc.branch.project.file("src/main/resources/${modId}.classtweaker")
     if (aw.exists()) {
         accessWidenerPath = sc.process(aw, "build/dev.ct")
     } else {
@@ -85,8 +111,6 @@ tasks.named("stonecutterPrepare").configure {
 
 fabricApi {
     configureDataGeneration {
-        createSourceSet = true
-        modId = "${sc.properties["mod_id"] as String}_data"
         client = true
     }
 }

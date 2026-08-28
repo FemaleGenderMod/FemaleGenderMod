@@ -53,17 +53,14 @@ java {
 
 val generatePackageInfos = tasks.register<GeneratePackageInfos>("generatePackageInfos")
 
-if (loader != "fabric") {
-    sourceSets.register("datagen")
+sourceSets.register("datagen") {
+    //Datagen has no input resources
+    resources.setSrcDirs(listOf<String>())
+    compileClasspath += sourceSets.main.get().output
+    runtimeClasspath += sourceSets.main.get().runtimeClasspath
 }
 
 sourceSets.configureEach {
-    if (name == "datagen") {
-        //Datagen has no input resources
-        resources.setSrcDirs(listOf<String>())
-        compileClasspath += sourceSets.main.get().output
-        runtimeClasspath += sourceSets.main.get().runtimeClasspath
-    }
     generatePackageInfos.configure { files.from(java.srcDirTrees) }
     listOf(
         compileClasspathConfigurationName,

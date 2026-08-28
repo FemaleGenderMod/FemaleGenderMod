@@ -5,22 +5,8 @@ plugins {
 }
 
 val dataSourceSet = sourceSets.named("datagen")
-
-// These source-sets only exist for the sake of assembling a dependency graph
-// for IntelliJ. Each of these will become an IntelliJ module when the project is imported,
-// and will be set as the "main module" for the IntelliJ runs. A compile dependency
-// on the other source sets is enough, since runtime classpath is managed by MDG anyway.
-val runMain = sourceSets.register("runMain") {
-    val main = sourceSets.main.get()
-    compileClasspath += main.output
-    runtimeClasspath += main.runtimeClasspath
-}
-val runData = sourceSets.register("runData") {
-    val mainRun = runMain.get()
-    val data = dataSourceSet.get()
-    compileClasspath += mainRun.compileClasspath + data.output
-    runtimeClasspath += mainRun.runtimeClasspath + data.runtimeClasspath
-}
+val runMain = sourceSets.named("runMain")
+val runData = sourceSets.named("runData")
 
 neoForge {
     enable {
@@ -37,17 +23,19 @@ neoForge {
     //Note: We don't bother validating ATs as that is already done in the common branch
     //validateAccessTransformers = true
 
-    val mod = mods.register(sc.properties["mod_id"]) {
+    val modId : String = sc.properties["mod_id"]
+
+    val mod = mods.register(modId) {
         modSourceSets.add(sourceSets.main)
     }
-    val dataMod = mods.register("${sc.properties["mod_id"] as String}_data") {
+    val dataMod = mods.register("${modId}_data") {
         modSourceSets.set(mod.get().modSourceSets)
         modSourceSets.add(dataSourceSet)
     }
 
     runs {
         configureEach {
-            systemProperty("neoforge.enabledGameTestNamespaces", sc.properties["mod_id"])
+            systemProperty("neoforge.enabledGameTestNamespaces", modId)
             ideName = "NeoForge ${name.replaceFirstChar(Char::titlecase)} ($path)"
             gameDirectory = file("../../run")
 
@@ -81,7 +69,7 @@ neoForge {
             sourceSet = runData
 
             programArguments.addAll("--all", "--output", file("src/generated/resources").absolutePath,
-                "--mod", sc.properties["mod_id"], "--existing", file("src/main/resources").absolutePath,
+                "--mod", modId, "--existing", file("src/main/resources").absolutePath,
                 "--existing", common.file("src/main/resources").absolutePath
             )
         }
