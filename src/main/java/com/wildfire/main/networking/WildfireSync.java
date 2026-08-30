@@ -18,22 +18,26 @@
 
 package com.wildfire.main.networking;
 
-import com.mojang.logging.LogUtils;
+import com.wildfire.main.WildfireGender;
 import com.wildfire.main.entitydata.PlayerConfig;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import com.wildfire.main.entitydata.PlayerConfigHolder;
+import com.wildfire.main.networking.packets.hello.SyncHelloPacket;
+import com.wildfire.main.networking.packets.sync.ClientboundSyncPacket;
+import com.wildfire.main.networking.packets.sync.ServerboundSyncPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
+import net.fabricmc.fabric.api.networking.v1.context.PacketContextProvider;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.ApiStatus;
-import org.slf4j.Logger;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 public final class WildfireSync {
-    static final Logger LOGGER = LogUtils.getLogger();
+
+    public static final PacketContext.Key<Integer> VERSION = PacketContext.key(WildfireGender.id("version"));
+    public static final Marker MARKER = MarkerFactory.getMarker("SYNC");
 
     private WildfireSync() {
         throw new UnsupportedOperationException();
@@ -41,76 +45,60 @@ public final class WildfireSync {
 
     @ApiStatus.Internal
     public static void register() {
-        // note that each packet has to be registered on both sides for receiving and sending, regardless
-        // of if the current side is actually supposed to be doing either action for a given packet.
-        PayloadTypeRegistry.serverboundPlay().register(ClientboundSyncPacket.ID, ClientboundSyncPacket.CODEC);
-        PayloadTypeRegistry.clientboundPlay().register(ClientboundSyncPacket.ID, ClientboundSyncPacket.CODEC);
-
-        PayloadTypeRegistry.serverboundPlay().register(ServerboundSyncPacket.ID, ServerboundSyncPacket.CODEC);
-        PayloadTypeRegistry.clientboundPlay().register(ServerboundSyncPacket.ID, ServerboundSyncPacket.CODEC);
-
-        PayloadTypeRegistry.serverboundPlay().register(SyncHelloPacket.Clientbound.ID, SyncHelloPacket.Clientbound.CODEC);
-        PayloadTypeRegistry.clientboundPlay().register(SyncHelloPacket.Clientbound.ID, SyncHelloPacket.Clientbound.CODEC);
-        PayloadTypeRegistry.serverboundPlay().register(SyncHelloPacket.Serverbound.ID, SyncHelloPacket.Serverbound.CODEC);
-        PayloadTypeRegistry.clientboundPlay().register(SyncHelloPacket.Serverbound.ID, SyncHelloPacket.Serverbound.CODEC);
-
-        ServerPlayConnectionEvents.INIT.register((handler, _) -> {
-            ServerPlayNetworking.registerReceiver(handler, ServerboundSyncPacket.ID, ServerboundSyncPacket::handle);
-            ServerPlayNetworking.registerReceiver(handler, SyncHelloPacket.Serverbound.ID, SyncHelloPacket.Serverbound::handle);
-        });
+        WildfireConfigNetworking.register();
+        WildfirePlayNetworking.register();
     }
 
+    /// @apiNote Only call on the client
     @ApiStatus.Internal
-    @Environment(EnvType.CLIENT)
     public static void registerClient() {
-        ClientPlayConnectionEvents.INIT.register((handler, client) -> {
-            ClientPlayNetworking.registerReceiver(ClientboundSyncPacket.ID, ClientboundSyncPacket::handle);
-            ClientPlayNetworking.registerReceiver(SyncHelloPacket.Clientbound.ID, SyncHelloPacket.Clientbound::handle);
-        });
+        WildfireClientConfigNetworking.registerClient();
+        WildfireClientPlayNetworking.registerClient();
+    }
 
-        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
-            if(ClientPlayNetworking.canSend(SyncHelloPacket.Serverbound.ID)) {
-                LOGGER.debug("Sending hello packet to server");
-                sender.sendPacket(new SyncHelloPacket.Serverbound());
+    public static boolean versionMatches(PacketContextProvider contextProvider) {
+        Integer version = contextProvider.getPacketContext().get(VERSION);
+        return version != null && version == SyncHelloPacket.VERSION;
+    }
+
+    /// Sync a player's configuration to all nearby connected players
+    ///
+    /// @param toSync       The [`player`][ServerPlayer] to sync
+    /// @param playerConfig The [`configuration`][PlayerConfigHolder] for the target player
+    public static void sendToAllClients(ServerPlayer toSync, PlayerConfigHolder playerConfig) {
+        int sent = 0;
+        for (ServerPlayer player : PlayerLookup.tracking(toSync)) {
+            if (!player.equals(toSync) && ClientboundSyncPacket.canSend(player)) {
+                sent++;
+                ServerPlayNetworking.send(player, new ClientboundSyncPacket(playerConfig));
             }
-        });
+        }
+        if (sent > 0) {
+            WildfireGender.LOGGER.debug(MARKER, "Sent sync packet for {} to {} connected player(s)", toSync, sent);
+        }
     }
 
-    /**
-     * Sync a player's configuration to all nearby connected players
-     *
-     * @param toSync       The {@link ServerPlayer player} to sync
-     * @param playerConfig The {@link PlayerConfig configuration} for the target player
-     */
-    public static void sendToAllClients(ServerPlayer toSync, PlayerConfig playerConfig) {
-        PlayerLookup.tracking(toSync).stream()
-                .filter(player -> !player.equals(toSync))
-                .filter(ClientboundSyncPacket::canSend)
-                .forEach(player -> ServerPlayNetworking.send(player, new ClientboundSyncPacket(playerConfig)));
-    }
-
-    /**
-     * Sync a player's configuration to another connected player
-     *
-     * @param sendTo The {@link ServerPlayer player} to send the sync to
-     * @param toSync The {@link PlayerConfig configuration} for the player being synced
-     */
-    public static void sendToClient(ServerPlayer sendTo, PlayerConfig toSync) {
-        if(ClientboundSyncPacket.canSend(sendTo)) {
+    /// Sync a player's configuration to another connected player
+    ///
+    /// @param sendTo The [`player`][ServerPlayer] to send the sync to
+    /// @param toSync The [`configuration`][PlayerConfig] for the player being synced
+    public static void sendToClient(ServerPlayer sendTo, PlayerConfigHolder toSync) {
+        if (ClientboundSyncPacket.canSend(sendTo)) {
+            WildfireGender.LOGGER.debug(MARKER, "Sending profile for {} to other player {}", toSync.uuid, sendTo.getUUID());
             ServerPlayNetworking.send(sendTo, new ClientboundSyncPacket(toSync));
         }
     }
 
-    /**
-     * Send the client player's configuration to the server for syncing to other players
-     *
-     * @param plr The {@link PlayerConfig configuration} for the client player
-     */
-    @Environment(EnvType.CLIENT)
-    public static void sendToServer(PlayerConfig plr) {
-        if(!plr.needsSync || !ServerboundSyncPacket.canSend()) return;
-
-        ClientPlayNetworking.send(new ServerboundSyncPacket(plr));
-        plr.needsSync = false;
+    /// Send the client player's configuration to the server for syncing to other players
+    ///
+    /// @param plr The [`configuration`][PlayerConfig] for the client player
+    ///
+    /// @apiNote Only call on the client
+    public static void sendToServer(PacketContextProvider connection, PlayerConfigHolder plr) {
+        if (plr.needsSync && ServerboundSyncPacket.canSend(connection)) {
+            WildfireGender.LOGGER.debug(MARKER, "Sending player data to server");
+            ClientPlayNetworking.send(new ServerboundSyncPacket(plr.config()));
+            plr.needsSync = false;
+        }
     }
 }

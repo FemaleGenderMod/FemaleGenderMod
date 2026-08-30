@@ -24,11 +24,13 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.wildfire.main.uvs.UVDirection;
 import com.wildfire.main.uvs.UVLayout;
 import com.wildfire.main.uvs.UVQuad;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import org.joml.*;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.joml.Vector3fc;
+import org.joml.Vector4f;
 
-@Environment(EnvType.CLIENT)
+/// @apiNote Only use this on the client side
 public final class WildfireModelRenderer {
     private WildfireModelRenderer() {
         throw new UnsupportedOperationException();
@@ -73,21 +75,21 @@ public final class WildfireModelRenderer {
             this.posX1 = x;
             this.posY1 = y;
             this.posZ1 = z;
-            this.posX2 = x + (float) dx;
-            this.posY2 = y + (float) dy;
-            this.posZ2 = z + (float) dz;
+            this.posX2 = x + dx;
+            this.posY2 = y + dy;
+            this.posZ2 = z + dz;
             this.quads = new TexturedQuad[quads];
             this.dynamicUvLayouts = dynamicUvLayouts;
 
-            float f = x + (float) dx;
-            float f1 = y + (float) dy;
-            float f2 = z + (float) dz;
-            x = x - delta;
-            y = y - delta;
-            z = z - delta;
-            f = f + delta;
-            f1 = f1 + delta;
-            f2 = f2 + delta;
+            float f = x + dx;
+            float f1 = y + dy;
+            float f2 = z + dz;
+            x -= delta;
+            y -= delta;
+            z -= delta;
+            f += delta;
+            f1 += delta;
+            f2 += delta;
 
             initQuads(tW, tH, dx, dy, dz, quads,
                     new PositionTextureVertex(f, y, z, 0.0F, 8.0F),

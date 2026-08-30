@@ -19,24 +19,24 @@
 package com.wildfire.gui;
 
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.util.CommonColors;
 
 import java.util.function.Supplier;
+import net.minecraft.util.Util;
+import org.jspecify.annotations.Nullable;
 
-@Environment(EnvType.CLIENT)
-public class WildfireButton extends Button {
+/// @apiNote Only use this on the client side
+public class WildfireButton extends Button implements IFancyFontRenderer {
 
     private final @Nullable ButtonRenderer renderer;
     private final Supplier<Component> messageSupplier;
     public boolean transparent = false;
+
+    private long lastMSInitialized;
 
     private WildfireButton(int x, int y, int w, int h, Supplier<Component> text, Button.OnPress onPress, CreateNarration narrationSupplier, @Nullable ButtonRenderer renderer) {
         super(x, y, w, h, text.get(), onPress, narrationSupplier);
@@ -53,20 +53,17 @@ public class WildfireButton extends Button {
             renderer.render(this, graphics, mouseX, mouseY, partialTicks);
             return;
         }
-        Minecraft minecraft = Minecraft.getInstance();
-        Font font = minecraft.font;
-        int textColor = active ? 0xFFFFFF : 0x666666;
-        int i = this.getX() + 2;
-        int j = this.getX() + this.getWidth() - 2;
-        GuiUtils.drawScrollableTextWithoutShadow(GuiUtils.Justify.CENTER, graphics, font, this.getMessage(), i, this.getY(), j, this.getY() + this.getHeight(), textColor);
+        int textColor = active ? CommonColors.WHITE : 0xFF666666;
+        //Note: We add one to the button height and width as it is considered bounds as we want the final pixel to count towards the calculation of where the text should land
+        drawScrollingString(graphics, getMessage(), getX(), getY(), getRight() + 1, getBottom() + 1, TextAlignment.CENTER, textColor, false);
     }
 
     @Override
     protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-        int clr = 0x444444 + (84 << 24);
-        if(this.isHoveredOrFocused()) clr = 0x666666 + (84 << 24);
-        if(!active) clr = 0x222222 + (84 << 24);
-        if(!transparent) graphics.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), clr);
+        int clr = 0x54444444;
+        if(this.isHoveredOrFocused()) clr = 0x54666666;
+        if(!active) clr = 0x54222222;
+        if(!transparent) graphics.fill(getX(), getY(), getRight(), getBottom(), clr);
 
         drawInner(graphics, mouseX, mouseY, partialTicks);
         if(isHovered()) {
@@ -82,6 +79,21 @@ public class WildfireButton extends Button {
     public WildfireButton setActive(boolean b) {
         this.active = b;
         return this;
+    }
+
+    public WildfireButton setVisible(boolean visible) {
+        if (this.visible != visible) {
+            this.visible = visible;
+            if (visible) {
+                lastMSInitialized = Util.getMillis();
+            }
+        }
+        return this;
+    }
+
+    @Override
+    public long getTimeOpened() {
+        return lastMSInitialized;
     }
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "UnusedReturnValue"})
@@ -126,6 +138,10 @@ public class WildfireButton extends Button {
             return this;
         }
 
+        public Builder active(Supplier<Boolean> activeSupplier) {
+            return active(activeSupplier.get());
+        }
+
         public Builder active(boolean active) {
             this.active = active;
             return this;
@@ -136,8 +152,9 @@ public class WildfireButton extends Button {
             return this;
         }
 
-        public WildfireButton build() {
+        public WildfireButton build(long msInitialized) {
             var built = new WildfireButton(x, y, width, height, messageSupplier, onPress, narrationSupplier, renderer);
+            built.lastMSInitialized = msInitialized;
             built.setActive(active);
             if(tooltip != null) {
                 built.setTooltip(tooltip);
@@ -148,6 +165,7 @@ public class WildfireButton extends Button {
 
     @FunctionalInterface
     public interface PressAction extends Button.OnPress {
+        @Override
         default void onPress(Button button) {
             onPress((WildfireButton) button);
         }

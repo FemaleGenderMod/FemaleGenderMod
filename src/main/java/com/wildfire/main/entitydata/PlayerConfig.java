@@ -18,294 +18,85 @@
 
 package com.wildfire.main.entitydata;
 
-import com.google.gson.JsonObject;
-import com.wildfire.gui.screen.BaseWildfireScreen;
-import com.wildfire.main.WildfireGender;
-import com.wildfire.main.WildfireLocalization;
-import com.wildfire.main.cloud.CloudSync;
-import com.wildfire.main.cloud.SyncLog;
-import com.wildfire.main.config.ClientConfig;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.wildfire.main.config.Configuration;
 import com.wildfire.main.config.enums.Gender;
-import com.wildfire.main.config.types.ConfigKey;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
-import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.ApiStatus;
+import com.wildfire.main.config.value.ConfigKey;
+import com.wildfire.main.config.value.ConfigValue;
+import com.wildfire.main.uvs.UVs;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-
-/**
- * A version of {@link EntityConfig} backed by a {@link Configuration} for use with players
- */
+/// A version of [EntityConfig] backed by a [Configuration] for use with players
 public class PlayerConfig extends EntityConfig {
 
-    /**
-     * <p>{@code true} if this config should be synced to the connected server on the next attempt</p>
-     *
-     * <p>This only has an effect for the client player.</p>
-     */
-    public boolean needsSync;
+    private static final ConfigKey<Boolean> SHOW_IN_ARMOR = ConfigKey.DEFAULT_TRUE;
+    private static final ConfigKey<Boolean> HOLIDAY_THEMES = ConfigKey.DEFAULT_TRUE;
 
-    /**
-     * <p>{@code true} if this config should be synced to the {@link CloudSync cloud sync server} on the next attempt</p>
-     *
-     * <p>This only has an effect for the client player.</p>
-     */
-    public boolean needsCloudSync;
-
-    /**
-     * The current sync status of this player config
-     *
-     * @see #needsSync
-     * @see SyncStatus
-     */
-    public SyncStatus syncStatus = SyncStatus.UNKNOWN;
-
-    private final Configuration cfg;
-    protected boolean hurtSounds = Configuration.HURT_SOUNDS.getDefault();
-    protected boolean holidayThemes = Configuration.HOLIDAY_THEMES.getDefault();
-    protected boolean showBreastsInArmor = Configuration.SHOW_IN_ARMOR.getDefault();
-
-    /**
-     * @deprecated Use {@link #updateGender(Gender)} instead
-     */
-    @Deprecated
-    public PlayerConfig(UUID uuid, Gender gender) {
-        this(uuid);
-        updateGender(gender);
-    }
-
-    public PlayerConfig(UUID uuid) {
-        super(uuid);
-        cfg = new Configuration(uuid.toString());
-        cfg.setDefaults();
-
-        // Real players always have a UUID of version 4; if this isn't the case, then this is undeniably
-        // an NPC player entity.
-        if(uuid.version() != 4) holidayThemes = false;
-    }
-
-    // these shouldn't ever be called on players, but just to be safe, override with a noop.
-    @Override
-    public void readFromStack(ItemStack chestplate) {
-    }
-
-    public Configuration getConfig() {
-        return cfg;
-    }
-
-    public boolean updateGender(Gender value) {
-        return updateValue(Configuration.GENDER, value, v -> this.gender = v);
-    }
-
-    public boolean updateBustSize(float value) {
-        return updateValue(Configuration.BUST_SIZE, value, v -> this.pBustSize = v);
-    }
-
-
-    public boolean hasHolidayThemes() {
-        return holidayThemes;
-    }
-
-    public boolean updateHolidayThemes(boolean value) {
-        return updateValue(Configuration.HOLIDAY_THEMES, value, v -> this.holidayThemes = v);
-    }
-
-
-    public boolean hasHurtSounds() {
-        return hurtSounds;
-    }
-
-    public boolean updateVoicePitch(float value) {
-        return updateValue(Configuration.VOICE_PITCH, value, v -> this.voicePitch = v);
-    }
-
-    public boolean updateHurtSounds(boolean value) {
-        return updateValue(Configuration.HURT_SOUNDS, value, v -> this.hurtSounds = v);
-    }
-
-    public boolean updateBreastPhysics(boolean value) {
-        return updateValue(Configuration.BREAST_PHYSICS, value, v -> this.breastPhysics = v);
-    }
-
-    /**
-     * @apiNote The value this method returns has been moved to {@link ClientConfig}, and this method is only
-     * 			retained for compatibility with mods that use this as a mixin target.
-     */
-    @ApiStatus.Obsolete
-    @Environment(EnvType.CLIENT)
-    public boolean getArmorPhysicsOverride() {
-        return ClientConfig.INSTANCE.get(ClientConfig.ARMOR_PHYSICS_OVERRIDE);
-    }
-
-    public boolean showBreastsInArmor() {
-        return showBreastsInArmor;
-    }
-
-    public boolean updateShowBreastsInArmor(boolean value) {
-        return updateValue(Configuration.SHOW_IN_ARMOR, value, v -> this.showBreastsInArmor = v);
-    }
-
-    public boolean updateBounceMultiplier(float value) {
-        return updateValue(Configuration.BOUNCE_MULTIPLIER, value, v -> this.bounceMultiplier = v);
-    }
-
-    public boolean updateFloppiness(float value) {
-        return updateValue(Configuration.FLOPPY_MULTIPLIER, value, v -> this.floppyMultiplier = v);
-    }
-
-    public SyncStatus getSyncStatus() {
-        return this.syncStatus;
-    }
-
-    /**
-     * Returns a copy of the player's current configuration; the stored values are guaranteed to be valid for
-     * the associated {@link ConfigKey}, and does not include any unrecognized keys.
-     *
-     * @return A new copy of the player's {@link JsonObject saved config values}
-     */
-    public JsonObject toJson() {
-        var json = new JsonObject();
-        Configuration.KEYS.forEach(key -> key.dump(this, json));
-        return json;
-    }
-
-    /**
-     * @return {@code true} if the current player {@link Configuration#exists() has a local config file}
-     */
-    public boolean hasLocalConfig() {
-        return cfg.exists();
-    }
-
-    /**
-     * Loads the current player's settings from a file on disk
-     *
-     * @param markForSync {@code true} if {@link #needsSync} should be set to true
-     */
-    public void loadFromDisk(boolean markForSync) {
-        this.syncStatus = SyncStatus.CACHED;
-        cfg.load();
-        loadFromConfig(markForSync);
-    }
-
-    /**
-     * Loads the current player's settings from the local {@link Configuration}
-     *
-     * @param markForSync {@code true} if {@link #needsSync} should be set to true
-     */
-    public void loadFromConfig(boolean markForSync) {
-        Configuration.KEYS.forEach(key -> key.writeToPlayer(this));
-        if(markForSync) {
-            this.needsSync = true;
-        }
-    }
-
-    /**
-     * Write all known {@link ConfigKey}s from this {@link PlayerConfig} to the underlying {@link Configuration}
-     */
-    public void writeToConfig() {
-        Configuration.KEYS.forEach(key -> key.writeToConfig(this));
-    }
-
-    /**
-     * Saves the settings stored in this {@link PlayerConfig} to the underlying {@link Configuration},
-     * and then attempts to {@link Configuration#save() save to disk}.
-     */
-    public void save() {
-        writeToConfig();
-        getConfig().save();
-        needsSync = true;
-        needsCloudSync = true;
-    }
-
-    /**
-     * @deprecated Use {@code plr.save()} instead
-     */
-    @Deprecated(forRemoval = true)
-    @ApiStatus.ScheduledForRemoval(inVersion = "First release of 26.1")
-    public static void saveGenderInfo(PlayerConfig plr) {
-        plr.save();
-    }
-
-    @Override
-    public boolean hasJacketLayer() {
-        throw new UnsupportedOperationException("PlayerConfig does not support #hasJacketLayer(); use Player#isModelPartShown instead");
-    }
-
-    @ApiStatus.Internal
-    public void attemptCloudSync() {
-        var client = Minecraft.getInstance();
-        if(client.player == null || !this.uuid.equals(client.player.getUUID())) return;
-        if(!needsCloudSync) return;
-        //~ if >=26.2 'client.screen' -> 'client.gui.screen()'
-        if(client.gui.screen() instanceof BaseWildfireScreen) return;
-        if(!ClientConfig.INSTANCE.get(ClientConfig.AUTOMATIC_CLOUD_SYNC)) return;
-        if(CloudSync.syncOnCooldown()) return;
-
-        CompletableFuture.runAsync(() -> {
-            try {
-                CloudSync.sync(this).join();
-                WildfireGender.LOGGER.info("Synced player data to the cloud");
-            } catch(Exception e) {
-                WildfireGender.LOGGER.error("Failed to sync player data", e);
-                SyncLog.add(WildfireLocalization.SYNC_LOG_FAILED_TO_SYNC_DATA);
+    public static final Codec<PlayerConfig> CODEC = RecordCodecBuilder.create(instance -> codecGroup(instance)
+        .and(Sounds.CODEC_OR_LEGACY.forGetter(config -> config.sounds))
+        .and(SHOW_IN_ARMOR.codecOrDefault("show_in_armor").forGetter(config -> config.showBreastsInArmor.get()))
+        .and(HOLIDAY_THEMES.codecOrDefault("holiday_themes").forGetter(config -> config.holidayThemes.get()))
+        .apply(instance, PlayerConfig::new));
+    // remember to update SyncHelloPacket.VERSION when modifying this codec if the changes result in a change
+    // to the underlying packet structure
+    public static final StreamCodec<ByteBuf, PlayerConfig> STREAM_CODEC = StreamCodec.composite(
+        //From EntityConfig
+        GENDER.streamCodec(), config -> config.gender.get(),
+        Breasts.STREAM_CODEC, config -> config.breasts,
+        UVs.STREAM_CODEC, config -> config.uvs,
+        //From PlayerConfig
+        Sounds.STREAM_CODEC, config -> config.sounds,
+        SHOW_IN_ARMOR.streamCodec(), config -> config.showBreastsInArmor.get(),
+        HOLIDAY_THEMES.streamCodec(), config -> config.holidayThemes.get(),
+        PlayerConfig::new
+    );
+    public static final StreamCodec<ByteBuf, PlayerConfig> COMPACT_STREAM_CODEC = new StreamCodec<>() {
+        @Override
+        public PlayerConfig decode(final ByteBuf input) {
+            if (input.readBoolean()) {
+                return STREAM_CODEC.decode(input);
             }
-        });
-        needsCloudSync = false;
+            return createDefault();
+        }
+
+        @Override
+        public void encode(final ByteBuf output, final PlayerConfig config) {
+            if (config.gender.get() == Gender.MALE) {
+                output.writeBoolean(false);
+            } else {
+                output.writeBoolean(true);
+                STREAM_CODEC.encode(output, config);
+            }
+        }
+    };
+
+    //TODO: Remove this hacky way of enforcing encoding using the old syntax, by changing the serialization to CODEC once the cloud server can support doing it on its side
+    public static final Codec<PlayerConfig> CLOUD_SYNC_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        Gender.BY_ID_CODEC.fieldOf("gender").orElseGet(GENDER::defaultValue).forGetter(config -> config.gender.get()),
+        Breasts.LEGACY_CODEC.forGetter(config -> config.breasts),
+        //Note: it is safe to use the newer codec syntax here as the cloud server doesn't care about UVs
+        UVs.CODEC_OR_LEGACY.forGetter(config -> config.uvs),
+        Sounds.LEGACY_CODEC.forGetter(config -> config.sounds),
+        SHOW_IN_ARMOR.codecOrDefault("show_in_armor").forGetter(config -> config.showBreastsInArmor.get()),
+        HOLIDAY_THEMES.codecOrDefault("holiday_themes").forGetter(config -> config.holidayThemes.get())
+    ).apply(instance, PlayerConfig::new));
+
+    public static PlayerConfig createDefault() {
+        //Note: Theoretically this can never fail so it is safe to use getOrThrow as everything in the codec has orElse(default)
+        return CODEC.parse(JsonOps.INSTANCE, JsonOps.INSTANCE.emptyMap()).getOrThrow();
     }
 
-    /**
-     * Update player data from the provided {@link JsonObject}
-     *
-     * @apiNote This method will set the player's {@link #getSyncStatus() sync status} to {@link SyncStatus#SYNCED},
-     *          as it's expected that this method is only used in such cases where this would be applicable.
-     *
-     * @param json The {@link JsonObject} to merge with the existing config for this player
-     */
-    public void updateFromJson(JsonObject json) {
-        json.asMap().forEach(this.cfg::set);
-        loadFromConfig(false);
-        this.syncStatus = SyncStatus.SYNCED;
-    }
+    public final ConfigValue<Boolean> showBreastsInArmor;
+    public final ConfigValue<Boolean> holidayThemes;
+    public final Sounds sounds;
 
-    @Override
-    public List<String> getDebugInfo() {
-        var lines = super.getDebugInfo();
-        lines.add(1, "Sync status: " + getSyncStatus());
-        lines.add("Female hurt sounds: " + hasHurtSounds());
-        lines.add("Show in armor: " + showBreastsInArmor());
-        return lines;
-    }
-
-    public enum SyncStatus {
-        /**
-         * <p>Indicates that the relevant configuration has had its data loaded from a file on disk.</p>
-         *
-         * <p>This is only applicable on a client, as dedicated servers do not read player data from
-         * configuration files.</p>
-         */
-        CACHED,
-
-        /**
-         * <p>Indicates that the relevant configuration has had its data loaded from a sync packet,
-         * or from a profile retrieved from {@link CloudSync the cloud sync server}.</p>
-         *
-         * <p>This is currently only set on the client.</p>
-         */
-        // TODO this should be set on dedicated servers if/when the player config cache is split
-        //		into separate server-sided & client-sided caches
-        SYNCED,
-
-        /**
-         * <p>Indicates that this configuration has an unknown sync state.</p>
-         *
-         * <p>This is the default sync state for new configuration instances, and on dedicated servers is
-         * the only sync state.</p>
-         */
-        UNKNOWN,
+    private PlayerConfig(Gender gender, Breasts breasts, UVs uvs, Sounds sounds, boolean showBreastsInArmor, boolean holidayThemes) {
+        this.sounds = sounds;
+        this.showBreastsInArmor = SHOW_IN_ARMOR.createValueHandler(showBreastsInArmor);
+        this.holidayThemes = HOLIDAY_THEMES.createValueHandler(holidayThemes);
+        super(gender, breasts, uvs);
     }
 }

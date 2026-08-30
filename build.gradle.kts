@@ -1,4 +1,5 @@
 import me.modmuss50.mpp.ReleaseType
+import neoforge.GeneratePackageInfos
 
 plugins {
     // plugin versions are defined in stonecutter.gradle.kts
@@ -23,6 +24,7 @@ dependencies {
     implementation("net.fabricmc:fabric-loader:${project.property("loader_version")}")
 
     implementation(platform("net.fabricmc.fabric-api:fabric-api-bom:${property("dependencies.fabric")}"))
+    implementation("net.fabricmc.fabric-api:fabric-data-generation-api-v1")
     implementation("net.fabricmc.fabric-api:fabric-networking-api-v1")
     implementation("net.fabricmc.fabric-api:fabric-key-mapping-api-v1")
     implementation("net.fabricmc.fabric-api:fabric-lifecycle-events-v1")
@@ -81,10 +83,24 @@ loom {
     accessWidenerPath = sc.process(rootProject.file("src/main/resources/wildfire_gender.accesswidener"), "build/dev.aw")
 }
 
+fabricApi {
+    configureDataGeneration {
+        client = true
+    }
+}
+
 tasks.jar {
     from("LICENSE") {
         rename { "${it}_${project.property("archives_base_name")}" }
     }
+}
+
+tasks.register<GeneratePackageInfos>("generatePackageInfos") {
+    files.from(sourceSets.main.get().java.srcDirTrees)
+}
+
+tasks.named("test").configure {//Ensure validateJson has to be ran in order for build to pass
+    dependsOn(project.rootProject.tasks.named("validateJson"))
 }
 
 publishMods {

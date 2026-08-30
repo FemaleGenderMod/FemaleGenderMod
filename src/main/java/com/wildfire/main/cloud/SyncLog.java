@@ -18,11 +18,12 @@
 
 package com.wildfire.main.cloud;
 
+import com.wildfire.main.WildfireLang;
 import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.config.enums.SyncVerbosity;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
-import net.minecraft.util.Mth;
+import net.minecraft.util.CommonColors;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -31,15 +32,23 @@ import java.util.List;
 public final class SyncLog {
     public static final List<Entry> SYNC_LOG = new ArrayList<>();
 
-    public static int verbosity() {
-        return ClientConfig.INSTANCE.get(ClientConfig.SYNC_VERBOSITY).ordinal();
+    public static SyncVerbosity verbosity() {
+        return ClientConfig.config().syncVerbosity.get();
+    }
+
+    public static void add(WildfireLang langEntry, SyncVerbosity verbosity) {
+        add(langEntry.translate(), verbosity);
     }
 
     public static void add(Component text, SyncVerbosity verbosity) {
-        if(verbosity() < verbosity.ordinal()) {
+        if(verbosity().ordinal() < verbosity.ordinal()) {
             return;
         }
         add(text);
+    }
+
+    public static void add(WildfireLang langEntry) {
+        add(langEntry.translate());
     }
 
     public static void add(Component text) {
@@ -50,12 +59,12 @@ public final class SyncLog {
     }
 
     public record Entry(Component text, Instant timestamp) {
-        public static final int NEW_COLOR = 0x00FF00;
-        public static final int OLD_COLOR = 0x34A100;
+        public static final int NEW_COLOR = CommonColors.GREEN;
+        public static final int OLD_COLOR = 0xFF34A100;
 
         public int color() {
             long secondsPassed = Instant.now().getEpochSecond() - timestamp.getEpochSecond();
-            float delta = Mth.clamp(secondsPassed / 60f, 0f, 1f);
+            float delta = Math.clamp(secondsPassed / 60F, 0, 1);
             return ARGB.linearLerp(delta, NEW_COLOR, OLD_COLOR);
         }
     }

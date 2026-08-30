@@ -20,6 +20,7 @@ package com.wildfire.render.debug;
 
 import com.wildfire.main.WildfireGender;
 import com.wildfire.physics.BreastPhysics;
+import com.wildfire.physics.BothBreastsPhysics;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.debug.DebugScreenDisplayer;
@@ -27,10 +28,10 @@ import net.minecraft.client.gui.components.debug.DebugScreenEntry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 
 public class PhysicsDebugHudEntry implements DebugScreenEntry {
     public static final Identifier ID = WildfireGender.id("physics");
@@ -42,16 +43,17 @@ public class PhysicsDebugHudEntry implements DebugScreenEntry {
         var config = WildfireGender.getPlayerById(player.getUUID());
         if(config == null) return;
 
+        BothBreastsPhysics breastPhysics = config.breastPhysics();
         List<String> info = new ArrayList<>();
-        if(config.getBreasts().isUniboob()) {
+        if(config.breasts().physics().uniboob().get()) {
             info.add(ChatFormatting.UNDERLINE + "Breast Physics");
-            add(info, config.getLeftBreastPhysics());
+            add(info, breastPhysics.left());
         } else {
             info.add(ChatFormatting.UNDERLINE + "Left Breast Physics");
-            add(info, config.getLeftBreastPhysics());
+            add(info, breastPhysics.left());
             info.add("");
             info.add(ChatFormatting.UNDERLINE + "Right Breast Physics");
-            add(info, config.getRightBreastPhysics());
+            add(info, breastPhysics.right());
         }
 
         lines.addToGroup(ID, info);

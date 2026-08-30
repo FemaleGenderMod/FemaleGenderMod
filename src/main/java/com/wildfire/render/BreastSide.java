@@ -18,17 +18,26 @@
 
 package com.wildfire.render;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-
-@Environment(EnvType.CLIENT)
+/// @apiNote Only use this on the client side (or move it to a different package)
 public enum BreastSide {
     LEFT(true),
     RIGHT(false);
 
-    public final boolean isLeft;
+    private final boolean isLeft;
 
     BreastSide(boolean isLeft) {
         this.isLeft = isLeft;
+    }
+
+    public float leftOrNegate(float left) {
+        return isLeft ? left : -left;
+    }
+
+    public float forSide(float left, float right) {
+        return isLeft ? left : right;
+    }
+
+    public <T> T forSide(T left, T right) {
+        return isLeft ? left : right;
     }
 }

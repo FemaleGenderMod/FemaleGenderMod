@@ -22,10 +22,8 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.wildfire.events.PlayerNametagRenderEvent;
+import com.wildfire.main.LoaderAgnostics;
 import com.wildfire.main.config.ClientConfig;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -40,8 +38,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+/// @apiNote Only applied on the client side
 @Mixin(AvatarRenderer.class)
-@Environment(EnvType.CLIENT)
 abstract class AvatarRendererMixin extends LivingEntityRenderer<Avatar, AvatarRenderState, HumanoidModel<AvatarRenderState>> {
     private AvatarRendererMixin(EntityRendererProvider.Context ctx, HumanoidModel<AvatarRenderState> model, float shadowRadius) {
         super(ctx, model, shadowRadius);
@@ -49,8 +47,8 @@ abstract class AvatarRendererMixin extends LivingEntityRenderer<Avatar, AvatarRe
 
     @ModifyReturnValue(method = "shouldShowName(Lnet/minecraft/world/entity/Avatar;D)Z", at = @At("RETURN"))
     public boolean wildfiregender$forceLabel(boolean original, @Local(argsOnly = true) Avatar entity) {
-        if(FabricLoader.getInstance().isDevelopmentEnvironment()) {
-            if(entity instanceof LocalPlayer && ClientConfig.INSTANCE.get(ClientConfig.DISPLAY_OWN_NAMETAG)) {
+        if (LoaderAgnostics.isDevelopmentEnv()) {
+            if(entity instanceof LocalPlayer && ClientConfig.DISPLAY_OWN_NAMETAG) {
                 return true;
             }
         }
@@ -73,7 +71,7 @@ abstract class AvatarRendererMixin extends LivingEntityRenderer<Avatar, AvatarRe
         final CameraRenderState camera,
         CallbackInfo ci
     ) {
-        PlayerNametagRenderEvent.EVENT.invoker().onRenderNameTag(state, poseStack, (text) -> {
+        PlayerNametagRenderEvent.EVENT.invoker().onRenderNameTag(state, poseStack, text -> {
             collector.submitNameTag(
                 poseStack,
                 state.nameTagAttachment,

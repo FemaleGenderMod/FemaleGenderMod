@@ -21,6 +21,7 @@ package com.wildfire.render.debug;
 import com.wildfire.api.IGenderArmor;
 import com.wildfire.main.WildfireGender;
 import com.wildfire.main.entitydata.EntityConfig;
+import com.wildfire.main.entitydata.EntityConfigHolder;
 import com.wildfire.physics.BreastPhysics;
 import com.wildfire.resources.GenderArmorResourceManager;
 import net.minecraft.ChatFormatting;
@@ -34,11 +35,11 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import org.jspecify.annotations.Nullable;
 
 public class GenderDebugHudEntry implements DebugScreenEntry {
     private final Identifier id;
@@ -67,7 +68,7 @@ public class GenderDebugHudEntry implements DebugScreenEntry {
             return;
         }
 
-        var config = EntityConfig.getEntity(living);
+        var config = EntityConfigHolder.getEntity(living);
         List<String> info = new ArrayList<>();
 
         info.add(PREFIX + " Gender Data");
@@ -78,12 +79,12 @@ public class GenderDebugHudEntry implements DebugScreenEntry {
         lines.addToGroup(id, info);
     }
 
-    private void addEquippedChestplate(List<String> lines, EntityConfig config, LivingEntity entity) {
+    private void addEquippedChestplate(List<String> lines, EntityConfigHolder<?> config, LivingEntity entity) {
         var equippedChestplate = entity.getItemBySlot(EquipmentSlot.CHEST);
         var equippable = equippedChestplate.get(DataComponents.EQUIPPABLE);
         // null is perfectly valid to return here
         //noinspection DataFlowIssue
-        var asset = Optionull.map(equippable, (it) -> it.assetId().orElse(null));
+        var asset = Optionull.map(equippable, it -> it.assetId().orElse(null));
         if(asset == null) return;
 
         lines.add("");
@@ -103,7 +104,7 @@ public class GenderDebugHudEntry implements DebugScreenEntry {
         lines.add("Tightness: " + armorConfig.tightness());
         lines.add("Armor stands copy: " + armorConfig.armorStandsCopySettings());
         if(armorConfig.tightness() > 0) {
-            float renderedSize = config.getBustSize() * (1 - BreastPhysics.TIGHTNESS_REDUCTION_FACTOR * armorConfig.tightness());
+            float renderedSize = config.breasts().bustSize().get() * (1 - BreastPhysics.TIGHTNESS_REDUCTION_FACTOR * armorConfig.tightness());
             lines.add("Rendered breast size: " + renderedSize);
         }
     }

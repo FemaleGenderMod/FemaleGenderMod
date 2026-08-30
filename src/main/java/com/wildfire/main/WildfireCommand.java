@@ -28,21 +28,20 @@ import com.wildfire.gui.screen.WildfireFirstTimeSetupScreen;
 import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.config.enums.SyncVerbosity;
 import com.wildfire.main.entitydata.BreastDataComponent;
-import com.wildfire.main.entitydata.EntityConfig;
-import com.wildfire.main.entitydata.PlayerConfig;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import com.wildfire.main.entitydata.EntityConfigHolder;
+import com.wildfire.main.entitydata.PlayerConfigHolder;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -60,15 +59,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.argument;
-
-@Environment(EnvType.CLIENT)
+/// @apiNote Only use this on the client side
 public class WildfireCommand {
-    private static final Component COMMAND_PREFIX = Component.empty()
-            .append(Component.literal("[").withStyle(ChatFormatting.GRAY))
-            .append(Component.literal("F").withStyle(ChatFormatting.LIGHT_PURPLE))
-            .append(Component.literal("GM").withStyle(ChatFormatting.WHITE))
-            .append(Component.literal("] ").withStyle(ChatFormatting.GRAY));
+
+    //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor' {
+    private static final Component COMMAND_PREFIX = WildfireLang.GENERIC_BRACKETS.translateColored(TextColor.GRAY, WildfireLang.GENERIC_CONCAT.translate(
+        WildfireLang.MISC_F.translateColored(TextColor.LIGHT_PURPLE),
+        WildfireLang.MISC_GM.translateColored(TextColor.WHITE)
+    ));
+    //~}
 
     static void init() {
         ClientCommandRegistrationCallback.EVENT.register(WildfireCommand::register);
@@ -78,18 +77,20 @@ public class WildfireCommand {
         Minecraft client = Minecraft.getInstance();
 
         var debug = ClientCommands.literal("debug")
-                .executes((ctx) -> {
-                    sendHelp(ctx, Component.literal("Debug Commands:"),
-                            "invalidatecache", "Clears the player & entity caches",
-                            "target", "Show debug info for entity you are looking at",
-                            "cache [allPlayers] [showEntities]", "Display cached entities/players",
-                            "firsttime", "Display the first time setup screen",
-                            "syncverbosity [level]", "Change how verbose the sync log is");
-                    ctx.getSource().sendFeedback(Component.empty());
-                    sendHelp(ctx, Component.literal("Singleplayer Commands:"),
-                            "trim [glint]", "Equips a chestplate with a trim pre-applied onto yourself",
-                            "armorstand", "Spawns an armor stand with armor copying your breast settings pre-equipped");
-                    return 1;
+                .executes(ctx -> {
+                    sendHelp(ctx, WildfireLang.DEBUG_COMMAND,
+                        WildfireLang.COMMAND_INVALIDATE_CACHE,
+                        WildfireLang.COMMAND_TARGET,
+                        WildfireLang.COMMAND_CACHE,
+                        WildfireLang.COMMAND_FIRST_TIME,
+                        WildfireLang.COMMAND_SYNC_VERBOSITY
+                    );
+                    ctx.getSource().sendFeedback(CommonComponents.EMPTY);
+                    sendHelp(ctx, WildfireLang.SINGLE_PLAYER_COMMAND,
+                        WildfireLang.COMMAND_TRIM,
+                        WildfireLang.COMMAND_ARMOR_STAND
+                    );
+                    return Command.SINGLE_SUCCESS;
                 })
                 .then(ClientCommands.literal("invalidatecache")
                         .executes(WildfireCommand::invalidateCache))
@@ -104,13 +105,13 @@ public class WildfireCommand {
                             return Command.SINGLE_SUCCESS;
                         }))
                 .then(ClientCommands.literal("cache")
-                        .then(argument("allPlayers", BoolArgumentType.bool())
+                        .then(ClientCommands.argument("allPlayers", BoolArgumentType.bool())
                                 .executes(WildfireCommand::getUsers)
-                                .then(argument("showEntities", BoolArgumentType.bool())
+                                .then(ClientCommands.argument("showEntities", BoolArgumentType.bool())
                                         .executes(WildfireCommand::getUsers)))
                         .executes(WildfireCommand::getUsers))
                 .then(ClientCommands.literal("syncverbosity")
-                        .then(argument("level", new SyncVerbosity.SyncVerbosityArgumentType())
+                        .then(ClientCommands.argument("level", new SyncVerbosity.SyncVerbosityArgumentType())
                                 .executes(WildfireCommand::setLogLevel)));
 
         if(Minecraft.getInstance().isLocalServer()) {
@@ -141,29 +142,26 @@ public class WildfireCommand {
         return value;
     }
 
-    public static void send(CommandContext<FabricClientCommandSource> ctx, String text) {
-        ctx.getSource().sendFeedback(Component.empty().append(COMMAND_PREFIX).append(text));
-    }
-
     public static void send(CommandContext<FabricClientCommandSource> ctx, Component text) {
-        ctx.getSource().sendFeedback(Component.empty().append(COMMAND_PREFIX).append(text));
+        ctx.getSource().sendFeedback(WildfireLang.GENERIC_SPACE.translate(COMMAND_PREFIX, text));
     }
 
-    public static void sendHelp(CommandContext<FabricClientCommandSource> ctx, Component header, String... nameToDescription) {
-        assert nameToDescription.length % 2 == 0;
+    public static void sendHelp(CommandContext<FabricClientCommandSource> ctx, WildfireLang header, WildfireLang... usageToDescription) {
         List<Component> lines = new ArrayList<>();
-        lines.add(Component.empty().append(COMMAND_PREFIX).append(header).withStyle(ChatFormatting.UNDERLINE));
+        lines.add(WildfireLang.GENERIC_SPACE.translate(COMMAND_PREFIX, header.translate().withStyle(style -> style.withUnderlined(true))));
 
-        for(int i = 0; i < nameToDescription.length / 2; i++) {
-            var name = nameToDescription[i * 2];
-            var description = nameToDescription[(i * 2) + 1];
-            lines.add(Component.empty().append(COMMAND_PREFIX)
-                .append(Component.literal(name).withStyle(ChatFormatting.AQUA))
-                .append(Component.literal(" - ").withStyle(ChatFormatting.GRAY))
-                .append(Component.literal(description)));
+        for (WildfireLang langEntry : usageToDescription) {
+            //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor' {
+            lines.add(WildfireLang.GENERIC_SPACE.translate(COMMAND_PREFIX, WildfireLang.GENERIC_DASH_EXPLANATION.translateColored(TextColor.GRAY,
+                langEntry.translateColored(TextColor.AQUA),
+                //~}
+                //~ if >=26.2 'withStyle(net.minecraft.ChatFormatting.' -> 'withColor(TextColor.'
+                langEntry.translateDescription().withColor(TextColor.WHITE)
+            )));
+
         }
 
-        ctx.getSource().sendFeedback(ComponentUtils.formatList(lines, Component.literal("\n")));
+        ctx.getSource().sendFeedback(ComponentUtils.formatList(lines, CommonComponents.NEW_LINE));
     }
 
     private static int openConfig(CommandContext<FabricClientCommandSource> ctx) {
@@ -171,32 +169,34 @@ public class WildfireCommand {
         final var player = ctx.getSource().getPlayer();
         // the .schedule() is necessary as otherwise the chat screen will simply immediately close the opened screen
         client.schedule(() -> WardrobeBrowserScreen.open(client, player));
-        return 1;
+        return Command.SINGLE_SUCCESS;
     }
 
     private static int getEntityLookingAt(CommandContext<FabricClientCommandSource> ctx) {
         var target = ctx.getSource().getClient().crosshairPickEntity;
 
         if(target != null) {
-            send(ctx, "Looking at: " + target.getName().getString());
-            send(ctx, "UUID: " + target.getStringUUID());
-            send(ctx, "Type: " + target.getType());
-            send(ctx, "Class: " + target.getClass());
-            send(ctx, "Renderer: " + Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(target));
+            send(ctx, WildfireLang.COMMAND_LOOKING_AT.translate(target.getName()));
+            send(ctx, WildfireLang.COMMAND_LOOKING_AT_UUID.translate(target.getStringUUID()));
+            send(ctx, WildfireLang.COMMAND_LOOKING_AT_TYPE.translate(target.getType()));
+            send(ctx, WildfireLang.COMMAND_LOOKING_AT_CLASS.translate(target.getClass()));
+            send(ctx, WildfireLang.COMMAND_LOOKING_AT_RENDERER.translate( Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(target)));
         } else {
-            send(ctx, "No entity in sight.");
+            send(ctx, WildfireLang.COMMAND_LOOKING_AT_NONE.translate());
         }
-        return 1;
+        return Command.SINGLE_SUCCESS;
     }
 
     public static int setLogLevel(CommandContext<FabricClientCommandSource> ctx) {
         SyncVerbosity level = ctx.getArgument("level", SyncVerbosity.class);
 
-        ClientConfig.INSTANCE.set(ClientConfig.SYNC_VERBOSITY, level);
-        ClientConfig.INSTANCE.save();
+        if (ClientConfig.config().syncVerbosity.update(level)) {//Should always be true
+            ClientConfig.save();
 
-        send(ctx, "Log level set to: " + level);
-        return 1;
+            send(ctx, WildfireLang.COMMAND_LOG_LEVEL.translate(level));
+            return Command.SINGLE_SUCCESS;
+        }
+        return 0;
     }
 
     private static int getUsers(CommandContext<FabricClientCommandSource> ctx) {
@@ -205,26 +205,26 @@ public class WildfireCommand {
 
         var players = dump(WildfireGender.CACHE, ctx.getSource().getLevel(), !allPlayers);
         if(!players.isEmpty()) {
-            send(ctx, "Synced Players (" + players.size() + "):");
+            send(ctx, WildfireLang.COMMAND_SYNCED_PLAYERS.translate(players.size()));
             for(var line : players) {
                 send(ctx, line);
             }
         }
 
         if(showEntities) {
-            var entities = dump(EntityConfig.CACHE, ctx.getSource().getLevel(), false);
+            var entities = dump(EntityConfigHolder.CACHE, ctx.getSource().getLevel(), false);
             if(!entities.isEmpty()) {
-                send(ctx, "Entities (" + players.size() + "):");
+                send(ctx, WildfireLang.COMMAND_ENTITIES.translate(entities.size()));
                 for(var line : entities) {
                     send(ctx, line);
                 }
             }
         }
 
-        return 1;
+        return Command.SINGLE_SUCCESS;
     }
 
-    private static List<Component> dump(Cache<UUID, ? extends EntityConfig> cache, Level world, boolean ignoreEmptyConfig) {
+    private static List<Component> dump(Cache<UUID, ? extends EntityConfigHolder<?>> cache, Level world, boolean ignoreEmptyConfig) {
         List<Component> lines = new ArrayList<>();
         for(var entry : cache.asMap().entrySet()) {
             var uuid = entry.getKey();
@@ -232,18 +232,15 @@ public class WildfireCommand {
             if(config == null) {
                 continue;
             }
-            if(config instanceof PlayerConfig playerConfig && playerConfig.getSyncStatus() == PlayerConfig.SyncStatus.UNKNOWN && ignoreEmptyConfig) {
+            if(config instanceof PlayerConfigHolder playerConfig && playerConfig.getSyncStatus() == PlayerConfigHolder.SyncStatus.UNKNOWN && ignoreEmptyConfig) {
                 continue;
             }
             var entity = world.getEntity(uuid);
             if(entity == null) continue;
 
-            var info = ComponentUtils.formatList(config.getDebugInfo(), Component.literal("\n"), Component::literal);
+            var info = ComponentUtils.formatList(config.getDebugInfo(), CommonComponents.NEW_LINE, Component::literal);
 
-            lines.add(Component.empty()
-                    .append(entity.getDisplayName())
-                    .append(" - ")
-                    .append(config.getGender().getDisplayName())
+            lines.add(WildfireLang.GENERIC_DASH_EXPLANATION.translate(entity.getDisplayName(), config.gender().get().getDisplayName())
                     .withStyle(style -> style.withHoverEvent(new HoverEvent.ShowText(info))));
         }
         return lines;
@@ -251,16 +248,14 @@ public class WildfireCommand {
 
     private static int invalidateCache(CommandContext<FabricClientCommandSource> ctx) {
         WildfireGender.CACHE.invalidateAll();
-        EntityConfig.CACHE.invalidateAll();
+        EntityConfigHolder.CACHE.invalidateAll();
 
-        send(ctx, "Cache has been invalidated!");
-        return 1;
+        send(ctx, WildfireLang.COMMAND_INVALIDATE_CACHE_SUCCESS.translate());
+        return Command.SINGLE_SUCCESS;
     }
 
-    /**
-     * Takes a client-sided {@link CommandContext} and returns the {@link ServerPlayer} for the invoking player
-     * when in singleplayer, or throws an error.
-     */
+    /// Takes a client-sided [CommandContext] and returns the [ServerPlayer] for the invoking player
+    /// when in singleplayer, or throws an error.
     private static ServerPlayer getIntegratedServerPlayer(CommandContext<FabricClientCommandSource> ctx) {
         var integratedServer = Objects.requireNonNull(Minecraft.getInstance().getSingleplayerServer());
         var playerManager = Objects.requireNonNull(integratedServer.getPlayerList());
@@ -279,7 +274,7 @@ public class WildfireCommand {
             item.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, glint);
         }
         player.setItemSlot(EquipmentSlot.CHEST, item);
-        return 1;
+        return Command.SINGLE_SUCCESS;
     }
 
     private static int spawnArmorStand(CommandContext<FabricClientCommandSource> ctx) {
@@ -291,7 +286,7 @@ public class WildfireCommand {
         var config = WildfireGender.getOrAddPlayerById(player.getUUID());
         var component = BreastDataComponent.fromPlayer(player, config);
         if(component == null) {
-            ctx.getSource().sendError(Component.literal("Returned breast data component was null; do you have Hide in Armor on?"));
+            ctx.getSource().sendError(WildfireLang.COMMAND_ARMOR_STAND_NO_COMPONENT.translate());
             return 0;
         }
         component.write(item);
@@ -303,6 +298,6 @@ public class WildfireCommand {
         stand.setItemSlot(EquipmentSlot.FEET, new ItemStack(Items.IRON_BOOTS));
         world.addFreshEntity(stand);
 
-        return 1;
+        return Command.SINGLE_SUCCESS;
     }
 }

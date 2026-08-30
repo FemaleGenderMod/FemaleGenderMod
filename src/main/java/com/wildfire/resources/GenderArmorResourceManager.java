@@ -20,8 +20,6 @@ package com.wildfire.resources;
 
 import com.wildfire.api.IGenderArmor;
 import com.wildfire.main.WildfireGender;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceKey;
@@ -31,14 +29,14 @@ import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.equipment.Equippable;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import org.jspecify.annotations.Nullable;
 
-@Environment(EnvType.CLIENT)
+/// @apiNote Only use this on the client side
 public final class GenderArmorResourceManager extends SimpleJsonResourceReloadListener<IGenderArmor> {
     private GenderArmorResourceManager() {
         super(IGenderArmor.CODEC, FileToIdConverter.json("wildfire_gender_data"));

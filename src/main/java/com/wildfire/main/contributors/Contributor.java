@@ -20,44 +20,45 @@ package com.wildfire.main.contributors;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.annotations.SerializedName;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import com.wildfire.main.WildfireLang;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.network.chat.TextColor;
 
-import java.util.Locale;
+import org.jspecify.annotations.Nullable;
 
-@Environment(EnvType.CLIENT)
+/// @apiNote Only use this on the client side
 public record Contributor(
-        // TODO this technically supports multiple roles due to this using a bitmask, but any additional roles other than
-        //		the topmost one defined in Role is currently ignored
-        int roles,
-        @Nullable Integer color,
-        @Nullable String name,
-        @SerializedName("show_in_credits")
-        @Nullable Boolean showInCredits
+    // TODO this technically supports multiple roles due to this using a bitmask, but any additional roles other than
+    //		the topmost one defined in Role is currently ignored
+    int roles,
+    @Nullable Integer color,//TODO: Can this be moved to a TextColor or does that break serializiation
+    @Nullable String name,
+    @SerializedName("show_in_credits")
+    @Nullable Boolean showInCredits
 ) {
-    private static final int DEFAULT_COLOR = 0xFFAA00; // ChatFormatting.GOLD
 
-    public int getColor() {
-        if(color != null) {
-            return color;
+    //~ if >=26.2 'fromRgb(0xFFAA00)' -> 'GOLD'
+    private static final TextColor DEFAULT_COLOR = TextColor.GOLD;
+
+    public TextColor getColor() {
+        if (color != null) {
+            return TextColor.fromRgb(color);
         }
         return getRole().getColor();
     }
 
     public Component asText() {
-        return getRole().nametag().withColor(getColor());
+        return getRole().langEntry.translateColored(getColor());
     }
 
     public Role getRole() {
-        if(roles == 0) {
+        if (roles == 0) {
             return Role.GENERIC;
         }
 
-        for(var role : Role.values()) {
-            if(role.isIn(this.roles)) {
+        for (var role : Role.values()) {
+            if (role.isIn(this.roles)) {
                 return role;
             }
         }
@@ -66,27 +67,34 @@ public record Contributor(
     }
 
     public enum Role {
-        MOD_CREATOR(0, 0xFF55FF), // ChatFormatting.LIGHT_PURPLE
-        FABRIC_MAINTAINER(1, 0xA78FFF),
-        NEOFORGE_MAINTAINER(2, 0xA78FFF),
-        CI_MAINTAINER(8, 0x50C878),
-        DEVELOPER(3),
-        TRANSLATOR(4, 0x66CCFF),
-        MASCOT(5),
-        VOICE_ACTOR_FEMALE(6),
-        GENERIC(7),
+        //~ if >=26.2 '0xFF55FF' -> 'TextColor.LIGHT_PURPLE'
+        MOD_CREATOR(0, WildfireLang.CONTRIBUTOR_ROLE_MOD_CREATOR, TextColor.LIGHT_PURPLE),
+        FABRIC_MAINTAINER(1, WildfireLang.CONTRIBUTOR_ROLE_FABRIC_MAINTAINER, 0xA78FFF),
+        NEOFORGE_MAINTAINER(2, WildfireLang.CONTRIBUTOR_ROLE_NEO_MAINTAINER, 0xA78FFF),
+        CI_MAINTAINER(8, WildfireLang.CONTRIBUTOR_ROLE_CI_MAINTAINER, 0x50C878),
+        DEVELOPER(3, WildfireLang.CONTRIBUTOR_ROLE_DEVELOPER),
+        TRANSLATOR(4, WildfireLang.CONTRIBUTOR_ROLE_TRANSLATOR, 0x66CCFF),
+        MASCOT(5, WildfireLang.CONTRIBUTOR_ROLE_MASCOT),
+        VOICE_ACTOR_FEMALE(6, WildfireLang.CONTRIBUTOR_ROLE_FEMALE_VOICE_ACTOR),
+        GENERIC(7, WildfireLang.CONTRIBUTOR_ROLE_GENERIC),
         ;
 
         private final int bit;
-        private final @Nullable Integer color;
+        private final WildfireLang langEntry;
+        private final @Nullable TextColor color;
 
-        Role(int bit, @Nullable Integer color) {
+        Role(int bit, WildfireLang langEntry, int color) {
+            this(bit, langEntry, TextColor.fromRgb(color));
+        }
+
+        Role(int bit, WildfireLang langEntry, @Nullable TextColor color) {
             this.bit = 1 << bit;
+            this.langEntry = langEntry;
             this.color = color;
         }
 
-        Role(int bit) {
-            this(bit, null);
+        Role(int bit, WildfireLang langEntry) {
+            this(bit, langEntry, null);
         }
 
         public int bit() {
@@ -97,24 +105,18 @@ public record Contributor(
             return (bitmask & bit()) == bit();
         }
 
-        public int getColor() {
+        public TextColor getColor() {
             return color == null ? DEFAULT_COLOR : color;
         }
 
         public MutableComponent withColor(MutableComponent text) {
             Preconditions.checkNotNull(text);
-            if(color != null) {
-                return text.withColor(color);
-            }
-            return text;
-        }
-
-        public MutableComponent nametag() {
-            return Component.translatable("wildfire_gender.contributor.role." + name().toLowerCase(Locale.ROOT));
+            //~ if >=26.2 'getColor().getValue()' -> 'getColor()'
+            return text.withColor(getColor());
         }
 
         public MutableComponent shortName() {
-            return Component.translatable("wildfire_gender.contributor.role." + name().toLowerCase(Locale.ROOT) + ".short");
+            return langEntry.translateShort();
         }
     }
 }

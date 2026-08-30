@@ -22,10 +22,8 @@ import com.wildfire.api.IBreastArmorTexture;
 import com.wildfire.main.uvs.UVMap;
 import org.joml.Vector2ic;
 
-/**
- * Default record implementation of {@link IBreastArmorTexture} used for resource pack entries
- *
- * @see IBreastArmorTexture
- */
+/// Default record implementation of [IBreastArmorTexture] used for resource pack entries
+///
+/// @see IBreastArmorTexture
 public record BreastArmorTexture(Vector2ic textureSize, UVMap uvs) implements IBreastArmorTexture {
 }

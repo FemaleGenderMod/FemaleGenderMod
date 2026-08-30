@@ -8,12 +8,9 @@
     ],
     "client": [
         "AvatarRendererMixin",
+        "EntityRendererMixin",
         "ItemStackMixin",
         "LivingEntityMixin",
-        "LivingEntityRendererMixin",
-        "TextureManagerMixin",
-        "accessors.ClientMannequinAccessor",
-        "accessors.EquipmentLayerRendererAccessor",
         "accessors.LivingEntityRendererAccessor",
         "accessors.YggdrasilMinecraftSessionServiceAccessor"
     ],

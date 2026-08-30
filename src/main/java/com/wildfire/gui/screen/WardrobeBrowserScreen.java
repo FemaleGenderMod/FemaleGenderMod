@@ -18,17 +18,20 @@
 
 package com.wildfire.gui.screen;
 
-import com.wildfire.gui.GuiUtils;
 import com.wildfire.gui.SyncedPlayerList;
 import com.wildfire.main.WildfireGender;
+import com.wildfire.main.WildfireLang;
 import com.wildfire.main.cloud.CloudSync;
 import com.wildfire.main.config.ClientConfig;
 import com.wildfire.main.config.enums.Gender;
+import com.wildfire.main.config.enums.ShowPlayerListMode;
 import com.wildfire.main.contributors.Contributors;
-import com.wildfire.main.entitydata.PlayerConfig;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormatting;
+import java.time.Month;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Tooltip;
@@ -38,36 +41,38 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
+import net.minecraft.util.CommonColors;
+import net.minecraft.util.Mth;
 import net.minecraft.world.scores.PlayerTeam;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.jspecify.annotations.Nullable;
 
-@Environment(EnvType.CLIENT)
+/// @apiNote Only use this on the client side
 public class WardrobeBrowserScreen extends BaseWildfireScreen {
-    private static final Identifier BACKGROUND_MALE = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/wardrobe_bg_male.png");
-    private static final Identifier BACKGROUND_FEMALE = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/wardrobe_bg_female.png");
-    private static final Identifier BACKGROUND_OTHER = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/gui/wardrobe_bg_other.png");
+    private static final Identifier BACKGROUND_MALE = WildfireGender.id("textures/gui/wardrobe_bg_male.png");
+    private static final Identifier BACKGROUND_FEMALE = WildfireGender.id("textures/gui/wardrobe_bg_female.png");
+    private static final Identifier BACKGROUND_OTHER = WildfireGender.id("textures/gui/wardrobe_bg_other.png");
 
-    private static final Identifier TXTR_RIBBON = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/bc_ribbon.png");
-    private static final Identifier CLOUD_ICON = Identifier.fromNamespaceAndPath(WildfireGender.MODID, "textures/cloud.png");
+    private static final Identifier TXTR_RIBBON = WildfireGender.id("bc_ribbon");
+    private static final Identifier CLOUD_ICON = WildfireGender.id("cloud");
 
-    private static final boolean isBreastCancerAwarenessMonth = Calendar.getInstance().get(Calendar.MONTH) == Calendar.OCTOBER;
+    private static final boolean isBreastCancerAwarenessMonth = Month.from(ZonedDateTime.now()) == Month.OCTOBER;
 
     private final WidgetTooltipHolder contribTooltip = new WidgetTooltipHolder();
 
     public WardrobeBrowserScreen(@Nullable Screen parent, UUID uuid) {
-        super(Component.translatable("wildfire_gender.wardrobe.title"), parent, uuid);
+        super(WildfireLang.WARDROBE_TITLE.translate(), parent, uuid);
     }
 
     public static BaseWildfireScreen create(LocalPlayer player, @Nullable Screen parent) {
-        if(ClientConfig.INSTANCE.get(ClientConfig.FIRST_TIME_LOAD) && CloudSync.isAvailable()) {
+        if(ClientConfig.config().firstTimeLoad.get() && CloudSync.isAvailable()) {
             return new WildfireFirstTimeSetupScreen(parent, player.getUUID());
         } else {
             return new WardrobeBrowserScreen(parent, player.getUUID());
@@ -81,51 +86,52 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 
     @Override
     public void init() {
+        super.init();
         final var client = Objects.requireNonNull(this.minecraft, "client");
         int y = this.height / 2;
-        PlayerConfig plr = Objects.requireNonNull(getPlayer(), "getPlayer()");
+        var plr = Objects.requireNonNull(getPlayer(), "getPlayer()");
 
         addButton(builder -> builder
-                .message(() -> Component.translatable("wildfire_gender.always_show_list", ClientConfig.INSTANCE.get(ClientConfig.ALWAYS_SHOW_LIST).text()))
-                .tooltip(ClientConfig.INSTANCE.get(ClientConfig.ALWAYS_SHOW_LIST).tooltip())
+                .message(() -> WildfireLang.PLAYER_LIST_MODE.translate(ClientConfig.config().playerListMode.get().text()))
+                .tooltip(ClientConfig.config().playerListMode.get().tooltip())
                 .position(126, 4)
                 .size(185, 10)
                 .onPress(button -> {
-                    var config = ClientConfig.INSTANCE;
-                    var newVal = config.get(ClientConfig.ALWAYS_SHOW_LIST).next();
-                    config.set(ClientConfig.ALWAYS_SHOW_LIST, newVal);
-                    config.save();
-                    button.updateMessage();
-                    button.setTooltip(newVal.tooltip());
+                    if (ClientConfig.config().playerListMode.update(ShowPlayerListMode::next)) {
+                        ClientConfig.save();
+                        button.updateMessage();
+                        button.setTooltip(ClientConfig.config().playerListMode.get().tooltip());
+                    }
                 }));
 
         addButton(builder -> builder
-                .message(() -> plr.getGender().getDisplayName())
+                .message(() -> plr.gender().get().getDisplayName())
                 .position(this.width / 2 - 130, this.height / 2 + 33)
                 .size(80, 15)
                 .onPress(_ -> {
-                    plr.updateGender(plr.getGender().next());
-                    plr.save();
-                    rebuildWidgets();
+                    if (plr.gender().update(Gender::next)) {
+                        plr.save();
+                        rebuildWidgets();
+                    }
                 }));
 
         addButton(builder -> builder
-                .message(() -> Component.translatable("wildfire_gender.appearance_settings.title").append("..."))
+                .message(() -> WildfireLang.GENERIC_ELLIPSIS_SUFFIX.translate(WildfireLang.APPEARANCE_SETTINGS_TITLE))
                 .position(this.width / 2 - 36, this.height / 2 - 63)
                 .size(157, 20)
                 .onPress(_ -> {
                     //~ if >=26.2 'setScreen' -> 'gui.setScreen'
-                    client.gui.setScreen(new WildfireBreastCustomizationScreen(WardrobeBrowserScreen.this, this.playerUUID));
+                    client.gui.setScreen(new WildfireBreastCustomizationScreen(this, this.playerUUID));
                 })
-                .active(plr.getGender().canHaveBreasts()));
+                .active(plr.gender().get().canHaveBreasts()));
 
         addButton(builder -> {
-            builder.message(() -> Component.translatable("wildfire_gender.cloud_settings"));
+            builder.message(WildfireLang.CLOUD_SETTINGS::translate);
             builder.position(this.width / 2 - 36, y + 30);
             builder.size(24, 18);
-            builder.renderer((button, ctx, mouseX, mouseY, partialTicks) -> {
-                ctx.blit(RenderPipelines.GUI_TEXTURED, CLOUD_ICON, button.getX() + 2, button.getY() + 2, 0, 0, 20, 14, 32, 26, 32, 26);
-            });
+            builder.renderer((button, ctx, _, _, _) ->
+                ctx.blitSprite(RenderPipelines.GUI_TEXTURED, CLOUD_ICON, button.getX() + 2, button.getY() + 2, 20, 14)
+            );
             builder.onPress(_ -> {
                 //~ if >=26.2 'setScreen' -> 'gui.setScreen'
                 client.gui.setScreen(new WildfireCloudSyncScreen(this, this.playerUUID));
@@ -135,17 +141,17 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
                 builder.tooltip(Tooltip.create(cloudUnavailable.text()));
                 builder.active(false);
             } else {
-                builder.tooltip(Tooltip.create(Component.translatable("wildfire_gender.cloud.tooltip")));
+                builder.tooltip(Tooltip.create(WildfireLang.CLOUD_TOOLTIP.translate()));
             }
         });
 
         addButton(builder -> builder
-                .message(() -> Component.translatable("wildfire_gender.credits.title").append("..."))
+                .message(() -> WildfireLang.GENERIC_ELLIPSIS_SUFFIX.translate(WildfireLang.CREDITS_TITLE))
                 .position(this.width / 2 + 2, this.height / 2 + 33)
                 .size(78, 15)
                 .onPress(_ -> {
                     //~ if >=26.2 'setScreen' -> 'gui.setScreen'
-                    client.gui.setScreen(new WildfireCreditsScreen(WardrobeBrowserScreen.this, this.playerUUID));
+                    client.gui.setScreen(new WildfireCreditsScreen(this, this.playerUUID));
                 }));
 
         /*this.addDrawableChild(new WildfireButton(this.width / 2 + 111, y - 63, 9, 9, Text.literal("X"),
@@ -156,12 +162,12 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         extractTransparentBackground(graphics);
 
-        PlayerConfig plr = getPlayer();
+        var plr = getPlayer();
         if(plr == null) return;
-        Identifier backgroundTexture = switch(plr.getGender()) {
-            case Gender.MALE -> BACKGROUND_MALE;
-            case Gender.FEMALE -> BACKGROUND_FEMALE;
-            case Gender.OTHER -> BACKGROUND_OTHER;
+        Identifier backgroundTexture = switch(plr.gender().get()) {
+            case MALE -> BACKGROUND_MALE;
+            case FEMALE -> BACKGROUND_FEMALE;
+            case OTHER -> BACKGROUND_OTHER;
         };
 
         graphics.blit(RenderPipelines.GUI_TEXTURED, backgroundTexture, (this.width - 272) / 2, (this.height - 138) / 2, 0, 0, 268, 124, 512, 512);
@@ -174,18 +180,19 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
         super.extractRenderState(graphics, mouseX, mouseY, delta);
         int x = this.width / 2;
         int y = this.height / 2;
-        graphics.text(font, getTitle(), x - font.width(getTitle()) / 2, y - 82, 0xFFFFFF, false);
+        drawScrollingString(graphics, getTitle(), 0, y - 82, TextAlignment.CENTER, CommonColors.WHITE, graphics.guiWidth(), 5, false);
 
         drawCreatorContributorText(graphics, mouseX, mouseY, y + 65 + (isBreastCancerAwarenessMonth ? 30 : 0));
 
         if(isBreastCancerAwarenessMonth) {
             int bcaY = y - 45;
-            graphics.fill(x - 159, bcaY + 106, x + 159, bcaY + 136, 0x55000000);
-            graphics.text(font, Component.translatable("wildfire_gender.cancer_awareness.title").withStyle(ChatFormatting.BOLD, ChatFormatting.ITALIC), this.width / 2 - 148, bcaY + 117, 0xFFFFFFFF);
-            graphics.blit(RenderPipelines.GUI_TEXTURED, TXTR_RIBBON, x + 130, bcaY + 109, 0, 0, 26, 26, 20, 20, 20, 20);
+            graphics.fill(x - 159, bcaY + 106, x + 159, bcaY + 136, ARGB.black(0x55));
+            drawScrollingString(graphics, WildfireLang.CANCER_AWARENESS_TITLE.translate().withStyle(style -> style.withBold(true).withItalic(true)),
+                x - 153, bcaY + 117, TextAlignment.LEFT, CommonColors.WHITE, 283, 5, false);
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, TXTR_RIBBON, x + 130, bcaY + 109, 26, 26);
         }
 
-        SyncedPlayerList.drawSyncedPlayers(graphics, font);
+        SyncedPlayerList.drawSyncedPlayers(this, graphics, 126, graphics.guiWidth());
     }
 
     private void drawCreatorContributorText(GuiGraphicsExtractor graphics, int mouseX, int mouseY, int creatorY) {
@@ -208,27 +215,28 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
         final Component text;
         final var toList = new ArrayList<>(foundContributors);
         if(withCreator && !foundContributors.isEmpty()) {
-            text = Component.translatable("wildfire_gender.label.with_both");
+            text = WildfireLang.LABEL_WITH_BOTH.translate();
             toList.addFirst(entries.get(Contributors.CREATOR_UUID));
         } else if(withCreator) {
-            text = Component.translatable("wildfire_gender.label.with_creator");
+            text = WildfireLang.LABEL_WITH_CREATOR.translate();
         } else {
-            text = Component.translatable("wildfire_gender.label.with_contributor");
+            text = WildfireLang.LABEL_WITH_CONTRIBUTOR.translate();
         }
 
         int textWidth = font.width(text);
-        GuiUtils.drawCenteredTextWrapped(graphics, this.font, text, this.width / 2, creatorY, 300, ARGB.opaque(0xFF00FF));
+        drawCenteredTextWrapped(graphics, text, this.width / 2, creatorY, 300, 0xFFFF00FF);
 
         // Render a tooltip with the relevant player names when hovered over
-        int lines = (int) Math.ceil(textWidth / 300.0);
+        int lines = Mth.ceil(textWidth / 300.0);
         if(!toList.isEmpty()
                 && mouseX > this.width / 2 - textWidth / 2 && mouseX < this.width / 2 + textWidth / 2
                 && mouseY > creatorY - 2 && mouseY < creatorY + (9 * lines)) {
             var contributorNames = toList.stream()
-                    .map(entry -> PlayerTeam.formatNameForTeam(entry.getTeam(), Component.nullToEmpty(entry.getProfile().name())))
+                    //Copy of Player#getDisplayName creates the component for a player
+                    .map(entry -> PlayerTeam.formatNameForTeam(entry.getTeam(), Component.literal(entry.getProfile().name())))
                     .toList();
 
-            contribTooltip.set(Tooltip.create(ComponentUtils.formatList(contributorNames, Component.literal("\n"))));
+            contribTooltip.set(Tooltip.create(ComponentUtils.formatList(contributorNames, CommonComponents.NEW_LINE)));
             contribTooltip.refreshTooltipForNextRenderPass(graphics, mouseX, mouseY, true, true, ScreenRectangle.empty());
         }
     }

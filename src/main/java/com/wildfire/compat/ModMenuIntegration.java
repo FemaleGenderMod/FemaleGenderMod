@@ -21,7 +21,7 @@ package com.wildfire.compat;
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 import com.wildfire.gui.screen.WardrobeBrowserScreen;
-import net.minecraft.ChatFormatting;
+import com.wildfire.main.WildfireLang;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.layouts.LinearLayout;
@@ -29,8 +29,7 @@ import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-
-import java.util.Objects;
+import net.minecraft.network.chat.TextColor;
 
 public class ModMenuIntegration implements ModMenuApi {
     @Override
@@ -56,15 +55,16 @@ public class ModMenuIntegration implements ModMenuApi {
             super(
                 //~ if >=26.2 'setScreen' -> 'gui.setScreen'
                 _ -> client.gui.setScreen(parent),
-                Component.translatable("wildfire_gender.not_in_world.title").withStyle(ChatFormatting.RED),
-                Component.translatable("wildfire_gender.not_in_world")
+                //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor'
+                WildfireLang.NOT_IN_WORLD_TITLE.translateColored(TextColor.RED),
+                WildfireLang.NOT_IN_WORLD.translate()
             );
             this.parent = parent;
         }
 
         @Override
         protected void addButtons(LinearLayout layout) {
-            layout.addChild(Button.builder(CommonComponents.GUI_OK, (button) -> onClose()).build());
+            layout.addChild(Button.builder(CommonComponents.GUI_OK, _ -> onClose()).build());
         }
 
         @Override

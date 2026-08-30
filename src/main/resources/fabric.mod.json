@@ -35,6 +35,9 @@
         ],
         "modmenu": [
             "com.wildfire.compat.ModMenuIntegration"
+        ],
+        "fabric-datagen": [
+          "com.wildfire.datagen.WildfireGenderDataGenerator"
         ]
     },
     "mixins": [

@@ -22,11 +22,12 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.mojang.logging.LogUtils;
-import com.wildfire.main.entitydata.PlayerConfig;
+import com.wildfire.main.entitydata.PlayerConfigHolder;
 import com.wildfire.main.networking.WildfireSync;
 import net.fabricmc.api.ModInitializer;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.time.Duration;
@@ -35,7 +36,7 @@ import java.util.UUID;
 public class WildfireGender implements ModInitializer {
     public static final String MODID = "wildfire_gender";
     public static final Logger LOGGER = LogUtils.getLogger();
-    public static final LoadingCache<UUID, PlayerConfig> CACHE;
+    public static final LoadingCache<UUID, PlayerConfigHolder> CACHE;
 
     static {
         var builder = CacheBuilder.newBuilder();
@@ -45,7 +46,7 @@ public class WildfireGender implements ModInitializer {
         // a local config file or from the cloud.
         // Note that servers will manually invalidate cache entries upon a player disconnecting
         // (see WildfireEventHandler#playerDisconnected).
-        if(WildfireHelper.onClient()) {
+        if(LoaderAgnostics.onClient()) {
             // TODO this design is super janky, and has some potential edge case issues around LAN worlds;
             //		notably, connected players could potentially have their configs expire, although this is currently
             //		prevented through further jank with how SyncedPlayerList is implemented (which should also
@@ -57,9 +58,9 @@ public class WildfireGender implements ModInitializer {
             builder.expireAfterAccess(Duration.ofMinutes(15));
         }
         CACHE = builder.build(CacheLoader.from(key -> {
-            var config = new PlayerConfig(key);
+            var config = new PlayerConfigHolder(key);
             // only attempt to load player data on the client
-            if(WildfireHelper.onClient()) {
+            if(LoaderAgnostics.onClient()) {
                 // markForSync being true will only ever do anything for the client player
                 WildfireGenderClient.loadGenderInfo(config, true, false);
             }
@@ -73,15 +74,27 @@ public class WildfireGender implements ModInitializer {
         WildfireEventHandler.registerCommonEvents();
     }
 
-    public static @Nullable PlayerConfig getPlayerById(UUID id) {
+    public static @Nullable PlayerConfigHolder getPlayerById(UUID id) {
         return CACHE.getIfPresent(id);
     }
 
-    public static PlayerConfig getOrAddPlayerById(UUID id) {
+    public static PlayerConfigHolder getOrAddPlayerById(UUID id) {
         return CACHE.getUnchecked(id);
     }
 
     public static Identifier id(String path) {
         return Identifier.fromNamespaceAndPath(MODID, path);
+    }
+
+    public static <T extends CustomPacketPayload> CustomPacketPayload.Type<T> clientBoundPacket(String path) {
+        return packet("clientbound/" + path);
+    }
+
+    public static <T extends CustomPacketPayload> CustomPacketPayload.Type<T> serverBoundPacket(String path) {
+        return packet("serverbound/" + path);
+    }
+
+    private static <T extends CustomPacketPayload> CustomPacketPayload.Type<T> packet(String path) {
+        return new CustomPacketPayload.Type<>(id(path));
     }
 }

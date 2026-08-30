@@ -47,8 +47,6 @@
 
     "wildfire_gender.label.enabled": "Кушык",
     "wildfire_gender.label.disabled": "Сүнек",
-    "wildfire_gender.label.yes": "Әйе",
-    "wildfire_gender.label.no": "Юк",
     "wildfire_gender.label.with_creator": "Сез бу модның ясаучы белән бер серверда уйныйсыз!",
 
     "wildfire_gender.slider.bounce": "Сикерү интенсивлыгы: ×%s",

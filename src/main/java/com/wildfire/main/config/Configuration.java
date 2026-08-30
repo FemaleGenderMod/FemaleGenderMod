@@ -18,135 +18,86 @@
 
 package com.wildfire.main.config;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.wildfire.main.config.enums.Gender;
-import com.wildfire.main.config.functions.BreastGetter;
-import com.wildfire.main.config.functions.BreastSetter;
-import com.wildfire.main.config.functions.PlayerGetter;
-import com.wildfire.main.config.functions.PlayerSetter;
-import com.wildfire.main.config.types.*;
-import com.wildfire.main.entitydata.Breasts;
-import com.wildfire.main.entitydata.PlayerConfig;
-import com.wildfire.main.uvs.UVLayout;
-import com.wildfire.main.uvs.UVQuad;
-import org.jetbrains.annotations.Unmodifiable;
+import com.google.gson.stream.JsonWriter;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
+import com.wildfire.main.LoaderAgnostics;
+import com.wildfire.main.WildfireGender;
+import java.nio.charset.StandardCharsets;
+import java.util.Comparator;
+import java.util.Optional;
+import net.minecraft.util.GsonHelper;
 
-import java.util.List;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-public class Configuration extends AbstractConfiguration {
+public class Configuration<TYPE> {
 
     public static final String CONFIG_DIR = "FemaleGenderMod";
 
-    public static final EnumConfigKey<Gender> GENDER = new EnumConfigKey<>("gender", Gender.MALE, Gender.BY_ID);
-    public static final FloatConfigKey BUST_SIZE = new FloatConfigKey("bust_size", 0.6F, 0, 0.8f);
-    public static final BooleanConfigKey HURT_SOUNDS = new BooleanConfigKey("hurt_sounds", true);
-    public static final FloatConfigKey VOICE_PITCH = new FloatConfigKey("voice_pitch", 1F, 0.8f, 1.2f);
+    private final Codec<TYPE> codec;
+    private final File cfgFile;
 
-    public static final FloatConfigKey BREASTS_OFFSET_X = new FloatConfigKey("breasts_xOffset", 0.0F, -1, 1);
-    public static final FloatConfigKey BREASTS_OFFSET_Y = new FloatConfigKey("breasts_yOffset", 0.0F, -1, 1);
-    public static final FloatConfigKey BREASTS_OFFSET_Z = new FloatConfigKey("breasts_zOffset", 0.0F, -1, 0);
-    public static final BooleanConfigKey BREASTS_UNIBOOB = new BooleanConfigKey("breasts_uniboob", true);
-    public static final FloatConfigKey BREASTS_CLEAVAGE = new FloatConfigKey("breasts_cleavage", 0, 0, 0.1F);
-
-    public static final BooleanConfigKey BREAST_PHYSICS = new BooleanConfigKey("breast_physics", true);
-    public static final BooleanConfigKey SHOW_IN_ARMOR = new BooleanConfigKey("show_in_armor", true);
-    public static final FloatConfigKey BOUNCE_MULTIPLIER = new FloatConfigKey("bounce_multiplier", 0.333F, 0, 0.5f);
-    public static final FloatConfigKey FLOPPY_MULTIPLIER = new FloatConfigKey("floppy_multiplier", 0.75F, 0.25f, 1);
-
-    public static final BooleanConfigKey HOLIDAY_THEMES = new BooleanConfigKey("holiday_themes", true);
-
-    // TODO change these UVLayout entries to use UVMap objects?
-    //        would probably require adding some form of migration capability to AbstractConfiguration
-
-    // Base breasts
-    public static final ConfigKey<UVLayout> LEFT_BREAST_UV_LAYOUT =
-            new UVLayoutConfigKey("leftBreastUVLayout", new UVLayout(
-                    new UVQuad(24, 21, 27, 26),  // EAST
-                    new UVQuad(16, 21, 20, 26),  // WEST
-                    new UVQuad(20, 17, 24, 21),  // DOWN
-                    new UVQuad(20, 25, 24, 27),  // UP
-                    new UVQuad(20, 21, 24, 26)   // NORTH
-            ));
-
-    public static final ConfigKey<UVLayout> RIGHT_BREAST_UV_LAYOUT =
-            new UVLayoutConfigKey("rightBreastUVLayout", new UVLayout(
-                    new UVQuad(28, 21, 32, 26),  // EAST
-                    new UVQuad(21, 21, 24, 26),  // WEST
-                    new UVQuad(24, 17, 28, 21),  // DOWN
-                    new UVQuad(24, 25, 28, 27),  // UP
-                    new UVQuad(24, 21, 28, 26)   // NORTH
-            ));
-
-    // Overlay breasts
-    public static final ConfigKey<UVLayout> LEFT_BREAST_OVERLAY_UV_LAYOUT =
-            new UVLayoutConfigKey("leftBreastOverlayUVLayout", new UVLayout(
-                    new UVQuad( 0,  0,  0,  0),  // EAST (not used)
-                    new UVQuad(17, 37, 20, 42),  // WEST
-                    new UVQuad(20, 34, 24, 37),  // DOWN
-                    new UVQuad(20, 41, 24, 44),  // UP
-                    new UVQuad(20, 37, 24, 42)   // NORTH
-            ));
-
-    public static final ConfigKey<UVLayout> RIGHT_BREAST_OVERLAY_UV_LAYOUT =
-            new UVLayoutConfigKey("rightBreastOverlayUVLayout", new UVLayout(
-                    new UVQuad(28, 37, 31, 42),  // EAST
-                    new UVQuad( 0,  0,  0,  0),  // WEST (not used)
-                    new UVQuad(24, 34, 28, 37),  // DOWN
-                    new UVQuad(24, 41, 28, 44),  // UP
-                    new UVQuad(24, 37, 28, 42)   // NORTH
-            ));
-
-    public static final @Unmodifiable List<RegisteredKey<?>> KEYS = List.of(
-            new RegisteredKey<>(GENDER, PlayerConfig::getGender, PlayerConfig::updateGender),
-            new RegisteredKey<>(BUST_SIZE, PlayerConfig::getBustSize, PlayerConfig::updateBustSize),
-            new RegisteredKey<>(HURT_SOUNDS, PlayerConfig::hasHurtSounds, PlayerConfig::updateHurtSounds),
-            new RegisteredKey<>(VOICE_PITCH, PlayerConfig::getVoicePitch, PlayerConfig::updateVoicePitch),
-
-            new RegisteredKey<>(BREASTS_OFFSET_X, Breasts::getXOffset, Breasts::updateXOffset),
-            new RegisteredKey<>(BREASTS_OFFSET_Y, Breasts::getYOffset, Breasts::updateYOffset),
-            new RegisteredKey<>(BREASTS_OFFSET_Z, Breasts::getZOffset, Breasts::updateZOffset),
-            new RegisteredKey<>(BREASTS_UNIBOOB, Breasts::isUniboob, Breasts::updateUniboob),
-            new RegisteredKey<>(BREASTS_CLEAVAGE, Breasts::getCleavage, Breasts::updateCleavage),
-
-            new RegisteredKey<>(BREAST_PHYSICS, PlayerConfig::hasBreastPhysics, PlayerConfig::updateBreastPhysics),
-            new RegisteredKey<>(SHOW_IN_ARMOR, PlayerConfig::showBreastsInArmor, PlayerConfig::updateShowBreastsInArmor),
-            new RegisteredKey<>(BOUNCE_MULTIPLIER, PlayerConfig::getBounceMultiplier, PlayerConfig::updateBounceMultiplier),
-            new RegisteredKey<>(FLOPPY_MULTIPLIER, PlayerConfig::getFloppiness, PlayerConfig::updateFloppiness),
-
-            new RegisteredKey<>(HOLIDAY_THEMES, PlayerConfig::hasHolidayThemes, PlayerConfig::updateHolidayThemes),
-
-            new RegisteredKey<>(LEFT_BREAST_UV_LAYOUT, PlayerConfig::getLeftBreastUVLayout, PlayerConfig::updateLeftBreastUVLayout),
-            new RegisteredKey<>(RIGHT_BREAST_UV_LAYOUT, PlayerConfig::getRightBreastUVLayout, PlayerConfig::updateRightBreastUVLayout),
-
-            new RegisteredKey<>(LEFT_BREAST_OVERLAY_UV_LAYOUT, PlayerConfig::getLeftBreastOverlayUVLayout, PlayerConfig::updateLeftBreastOverlayUVLayout),
-            new RegisteredKey<>(RIGHT_BREAST_OVERLAY_UV_LAYOUT, PlayerConfig::getRightBreastOverlayUVLayout, PlayerConfig::updateRightBreastOverlayUVLayout)
-    );
-
-    public Configuration(String cfgName) {
-        super(CONFIG_DIR, cfgName);
+    public Configuration(String cfgName, Codec<TYPE> codec) {
+        this(CONFIG_DIR, cfgName, codec);
     }
 
-    public void setDefaults() {
-        KEYS.stream().map(RegisteredKey::key).forEach(this::setDefault);
+    protected Configuration(String directory, String cfgName, Codec<TYPE> codec) {
+        this.codec = codec;
+        Path saveDir = LoaderAgnostics.getConfigDir().resolve(directory);
+        if(supportsSaving() && !Files.isDirectory(saveDir)) {
+            try {
+                Files.createDirectory(saveDir);
+            } catch(IOException e) {
+                WildfireGender.LOGGER.error("Failed to create config directory", e);
+            }
+        }
+        cfgFile = saveDir.resolve(cfgName + ".json").toFile();
     }
 
-    public record RegisteredKey<T>(ConfigKey<T> key, PlayerGetter<T> getter, PlayerSetter<T> setter) {
-        RegisteredKey(ConfigKey<T> key, BreastGetter<T> getter, BreastSetter<T> setter) {
-            // java isn't quite smart enough to do all of this for us, but it is smart enough to cast the setter
-            // for us, so long as we give it enough of a hint with the getter.
-            this(key, (PlayerGetter<T>) getter, setter);
-        }
+    public static boolean supportsSaving() {
+        return LoaderAgnostics.onClient();
+    }
 
-        public void dump(PlayerConfig config, JsonObject obj) {
-            key.save(obj, config.getConfig().get(key));
-        }
+    public boolean exists() {
+        return cfgFile.exists();
+    }
 
-        public void writeToConfig(PlayerConfig player) {
-            player.getConfig().set(key, getter.get(player));
+    public void save(TYPE value) {
+        if (supportsSaving()) {
+            //TODO: Do we want to log if it fails to encode?
+            Optional<JsonElement> result = codec.encodeStart(JsonOps.INSTANCE, value).resultOrPartial();
+            if (result.isPresent()) {
+                try (FileWriter writer = new FileWriter(cfgFile, StandardCharsets.UTF_8); JsonWriter jsonWriter = new JsonWriter(writer)) {
+                    jsonWriter.setIndent("\t");
+                    GsonHelper.writeValue(jsonWriter, result.get(), Comparator.naturalOrder());
+                } catch (IOException e) {
+                    WildfireGender.LOGGER.error("Failed to save config file", e);
+                }
+            }
         }
+    }
 
-        public void writeToPlayer(PlayerConfig player) {
-            setter.set(player, player.getConfig().get(key));
+    public TYPE load() {
+        //TODO: If empty bc not able to read such as on server, should this try to load or skip?
+        //TODO: If not success do we want to log it failed? Can it even fail? Given the fact everything has orDefault
+        return codec.parse(JsonOps.INSTANCE, read()).getOrThrow();
+    }
+
+    private JsonObject read() {
+        if (supportsSaving() && cfgFile.exists()) {
+            try (FileReader configurationFile = new FileReader(cfgFile, StandardCharsets.UTF_8)) {
+                return GsonHelper.parse(configurationFile);
+            } catch (IOException e) {
+                WildfireGender.LOGGER.error("Failed to load config file", e);
+            }
         }
+        return new JsonObject();
     }
 }

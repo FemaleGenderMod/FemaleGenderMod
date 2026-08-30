@@ -51,8 +51,6 @@
     "wildfire_gender.label.disabled": "꺼짐",
     "wildfire_gender.label.on": "켜짐",
     "wildfire_gender.label.off": "꺼짐",
-    "wildfire_gender.label.yes": "켜짐",
-    "wildfire_gender.label.no": "꺼짐",
     "wildfire_gender.label.with_creator": "당신은 이 모드 제작자와 같은 서버에 있습니다!",
     "wildfire_gender.label.with_contributor": "당신은 이 모드 기여자와 같은 서버에 있습니다!",
     "wildfire_gender.label.with_both": "당신은 이 모드 기여자, 모드 제작자와 같은 서버에 있습니다!",

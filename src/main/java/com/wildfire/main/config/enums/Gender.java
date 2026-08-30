@@ -18,36 +18,51 @@
 
 package com.wildfire.main.config.enums;
 
+import com.mojang.serialization.Codec;
+import com.wildfire.main.WildfireLang;
 import com.wildfire.main.WildfireSounds;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.ByIdMap;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.IntFunction;
+import net.minecraft.util.ExtraCodecs;
+import net.minecraft.util.StringRepresentable;
+import org.jspecify.annotations.Nullable;
 
-public enum Gender {
-
+public enum Gender implements StringRepresentable {
     // NOTE: The order of these should remain unchanged! Changing these WILL modify player configs!
-    FEMALE(Component.translatable("wildfire_gender.label.female").withStyle(ChatFormatting.LIGHT_PURPLE), true, WildfireSounds.FEMALE_HURT),
-    MALE(Component.translatable("wildfire_gender.label.male").withStyle(ChatFormatting.BLUE), false, null),
-    OTHER(Component.translatable("wildfire_gender.label.other").withStyle(ChatFormatting.GREEN), true, WildfireSounds.FEMALE_HURT);
+    //~ if >=26.2 'net.minecraft.ChatFormatting' -> 'TextColor' {
+    FEMALE("female", WildfireLang.LABEL_FEMALE.translateColored(TextColor.LIGHT_PURPLE), true, WildfireSounds.FEMALE_HURT),
+    MALE("male", WildfireLang.LABEL_MALE.translateColored(TextColor.BLUE), false, null),
+    OTHER("other", WildfireLang.LABEL_OTHER.translateColored(TextColor.GREEN), true, WildfireSounds.FEMALE_HURT);
+    //~}
 
     public static final IntFunction<Gender> BY_ID = ByIdMap.continuous(Gender::ordinal, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
-    public static final StreamCodec<ByteBuf, Gender> CODEC = ByteBufCodecs.idMapper(BY_ID, Gender::ordinal);
+    public static final Codec<Gender> CODEC = StringRepresentable.fromEnum(Gender::values);
+    public static final Codec<Gender> BY_ID_CODEC = ExtraCodecs.idResolverCodec(Gender::ordinal, BY_ID, 0);
+    public static final Codec<Gender> CODEC_OR_LEGACY = CODEC.withAlternative(BY_ID_CODEC);
+    public static final StreamCodec<ByteBuf, Gender> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, Gender::ordinal);
 
+    private final String saveName;
     private final Component name;
     private final boolean canHaveBreasts;
     private final @Nullable SoundEvent hurtSound;
 
-    Gender(Component name, boolean canHaveBreasts, @Nullable SoundEvent hurtSound) {
+    Gender(String saveName, Component name, boolean canHaveBreasts, @Nullable SoundEvent hurtSound) {
+        this.saveName = saveName;
         this.name = name;
         this.canHaveBreasts = canHaveBreasts;
         this.hurtSound = hurtSound;
+    }
+
+    @Override
+    public String getSerializedName() {
+        return saveName;
     }
 
     public Component getDisplayName() {

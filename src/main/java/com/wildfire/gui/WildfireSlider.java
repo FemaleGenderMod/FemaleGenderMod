@@ -18,29 +18,31 @@
 
 package com.wildfire.gui;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import com.wildfire.main.WildfireHelper;
-import com.wildfire.main.config.types.FloatConfigKey;
+import com.wildfire.main.config.value.ConfigKey;
+import com.wildfire.main.config.validator.ConfigRange;
+import com.wildfire.main.config.value.ConfigValue;
 import it.unimi.dsi.fastutil.floats.Float2ObjectFunction;
 import it.unimi.dsi.fastutil.floats.FloatConsumer;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
+import java.util.function.Supplier;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.util.Mth;
-import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
+import net.minecraft.util.ARGB;
+import net.minecraft.util.CommonColors;
+import net.minecraft.util.Util;
+import org.jspecify.annotations.Nullable;
 
-@Environment(EnvType.CLIENT)
-public class WildfireSlider extends AbstractWidget {
+/// @apiNote Only use this on the client side
+public class WildfireSlider extends AbstractWidget implements IFancyFontRenderer {
     private double value;
     private final double minValue;
     private final double maxValue;
@@ -48,6 +50,7 @@ public class WildfireSlider extends AbstractWidget {
     private final Float2ObjectFunction<Component> messageUpdate;
     private final FloatConsumer onSave;
 
+    private long lastMSInitialized;
     private float lastValue;
     private boolean changed;
     private boolean dragging;
@@ -57,7 +60,7 @@ public class WildfireSlider extends AbstractWidget {
 
     private WildfireSlider(int xPos, int yPos, int width, int height, double minVal, double maxVal, double currentVal, FloatConsumer valueUpdate,
                           Float2ObjectFunction<Component> messageUpdate, FloatConsumer onSave) {
-        super(xPos, yPos, width, height, Component.empty());
+        super(xPos, yPos, width, height, CommonComponents.EMPTY);
         this.minValue = minVal;
         this.maxValue = maxVal;
         this.valueUpdate = valueUpdate;
@@ -109,9 +112,9 @@ public class WildfireSlider extends AbstractWidget {
     @Override
     public boolean keyPressed(KeyEvent event) {
         int keyCode = event.key();
-        if(keyCode == GLFW.GLFW_KEY_LEFT || keyCode == GLFW.GLFW_KEY_RIGHT) {
-            value += (keyCode == GLFW.GLFW_KEY_LEFT ? -arrowKeyStep : arrowKeyStep);
-            value = WildfireHelper.snapToStep(Mth.clamp(value, 0, 1), arrowKeyStep);
+        if(keyCode == InputConstants.KEY_LEFT || keyCode == InputConstants.KEY_RIGHT) {
+            value += keyCode == InputConstants.KEY_LEFT ? -arrowKeyStep : arrowKeyStep;
+            value = WildfireHelper.snapToStep(Math.clamp(value, 0, 1), arrowKeyStep);
             applyValue();
             updateMessage();
             return true;
@@ -127,7 +130,7 @@ public class WildfireSlider extends AbstractWidget {
     @Override
     public boolean keyReleased(KeyEvent event) {
         var keyCode = event.key();
-        if(keyCode == GLFW.GLFW_KEY_LEFT || keyCode == GLFW.GLFW_KEY_RIGHT) {
+        if(keyCode == InputConstants.KEY_LEFT || keyCode == InputConstants.KEY_RIGHT) {
             save();
             return true;
         }
@@ -145,24 +148,22 @@ public class WildfireSlider extends AbstractWidget {
             return;
         }
         int xP = getX() + 2;
-        graphics.fill(xP - 2, getY(), getX() + this.width, getY() + this.height, 0x222222 + (128 << 24));
+        graphics.fill(xP - 2, getY(), getRight(), getBottom(), 0x80222222);
         int xPos = getX() + 2 + (int) (this.value * (float)(this.width - 3));
 
-        graphics.fill(getX() + 1, getY() + 1, xPos - 1, getY() + this.height - 1, active?(0x222266 + (180 << 24)):(0x111133 + (180 << 24)));
+        graphics.fill(getX() + 1, getY() + 1, xPos - 1, getBottom() - 1, active ? 0xB4222266 : 0xB4111133);
 
         if(active) {
             int xPos2 = this.getX() + 3 + (int) (this.value * (float) (this.width - 4));
-            graphics.fill(xPos2 - 2, getY() + 1, xPos2, getY() + this.height - 1, 0xFFFFFF + (120 << 24));
+            graphics.fill(xPos2 - 2, getY() + 1, xPos2, getBottom() - 1, ARGB.white(0x78));
         }
-        Font font = Minecraft.getInstance().font;
-        int i = this.getX() + 2;
-        int j = this.getX() + this.getWidth() - 2;
 
-        int textColor = (isHoveredOrFocused()&&active) || changed ? 0xFFFF55 : 0xFFFFFF;
+        int textColor = (isHoveredOrFocused()&&active) || changed ? CommonColors.SOFT_YELLOW : CommonColors.WHITE;
         if(!active) {
-            textColor = 0x666666;
+            textColor = 0xFF666666;
         }
-        GuiUtils.drawScrollableTextWithoutShadow(GuiUtils.Justify.CENTER, graphics, font, this.getMessage(), i, this.getY(), j, this.getY() + this.getHeight(), textColor);
+        //Note: We add one to the button height and width as it is considered bounds as we want the final pixel to count towards the calculation of where the text should land
+        drawScrollingString(graphics, getMessage(), getX(), getY(), getRight() + 1, getBottom() + 1, TextAlignment.CENTER, textColor, false);
 
         if(isHovered() || dragging) {
             if(!active) {
@@ -187,7 +188,7 @@ public class WildfireSlider extends AbstractWidget {
     }
 
     private void setValueInternal(double value) {
-        this.value = Mth.clamp((value - this.minValue) / (this.maxValue - this.minValue), 0, 1);
+        this.value = Math.clamp((value - this.minValue) / (this.maxValue - this.minValue), 0, 1);
         this.lastValue = (float) value;
         updateMessage();
         //Note: Does not call applyValue
@@ -206,16 +207,31 @@ public class WildfireSlider extends AbstractWidget {
     }
 
     private void setValueFromMouse(double mouseX) {
-        this.value = ((mouseX - (double)(this.getX() + 4)) / (double)(this.getWidth() - 8));
-        this.value = Mth.clamp(this.value, 0, 1);
+        this.value = (mouseX - (this.getX() + 4)) / (this.getWidth() - 8);
+        this.value = Math.clamp(this.value, 0, 1);
 
         if (mouseStep > 0) {
             double snapped = Math.round(this.value / mouseStep) * mouseStep;
-            this.value = Mth.clamp(snapped, 0, 1);
+            this.value = Math.clamp(snapped, 0, 1);
         }
 
         applyValue();
         updateMessage();
+    }
+
+    public WildfireSlider setVisible(boolean visible) {
+        if (this.visible != visible) {
+            this.visible = visible;
+            if (visible) {
+                lastMSInitialized = Util.getMillis();
+            }
+        }
+        return this;
+    }
+
+    @Override
+    public long getTimeOpened() {
+        return lastMSInitialized;
     }
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "UnusedReturnValue"})
@@ -256,8 +272,13 @@ public class WildfireSlider extends AbstractWidget {
             return this;
         }
 
-        public Builder range(FloatConfigKey key) {
-            return range(key.getMinInclusive(), key.getMaxInclusive());
+        public Builder range(ConfigKey<Float> key) {
+            if (key.validator() instanceof ConfigRange<Float>(Float minInclusive, Float maxInclusive)) {
+                return range(minInclusive, maxInclusive);
+            }
+            //TODO: Do we care about having a logging message? If so where should we get the key name from
+            //WildfireGender.LOGGER.warn("No range available for {}", key.key());
+            return this;
         }
 
         public Builder range(float min, float max) {
@@ -269,6 +290,17 @@ public class WildfireSlider extends AbstractWidget {
         public Builder current(double value) {
             this.value = value;
             return this;
+        }
+
+        public Builder forConfig(Supplier<ConfigValue<Float>> configValue) {
+            ConfigValue<Float> currentValue = configValue.get();
+            return range(currentValue.key())
+                .current(currentValue.get())
+                .update(value -> configValue.get().update(value));
+        }
+
+        public Builder active(Supplier<Boolean> initiallyActive) {
+            return active(initiallyActive.get());
         }
 
         public Builder active(boolean active) {
@@ -286,9 +318,10 @@ public class WildfireSlider extends AbstractWidget {
             return this;
         }
 
-        public WildfireSlider build() {
+        public WildfireSlider build(long msInitialized) {
             var built = new WildfireSlider(x, y, width, height, min, max, value, onUpdate, messageSupplier, onSave);
             built.active = active;
+            built.lastMSInitialized = msInitialized;
             if(step != null) {
                 built.setArrowKeyStep(step);
             }

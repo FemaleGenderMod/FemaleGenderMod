@@ -21,25 +21,21 @@ package com.wildfire.api;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.WildfireGenderClient;
-import com.wildfire.main.config.Configuration;
 import com.wildfire.main.config.enums.Gender;
+import com.wildfire.main.entitydata.EntityConfig;
 import com.wildfire.main.entitydata.PlayerConfig;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import com.wildfire.main.entitydata.PlayerConfigHolder;
 import net.minecraft.util.Util;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 import org.joml.Vector2ic;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.IntStream;
+import org.jspecify.annotations.Nullable;
 
 @SuppressWarnings("unused")
 public final class WildfireAPI {
@@ -56,28 +52,24 @@ public final class WildfireAPI {
             vec2i -> IntStream.of(vec2i.x(), vec2i.y())
     ), VEC2I_LEGACY_CODEC);
 
-    /**
-     * Get the cached config for a {@link Player}
-     *
-     * @apiNote This method will not load a player's config if they aren't already cached, and will only return
-     *		  the config of players the mod has already loaded.
-     *
-     * @param  uuid  the uuid of the target {@link Player}
-     * @see	PlayerConfig
-     */
-    public static @Nullable PlayerConfig getPlayerById(UUID uuid) {
+    /// Get the cached config for a [Player]
+    ///
+    /// @apiNote This method will not load a player's config if they aren't already cached, and will only return
+    /// 		  the config of players the mod has already loaded.
+    ///
+    /// @param  uuid  the uuid of the target [Player]
+    /// @see	PlayerConfig
+    public static @Nullable PlayerConfigHolder getPlayerById(UUID uuid) {//TODO: This is technically breaking, we could give it a value, but PlayerConfig underwent breaking changes itself
         return WildfireGender.getPlayerById(uuid);
     }
 
-    /**
-     * Get the player's {@link Gender}
-     *
-     * @param  uuid  the uuid of the target {@link Player}.
-     * @see	Gender
-     */
+    /// Get the player's [Gender]
+    ///
+    /// @param  uuid  the uuid of the target [Player].
+    /// @see	Gender
     public static Gender getPlayerGender(UUID uuid) {
-        PlayerConfig cfg = WildfireGender.getPlayerById(uuid);
-        if(cfg == null) return Configuration.GENDER.getDefault();
-        return cfg.getGender();
+        PlayerConfigHolder cfg = WildfireGender.getPlayerById(uuid);
+        if(cfg == null) return EntityConfig.GENDER.defaultValue();
+        return cfg.gender().get();
     }
 }
