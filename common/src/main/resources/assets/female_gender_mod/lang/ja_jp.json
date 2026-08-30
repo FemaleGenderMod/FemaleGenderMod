@@ -78,8 +78,7 @@
     "female_gender_mod.char_settings.jumping": "ジャンプ停止",
 
     "female_gender_mod.char_settings.override_armor_physics": "防具物理演算: %s",
-    "female_gender_mod.tooltip.override_armor_physics.line1": "有効にすると、装備している防具によるバスト物理演算の軽減・抑制がなくなります。主に防具を非表示にするリソースパックでの使用を想定しています。",
-    "female_gender_mod.tooltip.override_armor_physics.line2": "この設定は自分自身および他のプレイヤーの見た目に影響しますが、他のプレイヤーからの見え方には影響しません。",
+  "configuration.female_gender_mod.client.override.armor_physics.tooltip": "有効にすると、装備している防具によるバスト物理演算の軽減・抑制がなくなります。主に防具を非表示にするリソースパックでの使用を想定しています。 この設定は自分自身および他のプレイヤーの見た目に影響しますが、他のプレイヤーからの見え方には影響しません。",
 
     "female_gender_mod.char_settings.hide_in_armor": "防具着用時に非表示: %s",
     "female_gender_mod.char_settings.show_armor_stat": "防具ツールチップを表示: %s",

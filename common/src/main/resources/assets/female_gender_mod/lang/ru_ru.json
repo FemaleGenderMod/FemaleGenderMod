@@ -76,8 +76,7 @@
     "female_gender_mod.char_settings.jumping": "Перестать прыгать",
 
     "female_gender_mod.char_settings.override_armor_physics": "Физика брони: %s",
-    "female_gender_mod.tooltip.override_armor_physics.line1": "При включении этой функции физика груди больше не будет снижаться/подавляться экипированной броней.",
-    "female_gender_mod.tooltip.override_armor_physics.line2": "Это предназначено для использования с наборами ресурсов, скрывающими броню, или любыми аналогичными наборами ресурсов минимальной брони.",
+    "configuration.female_gender_mod.client.override.armor_physics.tooltip": "При включении этой функции физика груди больше не будет снижаться/подавляться экипированной броней. Это предназначено для использования с наборами ресурсов, скрывающими броню, или любыми аналогичными наборами ресурсов минимальной брони.",
 
     "female_gender_mod.char_settings.hide_in_armor": "Спрятать в доспехах: %s",
     "female_gender_mod.char_settings.show_armor_stat": "Подсказки по броне: %s",

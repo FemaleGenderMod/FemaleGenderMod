@@ -47,8 +47,7 @@
     "female_gender_mod.char_settings.jumping": "Arrêter de sauter",
 
     "female_gender_mod.char_settings.override_armor_physics": "Physique de l'armure: %s",
-    "female_gender_mod.tooltip.override_armor_physics.line1": "La physique de la poitrine ne sera plus réduite/supprimée par votre armure équipée lorsque cette option est activée",
-    "female_gender_mod.tooltip.override_armor_physics.line2": "Cette option est destinée à être utilisée avec des packs de ressources/mods qui cachent l'armure, ou tout pack d'armure minimal similaire.",
+    "configuration.female_gender_mod.client.override.armor_physics.tooltip": "La physique de la poitrine ne sera plus réduite/supprimée par votre armure équipée lorsque cette option est activée. Cette option est destinée à être utilisée avec des packs de ressources/mods qui cachent l'armure, ou tout pack d'armure minimal similaire.",
 
     "female_gender_mod.char_settings.hide_in_armor": "Cacher dans l'armure: %s",
     "female_gender_mod.char_settings.show_armor_stat": "Infobulle de l'armure: %s",

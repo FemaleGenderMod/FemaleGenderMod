@@ -72,8 +72,7 @@
     "female_gender_mod.char_settings.jumping": "Tumigil sa Pagtalon",
 
     "female_gender_mod.char_settings.override_armor_physics": "Pisiks ng Baluti: %s",
-    "female_gender_mod.tooltip.override_armor_physics.line1": "Hindi na babawasan/papalitan ng anumang sinusuot na baluti ang pisiks ng suso habang naka-enable; ito ay pangunahing inilaan para sa paggamit ng mga resource pack na nagtatago ng mga baluti",
-    "female_gender_mod.tooltip.override_armor_physics.line2": "Inaapektuhan nito kung panno mo nakikita ang ibang mga manlalaro at sarili mo, ngunit hindi inaapektuhan kung paano ka nakikita.",
+    "configuration.female_gender_mod.client.override.armor_physics.tooltip": "Hindi na babawasan/papalitan ng anumang sinusuot na baluti ang pisiks ng suso habang naka-enable; ito ay pangunahing inilaan para sa paggamit ng mga resource pack na nagtatago ng mga baluti. Inaapektuhan nito kung panno mo nakikita ang ibang mga manlalaro at sarili mo, ngunit hindi inaapektuhan kung paano ka nakikita.",
 
     "female_gender_mod.char_settings.hide_in_armor": "Itago Sa Baluti: %s",
     "female_gender_mod.char_settings.show_armor_stat": "Ipakita ang Tooltip ng Baluti: %s",

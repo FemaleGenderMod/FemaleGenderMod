@@ -29,8 +29,7 @@
     "female_gender_mod.char_settings.physics": "Имчәк физикасы: %s",
 
     "female_gender_mod.char_settings.override_armor_physics": "Көбә физикасы: %s",
-    "female_gender_mod.tooltip.override_armor_physics.line1": "Кушылганда имчәк физикасы киенгән көбәгез тарафыннан кечерәймәячәк һәм бастырылмаячак",
-    "female_gender_mod.tooltip.override_armor_physics.line2": "Бу көйләү яшерүче ресурс җыелмалары яки шундый ук минималь көбә җыелмалары белән куллану өчен эшләнгән",
+    "configuration.female_gender_mod.client.override.armor_physics.tooltip": "Кушылганда имчәк физикасы киенгән көбәгез тарафыннан кечерәймәячәк һәм бастырылмаячак. Бу көйләү яшерүче ресурс җыелмалары яки шундый ук минималь көбә җыелмалары белән куллану өчен эшләнгән",
 
     "female_gender_mod.char_settings.hide_in_armor": "Көбәдә яшерү: %s",
     "female_gender_mod.char_settings.hurt_sounds": "Яралану тавышлары: %s",

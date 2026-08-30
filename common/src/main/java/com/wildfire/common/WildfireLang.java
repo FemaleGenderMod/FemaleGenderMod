@@ -102,7 +102,6 @@ public enum WildfireLang {
     CHAR_SETTINGS_HURT_SOUNDS("char_settings.hurt_sounds"),
     CHAR_SETTINGS_HURT_SOUNDS_TOOLTIP("tooltip.hurt_sounds"),
     CHAR_SETTINGS_OVERRIDE_PHYSICS("char_settings.override_armor_physics"),
-    CHAR_SETTINGS_OVERRIDE_PHYSICS_TOOLTIP("tooltip.override_armor_physics"),
 
     LABEL_GENDER("label.gender"),
     LABEL_ENABLED("label.enabled"),

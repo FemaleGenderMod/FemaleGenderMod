@@ -81,8 +81,7 @@
 	"female_gender_mod.char_settings.jumping": "停止跳躍",
 
 	"female_gender_mod.char_settings.override_armor_physics": "盔甲物理：%s",
-	"female_gender_mod.tooltip.override_armor_physics.line1": "啟用後，胸部物理效果將不再因穿著盔甲而減弱或抑制；這主要用於隱藏盔甲的資源包。",
-	"female_gender_mod.tooltip.override_armor_physics.line2": "這會影響您看到其他玩家及自己的方式，但不會影響其他人看到您的樣子。",
+  "configuration.female_gender_mod.client.override.armor_physics.tooltip": "啟用後，胸部物理效果將不再因穿著盔甲而減弱或抑制；這主要用於隱藏盔甲的資源包。 這會影響您看到其他玩家及自己的方式，但不會影響其他人看到您的樣子。",
 
 	"female_gender_mod.char_settings.hide_in_armor": "在盔甲中隱藏：%s",
 	"female_gender_mod.char_settings.show_armor_stat": "顯示盔甲提示：%s",

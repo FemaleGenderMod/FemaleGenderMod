@@ -78,8 +78,7 @@
   "female_gender_mod.char_settings.jumping": "Секіруді тоқтату",
 
   "female_gender_mod.char_settings.override_armor_physics": "Сауыт физикасы: %s",
-  "female_gender_mod.tooltip.override_armor_physics.line1": "Қосылған кезде омырау физикасы сауыт кигеннен азаймайды; бұл негізінен сауытты жасыратын ресурс пакеттер үшін арналған.",
-  "female_gender_mod.tooltip.override_armor_physics.line2": "Бұл басқа ойыншыларды және өзіңді қалай көретініңе әсер етеді, бірақ басқалардың сені қалай көретініне әсер етпейді.",
+  "configuration.female_gender_mod.client.override.armor_physics.tooltip": "Қосылған кезде омырау физикасы сауыт кигеннен азаймайды; бұл негізінен сауытты жасыратын ресурс пакеттер үшін арналған. Бұл басқа ойыншыларды және өзіңді қалай көретініңе әсер етеді, бірақ басқалардың сені қалай көретініне әсер етпейді.",
 
   "female_gender_mod.char_settings.hide_in_armor": "Сауытта жасыру: %s",
   "female_gender_mod.char_settings.show_armor_stat": "Сауыт түсіндірмесін көрсету: %s",

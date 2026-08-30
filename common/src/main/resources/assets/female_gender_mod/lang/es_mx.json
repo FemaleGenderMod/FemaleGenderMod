@@ -79,8 +79,7 @@
     "female_gender_mod.char_settings.jumping": "Deja de saltar",
 
     "female_gender_mod.char_settings.override_armor_physics": "Físicas en Armadura: %s",
-    "female_gender_mod.tooltip.override_armor_physics.line1": "Las físicas de el pecho no se verán afectadas por la armadura. Ésto es útil para paquetes de recursos que escondán la armadura.",
-    "female_gender_mod.tooltip.override_armor_physics.line2": "Ésto afecta como te ves a tí y a otros jugadores, pero los otros jugadores no lo verán así.",
+    "configuration.female_gender_mod.client.override.armor_physics.tooltip": "Las físicas de el pecho no se verán afectadas por la armadura. Ésto es útil para paquetes de recursos que escondán la armadura. Ésto afecta como te ves a tí y a otros jugadores, pero los otros jugadores no lo verán así.",
 
     "female_gender_mod.char_settings.hide_in_armor": "Esconder en Armadura: %s",
     "female_gender_mod.char_settings.show_armor_stat": "Mostrar info de armadura: %s",

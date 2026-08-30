@@ -39,8 +39,7 @@
     "female_gender_mod.char_settings.physics": "Tit Boing-Boing action!: %s",
 
     "female_gender_mod.char_settings.override_armor_physics": "Tit Boing-Boings in armor: %s",
-    "female_gender_mod.tooltip.override_armor_physics.line1": "Ze tit shall remain free even under ze constraints of matey attire!",
-    "female_gender_mod.tooltip.override_armor_physics.line2": "Zis is for custom matey attire zat iz minimal or non-existent, usually added via image barrels.",
+    "configuration.female_gender_mod.client.override.armor_physics.tooltip": "Ze tit shall remain free even under ze constraints of matey attire! Zis is for custom matey attire zat iz minimal or non-existent, usually added via image barrels.",
 
     "female_gender_mod.char_settings.hide_in_armor": "Hide ze tit in matey attire: %s",
     "female_gender_mod.char_settings.hurt_sounds": "Wohman Noises: %s",

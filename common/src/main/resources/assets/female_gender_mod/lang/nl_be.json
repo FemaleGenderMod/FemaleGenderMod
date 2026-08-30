@@ -47,8 +47,7 @@
     "female_gender_mod.char_settings.jumping": "Stop met springen",
 
     "female_gender_mod.char_settings.override_armor_physics": "Beweegt in Harnas: %s",
-    "female_gender_mod.tooltip.override_armor_physics.line1": "De borst bewegingen zullen niet langer onderdrukt worden bij jouw aangetrokken harnas, als dit aan staat",
-    "female_gender_mod.tooltip.override_armor_physics.line2": "Dit is bedoeld voor het gebruik met bronpakketen die harnas verstoppen of iets in die geest",
+    "configuration.female_gender_mod.client.override.armor_physics.tooltip": "De borst bewegingen zullen niet langer onderdrukt worden bij jouw aangetrokken harnas, als dit aan staat. Dit is bedoeld voor het gebruik met bronpakketen die harnas verstoppen of iets in die geest",
 
     "female_gender_mod.char_settings.hide_in_armor": "Verstop In Harnas: %s",
     "female_gender_mod.char_settings.show_armor_stat": "Laat Armor Beschrijving Zien: %s",

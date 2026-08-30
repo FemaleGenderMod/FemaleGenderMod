@@ -76,8 +76,7 @@
     "female_gender_mod.char_settings.jumping": "Aufhören",
 
     "female_gender_mod.char_settings.override_armor_physics": "Rüstungs Physik: %s",
-    "female_gender_mod.tooltip.override_armor_physics.line1": "Brustphysik wird nicht mehr durch Rüstung reduziert/gestoppt, wenn es aktiviert ist.",
-    "female_gender_mod.tooltip.override_armor_physics.line2": "Dies ist hauptsächlich da für Resource Packs die Rüstungen entfernen oder verringern",
+    "configuration.female_gender_mod.client.override.armor_physics.tooltip": "Brustphysik wird nicht mehr durch Rüstung reduziert/gestoppt, wenn es aktiviert ist. Dies ist hauptsächlich da für Resource Packs die Rüstungen entfernen oder verringern",
 
     "female_gender_mod.char_settings.hide_in_armor": "In Rüstung verstecken: %s",
     "female_gender_mod.char_settings.show_armor_stat": "Zeige Rüstungstooltip: %s",
