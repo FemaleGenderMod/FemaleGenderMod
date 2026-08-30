@@ -24,7 +24,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.mojang.authlib.HttpAuthenticationService;
 import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.serialization.JsonOps;
 import com.mojang.util.InstantTypeAdapter;
@@ -58,6 +57,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Random;
+import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -65,6 +65,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Util;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.ApiStatus;
@@ -103,15 +104,17 @@ public final class CloudSync {
         return builder.build();
     });
 
-    private static final String USER_AGENT =
-            "WildfireGender/" + StringUtils.split(LoaderAgnostics.INSTANCE.getModVersion(WildfireAPI.MODID), '+')[0]
-                    + " Minecraft/" + LoaderAgnostics.INSTANCE.getModVersion("minecraft");
+    private static final String USER_AGENT = Util.make(new StringJoiner(" "), joiner -> {
+        joiner.add("WildfireGender/" +  StringUtils.split(LoaderAgnostics.INSTANCE.getModVersion(WildfireAPI.MODID), '+')[0]);
+        joiner.add("Minecraft/" + LoaderAgnostics.INSTANCE.getModVersion(Identifier.DEFAULT_NAMESPACE));
+        joiner.add(LoaderAgnostics.INSTANCE.name() + "/" + LoaderAgnostics.INSTANCE.getLoaderVersion());
+    }).toString();
 
     private static final Queue<QueuedFetch> QUEUED = new ConcurrentLinkedDeque<>();
     private static final Cache<UUID, Optional<JsonObject>> FETCH_CACHE = CacheBuilder.newBuilder()
             .expireAfterWrite(Duration.ofMinutes(10)).concurrencyLevel(6).build();
 
-    private static final String DEFAULT_CLOUD_URL = "https://wfgm.celestialfault.dev";
+    private static final String DEFAULT_CLOUD_URL = "https://wfgm.celestialfault.dev/v2";
     private static final Duration SYNC_COOLDOWN = Duration.ofSeconds(10);
 
     /// @return `true` if the last [`sync`][#sync(PlayerConfigHolder)] was within the last 10 seconds
@@ -249,9 +252,16 @@ public final class CloudSync {
 
                 WildfireGender.LOGGER.info("Obtaining new authentication token from the cloud sync server");
                 SyncLog.add(WildfireLang.SYNC_LOG_AUTH_SYNC);
-                var query = HttpAuthenticationService.buildQuery(Map.of("serverId", serverId, "username", session.getName()));
-                var uri = URI.create(getCloudServer() + "/auth?" + query);
-                var request = createRequest(uri).GET().build();
+                String body = Util.make(new JsonObject(), obj -> {
+                    obj.addProperty("server_id", serverId);
+                    obj.addProperty("username", session.getName());
+                }).toString();
+                var uri = URI.create(getCloudServer() + "/auth");
+                var request = createRequest(uri)
+                    .POST(HttpRequest.BodyPublishers.ofString(body))
+                    .header("Content-Type", "application/json; charset=UTF-8")
+                    .build();
+
                 var response = CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString()).join();
                 if(response.statusCode() >= HttpURLConnection.HTTP_BAD_REQUEST) {
                     SyncLog.add(WildfireLang.SYNC_LOG_AUTH_FAILED);
@@ -295,9 +305,8 @@ public final class CloudSync {
     private static CompletableFuture<Void> syncInternal(PlayerConfigHolder config, boolean resyncing) {
         return CompletableFuture.runAsync(() -> {
             var token = getAuthToken();
-            var url = URI.create(getCloudServer() + "/" + config.uuid);
-            //TODO: Remove this hacky way of enforcing encoding the gender as the ordinal, by changing the serialization out once the cloud server can support doing it on its side
-            var json = PlayerConfig.CLOUD_SYNC_CODEC.encodeStart(JsonOps.INSTANCE, config.config()).resultOrPartial().orElseGet(JsonObject::new).toString();
+            var url = URI.create(getCloudServer() + "/player/" + config.uuid);
+            var json = PlayerConfig.CODEC.encodeStart(JsonOps.INSTANCE, config.config()).resultOrPartial().orElseGet(JsonObject::new).toString();
 
             SyncLog.add(WildfireLang.SYNC_LOG_START);
 
@@ -306,6 +315,7 @@ public final class CloudSync {
                     .header("Content-Type", "application/json; charset=UTF-8")
                     .header("Auth-Token", token)
                     .build();
+
             var response = CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString()).join();
             if(response.statusCode() == HttpURLConnection.HTTP_UNAUTHORIZED && !resyncing) {
                 SyncLog.add(WildfireLang.SYNC_LOG_REAUTH);
@@ -316,6 +326,7 @@ public final class CloudSync {
             } else if(response.statusCode() >= HttpURLConnection.HTTP_BAD_REQUEST) {
                 throw new RuntimeException("Server responded " + response.statusCode() + ": " + response.body());
             }
+
             WildfireGender.LOGGER.debug("Server responded to update: {}", response.body());
             SyncLog.add(WildfireLang.SYNC_LOG_SUCCESS);
         }, EXECUTOR);
@@ -330,7 +341,7 @@ public final class CloudSync {
     public static CompletableFuture<Void> deleteProfile(PlayerConfigHolder config) {
         return CompletableFuture.runAsync(() -> {
             var token = getAuthToken();
-            var url = URI.create(getCloudServer() + "/" + config.uuid);
+            var url = URI.create(getCloudServer() + "/player/" + config.uuid);
             var request = createRequest(url).DELETE().header("Auth-Token", token).build();
             var response = CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString()).join();
             if(response.statusCode() == HttpURLConnection.HTTP_NOT_FOUND) {
@@ -376,7 +387,7 @@ public final class CloudSync {
         }
 
         return CompletableFuture.supplyAsync(() -> {
-            var url = URI.create(getCloudServer() + "/" + uuid);
+            var url = URI.create(getCloudServer() + "/player/" + uuid);
             var request = createRequest(url).GET().build();
             var response = CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString()).join();
             if(response.statusCode() == HttpURLConnection.HTTP_NOT_FOUND || response.statusCode() == HttpURLConnection.HTTP_NO_CONTENT) {
@@ -412,7 +423,7 @@ public final class CloudSync {
                 return Collections.emptyMap();
             }
 
-            var url = URI.create(getCloudServer() + "/");
+            var url = URI.create(getCloudServer() + "/players");
             var json = new JsonArray();
             uuids.forEach(uuid -> json.add(uuid.toString()));
             var request = createRequest(url)

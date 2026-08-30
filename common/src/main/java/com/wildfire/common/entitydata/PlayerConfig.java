@@ -70,16 +70,6 @@ public class PlayerConfig extends EntityConfig {
         }
     };
 
-    //TODO: Remove this hacky way of enforcing encoding using the old syntax, by changing the serialization to CODEC once the cloud server can support doing it on its side
-    public static final Codec<PlayerConfig> CLOUD_SYNC_CODEC = RecordCodecBuilder.create(instance -> instance.group(
-        Gender.BY_ID_CODEC.fieldOf("gender").orElseGet(GENDER::defaultValue).forGetter(config -> config.gender.get()),
-        Breasts.LEGACY_CODEC.forGetter(config -> config.breasts),
-        //Note: it is safe to use the newer codec syntax here as the cloud server doesn't care about UVs
-        UVs.CODEC_OR_LEGACY.forGetter(config -> config.uvs),
-        Sounds.LEGACY_CODEC.forGetter(config -> config.sounds),
-        SHOW_IN_ARMOR.codecOrDefault("show_in_armor").forGetter(config -> config.showBreastsInArmor.get())
-    ).apply(instance, PlayerConfig::new));
-
     public static PlayerConfig createDefault() {
         //Note: Theoretically this can never fail so it is safe to use getOrThrow as everything in the codec has orElse(default)
         return CODEC.parse(JsonOps.INSTANCE, JsonOps.INSTANCE.emptyMap()).getOrThrow();
