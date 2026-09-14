@@ -65,7 +65,6 @@ loom {
         }
         create("${modId}_data") {
             sourceSet("runData")
-            modFiles.forEach { println("File: ${it.absolutePath}") }
         }
     }
 

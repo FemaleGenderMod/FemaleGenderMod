@@ -23,7 +23,7 @@ accessible method net/minecraft/client/renderer/entity/ArmorStandRenderer getRen
 accessible method net/minecraft/client/renderer/entity/LivingEntityRenderer isBodyVisible (Lnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;)Z
 accessible method net/minecraft/client/renderer/entity/IllusionerRenderer isBodyVisible (Lnet/minecraft/client/renderer/entity/state/IllusionerRenderState;)Z
 
-#? if >=26.3-rc-2 {
+#? if >=26.3-rc-3 {
 accessible field net/minecraft/world/entity/LivingEntity swingState Lnet/minecraft/world/entity/LivingEntity$SwingState;
 accessible field net/minecraft/world/entity/LivingEntity$SwingState currentSwing Lnet/minecraft/world/entity/LivingEntity$SwingDescription;
 accessible field net/minecraft/world/entity/LivingEntity$SwingState ticks I
