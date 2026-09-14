@@ -20,7 +20,7 @@ issueTrackerURL = "${issue_tracker}"
 [[dependencies.${mod_id}]]
     modId = "minecraft"
     type = "required"
-    versionRange = "[${major_minecraft_version},)"
+    versionRange = "${minecraft_version_range}"
     side = "BOTH"
 [[dependencies.${mod_id}]]
     modId = "neoforge"

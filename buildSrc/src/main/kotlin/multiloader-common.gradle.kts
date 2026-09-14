@@ -131,8 +131,8 @@ tasks.named<ProcessResources>("processResources") {
     val expandProps = mapOf(
         "version" to modVersion,
         "minecraft_version" to stonecutterBuild.current.version,
-        "major_minecraft_version" to stonecutterBuild.current.project,
-        "minecraft_version_range" to stonecutterBuild.properties["meta.supported_minecraft_versions"],
+        "minecraft_version_range" to stonecutterBuild.properties["meta.minecraft_version_range"],
+        "supported_minecraft_versions" to stonecutterBuild.properties["meta.supported_minecraft_versions"],
         "fabric_version" to stonecutterBuild.properties["dependencies.fabric_api"],
         "fabric_loader_version" to stonecutterBuild.properties["dependencies.fabric_loader_version"],
         "mod_name" to modName,
@@ -146,7 +146,7 @@ tasks.named<ProcessResources>("processResources") {
         "contributors" to contributors.asListedElements(),
         "contributors_list" to contributors.asTomlList(),
         // may be omitted during snapshot cycles
-        "neoforge_version" to (stonecutterBuild.properties.getOrNull("dependencies.min_neo_version") ?: ""),
+        "neoforge_version" to (stonecutterBuild.properties.getOrNull("dependencies.min_neo_version") ?: "${stonecutterBuild.current.version}.0-beta"),
         "java_version" to javaVersion,
     )
     inputs.properties(expandProps)

@@ -80,6 +80,20 @@ neoForge {
     }
 }
 
+repositories {
+    val snapshotPr: Int? = sc.properties.getOrNull("dependencies.neoforge_snapshot_pr")
+    if (snapshotPr != null) {
+        maven {
+            name = "Maven for PR #${snapshotPr}"
+            url = uri("https://prmaven.neoforged.net/NeoForge/pr${snapshotPr}")
+            content {
+                includeModule("net.neoforged", "neoforge")
+                includeModule("net.neoforged", "testframework")
+            }
+        }
+    }
+}
+
 rootProject.tasks.named("runData").configure {
     dependsOn(tasks.named("runData"))
 }

@@ -43,8 +43,9 @@ publish.modrinth = "bcOsQHnC"
 
 ["26.1"]
     meta.supported_minecraft_versions = ">=26.1 <26.2"
+    meta.minecraft_version_range = "[26.1.2,26.2)"
     dependencies.fabric_api = "0.144.3"
-    dependencies.neo_version = "26.1.2.97"
+    dependencies.neo_version = "26.1.2.109"
     dependencies.min_neo_version = "26.1.2.97"
     publish.version_title = "26.1.x"
     publish.min_version = "26.1"
@@ -52,21 +53,25 @@ publish.modrinth = "bcOsQHnC"
 
 ["26.2"]
     meta.supported_minecraft_versions = ">=26.2 <26.3"
+    meta.minecraft_version_range = "[26.2,26.3)"
     dependencies.fabric_api = "0.152.1"
     dependencies.neoform_timestamp = "2"
-    dependencies.neo_version = "26.2.0.64"
-    dependencies.min_neo_version = "26.2.0.64"
+    dependencies.neo_version = "26.2.0.88"
+    dependencies.min_neo_version = "26.2.0.81"
     publish.version_title = "26.2"
     publish.min_version = "26.2"
     publish.max_version = "26.2"
 
 ["26.3"]
     meta.supported_minecraft_versions = ">=26.3-alpha.10 <26.3"
+    meta.minecraft_version_range = "[26.3-rc-2,26.4)"
     dependencies.fabric_api = "0.160.4"
     # TODO remove this redundant property after full release assuming this isn't required
     dependencies.neoform_timestamp = "1"
-    #dependencies.neo_version = "26.2.0.64"
-    #dependencies.min_neo_version = "26.2.0.64"
+    dependencies.neo_version = "26.3.0-alpha.0+rc-2.20260913.135326"
+    dependencies.min_neo_version = "26.3.0-alpha.0"
+    # TODO: Comment this out when moved to
+    dependencies.neoforge_snapshot_pr=3403
     publish.version_title = "26.3"
     publish.min_version = "26.3"
     publish.max_version = "latest"
