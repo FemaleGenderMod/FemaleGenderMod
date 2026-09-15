@@ -26,6 +26,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(MinecraftServicesSessionService.class)
 public interface SessionServiceAccessor {
     @Accessor
-    //~ if >=26.3-rc-3 'String getBaseUrl' -> 'com.mojang.authlib.services.MinecraftServicesDiscoveryService getDiscoveryService'
+    //~ if >=26.3 'String getBaseUrl' -> 'com.mojang.authlib.services.MinecraftServicesDiscoveryService getDiscoveryService'
     com.mojang.authlib.services.MinecraftServicesDiscoveryService getDiscoveryService();
 }

@@ -32,6 +32,7 @@ issue_tracker = "https://github.com/FemaleGenderMod/FemaleGenderMod/issues"
 # override it for the specific project version
 dependencies.neoform_timestamp = "1"
 dependencies.fabric_loader_version = "0.19.5"
+#dependencies.neoforge_snapshot_pr=3403
 # Note that mod menu may be several versions out of date; this is fine, as we only care about using this
 # for its API, which shouldn't realistically need to be updated often (if ever).
 dependencies.modmenu = "18.0.0-alpha.6"
@@ -63,15 +64,11 @@ publish.modrinth = "bcOsQHnC"
     publish.max_version = "26.2"
 
 ["26.3"]
-    meta.supported_minecraft_versions = ">=26.3-alpha.10 <26.3"
-    meta.minecraft_version_range = "[26.3-rc-3,26.4)"
+    meta.supported_minecraft_versions = ">=26.3-alpha.10 <26.4"
+    meta.minecraft_version_range = "[26.3,26.4)"
     dependencies.fabric_api = "0.160.5"
-    # TODO remove this redundant property after full release assuming this isn't required
-    dependencies.neoform_timestamp = "1"
-    dependencies.neo_version = "26.3.0-alpha.0+rc-3.20260914.212429"
-    dependencies.min_neo_version = "26.3.0-alpha.0"
-    # TODO: Comment this out when moved to
-    dependencies.neoforge_snapshot_pr=3403
+    dependencies.neo_version = "26.3.0.0-beta"
+    dependencies.min_neo_version = "26.3.0.0-beta"
     publish.version_title = "26.3"
     publish.min_version = "26.3"
     publish.max_version = "latest"

@@ -249,7 +249,7 @@ public class GenderLayer<STATE extends HumanoidRenderState, MODEL extends Humano
         //Note: While the living entity renderer uses the light coords, we mirror Deadmau5EarsLayer and use the passed in light coords
         // (which the renderer passes the state's light coords in, but we might as well be consistent with how vanilla does extra body parts as a layer)
         var model = side.forSide(lBreast, rBreast);
-        //~ if >=26.3-rc-3 'outlineColor, null' -> 'outlineColor' {
+        //~ if >=26.3 'outlineColor, null' -> 'outlineColor' {
         nodeCollector.submitModel(new BreastModel(model), state, poseStack, type, lightCoords, overlayCoords, baseColor, null, state.outlineColor);
 
         if (genderState.hasJacketLayer) {
