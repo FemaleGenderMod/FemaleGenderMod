@@ -2,6 +2,7 @@ import com.wildfire.ATtoCTConverter
 import com.wildfire.OptimizePng
 import com.wildfire.ValidateJson
 import dev.kikugie.stonecutter.build.config.ReplacementContainer
+import dev.kikugie.stonecutter.data.tree.ProjectNode
 
 plugins {
     id("dev.kikugie.stonecutter")
@@ -74,10 +75,19 @@ tasks.register<ATtoCTConverter>("convertATtoCT") {
     ctPath = layout.projectDirectory.file("fabric/src/main/resources/${stonecutter.properties["mod_id"] as String}.classtweaker")
 }
 
+val loaderOnly: ProjectNode.() -> Boolean = {
+    branch.id == "fabric" || branch.id == "neoforge"
+}
+
 tasks.register("publishMods") {
     description = "Publish mod to both platforms, for both loaders, and all versions"
     group = "publishing"
-    dependsOn(stonecutter.tasks.named("publishMods") { branch.id == "fabric" || branch.id == "neoforge" })
+    dependsOn(stonecutter.tasks.named("publishMods", loaderOnly))
+}
+
+stonecutter tasks {
+    order("publishModrinth", filter = loaderOnly)
+    order("publishCurseforge", filter = loaderOnly)
 }
 
 stonecutter parameters {

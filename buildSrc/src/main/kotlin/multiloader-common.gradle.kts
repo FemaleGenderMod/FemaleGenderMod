@@ -43,7 +43,7 @@ base {
     archivesName.set(modName.replace(' ', '-'))
 }
 
-version = "${loader}-${modVersion}+mc${stonecutterBuild.current.project}"
+version = "${modVersion}+mc${stonecutterBuild.current.project}-${loader}"
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(javaVersion))
