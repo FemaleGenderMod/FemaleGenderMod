@@ -29,7 +29,8 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 public record ServerboundSyncHelloPacket(int version) implements SyncHelloPacket {
 
     public static final Type<ServerboundSyncHelloPacket> TYPE = WildfireGender.serverBoundPacket("hello");
-    public static final StreamCodec<ByteBuf, ServerboundSyncHelloPacket> STREAM_CODEC = ByteBufCodecs.VAR_INT.map(ServerboundSyncHelloPacket::new, SyncHelloPacket::version);
+    public static final StreamCodec<ByteBuf, ServerboundSyncHelloPacket> STREAM_CODEC = ByteBufCodecs.VAR_INT
+        .map(ServerboundSyncHelloPacket::new, ServerboundSyncHelloPacket::version);
 
     public ServerboundSyncHelloPacket() {
         this(VERSION);

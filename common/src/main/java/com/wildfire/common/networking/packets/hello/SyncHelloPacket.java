@@ -21,7 +21,6 @@ package com.wildfire.common.networking.packets.hello;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 public sealed interface SyncHelloPacket extends CustomPacketPayload permits ClientboundSyncHelloPacket, ServerboundSyncHelloPacket {
-
     /// Denotes the current sync protocol version
     ///
     /// This version handshake is initiated by the connecting client, with the server only then responding with its own protocol version.
@@ -29,12 +28,9 @@ public sealed interface SyncHelloPacket extends CustomPacketPayload permits Clie
     /// If the server doesn't respond or responds with a different value, then the server is assumed to not support syncing over the current protocol, and will not send
     /// or receive any sync packets, and vice versa.
     ///
-    /// | Protocol Version     | Changes                    |
-    /// | ---------------------|--------------------------- |
-    /// | `1` (`5.0.0-Beta.2`) | Initial versioned protocol |
-    /// | `2` (TBD)            | Hello packet is now sent during config phase and is now required, sync packets are now identified as `{client,server}bound/sync`, sync
-    /// packet contents are now different |
+    /// | Protocol Version     | Changes                                                                                 |
+    /// | ---------------------|---------------------------------------------------------------------------------------- |
+    /// | `1` (`5.0.0-Beta.2`) | Initial versioned protocol, sent during play phase                                      |
+    /// | `2` (`5.0.0-Beta.5`) | Hello packet is now sent in config phase and play phase sync packets have been reworked |
     int VERSION = 2;
-
-    int version();
 }
