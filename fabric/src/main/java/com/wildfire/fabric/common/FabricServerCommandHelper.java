@@ -31,7 +31,7 @@ import net.minecraft.server.level.ServerPlayer;
 
 public class FabricServerCommandHelper implements ServerCommandHelper<CommandSourceStack> {
     @Override
-    public LiteralArgumentBuilder<CommandSourceStack> literalArgumentBuilder(String key) {
+    public LiteralArgumentBuilder<CommandSourceStack> literal(String key) {
         return Commands.literal(key);
     }
 

@@ -31,7 +31,7 @@ import net.minecraft.world.level.Level;
 
 public class FabricClientCommandHelper implements ClientCommandHelper<FabricClientCommandSource> {
     @Override
-    public LiteralArgumentBuilder<FabricClientCommandSource> literalArgumentBuilder(final String key) {
+    public LiteralArgumentBuilder<FabricClientCommandSource> literal(final String key) {
         return ClientCommands.literal(key);
     }
 

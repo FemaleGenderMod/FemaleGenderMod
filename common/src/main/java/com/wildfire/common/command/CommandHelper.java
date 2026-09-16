@@ -27,7 +27,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 
 public interface CommandHelper<SOURCE extends SharedSuggestionProvider> {
-    LiteralArgumentBuilder<SOURCE> literalArgumentBuilder(String key);
+    LiteralArgumentBuilder<SOURCE> literal(String key);
     <T> RequiredArgumentBuilder<SOURCE, T> argument(String key, ArgumentType<T> type);
 
     Player getPlayer(SOURCE source) throws CommandSyntaxException;

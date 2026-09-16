@@ -60,7 +60,6 @@ public abstract class AbstractWildfireCommand<T extends CommandHelper<S>, S exte
 
     protected void sendHelp(
         CommandContext<S> ctx,
-        ClientCommandHelper<S> helper,
         WildfireLang header,
         WildfireLang... usageToDescription
     ) {

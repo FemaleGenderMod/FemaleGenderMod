@@ -28,7 +28,7 @@ import net.minecraft.network.chat.Component;
 
 public abstract class AbstractNeoCommandHelper implements CommandHelper<CommandSourceStack> {
     @Override
-    public LiteralArgumentBuilder<CommandSourceStack> literalArgumentBuilder(final String key) {
+    public LiteralArgumentBuilder<CommandSourceStack> literal(final String key) {
         return Commands.literal(key);
     }
 

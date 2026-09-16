@@ -194,10 +194,9 @@ public enum WildfireLang {
     COMMAND_CACHE("command.debug.cache"),
     COMMAND_FIRST_TIME("command.debug.firsttime"),
     COMMAND_SYNC_VERBOSITY("command.debug.syncverbosity"),
-    SINGLE_PLAYER_COMMAND("command.single_player"),
-    COMMAND_ARMOR_STAND("command.single_player.armor_stand"),
-    COMMAND_ARMOR_STAND_NO_COMPONENT("command.single_player.armor_stand.error.no_component"),
-    COMMAND_TRIM("command.single_player.trim"),
+    COMMAND_ARMOR_STAND("command.server.debug.armor_stand"),
+    COMMAND_ARMOR_STAND_NO_COMPONENT("command.server.debug.armor_stand.error.no_component"),
+    COMMAND_TRIM("command.server.debug.trim"),
 
     COMMAND_LOOKING_AT("command.looking_at"),
     COMMAND_LOOKING_AT_NONE("command.looking_at.none"),

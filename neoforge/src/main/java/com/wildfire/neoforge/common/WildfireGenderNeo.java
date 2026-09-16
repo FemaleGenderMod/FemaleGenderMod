@@ -20,11 +20,13 @@ package com.wildfire.neoforge.common;
 
 import com.wildfire.api.WildfireAPI;
 import com.wildfire.common.WildfireEventHandler;
+import com.wildfire.common.command.WildfireServerCommand;
 import com.wildfire.neoforge.common.networking.NeoSync;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent;
 
@@ -36,8 +38,12 @@ public class WildfireGenderNeo {
         NeoForge.EVENT_BUS.addListener(PlayerLoggedOutEvent.class, event -> WildfireEventHandler.playerDisconnected(event.getEntity()));
         NeoForge.EVENT_BUS.addListener(PlayerEvent.StartTracking.class, event -> {
             if (event.getEntity() instanceof ServerPlayer sendTo) {
-                WildfireEventHandler.onBeginTracking(event.getTarget(), sendTo);;
+                WildfireEventHandler.onBeginTracking(event.getTarget(), sendTo);
             }
+        });
+        NeoForge.EVENT_BUS.addListener(RegisterCommandsEvent.class, event -> {
+            var command = new WildfireServerCommand<>(new NeoServerCommandHelper());
+            command.register(event.getDispatcher());
         });
     }
 }

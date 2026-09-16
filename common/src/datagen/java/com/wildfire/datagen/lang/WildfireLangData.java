@@ -306,7 +306,6 @@ public class WildfireLangData {
         addCommand(builder, WildfireLang.COMMAND_FIRST_TIME, "firsttime", "Display the first time setup screen");
         addCommand(builder, WildfireLang.COMMAND_SYNC_VERBOSITY, "syncverbosity [level]", "Change how verbose the sync log is");
 
-        add(builder, WildfireLang.SINGLE_PLAYER_COMMAND, "Singleplayer Commands:");
         addCommand(builder, WildfireLang.COMMAND_ARMOR_STAND, "armorstand", "Spawns an armor stand with armor copying your breast settings pre-equipped");
         add(builder, WildfireLang.COMMAND_ARMOR_STAND_NO_COMPONENT, "Returned breast data component was null; do you have Hide in Armor on?");
         addCommand(builder, WildfireLang.COMMAND_TRIM, "trim [glint]", "Equips a chestplate with a trim pre-applied onto yourself");

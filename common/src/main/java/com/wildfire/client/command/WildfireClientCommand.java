@@ -33,36 +33,21 @@ import com.wildfire.client.gui.screen.WildfireFirstTimeSetupScreen;
 import com.wildfire.common.WildfireLang;
 import com.wildfire.common.command.AbstractWildfireCommand;
 import com.wildfire.common.config.enums.SyncVerbosity;
-import com.wildfire.common.entities.BreastDataComponent;
 import com.wildfire.common.entities.EntityConfig;
 import com.wildfire.common.entities.EntityConfigHolder;
 import com.wildfire.common.entities.players.PlayerConfigHolder;
 import com.wildfire.common.entities.players.SyncStatus;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.TextColor;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.decoration.ArmorStand;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.equipment.trim.ArmorTrim;
-import net.minecraft.world.item.equipment.trim.TrimMaterials;
-import net.minecraft.world.item.equipment.trim.TrimPatterns;
 import net.minecraft.world.level.Level;
 
 /// @apiNote Only use this on the client side
@@ -72,54 +57,38 @@ public final class WildfireClientCommand<S extends SharedSuggestionProvider> ext
     }
 
     public void register(final CommandDispatcher<S> dispatcher) {
-        var debug = helper.literalArgumentBuilder("debug")
+        var debug = helper.literal("debug")
             .executes(ctx -> {
-                sendHelp(ctx, helper, WildfireLang.DEBUG_COMMAND,
+                sendHelp(ctx, WildfireLang.DEBUG_COMMAND,
                     WildfireLang.COMMAND_INVALIDATE_CACHE,
                     WildfireLang.COMMAND_TARGET,
                     WildfireLang.COMMAND_CACHE,
                     WildfireLang.COMMAND_FIRST_TIME,
                     WildfireLang.COMMAND_SYNC_VERBOSITY
                 );
-                helper.sendSystemMessage(ctx.getSource(), CommonComponents.EMPTY);
-                sendHelp(ctx, helper, WildfireLang.SINGLE_PLAYER_COMMAND,
-                    WildfireLang.COMMAND_TRIM,
-                    WildfireLang.COMMAND_ARMOR_STAND
-                );
                 return Command.SINGLE_SUCCESS;
             })
-            .then(helper.literalArgumentBuilder("invalidatecache")
+            .then(helper.literal("invalidatecache")
                 .executes(this::invalidateCache))
-            .then(helper.literalArgumentBuilder("target")
+            .then(helper.literal("target")
                 .executes(this::getEntityLookingAt))
-            .then(helper.literalArgumentBuilder("firsttime")
+            .then(helper.literal("firsttime")
                 .executes(this::openFirstTime))
-            .then(helper.literalArgumentBuilder("cache")
+            .then(helper.literal("cache")
                 .then(helper.argument("allPlayers", BoolArgumentType.bool())
                     .executes(this::getUsers)
                     .then(helper.argument("showArmorStands", BoolArgumentType.bool())
                         .executes(this::getUsers)))
                 .executes(this::getUsers))
-            .then(helper.literalArgumentBuilder("syncverbosity")
+            .then(helper.literal("syncverbosity")
                 .then(helper.argument("level", new SyncVerbosity.SyncVerbosityArgumentType())
                     .executes(this::setLogLevel)));
 
-        // TODO split these out to a separate /fgmserver debug command
-        if (Minecraft.getInstance().isLocalServer()) {
-            debug.then(helper.literalArgumentBuilder("trim")
-                    .then(helper.argument("glint", BoolArgumentType.bool())
-                        .executes(this::equipTrimmedChestplate))
-                    .executes(this::equipTrimmedChestplate))
-                .then(helper.literalArgumentBuilder("armorstand").executes(this::spawnArmorStand));
-            debug.then(helper.literalArgumentBuilder("spcache")
-                .executes(this::getSingleplayerUsers));
-        }
-
-        var root = dispatcher.register(helper.literalArgumentBuilder("femalegender")
+        var root = dispatcher.register(helper.literal("femalegender")
             .executes(this::openConfig)
             .then(debug));
 
-        dispatcher.register(helper.literalArgumentBuilder("fgm")
+        dispatcher.register(helper.literal("fgm")
             .executes(this::openConfig)
             .redirect(root));
     }
@@ -242,56 +211,6 @@ public final class WildfireClientCommand<S extends SharedSuggestionProvider> ext
         WildfireClientAPI.armorStands().invalidateAll();
 
         send(ctx, WildfireLang.COMMAND_INVALIDATE_CACHE_SUCCESS.translate());
-        return Command.SINGLE_SUCCESS;
-    }
-
-    /// Takes a client-sided [CommandContext] and returns the [ServerPlayer] for the invoking player when in singleplayer, or throws an error.
-    private ServerPlayer getIntegratedServerPlayer(CommandContext<S> ctx) {
-        var integratedServer = Objects.requireNonNull(helper.getMinecraft(ctx.getSource()).getSingleplayerServer());
-        var playerManager = Objects.requireNonNull(integratedServer.getPlayerList());
-        return Objects.requireNonNull(playerManager.getPlayer(helper.getPlayer(ctx.getSource()).getUUID()));
-    }
-
-    private int equipTrimmedChestplate(CommandContext<S> ctx) {
-        Boolean glint = getOrDefault(ctx, "glint", null, Boolean.class);
-        var player = getIntegratedServerPlayer(ctx);
-        if (!player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) {
-            return 0;
-        }
-        var item = new ItemStack(Items.IRON_CHESTPLATE);
-        var material = player.registryAccess().lookupOrThrow(Registries.TRIM_MATERIAL).getOrThrow(TrimMaterials.AMETHYST);
-        var pattern = player.registryAccess().lookupOrThrow(Registries.TRIM_PATTERN).getOrThrow(TrimPatterns.COAST);
-        item.set(DataComponents.TRIM, new ArmorTrim(material, pattern));
-        if (glint != null) {
-            item.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, glint);
-        }
-        player.setItemSlot(EquipmentSlot.CHEST, item);
-        return Command.SINGLE_SUCCESS;
-    }
-
-    private int spawnArmorStand(CommandContext<S> ctx) {
-        var player = getIntegratedServerPlayer(ctx);
-        if (!player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) {
-            return 0;
-        }
-        var world = player.level();
-
-        var item = new ItemStack(Items.IRON_CHESTPLATE);
-        var config = WildfireServerAPI.players().getOrCreate(player);
-        var component = BreastDataComponent.fromPlayer(player, config);
-        if (component == null) {
-            helper.sendFailure(ctx.getSource(), WildfireLang.COMMAND_ARMOR_STAND_NO_COMPONENT.translateColored(TextColor.RED));
-            return 0;
-        }
-        component.write(item);
-
-        var stand = new ArmorStand(world, player.getBlockX(), player.getBlockY(), player.getBlockZ());
-        stand.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
-        stand.setItemSlot(EquipmentSlot.CHEST, item);
-        stand.setItemSlot(EquipmentSlot.LEGS, new ItemStack(Items.IRON_LEGGINGS));
-        stand.setItemSlot(EquipmentSlot.FEET, new ItemStack(Items.IRON_BOOTS));
-        world.addFreshEntity(stand);
-
         return Command.SINGLE_SUCCESS;
     }
 }
