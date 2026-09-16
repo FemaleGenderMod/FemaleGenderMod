@@ -16,58 +16,52 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.neoforge.client;
+package com.wildfire.fabric.client;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.wildfire.client.command.ClientCommandHelper;
-import java.util.Objects;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 
-public class NeoCommandHelper implements ClientCommandHelper<CommandSourceStack> {
-
+public class FabricClientCommandHelper implements ClientCommandHelper<FabricClientCommandSource> {
     @Override
-    public LiteralArgumentBuilder<CommandSourceStack> literalArgumentBuilder(final String key) {
-        return Commands.literal(key);
+    public LiteralArgumentBuilder<FabricClientCommandSource> literalArgumentBuilder(final String key) {
+        return ClientCommands.literal(key);
     }
 
     @Override
-    public <T> RequiredArgumentBuilder<CommandSourceStack, T> argument(final String key, final ArgumentType<T> type) {
-        return Commands.argument(key, type);
+    public <T> RequiredArgumentBuilder<FabricClientCommandSource, T> argument(final String key, final ArgumentType<T> type) {
+        return ClientCommands.argument(key, type);
     }
 
     @Override
-    public void sendSystemMessage(final CommandSourceStack source, final Component message) {
-        source.sendSystemMessage(message);
+    public void sendSystemMessage(final FabricClientCommandSource source, final Component message) {
+        source.sendFeedback(message);
     }
 
     @Override
-    public void sendFailure(final CommandSourceStack source, final Component message) {
-        source.sendFailure(message);
+    public void sendFailure(final FabricClientCommandSource source, final Component message) {
+        source.sendError(message);
     }
 
     @Override
-    public Level getLevel(final CommandSourceStack source) {
-        return source.getUnsidedLevel();
+    public Level getLevel(final FabricClientCommandSource source) {
+        return source.getLevel();
     }
 
     @Override
-    public LocalPlayer getPlayer(final CommandSourceStack source) {
-        if (source.getEntity() instanceof LocalPlayer player) {
-            //Note: This should almost always be true
-            return player;
-        }
-        return Objects.requireNonNull(getMinecraft(source).player, "No player!?");
+    public LocalPlayer getPlayer(final FabricClientCommandSource source) {
+        return source.getPlayer();
     }
 
     @Override
-    public Minecraft getMinecraft(final CommandSourceStack source) {
-        return Minecraft.getInstance();
+    public Minecraft getMinecraft(final FabricClientCommandSource source) {
+        return source.getClient();
     }
 }

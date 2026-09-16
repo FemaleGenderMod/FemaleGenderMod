@@ -16,16 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.client.command;
+package com.wildfire.common.command;
 
-import com.wildfire.common.command.CommandHelper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.world.level.Level;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 
-public interface ClientCommandHelper<SOURCE extends SharedSuggestionProvider> extends CommandHelper<SOURCE> {
-    Level getLevel(SOURCE source);
-    LocalPlayer getPlayer(SOURCE source);
-    Minecraft getMinecraft(SOURCE source);
+public interface ServerCommandHelper<SOURCE extends SharedSuggestionProvider> extends CommandHelper<SOURCE> {
+    MinecraftServer getServer(SOURCE source);
+    ServerPlayer getPlayer(SOURCE source) throws CommandSyntaxException;
 }

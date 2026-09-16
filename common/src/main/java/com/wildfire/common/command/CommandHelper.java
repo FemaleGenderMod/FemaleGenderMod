@@ -16,16 +16,22 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.client.command;
+package com.wildfire.common.command;
 
-import com.wildfire.common.command.CommandHelper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
+import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.world.level.Level;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
 
-public interface ClientCommandHelper<SOURCE extends SharedSuggestionProvider> extends CommandHelper<SOURCE> {
-    Level getLevel(SOURCE source);
-    LocalPlayer getPlayer(SOURCE source);
-    Minecraft getMinecraft(SOURCE source);
+public interface CommandHelper<SOURCE extends SharedSuggestionProvider> {
+    LiteralArgumentBuilder<SOURCE> literalArgumentBuilder(String key);
+    <T> RequiredArgumentBuilder<SOURCE, T> argument(String key, ArgumentType<T> type);
+
+    Player getPlayer(SOURCE source) throws CommandSyntaxException;
+
+    void sendSystemMessage(SOURCE source, Component message);
+    void sendFailure(SOURCE source, Component message);
 }

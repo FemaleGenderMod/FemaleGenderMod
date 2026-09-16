@@ -16,16 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.client.command;
+@NullMarked
+package com.wildfire.common.command;
 
-import com.wildfire.common.command.CommandHelper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.world.level.Level;
-
-public interface ClientCommandHelper<SOURCE extends SharedSuggestionProvider> extends CommandHelper<SOURCE> {
-    Level getLevel(SOURCE source);
-    LocalPlayer getPlayer(SOURCE source);
-    Minecraft getMinecraft(SOURCE source);
-}
+import org.jspecify.annotations.NullMarked;

@@ -22,7 +22,7 @@ package com.wildfire.fabric.client;
 import com.wildfire.client.WildfireClientEventHandler;
 import com.wildfire.client.WildfireGenderClient;
 import com.wildfire.client.WildfireKeyBindings;
-import com.wildfire.client.command.WildfireCommand;
+import com.wildfire.client.command.WildfireClientCommand;
 import com.wildfire.client.gui.SyncedPlayerList;
 import com.wildfire.common.LoaderAgnostics;
 import com.wildfire.common.WildfireGender;
@@ -68,7 +68,7 @@ public class WildfireGenderClientFabric implements ClientModInitializer {
         if (LoaderAgnostics.INSTANCE.isDevelopmentEnv()) {
             DebugScreenEntries.register(PhysicsDebugHudEntry.ID, new PhysicsDebugHudEntry());
         }
-        ClientCommandRegistrationCallback.EVENT.register((dispatcher, _) -> WildfireCommand.register(dispatcher, new FabricCommandHelper()));
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, _) -> WildfireClientCommand.register(dispatcher, new FabricClientCommandHelper()));
     }
 
     private void registerKeybindings() {

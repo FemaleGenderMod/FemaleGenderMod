@@ -66,7 +66,7 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.UnknownNullability;
 
 /// @apiNote Only use this on the client side
-public class WildfireCommand {
+public class WildfireClientCommand {
 
     private static final Component COMMAND_PREFIX = WildfireLang.GENERIC_BRACKETS.translateColored(TextColor.GRAY, WildfireLang.GENERIC_CONCAT.translate(
         WildfireLang.MISC_F.translateColored(TextColor.LIGHT_PURPLE),

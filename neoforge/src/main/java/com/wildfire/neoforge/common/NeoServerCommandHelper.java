@@ -16,16 +16,22 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.client.command;
+package com.wildfire.neoforge.common;
 
-import com.wildfire.common.command.CommandHelper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.world.level.Level;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.wildfire.common.command.ServerCommandHelper;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 
-public interface ClientCommandHelper<SOURCE extends SharedSuggestionProvider> extends CommandHelper<SOURCE> {
-    Level getLevel(SOURCE source);
-    LocalPlayer getPlayer(SOURCE source);
-    Minecraft getMinecraft(SOURCE source);
+public class NeoServerCommandHelper extends AbstractNeoCommandHelper implements ServerCommandHelper<CommandSourceStack> {
+    @Override
+    public MinecraftServer getServer(final CommandSourceStack source) {
+        return source.getServer();
+    }
+
+    @Override
+    public ServerPlayer getPlayer(final CommandSourceStack source) throws CommandSyntaxException {
+        return source.getPlayerOrException();
+    }
 }

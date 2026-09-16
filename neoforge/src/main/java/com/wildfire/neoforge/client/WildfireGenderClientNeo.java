@@ -25,7 +25,7 @@ import com.wildfire.client.ClientHelper;
 import com.wildfire.client.WildfireClientEventHandler;
 import com.wildfire.client.WildfireGenderClient;
 import com.wildfire.client.WildfireKeyBindings;
-import com.wildfire.client.command.WildfireCommand;
+import com.wildfire.client.command.WildfireClientCommand;
 import com.wildfire.client.config.ClientConfig;
 import com.wildfire.client.gui.SyncedPlayerList;
 import com.wildfire.client.render.GenderRenderState;
@@ -175,7 +175,7 @@ public class WildfireGenderClientNeo {
     }
 
     private void registerClientCommands(RegisterClientCommandsEvent event) {
-        WildfireCommand.register(event.getDispatcher(), new NeoCommandHelper());
+        WildfireClientCommand.register(event.getDispatcher(), new NeoClientCommandHelper());
     }
 
     private void registerKeybindings(RegisterKeyMappingsEvent event) {
