@@ -33,6 +33,7 @@ import com.wildfire.client.render.debug.PhysicsDebugHudEntry;
 import com.wildfire.client.resources.GenderArmorResourceManager;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
@@ -68,7 +69,10 @@ public class WildfireGenderClientFabric implements ClientModInitializer {
         if (LoaderAgnostics.INSTANCE.isDevelopmentEnv()) {
             DebugScreenEntries.register(PhysicsDebugHudEntry.ID, new PhysicsDebugHudEntry());
         }
-        ClientCommandRegistrationCallback.EVENT.register((dispatcher, _) -> WildfireClientCommand.register(dispatcher, new FabricClientCommandHelper()));
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, _) -> {
+            var command = new WildfireClientCommand<>(new FabricClientCommandHelper());
+            command.register(dispatcher);
+        });
     }
 
     private void registerKeybindings() {

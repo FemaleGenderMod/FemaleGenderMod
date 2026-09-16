@@ -20,12 +20,20 @@ package com.wildfire.common;
 
 import com.mojang.logging.LogUtils;
 import com.wildfire.api.WildfireAPI;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 
 public class WildfireGender {
     public static final Logger LOGGER = LogUtils.getLogger();
+
+    public static final Component COMMAND_PREFIX = WildfireLang.GENERIC_BRACKETS
+        .translateColored(TextColor.GRAY, WildfireLang.GENERIC_CONCAT.translate(
+            WildfireLang.MISC_F.translateColored(TextColor.LIGHT_PURPLE),
+            WildfireLang.MISC_GM.translateColored(TextColor.WHITE)
+        ));
 
     public static Identifier id(String path) {
         return Identifier.fromNamespaceAndPath(WildfireAPI.MODID, path);

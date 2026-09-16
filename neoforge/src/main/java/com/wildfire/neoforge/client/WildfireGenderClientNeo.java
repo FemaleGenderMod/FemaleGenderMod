@@ -175,7 +175,8 @@ public class WildfireGenderClientNeo {
     }
 
     private void registerClientCommands(RegisterClientCommandsEvent event) {
-        WildfireClientCommand.register(event.getDispatcher(), new NeoClientCommandHelper());
+        var command = new WildfireClientCommand<>(new NeoClientCommandHelper());
+        command.register(event.getDispatcher());
     }
 
     private void registerKeybindings(RegisterKeyMappingsEvent event) {
