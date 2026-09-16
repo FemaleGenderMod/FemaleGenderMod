@@ -58,8 +58,8 @@ public class FabricClientHelper implements ClientHelper {
         var accessor = (SessionServiceAccessor) service;
         String baseUrl;
         //? if <=26.2 {
-        //baseUrl = accessor.getBaseUrl();
-        //? } else {
+        /*baseUrl = accessor.getBaseUrl();
+        *///? } else {
         baseUrl = accessor.getDiscoveryService().getUrl(com.mojang.authlib.services.response.discovery.Service.SESSION, "join");
         if (baseUrl.endsWith("join")) {
             baseUrl = baseUrl.substring(0, baseUrl.length() - 4);

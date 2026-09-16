@@ -119,13 +119,13 @@ public final class WildfireClientCommand<S extends SharedSuggestionProvider> ext
         Entity target = minecraft.crosshairPickEntity;
 
         if (target != null) {
-            send(ctx, WildfireLang.COMMAND_LOOKING_AT.translate(target.getName()));
-            send(ctx, WildfireLang.COMMAND_LOOKING_AT_UUID.translate(target.getStringUUID()));
-            send(ctx, WildfireLang.COMMAND_LOOKING_AT_TYPE.translate(target.getType()));
-            send(ctx, WildfireLang.COMMAND_LOOKING_AT_CLASS.translate(target.getClass()));
-            send(ctx, WildfireLang.COMMAND_LOOKING_AT_RENDERER.translate(minecraft.getEntityRenderDispatcher().getRenderer(target)));
+            send(ctx, WildfireLang.DEBUG_COMMAND_LOOKING_AT.translate(target.getName()));
+            send(ctx, WildfireLang.DEBUG_COMMAND_LOOKING_AT_UUID.translate(target.getStringUUID()));
+            send(ctx, WildfireLang.DEBUG_COMMAND_LOOKING_AT_TYPE.translate(target.getType()));
+            send(ctx, WildfireLang.DEBUG_COMMAND_LOOKING_AT_CLASS.translate(target.getClass()));
+            send(ctx, WildfireLang.DEBUG_COMMAND_LOOKING_AT_RENDERER.translate(minecraft.getEntityRenderDispatcher().getRenderer(target)));
         } else {
-            send(ctx, WildfireLang.COMMAND_LOOKING_AT_NONE.translate());
+            send(ctx, WildfireLang.DEBUG_COMMAND_LOOKING_AT_NONE.translate());
         }
         return Command.SINGLE_SUCCESS;
     }
@@ -136,7 +136,7 @@ public final class WildfireClientCommand<S extends SharedSuggestionProvider> ext
         if (ClientConfig.config().cloudSync().logVerbosity().update(level)) {//Should always be true
             ClientConfig.INSTANCE.save();
 
-            send(ctx, WildfireLang.COMMAND_LOG_LEVEL.translate(level));
+            send(ctx, WildfireLang.DEBUG_COMMAND_LOG_LEVEL.translate(level));
             return Command.SINGLE_SUCCESS;
         }
         return 0;
@@ -149,7 +149,7 @@ public final class WildfireClientCommand<S extends SharedSuggestionProvider> ext
         Level level = helper.getLevel(ctx.getSource());
         List<Component> players = dump(WildfireClientAPI.players(), level, !allPlayers);
         if (!players.isEmpty()) {
-            send(ctx, WildfireLang.COMMAND_SYNCED_PLAYERS.translate(players.size()));
+            send(ctx, WildfireLang.DEBUG_COMMAND_SYNCED_PLAYERS.translate(players.size()));
             for (Component line : players) {
                 send(ctx, line);
             }
@@ -158,7 +158,7 @@ public final class WildfireClientCommand<S extends SharedSuggestionProvider> ext
         if (showArmorStands) {
             List<Component> entities = dump(WildfireClientAPI.armorStands(), level, false);
             if (!entities.isEmpty()) {
-                send(ctx, WildfireLang.COMMAND_ENTITIES.translate(entities.size()));
+                send(ctx, WildfireLang.DEBUG_COMMAND_ENTITIES.translate(entities.size()));
                 for (Component line : entities) {
                     send(ctx, line);
                 }
@@ -172,7 +172,7 @@ public final class WildfireClientCommand<S extends SharedSuggestionProvider> ext
         Level level = helper.getLevel(ctx.getSource());
         List<Component> players = dump(WildfireServerAPI.players(), level, true);
         if (!players.isEmpty()) {
-            send(ctx, WildfireLang.COMMAND_SYNCED_PLAYERS.translate(players.size()));
+            send(ctx, WildfireLang.DEBUG_COMMAND_SYNCED_PLAYERS.translate(players.size()));
             for (Component line : players) {
                 send(ctx, line);
             }

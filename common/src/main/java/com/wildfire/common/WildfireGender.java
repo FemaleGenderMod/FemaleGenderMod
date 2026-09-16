@@ -35,6 +35,10 @@ public class WildfireGender {
             WildfireLang.MISC_GM.translateColored(TextColor.WHITE)
         ));
 
+    public static String getModVersion() {
+        return LoaderAgnostics.INSTANCE.getModVersion(WildfireAPI.MODID);
+    }
+
     public static Identifier id(String path) {
         return Identifier.fromNamespaceAndPath(WildfireAPI.MODID, path);
     }

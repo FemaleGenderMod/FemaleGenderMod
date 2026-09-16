@@ -24,11 +24,13 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.wildfire.api.server.WildfireServerAPI;
+import com.wildfire.common.WildfireGender;
 import com.wildfire.common.WildfireLang;
 import com.wildfire.common.entities.BreastDataComponent;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.permissions.Permission;
 import net.minecraft.server.permissions.Permissions;
@@ -51,6 +53,7 @@ public final class WildfireServerCommand<S extends SharedSuggestionProvider> ext
     public void register(CommandDispatcher<S> dispatcher) {
         dispatcher.register(helper.literal("fgmserver")
             .requires(source -> source.permissions().hasPermission(SERVER_COMMAND))
+            .executes(this::syncStats)
             //<editor-fold desc="Debug">
             .then(helper.literal("debug")
                 .requires(source -> source.permissions().hasPermission(DEBUG_COMMANDS))
@@ -69,6 +72,28 @@ public final class WildfireServerCommand<S extends SharedSuggestionProvider> ext
                     .executes(this::spawnArmorStand)))
             //</editor-fold>
         );
+    }
+
+    private int syncStats(CommandContext<S> ctx) {
+        helper.sendSystemMessage(ctx.getSource(), WildfireLang.GENERIC_COMMA.translateColored(TextColor.GRAY,
+            WildfireLang.MOD_NAME.translateColored(TextColor.LIGHT_PURPLE),
+            WildfireLang.COMMAND_VERSION_INFO.translateColored(TextColor.GRAY,
+                Component.literal(WildfireGender.getModVersion()).withColor(TextColor.GREEN))));
+
+        final var server = helper.getServer(ctx.getSource());
+        final int online = server.getPlayerList().getPlayerCount();
+        int synced = 0;
+        for(var player : server.getPlayerList().getPlayers()) {
+            if(WildfireServerAPI.players().get(player) != null) {
+                synced++;
+            }
+        }
+
+        helper.sendSystemMessage(ctx.getSource(), WildfireLang.COMMAND_SYNCED_PLAYER_COUNT.translateColored(TextColor.GRAY,
+            Component.literal(String.valueOf(synced)).withColor(TextColor.GREEN),
+            Component.literal(String.valueOf(online)).withColor(TextColor.GREEN)));
+
+        return Command.SINGLE_SUCCESS;
     }
 
     private int equipTrimmedChestplate(CommandContext<S> ctx) throws CommandSyntaxException {

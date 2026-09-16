@@ -54,7 +54,7 @@ public enum WildfireLang {
     CREDITS_GENERAL("credits.general"),
     CREDITS_TRANSLATORS("credits.translators"),
 
-    PLAYER_LIST_TITLE("player_list.title"),
+    MOD_NAME("player_list.title"), // TODO change this path?
     PLAYER_LIST_SETTINGS("player_list.settings_button"),
     PLAYER_LIST_SYNC_STATUS("player_list.sync_status"),
     PLAYER_LIST_LOADING("player_list.state.loading"),
@@ -170,6 +170,7 @@ public enum WildfireLang {
     GENERIC_BRACKETS("generic.brackets"),
     GENERIC_ELLIPSIS_SUFFIX("generic.ellipsis.suffix"),
     GENERIC_CONCAT("generic.concat"),
+    GENERIC_COMMA("generic.comma"),
     GENERIC_SPACE("generic.space"),
     GENERIC_DASH_EXPLANATION("generic.dash_explanation"),
 
@@ -198,16 +199,18 @@ public enum WildfireLang {
     COMMAND_ARMOR_STAND_NO_COMPONENT("command.server.debug.armor_stand.error.no_component"),
     COMMAND_TRIM("command.server.debug.trim"),
 
-    COMMAND_LOOKING_AT("command.looking_at"),
-    COMMAND_LOOKING_AT_NONE("command.looking_at.none"),
-    COMMAND_LOOKING_AT_UUID("command.looking_at.uuid"),
-    COMMAND_LOOKING_AT_TYPE("command.looking_at.type"),
-    COMMAND_LOOKING_AT_CLASS("command.looking_at.class"),
-    COMMAND_LOOKING_AT_RENDERER("command.looking_at.renderer"),
-    COMMAND_LOG_LEVEL("command.log_level"),
-    COMMAND_SYNCED_PLAYERS("command.synced_players"),
-    COMMAND_ENTITIES("command.entities"),
+    COMMAND_VERSION_INFO("command.server.version_info"),
+    COMMAND_SYNCED_PLAYER_COUNT("command.server.synced_players"),
 
+    DEBUG_COMMAND_LOOKING_AT("command.looking_at"),
+    DEBUG_COMMAND_LOOKING_AT_NONE("command.looking_at.none"),
+    DEBUG_COMMAND_LOOKING_AT_UUID("command.looking_at.uuid"),
+    DEBUG_COMMAND_LOOKING_AT_TYPE("command.looking_at.type"),
+    DEBUG_COMMAND_LOOKING_AT_CLASS("command.looking_at.class"),
+    DEBUG_COMMAND_LOOKING_AT_RENDERER("command.looking_at.renderer"),
+    DEBUG_COMMAND_LOG_LEVEL("command.log_level"),
+    DEBUG_COMMAND_SYNCED_PLAYERS("command.synced_players"),
+    DEBUG_COMMAND_ENTITIES("command.entities"),
 
     ;
 

@@ -150,7 +150,7 @@ public class WildfireLangData {
         add(builder, WildfireLang.CREDITS_GENERAL, "General");
         add(builder, WildfireLang.CREDITS_TRANSLATORS, "Translators");
 
-        add(builder, WildfireLang.PLAYER_LIST_TITLE, "Female Gender Mod");
+        add(builder, WildfireLang.MOD_NAME, "Female Gender Mod");
         add(builder, WildfireLang.PLAYER_LIST_SETTINGS, "Settings");
         add(builder, WildfireLang.PLAYER_LIST_SYNC_STATUS, "Sync Status");
         add(builder, WildfireLang.PLAYER_LIST_LOADING, "Loading Data...");
@@ -281,6 +281,7 @@ public class WildfireLangData {
         add(builder, WildfireLang.GENERIC_BRACKETS, "[%1$s]");
         add(builder, WildfireLang.GENERIC_ELLIPSIS_SUFFIX, "%1$s...");
         add(builder, WildfireLang.GENERIC_CONCAT, "%1$s%2$s");
+        add(builder, WildfireLang.GENERIC_COMMA, "%1$s, %2$s");
         add(builder, WildfireLang.GENERIC_SPACE, "%1$s %2$s");
         add(builder, WildfireLang.GENERIC_DASH_EXPLANATION, "%1$s - %2$s");
 
@@ -310,16 +311,19 @@ public class WildfireLangData {
         add(builder, WildfireLang.COMMAND_ARMOR_STAND_NO_COMPONENT, "Returned breast data component was null; do you have Hide in Armor on?");
         addCommand(builder, WildfireLang.COMMAND_TRIM, "trim [glint]", "Equips a chestplate with a trim pre-applied onto yourself");
 
-        add(builder, WildfireLang.COMMAND_LOOKING_AT, "Looking at: %1$s");
-        add(builder, WildfireLang.COMMAND_LOOKING_AT_NONE, "No entity in sight.");
-        add(builder, WildfireLang.COMMAND_LOOKING_AT_UUID, "UUID: %1$s");
-        add(builder, WildfireLang.COMMAND_LOOKING_AT_TYPE, "Type: %1$s");
-        add(builder, WildfireLang.COMMAND_LOOKING_AT_CLASS, "Class: %1$s");
-        add(builder, WildfireLang.COMMAND_LOOKING_AT_RENDERER, "Renderer: %1$s");
+        add(builder, WildfireLang.COMMAND_VERSION_INFO, "running version %1$s");
+        add(builder, WildfireLang.COMMAND_SYNCED_PLAYER_COUNT, "%1$s/%2$s synced players online");
 
-        add(builder, WildfireLang.COMMAND_LOG_LEVEL, "Log level set to: %1$s");
-        add(builder, WildfireLang.COMMAND_SYNCED_PLAYERS, "Synced Players (%1$s):");
-        add(builder, WildfireLang.COMMAND_ENTITIES, "Entities (Class: %1$s):");
+        add(builder, WildfireLang.DEBUG_COMMAND_LOOKING_AT, "Looking at: %1$s");
+        add(builder, WildfireLang.DEBUG_COMMAND_LOOKING_AT_NONE, "No entity in sight.");
+        add(builder, WildfireLang.DEBUG_COMMAND_LOOKING_AT_UUID, "UUID: %1$s");
+        add(builder, WildfireLang.DEBUG_COMMAND_LOOKING_AT_TYPE, "Type: %1$s");
+        add(builder, WildfireLang.DEBUG_COMMAND_LOOKING_AT_CLASS, "Class: %1$s");
+        add(builder, WildfireLang.DEBUG_COMMAND_LOOKING_AT_RENDERER, "Renderer: %1$s");
+
+        add(builder, WildfireLang.DEBUG_COMMAND_LOG_LEVEL, "Log level set to: %1$s");
+        add(builder, WildfireLang.DEBUG_COMMAND_SYNCED_PLAYERS, "Synced Players (%1$s):");
+        add(builder, WildfireLang.DEBUG_COMMAND_ENTITIES, "Entities (Class: %1$s):");
 
         generateConfigTranslations(builder);
         addDescription(builder, "Adds extra customization options to the player model by adding breasts for a more feminine appearance");

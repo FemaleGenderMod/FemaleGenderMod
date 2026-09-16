@@ -187,7 +187,7 @@ public final class WildfireClientEventHandler {
     public static void clientJoin(Minecraft client) {
         if (client.player != null && ClientConfig.config().showToast().get()) {
             var button = WildfireKeyBindings.INSTANCE.configKey().getTranslatedKeyMessage();
-            client.gui.toastManager().addToast(new WildfireToast(Minecraft.getInstance().font, WildfireLang.PLAYER_LIST_TITLE.translate(), WildfireLang.TOAST_GET_STARTED.translate(button)));
+            client.gui.toastManager().addToast(new WildfireToast(Minecraft.getInstance().font, WildfireLang.MOD_NAME.translate(), WildfireLang.TOAST_GET_STARTED.translate(button)));
         }
     }
 
