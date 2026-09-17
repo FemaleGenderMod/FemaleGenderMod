@@ -26,7 +26,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.wildfire.api.EntityCache;
 import com.wildfire.api.client.WildfireClientAPI;
 import com.wildfire.api.impl.EntityCacheImpl;
-import com.wildfire.api.server.WildfireServerAPI;
 import com.wildfire.client.config.ClientConfig;
 import com.wildfire.client.gui.screen.WardrobeBrowserScreen;
 import com.wildfire.client.gui.screen.WildfireFirstTimeSetupScreen;
@@ -162,19 +161,6 @@ public final class WildfireClientCommand<S extends SharedSuggestionProvider> ext
                 for (Component line : entities) {
                     send(ctx, line);
                 }
-            }
-        }
-
-        return Command.SINGLE_SUCCESS;
-    }
-
-    private int getSingleplayerUsers(CommandContext<S> ctx) {
-        Level level = helper.getLevel(ctx.getSource());
-        List<Component> players = dump(WildfireServerAPI.players(), level, true);
-        if (!players.isEmpty()) {
-            send(ctx, WildfireLang.DEBUG_COMMAND_SYNCED_PLAYERS.translate(players.size()));
-            for (Component line : players) {
-                send(ctx, line);
             }
         }
 
