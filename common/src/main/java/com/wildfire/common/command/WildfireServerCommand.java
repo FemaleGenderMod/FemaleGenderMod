@@ -43,20 +43,17 @@ import net.minecraft.world.item.equipment.trim.TrimMaterials;
 import net.minecraft.world.item.equipment.trim.TrimPatterns;
 
 public final class WildfireServerCommand<S extends SharedSuggestionProvider> extends AbstractWildfireCommand<ServerCommandHelper<S>, S> {
-    public static final Permission SERVER_COMMAND = Permissions.COMMANDS_GAMEMASTER;
-    public static final Permission DEBUG_COMMANDS = Permissions.COMMANDS_GAMEMASTER;
-
     public WildfireServerCommand(final ServerCommandHelper<S> helper) {
         super(helper);
     }
 
     public void register(CommandDispatcher<S> dispatcher) {
         dispatcher.register(helper.literal("fgmserver")
-            .requires(source -> source.permissions().hasPermission(SERVER_COMMAND))
+            .requires(helper::hasCommandPermission)
             .executes(this::syncStats)
             //<editor-fold desc="Debug">
             .then(helper.literal("debug")
-                .requires(source -> source.permissions().hasPermission(DEBUG_COMMANDS))
+                .requires(helper::hasDebugCommandPermission)
                 .executes(ctx -> {
                     sendHelp(ctx, WildfireLang.DEBUG_COMMAND,
                         WildfireLang.COMMAND_TRIM,
