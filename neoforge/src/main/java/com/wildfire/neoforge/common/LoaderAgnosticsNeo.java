@@ -18,18 +18,33 @@
 
 package com.wildfire.neoforge.common;
 
+import com.mojang.serialization.MapCodec;
+import com.wildfire.api.WildfireAPI;
 import com.wildfire.common.LoaderAgnostics;
+import com.wildfire.common.entities.avatars.AvatarConfig;
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.function.Supplier;
+import net.minecraft.world.entity.decoration.Mannequin;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.i18n.MavenVersionTranslator;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
+import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.Nullable;
 
 public class LoaderAgnosticsNeo implements LoaderAgnostics {
+    @ApiStatus.Internal
+    public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, WildfireAPI.MODID);
+
+    private static final Supplier<AttachmentType<AvatarConfig>> AVATAR_ATTACHMENT = ATTACHMENT_TYPES.register("gender_data", () ->
+        AttachmentType.builder(AvatarConfig::createDefault).serialize(MapCodec.assumeMapUnsafe(AvatarConfig.CODEC)).build());
 
     @Override
     public String name() {
@@ -65,5 +80,15 @@ public class LoaderAgnosticsNeo implements LoaderAgnostics {
     @Override
     public boolean onClient() {
         return FMLEnvironment.getDist().isClient();
+    }
+
+    @Override
+    public @Nullable AvatarConfig readFromMannequin(final Mannequin mannequin) {
+        return mannequin.getData(AVATAR_ATTACHMENT);
+    }
+
+    @Override
+    public void writeToMannequin(final Mannequin mannequin, final AvatarConfig config) {
+        mannequin.setData(AVATAR_ATTACHMENT, config);
     }
 }

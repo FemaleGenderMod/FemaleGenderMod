@@ -23,8 +23,13 @@ import java.util.Arrays;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
+import org.jspecify.annotations.Nullable;
 
 public enum WildfireLang {
+    MOD_NAME("player_list.title") {{ // TODO change this path?
+        setFallbackString("Female Gender Mod");
+    }},
+
     ARMOR_TOOLTIP("armor.tooltip"),
 
     UV_EDITOR("uv_editor"),
@@ -54,7 +59,6 @@ public enum WildfireLang {
     CREDITS_GENERAL("credits.general"),
     CREDITS_TRANSLATORS("credits.translators"),
 
-    MOD_NAME("player_list.title"), // TODO change this path?
     PLAYER_LIST_SETTINGS("player_list.settings_button"),
     PLAYER_LIST_SYNC_STATUS("player_list.sync_status"),
     PLAYER_LIST_LOADING("player_list.state.loading"),
@@ -199,9 +203,6 @@ public enum WildfireLang {
     COMMAND_ARMOR_STAND_NO_COMPONENT("command.server.debug.armor_stand.error.no_component"),
     COMMAND_TRIM("command.server.debug.trim"),
 
-    COMMAND_VERSION_INFO("command.server.version_info"),
-    COMMAND_SYNCED_PLAYER_COUNT("command.server.synced_players"),
-
     DEBUG_COMMAND_LOOKING_AT("command.looking_at"),
     DEBUG_COMMAND_LOOKING_AT_NONE("command.looking_at.none"),
     DEBUG_COMMAND_LOOKING_AT_UUID("command.looking_at.uuid"),
@@ -212,9 +213,32 @@ public enum WildfireLang {
     DEBUG_COMMAND_SYNCED_PLAYERS("command.synced_players"),
     DEBUG_COMMAND_ENTITIES("command.entities"),
 
+    COMMAND_VERSION_INFO("command.server.version_info") {{
+        setFallbackString("running version %1$s");
+    }},
+    COMMAND_SYNCED_PLAYER_COUNT("command.server.synced_players") {{
+        setFallbackString("%1$s/%2$s synced players online");
+    }},
+    COMMAND_ENTITY_MUST_BE_MANNEQUIN("command.server.mannequin.not_mannequin") {{
+        setFallbackString("Provided entity must be a mannequin");
+    }},
+    COMMAND_ENTITY_MUST_BE_AVATAR_LIKE("command.server.mannequin.not_avatar_like") {{
+        setFallbackString("Provided entity must be a player or mannequin");
+    }},
+    COMMAND_SERVER_NO_MOD_ON_CLIENT("command.server.no_mod") {{
+        setFallbackString("You must have a compatible version of Female Gender Mod installed on your client to use this command");
+    }},
+    COMMAND_MANNEQUIN_COPIED_DATA("command.server.mannequin.copied") {{
+        setFallbackString("%1$s is now using breast data from %2$s");
+    }},
+    COMMAND_SERVER_INVALID_GENDER("command.server.invalid_gender") {{
+        setFallbackString("%1$s is not a valid gender");
+    }},
+
     ;
 
     private final String translationKey;
+    private @Nullable String fallbackString = null;
 
     WildfireLang(String type, String path) {
         this.translationKey = WildfireGender.id(path).toLanguageKey(type);
@@ -223,6 +247,14 @@ public enum WildfireLang {
     WildfireLang(String path) {
         //TODO: Evaluate changing lang key paths to actually using mojang's toLanguageKey helpers
         this.translationKey = WildfireAPI.MODID + "." + path;
+    }
+
+    protected void setFallbackString(@Nullable String string) {
+        this.fallbackString = string;
+    }
+
+    public @Nullable String getFallbackString() {
+        return fallbackString;
     }
 
     public String getTranslationKey() {
@@ -249,12 +281,21 @@ public enum WildfireLang {
     *///?}
 
     public MutableComponent translate() {
-        return Component.translatable(translationKey);
+        if(fallbackString == null) {
+            return Component.translatable(translationKey);
+        } else {
+            return Component.translatableWithFallback(translationKey, fallbackString);
+        }
     }
 
     public MutableComponent translate(Object... args) {
         //Simple filter to auto translate any sub lang entries
-        return Component.translatable(translationKey, Arrays.stream(args).map(arg -> arg instanceof WildfireLang lang ? lang.translate() : arg).toArray());
+        Object[] arguments = Arrays.stream(args).map(arg -> arg instanceof WildfireLang lang ? lang.translate() : arg).toArray();
+        if(fallbackString == null) {
+            return Component.translatable(translationKey, arguments);
+        } else {
+            return Component.translatableWithFallback(translationKey, fallbackString, arguments);
+        }
     }
 
     public MutableComponent line(int line) {

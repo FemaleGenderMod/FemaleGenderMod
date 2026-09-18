@@ -42,7 +42,7 @@ public final class WildfireServerAPI {
     public static EntityConfigHolder<? extends EntityConfig> getConfig(LivingEntity entity) {
         return switch(entity) {
             case Player player -> players().getOrCreate(player);
-            case Mannequin mannequin -> avatars().getOrCreate(mannequin);
+            case Mannequin mannequin -> mannequins().getOrCreate(mannequin);
             default -> null;
         };
     }
@@ -53,7 +53,7 @@ public final class WildfireServerAPI {
     }
 
     /// Returns the [EntityCache] supplying [MannequinConfigHolder] instances for server-side mannequin entities
-    public static EntityCache<MannequinConfigHolder, Mannequin> avatars() {
+    public static EntityCache<MannequinConfigHolder, Mannequin> mannequins() {
         return AVATARS;
     }
 }

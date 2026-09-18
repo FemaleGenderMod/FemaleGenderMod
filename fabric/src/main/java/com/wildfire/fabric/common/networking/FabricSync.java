@@ -24,6 +24,9 @@ import com.wildfire.common.networking.WildfireSync;
 import com.wildfire.common.networking.packets.hello.AbstractHelloConfigurationTask;
 import com.wildfire.common.networking.packets.hello.ClientboundSyncHelloPacket;
 import com.wildfire.common.networking.packets.hello.ServerboundSyncHelloPacket;
+import com.wildfire.common.networking.packets.mannequins.ClientboundEditMannequinPacket;
+import com.wildfire.common.networking.packets.mannequins.ClientboundMannequinDataPacket;
+import com.wildfire.common.networking.packets.mannequins.ServerboundMannequinDataPacket;
 import com.wildfire.common.networking.packets.sync.ClientboundSyncPacket;
 import com.wildfire.common.networking.packets.sync.ServerboundSyncPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents;
@@ -35,6 +38,9 @@ import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import org.jetbrains.annotations.ApiStatus;
 
 public class FabricSync {
@@ -44,10 +50,8 @@ public class FabricSync {
         //Note: Fabric requires registering packets on both client and server side, even if it is a single directional packet
 
         //Configuration
-        PayloadTypeRegistry.serverboundConfiguration().register(ClientboundSyncHelloPacket.TYPE, ClientboundSyncHelloPacket.STREAM_CODEC);
-        PayloadTypeRegistry.clientboundConfiguration().register(ClientboundSyncHelloPacket.TYPE, ClientboundSyncHelloPacket.STREAM_CODEC);
-        PayloadTypeRegistry.serverboundConfiguration().register(ServerboundSyncHelloPacket.TYPE, ServerboundSyncHelloPacket.STREAM_CODEC);
-        PayloadTypeRegistry.clientboundConfiguration().register(ServerboundSyncHelloPacket.TYPE, ServerboundSyncHelloPacket.STREAM_CODEC);
+        registerConfig(ClientboundSyncHelloPacket.TYPE, ClientboundSyncHelloPacket.STREAM_CODEC);
+        registerConfig(ServerboundSyncHelloPacket.TYPE, ServerboundSyncHelloPacket.STREAM_CODEC);
 
         WildfireGender.LOGGER.debug(WildfireSync.MARKER, "Registering server-side config phase receiver");
         ServerConfigurationNetworking.registerGlobalReceiver(ServerboundSyncHelloPacket.TYPE, (packet, context) -> {
@@ -64,14 +68,16 @@ public class FabricSync {
         });
 
         //Play
-        PayloadTypeRegistry.serverboundPlay().register(ClientboundSyncPacket.TYPE, ClientboundSyncPacket.STREAM_CODEC);
-        PayloadTypeRegistry.clientboundPlay().register(ClientboundSyncPacket.TYPE, ClientboundSyncPacket.STREAM_CODEC);
-        PayloadTypeRegistry.serverboundPlay().register(ServerboundSyncPacket.TYPE, ServerboundSyncPacket.STREAM_CODEC);
-        PayloadTypeRegistry.clientboundPlay().register(ServerboundSyncPacket.TYPE, ServerboundSyncPacket.STREAM_CODEC);
+        registerPlay(ClientboundSyncPacket.TYPE, ClientboundSyncPacket.STREAM_CODEC);
+        registerPlay(ServerboundSyncPacket.TYPE, ServerboundSyncPacket.STREAM_CODEC);
+        registerPlay(ClientboundMannequinDataPacket.TYPE, ClientboundMannequinDataPacket.STREAM_CODEC);
+        registerPlay(ServerboundMannequinDataPacket.TYPE, ServerboundMannequinDataPacket.STREAM_CODEC);
+        registerPlay(ClientboundEditMannequinPacket.TYPE, ClientboundEditMannequinPacket.STREAM_CODEC);
 
         ServerPlayConnectionEvents.INIT.register((listener, _) -> {
             if (WildfireNetworking.INSTANCE.versionMatches(listener.connection)) {
                 ServerPlayNetworking.registerReceiver(listener, ServerboundSyncPacket.TYPE, (packet, context) -> packet.handle(context.player()));
+                ServerPlayNetworking.registerReceiver(listener, ServerboundMannequinDataPacket.TYPE, (packet, context) -> packet.handle(context.player()));
             } else {
                 WildfireGender.LOGGER.debug(WildfireSync.MARKER, "{} is not using a supported sync protocol version (or doesn't have the mod), not registering receivers",
                     listener.getPlayer()
@@ -95,9 +101,21 @@ public class FabricSync {
         ClientPlayConnectionEvents.INIT.register((listener, _) -> {
             if (WildfireNetworking.INSTANCE.versionMatches(listener.getConnection())) {
                 ClientPlayNetworking.registerReceiver(ClientboundSyncPacket.TYPE, (packet, context) -> packet.handle(context.player().getUUID()));
+                ClientPlayNetworking.registerReceiver(ClientboundMannequinDataPacket.TYPE, (packet, _) -> packet.handle());
+                ClientPlayNetworking.registerReceiver(ClientboundEditMannequinPacket.TYPE, (packet, _) -> packet.handle());
             } else {
                 WildfireGender.LOGGER.debug(WildfireSync.MARKER, "Server is not using a supported sync protocol version (or doesn't have the mod), not registering receivers");
             }
         });
+    }
+
+    private static <T extends CustomPacketPayload> void registerPlay(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> codec) {
+        PayloadTypeRegistry.serverboundPlay().register(type, codec);
+        PayloadTypeRegistry.clientboundPlay().register(type, codec);
+    }
+
+    private static <T extends CustomPacketPayload> void registerConfig(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> codec) {
+        PayloadTypeRegistry.serverboundConfiguration().register(type, codec);
+        PayloadTypeRegistry.clientboundConfiguration().register(type, codec);
     }
 }

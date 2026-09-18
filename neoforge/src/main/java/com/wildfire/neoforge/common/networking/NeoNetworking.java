@@ -21,13 +21,12 @@ package com.wildfire.neoforge.common.networking;
 import com.wildfire.common.WildfireGender;
 import com.wildfire.common.networking.WildfireNetworking;
 import com.wildfire.common.networking.packets.hello.SyncHelloPacket;
-import com.wildfire.common.networking.packets.sync.ClientboundSyncPacket;
-import com.wildfire.common.networking.packets.sync.ServerboundSyncPacket;
 import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
 import java.util.Collection;
 import java.util.Collections;
 import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -40,14 +39,14 @@ public class NeoNetworking implements WildfireNetworking {
     public static final AttributeKey<Integer> VERSION = AttributeKey.newInstance(WildfireGender.id("version").toString());
 
     @Override
-    public boolean canSyncToPlayer(ServerPlayer player) {
-        return player.connection.hasChannel(ClientboundSyncPacket.TYPE) && versionMatches(player.connection.connection);
+    public boolean canSendToPlayer(ServerPlayer player, CustomPacketPayload.Type<?> type) {
+        return player.connection.hasChannel(type) && versionMatches(player.connection.connection);
     }
 
     @Override
-    public boolean canSyncToServer(Connection connection) {
+    public boolean canSendToServer(Connection connection, CustomPacketPayload.Type<?> type) {
         if (connection.getPacketListener() instanceof ICommonPacketListener listener) {
-            return listener.hasChannel(ServerboundSyncPacket.TYPE) && versionMatches(connection);
+            return listener.hasChannel(type) && versionMatches(connection);
         }
         return false;
     }
@@ -59,12 +58,12 @@ public class NeoNetworking implements WildfireNetworking {
     }
 
     @Override
-    public void syncToPlayer(final ServerPlayer sendTo, final ClientboundSyncPacket packet) {
+    public void sendToClient(final ServerPlayer sendTo, final CustomPacketPayload packet) {
         PacketDistributor.sendToPlayer(sendTo, packet);
     }
 
     @Override
-    public void syncToServer(final ServerboundSyncPacket packet) {
+    public void sendToServer(final CustomPacketPayload packet) {
         ClientPacketDistributor.sendToServer(packet);
     }
 

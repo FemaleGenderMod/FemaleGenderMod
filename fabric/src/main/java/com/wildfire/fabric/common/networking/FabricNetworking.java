@@ -21,14 +21,13 @@ package com.wildfire.fabric.common.networking;
 import com.wildfire.common.WildfireGender;
 import com.wildfire.common.networking.WildfireNetworking;
 import com.wildfire.common.networking.packets.hello.SyncHelloPacket;
-import com.wildfire.common.networking.packets.sync.ClientboundSyncPacket;
-import com.wildfire.common.networking.packets.sync.ServerboundSyncPacket;
 import java.util.Collection;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
 import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 
@@ -37,13 +36,13 @@ public class FabricNetworking implements WildfireNetworking {
     public static final PacketContext.Key<Integer> VERSION = PacketContext.key(WildfireGender.id("version"));
 
     @Override
-    public boolean canSyncToPlayer(ServerPlayer player) {
-        return ServerPlayNetworking.canSend(player, ClientboundSyncPacket.TYPE) && versionMatches(player.connection.connection);
+    public boolean canSendToPlayer(ServerPlayer player, CustomPacketPayload.Type<?> type) {
+        return ServerPlayNetworking.canSend(player, type) && versionMatches(player.connection.connection);
     }
 
     @Override
-    public boolean canSyncToServer(Connection connection) {
-        return ClientPlayNetworking.canSend(ServerboundSyncPacket.TYPE) && versionMatches(connection);
+    public boolean canSendToServer(Connection connection, CustomPacketPayload.Type<?> type) {
+        return ClientPlayNetworking.canSend(type) && versionMatches(connection);
     }
 
     @Override
@@ -53,12 +52,12 @@ public class FabricNetworking implements WildfireNetworking {
     }
 
     @Override
-    public void syncToPlayer(final ServerPlayer sendTo, final ClientboundSyncPacket packet) {
+    public void sendToClient(final ServerPlayer sendTo, final CustomPacketPayload packet) {
         ServerPlayNetworking.send(sendTo, packet);
     }
 
     @Override
-    public void syncToServer(final ServerboundSyncPacket packet) {
+    public void sendToServer(final CustomPacketPayload packet) {
         ClientPlayNetworking.send(packet);
     }
 

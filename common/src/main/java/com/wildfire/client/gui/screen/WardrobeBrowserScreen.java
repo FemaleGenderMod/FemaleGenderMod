@@ -18,6 +18,7 @@
 
 package com.wildfire.client.gui.screen;
 
+import com.wildfire.api.client.WildfireClientAPI;
 import com.wildfire.client.gui.SyncedPlayerList;
 import com.wildfire.common.WildfireGender;
 import com.wildfire.common.WildfireLang;
@@ -32,6 +33,9 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import com.wildfire.common.entities.avatars.AbstractAvatarConfigHolder;
+import com.wildfire.common.entities.avatars.MannequinConfigHolder;
+import com.wildfire.common.entities.players.PlayerConfigHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Tooltip;
@@ -65,22 +69,29 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 
     private static final boolean isBreastCancerAwarenessMonth = Month.from(ZonedDateTime.now()) == Month.OCTOBER;
 
+    private final AbstractAvatarConfigHolder holder;
     private final WidgetTooltipHolder contribTooltip = new WidgetTooltipHolder();
 
-    public WardrobeBrowserScreen(@Nullable Screen parent, UUID uuid) {
-        super(WildfireLang.WARDROBE_TITLE.translate(), parent, uuid);
+    public WardrobeBrowserScreen(@Nullable Screen parent, AbstractAvatarConfigHolder holder) {
+        super(WildfireLang.WARDROBE_TITLE.translate(), parent, holder);
+        this.holder = holder;
     }
 
     public static BaseWildfireScreen create(LocalPlayer player, @Nullable Screen parent) {
+        var config = WildfireClientAPI.players().getOrCreate(player);
         if (ClientConfig.config().firstTimeLoad().get() && CloudSync.isAvailable()) {
-            return new WildfireFirstTimeSetupScreen(parent, player.getUUID());
+            return new WildfireFirstTimeSetupScreen(parent, config);
         } else {
-            return new WardrobeBrowserScreen(parent, player.getUUID());
+            return new WardrobeBrowserScreen(parent, config);
         }
     }
 
     public static void open(Minecraft client, LocalPlayer player) {
         client.gui.setScreen(create(player, null));
+    }
+
+    public static void open(Minecraft client, MannequinConfigHolder config) {
+        client.gui.setScreen(new WardrobeBrowserScreen(null, config));
     }
 
     @Override
@@ -109,7 +120,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
                 .size(80, 15)
                 .onPress(_ -> {
                     if (plr.gender().update(Gender::next)) {
-                        plr.save();
+                        save();
                         rebuildWidgets();
                     }
                 }));
@@ -118,7 +129,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
                 .message(() -> WildfireLang.GENERIC_ELLIPSIS_SUFFIX.translate(WildfireLang.APPEARANCE_SETTINGS_TITLE))
                 .position(this.width / 2 - 36, this.height / 2 - 63)
                 .size(157, 20)
-                .onPress(_ -> client.gui.setScreen(new WildfireBreastCustomizationScreen(this, this.playerUUID)))
+                .onPress(_ -> client.gui.setScreen(new WildfireBreastCustomizationScreen(this, config)))
                 .active(plr.gender().get().canHaveBreasts()));
 
         addButton(builder -> {
@@ -128,13 +139,19 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
             builder.renderer((button, ctx, _, _, _) ->
                 ctx.blitSprite(RenderPipelines.GUI_TEXTURED, CLOUD_ICON, button.getX() + 2, button.getY() + 2, 20, 14)
             );
-            builder.onPress(_ -> client.gui.setScreen(new WildfireCloudSyncScreen(this, this.playerUUID)));
-            var cloudUnavailable = CloudSync.unavailableReason();
-            if(cloudUnavailable != null) {
-                builder.tooltip(Tooltip.create(cloudUnavailable.text()));
+            builder.onPress(_ ->
+                client.gui.setScreen(new WildfireCloudSyncScreen(this, (PlayerConfigHolder) config))
+            );
+            if(!(config instanceof PlayerConfigHolder)) {
                 builder.active(false);
             } else {
-                builder.tooltip(Tooltip.create(WildfireLang.CLOUD_TOOLTIP.translate()));
+                var cloudUnavailable = CloudSync.unavailableReason();
+                if(cloudUnavailable != null) {
+                    builder.tooltip(Tooltip.create(cloudUnavailable.text()));
+                    builder.active(false);
+                } else {
+                    builder.tooltip(Tooltip.create(WildfireLang.CLOUD_TOOLTIP.translate()));
+                }
             }
         });
 
@@ -142,7 +159,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
                 .message(() -> WildfireLang.GENERIC_ELLIPSIS_SUFFIX.translate(WildfireLang.CREDITS_TITLE))
                 .position(this.width / 2 + 2, this.height / 2 + 33)
                 .size(78, 15)
-                .onPress(_ -> client.gui.setScreen(new WildfireCreditsScreen(this, this.playerUUID))));
+                .onPress(_ -> client.gui.setScreen(new WildfireCreditsScreen(this, this.config))));
 
         /*this.addDrawableChild(new WildfireButton(this.width / 2 + 111, y - 63, 9, 9, Text.literal("X"),
             button -> close(), text -> GuiUtils.doneNarrationText()));*/

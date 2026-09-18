@@ -18,10 +18,44 @@
 
 package com.wildfire.common.entities.avatars;
 
+import com.google.common.base.Preconditions;
+import com.wildfire.common.LoaderAgnostics;
+import com.wildfire.common.networking.WildfireSync;
 import java.util.UUID;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.permissions.Permissions;
+import net.minecraft.world.entity.decoration.Mannequin;
+import org.jetbrains.annotations.ApiStatus;
 
 public class MannequinConfigHolder extends AbstractAvatarConfigHolder {
+
     public MannequinConfigHolder(final UUID uuid) {
         super(uuid, AvatarConfig.createDefault());
+    }
+
+    public boolean canEdit(ServerPlayer player) {
+        // TODO extend this to allow for some kind of proper permission API?
+        return player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER);
+    }
+
+    @ApiStatus.Internal
+    public void setConfig(AvatarConfig config) {
+        this.config = config;
+    }
+
+    /// @apiNote Only call on the logical server
+    @ApiStatus.Internal
+    public void sync(Mannequin mannequin) {
+        Preconditions.checkArgument(!mannequin.level().isClientSide(), "This method can only be run on a mannequin on the logical server");
+        LoaderAgnostics.INSTANCE.writeToMannequin(mannequin, config());
+        WildfireSync.sendToAllClients(mannequin, this);
+    }
+
+    /// @apiNote Only call on the logical server
+    @ApiStatus.Internal
+    public void setConfigAndSync(Mannequin mannequin, AvatarConfig config) {
+        Preconditions.checkArgument(!mannequin.level().isClientSide(), "This method can only be run on a mannequin on the logical server");
+        setConfig(config);
+        sync(mannequin);
     }
 }

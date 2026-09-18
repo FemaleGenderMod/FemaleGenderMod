@@ -18,11 +18,14 @@
 
 package com.wildfire.neoforge.common;
 
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.wildfire.common.command.ServerCommandHelper;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 
 public class NeoServerCommandHelper extends AbstractNeoCommandHelper implements ServerCommandHelper<CommandSourceStack> {
     @Override
@@ -33,5 +36,10 @@ public class NeoServerCommandHelper extends AbstractNeoCommandHelper implements 
     @Override
     public ServerPlayer getPlayer(final CommandSourceStack source) throws CommandSyntaxException {
         return source.getPlayerOrException();
+    }
+
+    @Override
+    public Entity resolveSingleEntityArgument(final CommandContext<CommandSourceStack> ctx, final String name) throws CommandSyntaxException {
+        return EntityArgument.getEntity(ctx, name);
     }
 }

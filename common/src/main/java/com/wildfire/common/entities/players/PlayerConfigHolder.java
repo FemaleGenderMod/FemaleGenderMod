@@ -21,7 +21,6 @@ package com.wildfire.common.entities.players;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
-import com.wildfire.client.ClientHelper;
 import com.wildfire.client.cloud.CloudSync;
 import com.wildfire.client.cloud.SyncLog;
 import com.wildfire.client.config.ClientConfig;
@@ -36,9 +35,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.Holder;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.ApiStatus;
 
 public class PlayerConfigHolder extends AbstractAvatarConfigHolder {
@@ -139,19 +135,6 @@ public class PlayerConfigHolder extends AbstractAvatarConfigHolder {
     public void updateFromPacket(final AvatarConfig config) {
         super.updateFromPacket(config);
         this.syncStatus = SyncStatus.SYNCED;
-    }
-
-    /// Play the relevant mod hurt sound when a player takes damage
-    ///
-    /// @apiNote Only call this on the client side as sounds are only registered on the client.
-    public void tryPlayHurtSound(Player player) {
-        if (sounds().hurt().get()) {
-            Holder<SoundEvent> hurtSound = ClientHelper.INSTANCE.hurtSound(gender().get());
-            if (hurtSound != null) {
-                float pitchVariation = (player.getRandom().nextFloat() - player.getRandom().nextFloat()) * 0.2F;
-                player.playSound(hurtSound.value(), 1f, pitchVariation + sounds().voicePitch().get());
-            }
-        }
     }
 
     @Override

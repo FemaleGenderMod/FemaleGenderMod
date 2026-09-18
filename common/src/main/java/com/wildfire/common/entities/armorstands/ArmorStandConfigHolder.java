@@ -21,14 +21,12 @@ package com.wildfire.common.entities.armorstands;
 import com.wildfire.api.Gender;
 import com.wildfire.common.entities.BreastDataComponent;
 import com.wildfire.common.entities.EntityConfigHolder;
+import java.util.Objects;
+import java.util.UUID;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import org.jspecify.annotations.Nullable;
-
-import java.util.Objects;
-import java.util.UUID;
 
 public class ArmorStandConfigHolder extends EntityConfigHolder<ArmorStandConfig> {
     protected boolean jacketLayer = true;

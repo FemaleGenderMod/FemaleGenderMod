@@ -19,10 +19,9 @@
 package com.wildfire.common.networking;
 
 import com.wildfire.common.WildfireHelper;
-import com.wildfire.common.networking.packets.sync.ClientboundSyncPacket;
-import com.wildfire.common.networking.packets.sync.ServerboundSyncPacket;
 import java.util.Collection;
 import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 
@@ -30,16 +29,16 @@ public interface WildfireNetworking {
 
     WildfireNetworking INSTANCE = WildfireHelper.getService(WildfireNetworking.class);
 
-    boolean canSyncToPlayer(ServerPlayer player);
+    boolean canSendToPlayer(ServerPlayer player, CustomPacketPayload.Type<?> type);
 
     /// @apiNote Only call on the client
-    boolean canSyncToServer(Connection connection);
+    boolean canSendToServer(Connection connection, CustomPacketPayload.Type<?> type);
 
     boolean versionMatches(Connection connection);
 
-    void syncToPlayer(ServerPlayer sendTo, ClientboundSyncPacket packet);
+    void sendToClient(ServerPlayer sendTo, CustomPacketPayload packet);
 
-    void syncToServer(ServerboundSyncPacket packet);
+    void sendToServer(CustomPacketPayload packet);
 
     Collection<ServerPlayer> playersTracking(Entity entity);
 }

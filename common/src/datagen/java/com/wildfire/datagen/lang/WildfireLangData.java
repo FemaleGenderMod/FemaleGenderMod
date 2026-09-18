@@ -29,6 +29,7 @@ import com.wildfire.common.config.GenderConfigTranslations;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import net.minecraft.data.CachedOutput;
@@ -95,6 +96,10 @@ public class WildfireLangData {
         add(builder, "neoforge.screen.mods.info.description." + modId, description);
     }
 
+    private void addFromFallback(BiConsumer<String, String> builder, WildfireLang lang) {
+        add(builder, lang, Objects.requireNonNull(lang.getFallbackString(), "Fallback string is null"));
+    }
+
     private void add(BiConsumer<String, String> builder, WildfireLang lang, String... translations) {
         String translationKey = lang.getTranslationKey();
         if (translations.length == 0) {
@@ -150,7 +155,7 @@ public class WildfireLangData {
         add(builder, WildfireLang.CREDITS_GENERAL, "General");
         add(builder, WildfireLang.CREDITS_TRANSLATORS, "Translators");
 
-        add(builder, WildfireLang.MOD_NAME, "Female Gender Mod");
+        addFromFallback(builder, WildfireLang.MOD_NAME);
         add(builder, WildfireLang.PLAYER_LIST_SETTINGS, "Settings");
         add(builder, WildfireLang.PLAYER_LIST_SYNC_STATUS, "Sync Status");
         add(builder, WildfireLang.PLAYER_LIST_LOADING, "Loading Data...");
@@ -311,8 +316,8 @@ public class WildfireLangData {
         add(builder, WildfireLang.COMMAND_ARMOR_STAND_NO_COMPONENT, "Returned breast data component was null; do you have Hide in Armor on?");
         addCommand(builder, WildfireLang.COMMAND_TRIM, "trim [glint]", "Equips a chestplate with a trim pre-applied onto yourself");
 
-        add(builder, WildfireLang.COMMAND_VERSION_INFO, "running version %1$s");
-        add(builder, WildfireLang.COMMAND_SYNCED_PLAYER_COUNT, "%1$s/%2$s synced players online");
+        addFromFallback(builder, WildfireLang.COMMAND_VERSION_INFO);
+        addFromFallback(builder, WildfireLang.COMMAND_SYNCED_PLAYER_COUNT);
 
         add(builder, WildfireLang.DEBUG_COMMAND_LOOKING_AT, "Looking at: %1$s");
         add(builder, WildfireLang.DEBUG_COMMAND_LOOKING_AT_NONE, "No entity in sight.");

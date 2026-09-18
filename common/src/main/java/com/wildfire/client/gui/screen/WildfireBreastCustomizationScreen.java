@@ -24,6 +24,8 @@ import com.wildfire.client.config.ClientConfig;
 import com.wildfire.common.WildfireLang;
 import com.wildfire.common.config.GenderConfigTranslations;
 import com.wildfire.common.config.value.ConfigValue;
+import com.wildfire.common.entities.avatars.AbstractAvatarConfigHolder;
+import com.wildfire.common.entities.players.PlayerConfigHolder;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -38,6 +40,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.CommonColors;
+import net.minecraft.world.entity.Avatar;
 import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.Objects;
@@ -61,8 +64,8 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
 
     private Tab currentTab = Tab.CUSTOMIZATION;
 
-    public WildfireBreastCustomizationScreen(Screen parent, UUID uuid) {
-        super(WildfireLang.APPEARANCE_SETTINGS_TITLE.translate(), parent, uuid);
+    public WildfireBreastCustomizationScreen(Screen parent, AbstractAvatarConfigHolder config) {
+        super(WildfireLang.APPEARANCE_SETTINGS_TITLE.translate(), parent, config);
     }
 
     @Override
@@ -168,7 +171,7 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
             .message(WildfireLang.UV_EDITOR::translate)
             .position(this.width / 2 - 36, tabOffsetY + 70)
             .size(FULL_WIDTH, 20)
-            .onPress(_ -> minecraft.gui.setScreen(new WildfireBreastUVEditorScreen(this, playerUUID))));
+            .onPress(_ -> minecraft.gui.setScreen(new WildfireBreastUVEditorScreen(this, this.config))));
     }
 
     private void initPhysicsTab(final int tabOffsetY) {
@@ -203,7 +206,7 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .size(FULL_WIDTH, 20)
                 .onPress(button -> {
                     if (plr.breasts().physics().enabled().update(ConfigValue.TOGGLE)) {
-                        plr.save();
+                        save();
                         button.updateMessage();
                         boolean breastPhysics = plr.breasts().physics().enabled().get();
                         ref.bounceSlider.active = breastPhysics;
@@ -219,7 +222,7 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .size(FULL_WIDTH, 20)
                 .onPress(button -> {
                     if (plr.breasts().physics().uniboob().update(ConfigValue.TOGGLE)) {
-                        plr.save();
+                        save();
                         button.updateMessage();
                     }
                 })
@@ -262,13 +265,14 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
             AbstractWidget pitchSlider;
         };
 
+        // TODO hurt sounds don't apply on mannequins
         addButton(builder -> builder
                 .message(() -> WildfireLang.CHAR_SETTINGS_HURT_SOUNDS.translate(plr.sounds().hurt().get() ? ENABLED : DISABLED))
                 .position(this.width / 2 - 36, tabOffsetY - 2)
                 .size(FULL_WIDTH, 20)
                 .onPress(button -> {
                     if (plr.sounds().hurt().update(ConfigValue.TOGGLE)) {
-                        plr.save();
+                        save();
                         ref.pitchSlider.active = plr.sounds().hurt().get();
                         button.updateMessage();
                     }
@@ -281,10 +285,10 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .size(HALF_WIDTH, 20)
                 .forConfig(() -> plr.sounds().voicePitch())
                 .save(_ -> {
-                    plr.save();
-                    var clientPlayer = Objects.requireNonNull(minecraft).player;
-                    if(clientPlayer != null) {
-                        plr.tryPlayHurtSound(clientPlayer);
+                    save();
+                    var player = getEntity();
+                    if(player != null && player instanceof Avatar avatar) {
+                        config.tryPlayHurtSound(avatar);
                     }
                 })
                 .step(0.01)
@@ -296,7 +300,7 @@ public class WildfireBreastCustomizationScreen extends BaseWildfireScreen {
                 .size(FULL_WIDTH, 20)
                 .onPress(button -> {
                     if (plr.showBreastsInArmor().update(ConfigValue.TOGGLE)) {
-                        plr.save();
+                        save();
                         button.updateMessage();
                     }
                 }));

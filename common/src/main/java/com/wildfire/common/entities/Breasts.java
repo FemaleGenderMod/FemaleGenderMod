@@ -135,8 +135,8 @@ public record Breasts(
 
         private static final ConfigKey<Boolean> BREAST_PHYSICS = ConfigKey.DEFAULT_TRUE;
         private static final ConfigKey<Boolean> BREASTS_UNIBOOB = ConfigKey.DEFAULT_TRUE;
-        private static final ConfigKey<Float> BOUNCE_MULTIPLIER = ConfigKey.create(0.333F, 0, 0.5F);
-        private static final ConfigKey<Float> FLOPPINESS = ConfigKey.create(0.75F, 0.25F, 1);
+        public static final ConfigKey<Float> BOUNCE_MULTIPLIER = ConfigKey.create(0.333F, 0, 0.5F);
+        public static final ConfigKey<Float> FLOPPINESS = ConfigKey.create(0.75F, 0.25F, 1);
 
         private static final Codec<Physics> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             BREAST_PHYSICS.codec().fieldOf("enabled").forGetter(physics -> physics.enabled.get()),

@@ -26,6 +26,8 @@ import com.wildfire.client.cloud.SyncLog;
 import com.wildfire.client.cloud.SyncingTooFrequentlyException;
 import com.wildfire.client.config.ClientConfig;
 import com.wildfire.common.config.value.ConfigValue;
+import com.wildfire.common.entities.avatars.AbstractAvatarConfigHolder;
+import com.wildfire.common.entities.players.PlayerConfigHolder;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
@@ -49,8 +51,8 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
     private static final Component ENABLED = WildfireLang.LABEL_ENABLED.translateColored(TextColor.GREEN);
     private static final Component DISABLED = WildfireLang.LABEL_DISABLED.translateColored(TextColor.RED);
 
-    protected WildfireCloudSyncScreen(Screen parent, UUID uuid) {
-        super(WildfireLang.CLOUD_SETTINGS.translate(), parent, uuid);
+    protected WildfireCloudSyncScreen(Screen parent, PlayerConfigHolder config) {
+        super(WildfireLang.CLOUD_SETTINGS.translate(), parent, config);
     }
 
     @Override
@@ -129,7 +131,8 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
         button.setMessage(WildfireLang.CLOUD_SYNCING.translate());
         CompletableFuture.runAsync(() -> {
             try {
-                CloudSync.sync(Objects.requireNonNull(getPlayer())).join();
+                var config = (PlayerConfigHolder) this.config;
+                CloudSync.sync(config).join();
                 button.setMessage(WildfireLang.CLOUD_SYNCING_SUCCESS.translate());
             } catch(Exception e) {
                 var actualException = e instanceof CompletionException ce ? ce.getCause() : e;
@@ -148,7 +151,8 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
         widget.active = false;
         CompletableFuture.runAsync(() -> {
             try {
-                CloudSync.deleteProfile(Objects.requireNonNull(getPlayer())).join();
+                var config = (PlayerConfigHolder) this.config;
+                CloudSync.deleteProfile(config).join();
                 widget.setMessage(WildfireLang.CLOUD_DELETED.translate());
             } catch(Exception e) {
                 WildfireGender.LOGGER.error("Failed to delete cloud sync profile", e);

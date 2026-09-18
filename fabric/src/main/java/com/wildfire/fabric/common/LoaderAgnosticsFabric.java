@@ -20,11 +20,19 @@ package com.wildfire.fabric.common;
 
 import com.wildfire.common.LoaderAgnostics;
 import java.nio.file.Path;
+import com.wildfire.common.WildfireGender;
+import com.wildfire.common.entities.avatars.AvatarConfig;
 import net.fabricmc.api.EnvType;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import net.minecraft.world.entity.decoration.Mannequin;
+import org.jspecify.annotations.Nullable;
 
 public class LoaderAgnosticsFabric implements LoaderAgnostics {
+    final AttachmentType<AvatarConfig> AVATAR_ATTACHMENT = AttachmentRegistry.create(WildfireGender.id("gender_data"),
+        builder -> builder.persistent(AvatarConfig.CODEC).copyOnDeath());
 
     @Override
     public String name() {
@@ -55,5 +63,15 @@ public class LoaderAgnosticsFabric implements LoaderAgnostics {
     @Override
     public boolean onClient() {
         return FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
+    }
+
+    @Override
+    public @Nullable AvatarConfig readFromMannequin(final Mannequin mannequin) {
+        return mannequin.getAttached(AVATAR_ATTACHMENT);
+    }
+
+    @Override
+    public void writeToMannequin(final Mannequin mannequin, final AvatarConfig config) {
+        mannequin.setAttached(AVATAR_ATTACHMENT, config);
     }
 }

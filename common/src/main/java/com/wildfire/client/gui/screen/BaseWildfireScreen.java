@@ -18,23 +18,26 @@
 
 package com.wildfire.client.gui.screen;
 
-import com.wildfire.api.client.WildfireClientAPI;
 import com.wildfire.client.gui.IFancyFontRenderer;
 import com.wildfire.client.gui.WildfireButton;
 import com.wildfire.client.gui.WildfireSlider;
-import com.wildfire.common.WildfireGender;
+import com.wildfire.common.entities.avatars.AbstractAvatarConfigHolder;
+import com.wildfire.common.entities.avatars.MannequinConfigHolder;
 import com.wildfire.common.entities.players.PlayerConfigHolder;
+import com.wildfire.common.networking.WildfireSync;
+import java.util.Objects;
+import java.util.function.Consumer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.network.chat.Component;
-
-import java.util.Objects;
-import java.util.UUID;
-import java.util.function.Consumer;
 import net.minecraft.util.Util;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 import org.jspecify.annotations.Nullable;
 
 /// @apiNote Only use this on the client side
@@ -42,15 +45,15 @@ public abstract class BaseWildfireScreen extends Screen implements IFancyFontRen
 
     private static final float ENTITY_SCALE = 0.0625F;
 
-    protected final UUID playerUUID;
+    protected final AbstractAvatarConfigHolder config;
     protected final @Nullable Screen parent;
 
     private long lastMSInitialized;
 
-    protected BaseWildfireScreen(Component title, @Nullable Screen parent, UUID uuid) {
+    protected BaseWildfireScreen(Component title, @Nullable Screen parent, AbstractAvatarConfigHolder holder) {
         super(title);
         this.parent = parent;
-        this.playerUUID = uuid;
+        this.config = holder;
     }
 
     protected WildfireButton addButton(Consumer<WildfireButton.Builder> builder) {
@@ -61,19 +64,44 @@ public abstract class BaseWildfireScreen extends Screen implements IFancyFontRen
 
     protected WildfireSlider addSlider(Consumer<WildfireSlider.Builder> builder) {
         var sliderBuilder = new WildfireSlider.Builder();
-        sliderBuilder.save(_ -> Objects.requireNonNull(getPlayer(), "getPlayer()").save());
+        sliderBuilder.save(_ -> save());
         builder.accept(sliderBuilder);
         return addRenderableWidget(sliderBuilder.build(lastMSInitialized));
     }
 
-    public @Nullable PlayerConfigHolder getPlayer() {
-        return WildfireClientAPI.players().get(this.playerUUID);
+    // TODO does this still serve a purpose?
+    public AbstractAvatarConfigHolder getPlayer() {
+        return config;
+    }
+
+    protected @Nullable LivingEntity getEntity() {
+        Level level = minecraft.level;
+        if(level == null) {
+            return null;
+        }
+
+        Entity entity = level.getEntity(config.uuid);
+        return entity instanceof LivingEntity living ? living : null;
+    }
+
+    protected void save() {
+        if(config instanceof PlayerConfigHolder playerConfig) {
+            LocalPlayer self = minecraft.player;
+            if(self == null || playerConfig.uuid != self.getUUID()) {
+                return;
+            }
+            playerConfig.save();
+        } else if(config instanceof MannequinConfigHolder mannequinConfig) {
+            var connection = Objects.requireNonNull(Minecraft.getInstance().getConnection(), "Connection is null while editing a mannequin?!");
+            WildfireSync.sendToServer(connection.getConnection(), mannequinConfig);
+        }
     }
 
     protected void renderPlayerInFrame(GuiGraphicsExtractor graphics, int xP, int yP, int mouseX, int mouseY) {
-        var player = minecraft.player;
-        if(player == null) return;
-        InventoryScreen.extractEntityInInventoryFollowsMouse(graphics, xP - 38, yP - 79, xP + 38, yP + 9, 70, getEntityScale(player, 0.4F), mouseX, mouseY, player);
+        LivingEntity entity = getEntity();
+        if(entity != null) {
+            InventoryScreen.extractEntityInInventoryFollowsMouse(graphics, xP - 38, yP - 79, xP + 38, yP + 9, 70, getEntityScale(entity, 0.4F), mouseX, mouseY, entity);
+        }
     }
 
     @Override

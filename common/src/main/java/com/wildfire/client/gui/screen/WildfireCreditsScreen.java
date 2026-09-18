@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import com.wildfire.common.entities.avatars.AbstractAvatarConfigHolder;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
@@ -74,8 +75,8 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
     private Category categoryTab = Category.GENERAL;
     private int creditsPage = 0;
 
-    public WildfireCreditsScreen(Screen parent, UUID uuid) {
-        super(WildfireLang.CREDITS_TITLE.translate(), parent, uuid);
+    public WildfireCreditsScreen(Screen parent, AbstractAvatarConfigHolder config) {
+        super(WildfireLang.CREDITS_TITLE.translate(), parent, config);
     }
 
     private int navigationY;

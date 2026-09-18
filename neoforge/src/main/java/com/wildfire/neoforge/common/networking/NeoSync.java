@@ -24,6 +24,9 @@ import com.wildfire.common.networking.WildfireSync;
 import com.wildfire.common.networking.packets.hello.AbstractHelloConfigurationTask;
 import com.wildfire.common.networking.packets.hello.ClientboundSyncHelloPacket;
 import com.wildfire.common.networking.packets.hello.ServerboundSyncHelloPacket;
+import com.wildfire.common.networking.packets.mannequins.ClientboundEditMannequinPacket;
+import com.wildfire.common.networking.packets.mannequins.ClientboundMannequinDataPacket;
+import com.wildfire.common.networking.packets.mannequins.ServerboundMannequinDataPacket;
 import com.wildfire.common.networking.packets.sync.ClientboundSyncPacket;
 import com.wildfire.common.networking.packets.sync.ServerboundSyncPacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -47,6 +50,7 @@ public class NeoSync {
 
     private static void registerPackets(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar(WildfireAPI.MODID).optional();
+
         //Client to server
         WildfireGender.LOGGER.debug(WildfireSync.MARKER, "Registering server-side config phase receiver");
         registrar.configurationToServer(ServerboundSyncHelloPacket.TYPE, ServerboundSyncHelloPacket.STREAM_CODEC, (packet, context) -> {
@@ -62,6 +66,14 @@ public class NeoSync {
                 WildfireGender.LOGGER.warn(WildfireSync.MARKER, "Server received a sync packet but the player wasn't a server player? This shouldn't be possible.");
             }
         });
+        registrar.playToServer(ServerboundMannequinDataPacket.TYPE, ServerboundMannequinDataPacket.STREAM_CODEC, (packet, context) -> {
+            if (context.player() instanceof ServerPlayer player) {//Should always be true
+                packet.handle(player);
+            } else {
+                WildfireGender.LOGGER.warn(WildfireSync.MARKER, "Server received a mannequin data packet but the player wasn't a server player? This shouldn't be possible.");
+            }
+        });
+
         //Server to client
         WildfireGender.LOGGER.debug(WildfireSync.MARKER, "Registering client-side config phase receiver");
         registrar.configurationToClient(ClientboundSyncHelloPacket.TYPE, ClientboundSyncHelloPacket.STREAM_CODEC, (packet, context) ->
@@ -71,5 +83,7 @@ public class NeoSync {
         //Note: We register this regardless of the sync hello packet status, as Neo collects these initially and then registers them to the channel.
         // The packet will only be sent to the client if the server's version matches the one from the client in the sync hello, so registering the channel is harmless
         registrar.playToClient(ClientboundSyncPacket.TYPE, ClientboundSyncPacket.STREAM_CODEC, (packet, context) -> packet.handle(context.player().getUUID()));
+        registrar.playToClient(ClientboundMannequinDataPacket.TYPE, ClientboundMannequinDataPacket.STREAM_CODEC, (packet, _) -> packet.handle());
+        registrar.playToClient(ClientboundEditMannequinPacket.TYPE, ClientboundEditMannequinPacket.STREAM_CODEC, (packet, _) -> packet.handle());
     }
 }

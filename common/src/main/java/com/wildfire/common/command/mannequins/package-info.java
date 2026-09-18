@@ -16,30 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.common;
+@NullMarked
+package com.wildfire.common.command.mannequins;
 
-import com.wildfire.common.entities.avatars.AvatarConfig;
-import net.minecraft.world.entity.decoration.Mannequin;
-import org.jspecify.annotations.Nullable;
-import java.nio.file.Path;
-
-public interface LoaderAgnostics {
-
-    LoaderAgnostics INSTANCE = WildfireHelper.getService(LoaderAgnostics.class);
-
-    String name();
-
-    String getLoaderVersion();
-
-    Path getConfigDir();
-
-    boolean isDevelopmentEnv();
-
-    String getModVersion(String modId);
-
-    boolean onClient();
-
-    // TODO move these to a different class
-    @Nullable AvatarConfig readFromMannequin(Mannequin mannequin);
-    void writeToMannequin(Mannequin mannequin, AvatarConfig config);
-}
+import org.jspecify.annotations.NullMarked;

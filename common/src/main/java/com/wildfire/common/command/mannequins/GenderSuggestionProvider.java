@@ -16,30 +16,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.common;
+package com.wildfire.common.command.mannequins;
 
-import com.wildfire.common.entities.avatars.AvatarConfig;
-import net.minecraft.world.entity.decoration.Mannequin;
-import org.jspecify.annotations.Nullable;
-import java.nio.file.Path;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import com.wildfire.api.Gender;
+import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
+import net.minecraft.commands.SharedSuggestionProvider;
 
-public interface LoaderAgnostics {
-
-    LoaderAgnostics INSTANCE = WildfireHelper.getService(LoaderAgnostics.class);
-
-    String name();
-
-    String getLoaderVersion();
-
-    Path getConfigDir();
-
-    boolean isDevelopmentEnv();
-
-    String getModVersion(String modId);
-
-    boolean onClient();
-
-    // TODO move these to a different class
-    @Nullable AvatarConfig readFromMannequin(Mannequin mannequin);
-    void writeToMannequin(Mannequin mannequin, AvatarConfig config);
+public class GenderSuggestionProvider<S extends SharedSuggestionProvider> implements SuggestionProvider<S> {
+    @Override
+    public CompletableFuture<Suggestions> getSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
+        return SharedSuggestionProvider.suggest(Arrays.stream(Gender.values()).map(Gender::name), builder);
+    }
 }

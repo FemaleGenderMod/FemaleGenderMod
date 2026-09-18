@@ -26,11 +26,12 @@ import com.wildfire.client.gui.FakeGUIPlayer;
 import com.wildfire.client.gui.WildfireButton;
 import com.wildfire.common.WildfireGender;
 import com.wildfire.common.WildfireLang;
+import com.wildfire.common.entities.avatars.AbstractAvatarConfigHolder;
+import com.wildfire.common.entities.players.SyncStatus;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.function.Supplier;
-import com.wildfire.common.entities.players.SyncStatus;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
@@ -60,8 +61,8 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 
     private final Supplier<FakeGUIPlayer> fakeKeira = Suppliers.memoize(() -> new FakeGUIPlayer("KeiaraFGM", keiraUUID, FakeGUIPlayer.FEMALE_CHANGES));
 
-    public WildfireFirstTimeSetupScreen(@Nullable Screen parent, UUID uuid) {
-        super(WildfireLang.FIRST_TIME_TITLE.translate().withStyle(style -> style.withUnderlined(true)), parent, uuid);
+    public WildfireFirstTimeSetupScreen(@Nullable Screen parent, AbstractAvatarConfigHolder config) {
+        super(WildfireLang.FIRST_TIME_TITLE.translate().withStyle(style -> style.withUnderlined(true)), parent, config);
     }
 
     @Override
@@ -89,8 +90,12 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
                     button.setMessage(CommonComponents.ELLIPSIS);
                     ref.no.setActive(false);
 
-                    final var nextScreen = new WardrobeBrowserScreen(null, playerUUID);
-                    doInitialSync().thenRun(() -> minecraft.execute(() -> minecraft.gui.setScreen(nextScreen)));
+                    final var nextScreen = WardrobeBrowserScreen.create(minecraft.player, null);
+                    doInitialSync().thenRun(() ->
+                        minecraft.execute(() ->
+                            minecraft.gui.setScreen(nextScreen)
+                        )
+                    );
                 })
                 .tooltip(Tooltip.create(WildfireLang.FIRST_TIME_ENABLE_TOOLTIP.line(1)
                         .append("\n\n")
@@ -106,7 +111,7 @@ public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
                     config.cloudSync().automatic().update(false);
                     config.firstTimeLoad().update(false);
 
-                    minecraft.gui.setScreen(new WardrobeBrowserScreen(null, playerUUID));
+                    minecraft.gui.setScreen(new WardrobeBrowserScreen(null, this.config));
                 }));
     }
 

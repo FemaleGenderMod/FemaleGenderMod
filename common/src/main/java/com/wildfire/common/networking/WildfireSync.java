@@ -20,11 +20,15 @@ package com.wildfire.common.networking;
 
 import com.wildfire.common.WildfireGender;
 import com.wildfire.common.entities.avatars.AvatarConfig;
+import com.wildfire.common.entities.avatars.MannequinConfigHolder;
 import com.wildfire.common.entities.players.PlayerConfigHolder;
+import com.wildfire.common.networking.packets.mannequins.ClientboundMannequinDataPacket;
+import com.wildfire.common.networking.packets.mannequins.ServerboundMannequinDataPacket;
 import com.wildfire.common.networking.packets.sync.ClientboundSyncPacket;
 import com.wildfire.common.networking.packets.sync.ServerboundSyncPacket;
 import net.minecraft.network.Connection;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.decoration.Mannequin;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
@@ -43,9 +47,22 @@ public final class WildfireSync {
     public static void sendToAllClients(ServerPlayer toSync, PlayerConfigHolder playerConfig) {
         int sent = 0;
         for (ServerPlayer player : WildfireNetworking.INSTANCE.playersTracking(toSync)) {
-            if (!player.equals(toSync) && WildfireNetworking.INSTANCE.canSyncToPlayer(player)) {
+            if (!player.equals(toSync) && WildfireNetworking.INSTANCE.canSendToPlayer(player, ClientboundSyncPacket.TYPE)) {
                 sent++;
-                WildfireNetworking.INSTANCE.syncToPlayer(player, new ClientboundSyncPacket(playerConfig));
+                WildfireNetworking.INSTANCE.sendToClient(player, new ClientboundSyncPacket(playerConfig));
+            }
+        }
+        if (sent > 0) {
+            WildfireGender.LOGGER.debug(MARKER, "Sent sync packet for {} to {} connected player(s)", toSync, sent);
+        }
+    }
+
+    public static void sendToAllClients(Mannequin toSync, MannequinConfigHolder config) {
+        int sent = 0;
+        for (ServerPlayer player : WildfireNetworking.INSTANCE.playersTracking(toSync)) {
+            if (WildfireNetworking.INSTANCE.canSendToPlayer(player, ClientboundMannequinDataPacket.TYPE)) {
+                sent++;
+                WildfireNetworking.INSTANCE.sendToClient(player, new ClientboundMannequinDataPacket(config));
             }
         }
         if (sent > 0) {
@@ -58,9 +75,16 @@ public final class WildfireSync {
     /// @param sendTo The [`player`][ServerPlayer] to send the sync to
     /// @param toSync The [`configuration`][AvatarConfig] for the player being synced
     public static void sendToClient(ServerPlayer sendTo, PlayerConfigHolder toSync) {
-        if (WildfireNetworking.INSTANCE.canSyncToPlayer(sendTo)) {
+        if (WildfireNetworking.INSTANCE.canSendToPlayer(sendTo, ClientboundSyncPacket.TYPE)) {
             WildfireGender.LOGGER.debug(MARKER, "Sending profile for {} to other player {}", toSync.uuid, sendTo.getUUID());
-            WildfireNetworking.INSTANCE.syncToPlayer(sendTo, new ClientboundSyncPacket(toSync));
+            WildfireNetworking.INSTANCE.sendToClient(sendTo, new ClientboundSyncPacket(toSync));
+        }
+    }
+
+    public static void sendToClient(ServerPlayer sendTo, MannequinConfigHolder toSync) {
+        if (WildfireNetworking.INSTANCE.canSendToPlayer(sendTo, ClientboundMannequinDataPacket.TYPE)) {
+            WildfireGender.LOGGER.debug(MARKER, "Sending profile for mannequin {} to player {}", toSync.uuid, sendTo.getUUID());
+            WildfireNetworking.INSTANCE.sendToClient(sendTo, new ClientboundMannequinDataPacket(toSync));
         }
     }
 
@@ -70,10 +94,17 @@ public final class WildfireSync {
     ///
     /// @apiNote Only call on the client
     public static void sendToServer(Connection connection, PlayerConfigHolder plr) {
-        if (plr.needsSync && WildfireNetworking.INSTANCE.canSyncToServer(connection)) {
+        if (plr.needsSync && WildfireNetworking.INSTANCE.canSendToServer(connection, ServerboundSyncPacket.TYPE)) {
             WildfireGender.LOGGER.debug(MARKER, "Sending player data to server");
-            WildfireNetworking.INSTANCE.syncToServer(new ServerboundSyncPacket(plr.config()));
+            WildfireNetworking.INSTANCE.sendToServer(new ServerboundSyncPacket(plr.config()));
             plr.needsSync = false;
+        }
+    }
+
+    public static void sendToServer(Connection connection, MannequinConfigHolder mannequin) {
+        if(WildfireNetworking.INSTANCE.canSendToServer(connection, ServerboundMannequinDataPacket.TYPE)) {
+            WildfireGender.LOGGER.debug(MARKER, "Sending mannequin data to server");
+            WildfireNetworking.INSTANCE.sendToServer(new ServerboundMannequinDataPacket(mannequin));
         }
     }
 }

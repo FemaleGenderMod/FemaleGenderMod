@@ -23,6 +23,7 @@ import com.wildfire.common.command.WildfireServerCommand;
 import com.wildfire.fabric.common.networking.FabricSync;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 
@@ -36,5 +37,6 @@ public class WildfireGenderFabric implements ModInitializer {
             var command = new WildfireServerCommand<>(new FabricServerCommandHelper());
             command.register(dispatcher);
         });
+        ServerEntityEvents.ENTITY_LOAD.register((entity, _) -> WildfireEventHandler.onEntityLoad(entity));
     }
 }
