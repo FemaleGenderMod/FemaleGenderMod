@@ -47,6 +47,7 @@ public record ClientboundSyncHelloPacket(IntArrayList version) implements SyncHe
         return TYPE;
     }
 
+    /// @apiNote Only call on the client side
     public void handle(Consumer<ServerboundSyncHelloPacket> replySender, IntConsumer versionSetter) {
         // could be changed in the future to also accept a close enough protocol if we have support
         // for one of the versions the server accepts

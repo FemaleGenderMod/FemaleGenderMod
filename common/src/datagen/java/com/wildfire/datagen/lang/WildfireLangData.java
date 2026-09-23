@@ -18,7 +18,7 @@
 
 package com.wildfire.datagen.lang;
 
-import com.wildfire.api.Gender;
+import com.google.common.base.Preconditions;
 import com.wildfire.api.uvs.FaceDirection;
 import com.wildfire.api.uvs.UVDirection;
 import com.wildfire.common.WildfireGender;
@@ -95,6 +95,12 @@ public class WildfireLangData {
         add(builder, "neoforge.screen.mods.info.description." + modId, description);
     }
 
+    private void addFromFallback(BiConsumer<String, String> builder, WildfireLang lang) {
+        String message = lang.getFallbackString();
+        Preconditions.checkNotNull(message, "Fallback string for %s is null", lang);
+        add(builder, lang, message);
+    }
+
     private void add(BiConsumer<String, String> builder, WildfireLang lang, String... translations) {
         String translationKey = lang.getTranslationKey();
         if (translations.length == 0) {
@@ -150,7 +156,7 @@ public class WildfireLangData {
         add(builder, WildfireLang.CREDITS_GENERAL, "General");
         add(builder, WildfireLang.CREDITS_TRANSLATORS, "Translators");
 
-        add(builder, WildfireLang.MOD_NAME, "Female Gender Mod");
+        addFromFallback(builder, WildfireLang.MOD_NAME);
         add(builder, WildfireLang.PLAYER_LIST_SETTINGS, "Settings");
         add(builder, WildfireLang.PLAYER_LIST_SYNC_STATUS, "Sync Status");
         add(builder, WildfireLang.PLAYER_LIST_LOADING, "Loading Data...");
@@ -197,9 +203,9 @@ public class WildfireLangData {
         add(builder, WildfireLang.CHAR_SETTINGS_OVERRIDE_PHYSICS, "Armor Physics: %1$s");
 
         add(builder, WildfireLang.LABEL_GENDER, "Gender");
-        add(builder, Gender.FEMALE.getTranslationKey(), "Female");
-        add(builder, Gender.MALE.getTranslationKey(), "Male");
-        add(builder, Gender.OTHER.getTranslationKey(), "Other");
+        addFromFallback(builder, WildfireLang.LABEL_FEMALE);
+        addFromFallback(builder, WildfireLang.LABEL_MALE);
+        addFromFallback(builder, WildfireLang.LABEL_OTHER);
 
         add(builder, WildfireLang.LABEL_ENABLED, "Enabled");
         add(builder, WildfireLang.LABEL_DISABLED, "Disabled");
@@ -225,6 +231,7 @@ public class WildfireLangData {
         add(builder, WildfireLang.CLOUD_TOOLTIP, "Cloud Sync");
         add(builder, WildfireLang.CLOUD_UNAVAILABLE_INVALID_ACC, "Cloud syncing is unavailable as you aren't currently logged into a valid Minecraft account");
         add(builder, WildfireLang.CLOUD_UNAVAILABLE_OFFLINE_SERVER, "Cloud syncing is unavailable as the server you're connected to is in offline mode");
+        add(builder, WildfireLang.CLOUD_UNAVAILABLE_EDITING_MANNEQUIN, "Unavailable while editing a mannequin");
         add(builder, WildfireLang.CLOUD_STATUS, "Cloud Sync: %1$s");
         add(builder, WildfireLang.CLOUD_AUTOMATIC, "Automatic Sync: %1$s");
         add(builder, WildfireLang.CLOUD_AUTOMATIC_TOOLTIP,
@@ -281,7 +288,7 @@ public class WildfireLangData {
         add(builder, WildfireLang.GENERIC_BRACKETS, "[%1$s]");
         add(builder, WildfireLang.GENERIC_ELLIPSIS_SUFFIX, "%1$s...");
         add(builder, WildfireLang.GENERIC_CONCAT, "%1$s%2$s");
-        add(builder, WildfireLang.GENERIC_COMMA, "%1$s, %2$s");
+        addFromFallback(builder, WildfireLang.GENERIC_COMMA);
         add(builder, WildfireLang.GENERIC_SPACE, "%1$s %2$s");
         add(builder, WildfireLang.GENERIC_DASH_EXPLANATION, "%1$s - %2$s");
 
@@ -292,7 +299,7 @@ public class WildfireLangData {
         add(builder, WildfireLang.NOT_IN_WORLD_TITLE, "Unavailable in Main Menu");
         add(builder, WildfireLang.NOT_IN_WORLD, "You need to be in a world to configure your gender settings.");
 
-        add(builder, WildfireLang.HURT_SOUND_SUBTITLE, "Female Player Hurt");
+        add(builder, WildfireLang.HURT_SOUND_SUBTITLE, "Female player hurts");
 
         add(builder, WildfireLang.KEY_CATEGORY, "Female Gender Mod");
         add(builder, WildfireLang.KEY_CONFIG, "Female Gender Menu");
@@ -311,9 +318,32 @@ public class WildfireLangData {
         add(builder, WildfireLang.COMMAND_ARMOR_STAND_NO_COMPONENT, "Returned breast data component was null; do you have Hide in Armor on?");
         addCommand(builder, WildfireLang.COMMAND_TRIM, "trim [glint]", "Equips a chestplate with a trim pre-applied onto yourself");
 
-        add(builder, WildfireLang.COMMAND_VERSION_INFO, "running version %1$s");
-        add(builder, WildfireLang.COMMAND_SYNCED_PLAYER_COUNT, "%1$s/%2$s synced players online");
+        addFromFallback(builder, WildfireLang.COMMAND_VERSION_INFO);
+        addFromFallback(builder, WildfireLang.COMMAND_SYNCED_PLAYER_COUNT);
+        addFromFallback(builder, WildfireLang.COMMAND_ENTITY_MUST_BE_MANNEQUIN);
+        addFromFallback(builder, WildfireLang.COMMAND_ENTITY_MUST_BE_AVATAR_LIKE);
+        addFromFallback(builder, WildfireLang.COMMAND_SERVER_NO_MOD_ON_CLIENT);
+        addFromFallback(builder, WildfireLang.COMMAND_MANNEQUIN_COPIED_DATA);
+        addFromFallback(builder, WildfireLang.COMMAND_SERVER_INVALID_GENDER);
 
+        addFromFallback(builder, WildfireLang.COMMAND_MANNEQUIN_SET_VALUE);
+        addFromFallback(builder, WildfireLang.COMMAND_MANNEQUIN_SET_VALUE_FAILED);
+
+        addFromFallback(builder, WildfireLang.COMMAND_MANNEQUIN_DATA_GENDER);
+        addFromFallback(builder, WildfireLang.COMMAND_MANNEQUIN_DATA_BREAST_SIZE);
+        addFromFallback(builder, WildfireLang.COMMAND_MANNEQUIN_DATA_X_OFFSET);
+        addFromFallback(builder, WildfireLang.COMMAND_MANNEQUIN_DATA_Y_OFFSET);
+        addFromFallback(builder, WildfireLang.COMMAND_MANNEQUIN_DATA_Z_OFFSET);
+        addFromFallback(builder, WildfireLang.COMMAND_MANNEQUIN_DATA_CLEAVAGE);
+        addFromFallback(builder, WildfireLang.COMMAND_MANNEQUIN_DATA_SHOW_IN_ARMOR);
+        addFromFallback(builder, WildfireLang.COMMAND_MANNEQUIN_DATA_PHYSICS);
+        addFromFallback(builder, WildfireLang.COMMAND_MANNEQUIN_DATA_PHYSICS_BOUNCE);
+        addFromFallback(builder, WildfireLang.COMMAND_MANNEQUIN_DATA_PHYSICS_FLOPPY);
+        addFromFallback(builder, WildfireLang.COMMAND_MANNEQUIN_DATA_PHYSICS_UNIBOOB);
+        addFromFallback(builder, WildfireLang.COMMAND_MANNEQUIN_DATA_HURT_SOUNDS);
+        addFromFallback(builder, WildfireLang.COMMAND_MANNEQUIN_DATA_HURT_PITCH);
+
+        // TODO do these debug command strings need to be translated?
         add(builder, WildfireLang.DEBUG_COMMAND_LOOKING_AT, "Looking at: %1$s");
         add(builder, WildfireLang.DEBUG_COMMAND_LOOKING_AT_NONE, "No entity in sight.");
         add(builder, WildfireLang.DEBUG_COMMAND_LOOKING_AT_UUID, "UUID: %1$s");

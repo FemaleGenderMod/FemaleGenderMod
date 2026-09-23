@@ -22,6 +22,7 @@ dependencies {
     implementation("net.fabricmc.fabric-api:fabric-command-api-v2")
     implementation("net.fabricmc.fabric-api:fabric-rendering-v1")
     implementation("net.fabricmc.fabric-api:fabric-resource-loader-v1")
+    implementation("net.fabricmc.fabric-api:fabric-data-attachment-api-v1")
     runtimeOnly("net.fabricmc.fabric-api:fabric-registry-sync-v0")
 
     // Allow logging into an actual Minecraft account in a dev env

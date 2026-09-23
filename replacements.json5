@@ -51,6 +51,8 @@
             ["TextColor.fromRgb(0xFFAA00)", "TextColor.GOLD"],
             ["TextColor.fromRgb(0xFF55FF)", "TextColor.LIGHT_PURPLE"],
             ["TextColor.fromRgb(0xFFFFFF)", "TextColor.WHITE"],
+            ["TextColor.fromRgb(0x5555FF)", "TextColor.BLUE"],
+            ["TextColor.fromRgb(0x55FF55)", "TextColor.GREEN"],
         ],
     },
 

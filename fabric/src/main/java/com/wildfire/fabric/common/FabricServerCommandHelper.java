@@ -29,7 +29,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
-public class FabricServerCommandHelper implements ServerCommandHelper<CommandSourceStack> {
+public class FabricServerCommandHelper implements ServerCommandHelper {
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> literal(String key) {
         return Commands.literal(key);

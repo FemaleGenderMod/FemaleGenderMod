@@ -20,21 +20,29 @@ package com.wildfire.fabric.common;
 
 import com.wildfire.common.WildfireEventHandler;
 import com.wildfire.common.command.WildfireServerCommand;
+import com.wildfire.common.entities.avatars.AvatarConfig;
 import com.wildfire.fabric.common.networking.FabricSync;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 
 public class WildfireGenderFabric implements ModInitializer {
+    public static final AttachmentType<AvatarConfig> AVATAR_ATTACHMENT = AttachmentRegistry.create(com.wildfire.common.WildfireGender.id("gender_data"),
+        builder -> builder.persistent(AvatarConfig.CODEC));
+
     @Override
     public void onInitialize() {
         FabricSync.register();
         EntityTrackingEvents.START_TRACKING.register(WildfireEventHandler::onBeginTracking);
         ServerPlayConnectionEvents.DISCONNECT.register((handler, _) -> WildfireEventHandler.playerDisconnected(handler.getPlayer()));
         CommandRegistrationCallback.EVENT.register((dispatcher, _, _) -> {
-            var command = new WildfireServerCommand<>(new FabricServerCommandHelper());
+            var command = new WildfireServerCommand(new FabricServerCommandHelper());
             command.register(dispatcher);
         });
+        ServerEntityEvents.ENTITY_LOAD.register((entity, _) -> WildfireEventHandler.onEntityLoad(entity));
     }
 }

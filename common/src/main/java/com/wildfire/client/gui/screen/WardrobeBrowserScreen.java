@@ -18,20 +18,26 @@
 
 package com.wildfire.client.gui.screen;
 
+import com.wildfire.api.Gender;
+import com.wildfire.api.client.WildfireClientAPI;
+import com.wildfire.client.cloud.CloudSync;
+import com.wildfire.client.config.ClientConfig;
+import com.wildfire.client.contributors.Contributors;
 import com.wildfire.client.gui.SyncedPlayerList;
 import com.wildfire.common.WildfireGender;
 import com.wildfire.common.WildfireLang;
-import com.wildfire.client.cloud.CloudSync;
-import com.wildfire.client.config.ClientConfig;
-import com.wildfire.api.Gender;
 import com.wildfire.common.config.enums.ShowPlayerListMode;
-import com.wildfire.client.contributors.Contributors;
+import com.wildfire.common.entities.avatars.AbstractAvatarConfigHolder;
+import com.wildfire.common.entities.avatars.MannequinConfigHolder;
+import com.wildfire.common.entities.players.PlayerConfigHolder;
 import java.time.Month;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Tooltip;
@@ -49,9 +55,6 @@ import net.minecraft.util.ARGB;
 import net.minecraft.util.CommonColors;
 import net.minecraft.util.Mth;
 import net.minecraft.world.scores.PlayerTeam;
-
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import org.jspecify.annotations.Nullable;
 
 /// @apiNote Only use this on the client side
@@ -67,15 +70,16 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
 
     private final WidgetTooltipHolder contribTooltip = new WidgetTooltipHolder();
 
-    public WardrobeBrowserScreen(@Nullable Screen parent, UUID uuid) {
-        super(WildfireLang.WARDROBE_TITLE.translate(), parent, uuid);
+    public WardrobeBrowserScreen(@Nullable Screen parent, AbstractAvatarConfigHolder holder) {
+        super(WildfireLang.WARDROBE_TITLE.translate(), parent, holder);
     }
 
     public static BaseWildfireScreen create(LocalPlayer player, @Nullable Screen parent) {
+        var config = WildfireClientAPI.players().getOrCreate(player);
         if (ClientConfig.config().firstTimeLoad().get() && CloudSync.isAvailable()) {
-            return new WildfireFirstTimeSetupScreen(parent, player.getUUID());
+            return new WildfireFirstTimeSetupScreen(parent, config);
         } else {
-            return new WardrobeBrowserScreen(parent, player.getUUID());
+            return new WardrobeBrowserScreen(parent, config);
         }
     }
 
@@ -83,13 +87,17 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
         client.gui.setScreen(create(player, null));
     }
 
+    public static void open(Minecraft client, MannequinConfigHolder config) {
+        client.gui.setScreen(new WardrobeBrowserScreen(null, config));
+    }
+
     @Override
     public void init() {
         super.init();
         final var client = Objects.requireNonNull(this.minecraft, "client");
         int y = this.height / 2;
-        var plr = Objects.requireNonNull(getPlayer(), "getPlayer()");
 
+        // TODO move this to a separate config screen (e.g. yacl or similar on fabric, neo's config)
         addButton(builder -> builder
                 .message(() -> WildfireLang.PLAYER_LIST_MODE.translate(ClientConfig.config().playerListMode().get().getTranslatedName()))
                 .tooltip(ClientConfig.config().playerListMode().get().tooltip())
@@ -104,12 +112,12 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
                 }));
 
         addButton(builder -> builder
-                .message(() -> plr.gender().get().getDisplayName())
+                .message(() -> config.gender().get().getDisplayName())
                 .position(this.width / 2 - 130, this.height / 2 + 33)
                 .size(80, 15)
                 .onPress(_ -> {
-                    if (plr.gender().update(Gender::next)) {
-                        plr.save();
+                    if (config.gender().update(Gender::next)) {
+                        save();
                         rebuildWidgets();
                     }
                 }));
@@ -118,8 +126,8 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
                 .message(() -> WildfireLang.GENERIC_ELLIPSIS_SUFFIX.translate(WildfireLang.APPEARANCE_SETTINGS_TITLE))
                 .position(this.width / 2 - 36, this.height / 2 - 63)
                 .size(157, 20)
-                .onPress(_ -> client.gui.setScreen(new WildfireBreastCustomizationScreen(this, this.playerUUID)))
-                .active(plr.gender().get().canHaveBreasts()));
+                .onPress(_ -> client.gui.setScreen(new WildfireBreastCustomizationScreen(this, config)))
+                .active(config.gender().get().canHaveBreasts()));
 
         addButton(builder -> {
             builder.message(WildfireLang.CLOUD_SETTINGS::translate);
@@ -128,13 +136,20 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
             builder.renderer((button, ctx, _, _, _) ->
                 ctx.blitSprite(RenderPipelines.GUI_TEXTURED, CLOUD_ICON, button.getX() + 2, button.getY() + 2, 20, 14)
             );
-            builder.onPress(_ -> client.gui.setScreen(new WildfireCloudSyncScreen(this, this.playerUUID)));
-            var cloudUnavailable = CloudSync.unavailableReason();
-            if(cloudUnavailable != null) {
-                builder.tooltip(Tooltip.create(cloudUnavailable.text()));
+            builder.onPress(_ ->
+                client.gui.setScreen(new WildfireCloudSyncScreen(this, (PlayerConfigHolder) config))
+            );
+            if(!(config instanceof PlayerConfigHolder)) {
+                builder.tooltip(Tooltip.create(WildfireLang.CLOUD_UNAVAILABLE_EDITING_MANNEQUIN.translate()));
                 builder.active(false);
             } else {
-                builder.tooltip(Tooltip.create(WildfireLang.CLOUD_TOOLTIP.translate()));
+                var cloudUnavailable = CloudSync.unavailableReason();
+                if(cloudUnavailable != null) {
+                    builder.tooltip(Tooltip.create(cloudUnavailable.text()));
+                    builder.active(false);
+                } else {
+                    builder.tooltip(Tooltip.create(WildfireLang.CLOUD_TOOLTIP.translate()));
+                }
             }
         });
 
@@ -142,7 +157,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
                 .message(() -> WildfireLang.GENERIC_ELLIPSIS_SUFFIX.translate(WildfireLang.CREDITS_TITLE))
                 .position(this.width / 2 + 2, this.height / 2 + 33)
                 .size(78, 15)
-                .onPress(_ -> client.gui.setScreen(new WildfireCreditsScreen(this, this.playerUUID))));
+                .onPress(_ -> client.gui.setScreen(new WildfireCreditsScreen(this, this.config))));
 
         /*this.addDrawableChild(new WildfireButton(this.width / 2 + 111, y - 63, 9, 9, Text.literal("X"),
             button -> close(), text -> GuiUtils.doneNarrationText()));*/
@@ -152,9 +167,7 @@ public class WardrobeBrowserScreen extends BaseWildfireScreen {
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         extractTransparentBackground(graphics);
 
-        var plr = getPlayer();
-        if(plr == null) return;
-        Identifier backgroundTexture = switch(plr.gender().get()) {
+        Identifier backgroundTexture = switch(config.gender().get()) {
             case MALE -> BACKGROUND_MALE;
             case FEMALE -> BACKGROUND_FEMALE;
             case OTHER -> BACKGROUND_OTHER;

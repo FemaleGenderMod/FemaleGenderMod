@@ -30,7 +30,7 @@ import net.minecraft.network.codec.StreamCodec;
 public record Sounds(ConfigValue<Boolean> hurt, ConfigValue<Float> voicePitch) {
 
     private static final ConfigKey<Boolean> HURT_SOUNDS = ConfigKey.DEFAULT_TRUE;
-    private static final ConfigKey<Float> VOICE_PITCH = ConfigKey.create(1F, 0.8F, 1.2F);
+    public static final ConfigKey<Float> VOICE_PITCH = ConfigKey.create(1F, 0.8F, 1.2F);
 
     public static final Codec<Sounds> CODEC = RecordCodecBuilder.create(instance -> instance.group(
         HURT_SOUNDS.codec().fieldOf("override_hurt").forGetter(sounds -> sounds.hurt.get()),

@@ -1,0 +1,15 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "com.wildfire.client.mixins",
+    "compatibilityLevel": "JAVA_${java_version}",
+    "client": [
+        "LivingEntityMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    },
+    "overwrites": {
+      "requireAnnotations": true
+    }
+}

@@ -17,6 +17,7 @@ public class NonAmericanLanguageProvider extends ConvertibleLanguageProvider {
         addEntry(map, "Personalization", "Personalisation");
         addEntry(map, "Customization", "Customisation");
         addEntry(map, "Customized", "Customised");
+        addEntry(map, "Recognized", "Recognised");
     }).entrySet().stream().map(entry -> new WordConversion(entry.getKey(), entry.getValue())).toList();
 
     private static void addEntry(Map<String, String> map, String key, String value) {

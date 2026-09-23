@@ -29,6 +29,7 @@
     },
     "mixins": [
         "${mod_id}.mixins.json",
+        "${mod_id}.client.mixins.json",
         "${mod_id}.fabric.mixins.json"
     ],
     "accessWidener": "${mod_id}.classtweaker",
@@ -41,6 +42,7 @@
         "fabric-rendering-v1": "*",
         "fabric-resource-loader-v1": "*",
         "fabric-registry-sync-v0": "*",
+        "fabric-data-attachment-api-v1": "*",
         "minecraft": "${supported_minecraft_versions}",
         "java": ">=${java_version}"
     },

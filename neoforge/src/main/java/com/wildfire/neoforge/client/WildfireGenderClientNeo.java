@@ -34,7 +34,7 @@ import com.wildfire.client.render.debug.PhysicsDebugHudEntry;
 import com.wildfire.client.resources.GenderArmorResourceManager;
 import com.wildfire.common.LoaderAgnostics;
 import com.wildfire.common.WildfireGender;
-import com.wildfire.common.entities.players.PlayerConfigHolder;
+import com.wildfire.common.entities.avatars.AbstractAvatarConfigHolder;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
@@ -221,8 +221,8 @@ public class WildfireGenderClientNeo {
                 if (p.hurtTime == p.hurtDuration && p.hurtTime > 0) {
                     //Note: We check hurtTime == hurtDuration and hurtTime > 0 or otherwise when the server sends a hurt sound to the client
                     // and the client will check itself instead of the player who was damaged.
-                    PlayerConfigHolder plr = WildfireClientAPI.players().get(p);
-                    if (plr != null && plr.sounds().hurt().get()) {
+                    var config = WildfireClientAPI.getConfig(p);
+                    if (config instanceof AbstractAvatarConfigHolder plr && plr.sounds().hurt().get()) {
                         Holder<SoundEvent> soundOverride = ClientHelper.INSTANCE.hurtSound(plr.gender().get());
                         if (soundOverride != null) {
                             //If the player who produced the hurt sound is a female sound replace it

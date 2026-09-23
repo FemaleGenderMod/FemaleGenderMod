@@ -19,13 +19,15 @@
 package com.wildfire.fabric.common;
 
 import com.wildfire.common.LoaderAgnostics;
+import com.wildfire.common.entities.avatars.AvatarConfig;
 import java.nio.file.Path;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import net.minecraft.world.entity.decoration.Mannequin;
+import org.jspecify.annotations.Nullable;
 
 public class LoaderAgnosticsFabric implements LoaderAgnostics {
-
     @Override
     public String name() {
         return "Fabric";
@@ -55,5 +57,15 @@ public class LoaderAgnosticsFabric implements LoaderAgnostics {
     @Override
     public boolean onClient() {
         return FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
+    }
+
+    @Override
+    public @Nullable AvatarConfig readFromMannequin(final Mannequin mannequin) {
+        return mannequin.getAttached(WildfireGenderFabric.AVATAR_ATTACHMENT);
+    }
+
+    @Override
+    public void writeToMannequin(final Mannequin mannequin, final AvatarConfig config) {
+        mannequin.setAttached(WildfireGenderFabric.AVATAR_ATTACHMENT, config);
     }
 }

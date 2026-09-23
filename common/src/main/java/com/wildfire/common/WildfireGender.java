@@ -18,16 +18,16 @@
 
 package com.wildfire.common;
 
-import com.mojang.logging.LogUtils;
 import com.wildfire.api.WildfireAPI;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WildfireGender {
-    public static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOGGER = LoggerFactory.getLogger("FemaleGenderMod");
 
     public static final Component COMMAND_PREFIX = WildfireLang.GENERIC_BRACKETS
         .translateColored(TextColor.GRAY, WildfireLang.GENERIC_CONCAT.translate(

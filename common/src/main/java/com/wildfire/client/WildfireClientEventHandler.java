@@ -119,7 +119,7 @@ public final class WildfireClientEventHandler {
         tooltipAppender.accept(WildfireLang.ARMOR_TOOLTIP.translateColored(TextColor.LIGHT_PURPLE, formatted));
     }
 
-    public static void renderHud(GuiGraphicsExtractor context, DeltaTracker tickCounter) {
+    public static void renderHud(GuiGraphicsExtractor context, @SuppressWarnings("unused") DeltaTracker tickCounter) {
         var client = Minecraft.getInstance();
         if (client.gui.screen() instanceof WardrobeBrowserScreen) {
             SyncedPlayerList.resetTimer();
@@ -134,7 +134,7 @@ public final class WildfireClientEventHandler {
     }
 
     /// Remove (non-avatar) entities from the client cache when they're unloaded
-    public static void onEntityUnload(Entity entity, Level world) {
+    public static void onEntityUnload(Entity entity, @SuppressWarnings("unused") Level world) {
         // players and mannequins are intentionally not unloaded outside of disconnecting or expiring as their data relies
         // on being loaded through external means (e.g. a sync packet, cloud sync, or a file on disk),
         // which we may not always be able to rely on being resent (especially in the case of third-party servers),
@@ -148,31 +148,35 @@ public final class WildfireClientEventHandler {
 
     /// Perform various actions that should happen once per client tick, such as syncing client player settings to the server.
     public static void onClientTick(Minecraft client) {
-        if (client.level == null || client.player == null) {
+        if(client.level == null || client.player == null) {
             return;
         }
         timer++;
 
-        if (timer % 5 == 0) {
+        if(timer % 5 == 0) {
             PlayerConfigHolder clientConfig = WildfireClientAPI.players().get(client.player);
             // Only attempt to sync if the server will accept the packet, and only once every 5 ticks, or around 4 times a second
-            if (clientConfig != null) {
-                // sendToServer will only actually send a packet if any changes have been made that need to be synced, or if we haven't synced before.
-                WildfireSync.sendToServer(client.player.connection.getConnection(), clientConfig);
+            if(clientConfig != null && clientConfig.needsSync) {
+                if(WildfireSync.sendToServer(client.player.connection.getConnection(), clientConfig)) {
+                    clientConfig.needsSync = false;
+                }
             }
-            if (timer % 40 == 0) {//All timers that are divisible by 40 will be divisible by 5, so we may as well put it within the outer if statement
+
+            if(timer % 40 == 0) {
                 CloudSync.sendNextQueueBatch();
-                if (clientConfig != null) {
+                if(clientConfig != null) {
                     clientConfig.attemptCloudSync();
                 }
             }
         }
 
-        if (WildfireKeyBindings.INSTANCE.toggleKey().consumeClick() && client.gui.screen() == null &&
-            ClientConfig.config().overrides().disableRendering().update(ConfigValue.TOGGLE)) {//Update should always succeed, but validate it just in case
-            ClientConfig.INSTANCE.save();
+        if(WildfireKeyBindings.INSTANCE.toggleKey().consumeClick() && client.gui.screen() == null) {
+            // Update should always succeed, but validate it just in case
+            if(ClientConfig.config().overrides().disableRendering().update(ConfigValue.TOGGLE)) {
+                ClientConfig.INSTANCE.save();
+            }
         }
-        if (WildfireKeyBindings.INSTANCE.configKey().consumeClick() && client.gui.screen() == null) {
+        if(WildfireKeyBindings.INSTANCE.configKey().consumeClick() && client.gui.screen() == null) {
             WardrobeBrowserScreen.open(client, client.player);
         }
     }

@@ -19,13 +19,14 @@
 package com.wildfire.client;
 
 import com.mojang.authlib.services.MinecraftServicesSessionService;
-import com.wildfire.client.config.ClientConfig;
-import com.wildfire.common.WildfireHelper;
-import com.wildfire.client.render.GenderRenderState;
 import com.wildfire.api.Gender;
+import com.wildfire.client.config.ClientConfig;
+import com.wildfire.client.render.GenderRenderState;
+import com.wildfire.common.WildfireHelper;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.Avatar;
 import org.jspecify.annotations.Nullable;
 
 public interface ClientHelper {
@@ -48,4 +49,14 @@ public interface ClientHelper {
     @Nullable GenderRenderState getRenderState(HumanoidRenderState state);
 
     String getSessionUrl(MinecraftServicesSessionService service);
+
+    /// Determines if the mod should play the gender hurt sound in addition to the vanilla hurt sound upon
+    /// an [Avatar] entity taking damage.
+    ///
+    /// If this returns `false`, the sound is assumed to be handled elsewhere, as this exists to work around
+    /// NeoForge's at entity sound event not being handled properly when mannequins take damage, which typically
+    /// replaces the vanilla hurt sound.
+    default boolean shouldOverlayHurtSound(Avatar avatar) {
+        return true;
+    }
 }

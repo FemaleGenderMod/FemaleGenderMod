@@ -33,6 +33,10 @@ public record ServerboundSyncPacket(AvatarConfig config) implements CustomPacket
     public static final Type<ServerboundSyncPacket> TYPE = WildfireGender.serverBoundPacket("sync");
     public static final StreamCodec<ByteBuf, ServerboundSyncPacket> STREAM_CODEC = AvatarConfig.COMPACT_STREAM_CODEC.map(ServerboundSyncPacket::new, ServerboundSyncPacket::config);
 
+    public ServerboundSyncPacket(PlayerConfigHolder holder) {
+        this(holder.config());
+    }
+
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;

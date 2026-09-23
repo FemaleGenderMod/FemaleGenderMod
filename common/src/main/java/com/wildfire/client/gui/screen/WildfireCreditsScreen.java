@@ -18,15 +18,15 @@
 
 package com.wildfire.client.gui.screen;
 
+import com.wildfire.client.contributors.Contributor.Role;
+import com.wildfire.client.contributors.Contributors;
 import com.wildfire.client.gui.FakeGUIPlayer;
 import com.wildfire.common.WildfireGender;
 import com.wildfire.common.WildfireLang;
-import com.wildfire.client.contributors.Contributor.Role;
-import com.wildfire.client.contributors.Contributors;
+import com.wildfire.common.entities.avatars.AbstractAvatarConfigHolder;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
@@ -49,7 +49,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
     private static final Identifier TAB_CONTAINER = WildfireGender.id("credits/tab_container");
 
     //General contributor list
-    private final FakeGUIPlayer[] C_GENERAL = Contributors.getContributors().entrySet().stream()
+    private final FakeGUIPlayer[] contributors = Contributors.getContributors().entrySet().stream()
             .filter(it -> it.getValue().name() != null && it.getValue().showInCredits())
             .filter(it -> it.getValue().getRole() != Role.TRANSLATOR) // exclude translators
             .sorted(Comparator.comparing(it -> it.getValue().name()))
@@ -58,7 +58,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
             .toArray(FakeGUIPlayer[]::new);
 
     //Translator list
-    private final FakeGUIPlayer[] C_TRANSLATORS = Contributors.getContributors().entrySet().stream()
+    private final FakeGUIPlayer[] translators = Contributors.getContributors().entrySet().stream()
             .filter(it -> it.getValue().name() != null && it.getValue().showInCredits())
             .filter(it -> it.getValue().getRole() == Role.TRANSLATOR) // only have translators
             .sorted(Comparator.comparing(it -> it.getValue().name()))
@@ -74,8 +74,8 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
     private Category categoryTab = Category.GENERAL;
     private int creditsPage = 0;
 
-    public WildfireCreditsScreen(Screen parent, UUID uuid) {
-        super(WildfireLang.CREDITS_TITLE.translate(), parent, uuid);
+    public WildfireCreditsScreen(Screen parent, AbstractAvatarConfigHolder config) {
+        super(WildfireLang.CREDITS_TITLE.translate(), parent, config);
     }
 
     private int navigationY;
@@ -172,7 +172,7 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
     }
 
     private FakeGUIPlayer[] getActiveBoxes() {
-        return categoryTab == Category.TRANSLATORS ? C_TRANSLATORS : C_GENERAL;
+        return categoryTab == Category.TRANSLATORS ? translators : contributors;
     }
 
     @Override

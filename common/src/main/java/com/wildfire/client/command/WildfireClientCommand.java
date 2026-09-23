@@ -107,7 +107,8 @@ public final class WildfireClientCommand<S extends SharedSuggestionProvider> ext
         // the .schedule() is necessary as otherwise the chat screen will simply immediately close the opened screen
         helper.getMinecraft(ctx.getSource()).schedule(() -> {
             LocalPlayer player = helper.getPlayer(ctx.getSource());
-            var screen = new WildfireFirstTimeSetupScreen(null, player.getUUID());
+            var config = WildfireClientAPI.players().getOrCreate(player);
+            var screen = new WildfireFirstTimeSetupScreen(null, config);
             client.gui.setScreen(screen);
         });
         return Command.SINGLE_SUCCESS;

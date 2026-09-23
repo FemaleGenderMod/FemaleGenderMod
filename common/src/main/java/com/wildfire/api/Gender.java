@@ -19,24 +19,24 @@
 package com.wildfire.api;
 
 import com.mojang.serialization.Codec;
+import com.wildfire.common.WildfireLang;
 import io.netty.buffer.ByteBuf;
-import java.util.function.UnaryOperator;
+import java.util.function.IntFunction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ByIdMap;
-
-import java.util.function.IntFunction;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.StringRepresentable;
 
-public enum Gender implements StringRepresentable {
+public enum Gender implements StringRepresentable, NamedEnum {
+    //~ color_as_rgb !named_text_color
     // NOTE: The order of these should remain unchanged! Changing these WILL modify player configs!
-    FEMALE("female", name -> name.withColor(TextColor.LIGHT_PURPLE), true),
-    MALE("male", name -> name.withColor(TextColor.BLUE), false),
-    OTHER("other", name -> name.withColor(TextColor.GREEN), true);
+    FEMALE("female", WildfireLang.LABEL_FEMALE, TextColor.LIGHT_PURPLE, true),
+    MALE("male", WildfireLang.LABEL_MALE, TextColor.BLUE, false),
+    OTHER("other", WildfireLang.LABEL_OTHER, TextColor.GREEN, true);
+    //~ !color_as_rgb named_text_color
 
     public static final IntFunction<Gender> BY_ID = ByIdMap.continuous(Gender::ordinal, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
     public static final Codec<Gender> CODEC = StringRepresentable.fromEnum(Gender::values);
@@ -45,12 +45,14 @@ public enum Gender implements StringRepresentable {
     public static final StreamCodec<ByteBuf, Gender> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, Gender::ordinal);
 
     private final String saveName;
-    private final Component name;
+    private final WildfireLang name;
+    private final TextColor color;
     private final boolean canHaveBreasts;
 
-    Gender(String saveName, UnaryOperator<MutableComponent> formatting, boolean canHaveBreasts) {
+    Gender(String saveName, WildfireLang displayName, TextColor color, boolean canHaveBreasts) {
         this.saveName = saveName;
-        this.name = formatting.apply(Component.translatable(getTranslationKey()));
+        this.name = displayName;
+        this.color = color;
         this.canHaveBreasts = canHaveBreasts;
     }
 
@@ -59,8 +61,9 @@ public enum Gender implements StringRepresentable {
         return saveName;
     }
 
+    @Override
     public Component getDisplayName() {
-        return name;
+        return name.translateColored(color);
     }
 
     public boolean canHaveBreasts() {
@@ -75,7 +78,8 @@ public enum Gender implements StringRepresentable {
         };
     }
 
+    @Deprecated
     public String getTranslationKey() {
-        return WildfireAPI.MODID + ".label." + saveName;
+        return name.getTranslationKey();
     }
 }

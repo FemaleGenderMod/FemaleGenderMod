@@ -18,6 +18,9 @@
 
 package com.wildfire.common;
 
+import com.wildfire.common.entities.avatars.AvatarConfig;
+import net.minecraft.world.entity.decoration.Mannequin;
+import org.jspecify.annotations.Nullable;
 import java.nio.file.Path;
 
 public interface LoaderAgnostics {
@@ -35,4 +38,8 @@ public interface LoaderAgnostics {
     String getModVersion(String modId);
 
     boolean onClient();
+
+    // TODO move these to a different class
+    @Nullable AvatarConfig readFromMannequin(Mannequin mannequin);
+    void writeToMannequin(Mannequin mannequin, AvatarConfig config);
 }

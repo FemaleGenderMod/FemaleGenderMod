@@ -24,7 +24,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
-public class NeoServerCommandHelper extends AbstractNeoCommandHelper implements ServerCommandHelper<CommandSourceStack> {
+public class NeoServerCommandHelper extends AbstractNeoCommandHelper implements ServerCommandHelper {
     @Override
     public MinecraftServer getServer(final CommandSourceStack source) {
         return source.getServer();

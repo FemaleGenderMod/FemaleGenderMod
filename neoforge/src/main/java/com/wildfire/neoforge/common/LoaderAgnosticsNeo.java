@@ -19,8 +19,10 @@
 package com.wildfire.neoforge.common;
 
 import com.wildfire.common.LoaderAgnostics;
+import com.wildfire.common.entities.avatars.AvatarConfig;
 import java.nio.file.Path;
 import java.util.Optional;
+import net.minecraft.world.entity.decoration.Mannequin;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.i18n.MavenVersionTranslator;
@@ -28,9 +30,9 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
+import org.jspecify.annotations.Nullable;
 
 public class LoaderAgnosticsNeo implements LoaderAgnostics {
-
     @Override
     public String name() {
         return "NeoForge";
@@ -65,5 +67,15 @@ public class LoaderAgnosticsNeo implements LoaderAgnostics {
     @Override
     public boolean onClient() {
         return FMLEnvironment.getDist().isClient();
+    }
+
+    @Override
+    public @Nullable AvatarConfig readFromMannequin(final Mannequin mannequin) {
+        return mannequin.getExistingDataOrNull(WildfireGenderNeo.AVATAR_ATTACHMENT);
+    }
+
+    @Override
+    public void writeToMannequin(final Mannequin mannequin, final AvatarConfig config) {
+        mannequin.setData(WildfireGenderNeo.AVATAR_ATTACHMENT, config);
     }
 }

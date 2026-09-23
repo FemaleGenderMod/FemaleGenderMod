@@ -28,10 +28,13 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.context.ContextKey;
+import net.minecraft.world.entity.Avatar;
+import net.minecraft.world.entity.decoration.Mannequin;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jspecify.annotations.Nullable;
+import java.util.Objects;
 
 public class NeoClientHelper implements ClientHelper {
 
@@ -62,15 +65,23 @@ public class NeoClientHelper implements ClientHelper {
             "baseUrl"
         );
         *///? } else {
-        baseUrl = ((com.mojang.authlib.services.MinecraftServicesDiscoveryService) ObfuscationReflectionHelper.getPrivateValue(
+        // TODO change this to use a cached #getField() instead?
+        var discovery = ((com.mojang.authlib.services.MinecraftServicesDiscoveryService) ObfuscationReflectionHelper.getPrivateValue(
             MinecraftServicesSessionService.class,
             service,
             "discoveryService"
-        )).getUrl(com.mojang.authlib.services.response.discovery.Service.SESSION, "join");
+        ));
+        assert discovery != null; // we know this can't be null, but just so intellij stops complaining about it
+        baseUrl = discovery.getUrl(com.mojang.authlib.services.response.discovery.Service.SESSION, "join");
         if (baseUrl.endsWith("join")) {
             baseUrl = baseUrl.substring(0, baseUrl.length() - 4);
         }
         //? }
         return baseUrl;
+    }
+
+    @Override
+    public boolean shouldOverlayHurtSound(Avatar avatar) {
+        return avatar instanceof Mannequin;
     }
 }
