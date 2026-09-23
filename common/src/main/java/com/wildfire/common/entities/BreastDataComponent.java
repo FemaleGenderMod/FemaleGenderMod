@@ -22,9 +22,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.wildfire.api.WildfireAPI;
-import com.wildfire.api.server.WildfireServerAPI;import com.wildfire.common.WildfireGender;
-import com.wildfire.common.config.value.ConfigKey;
+import com.wildfire.api.server.WildfireServerAPI;
 import com.wildfire.common.config.validator.ConfigRange;
+import com.wildfire.common.config.value.ConfigKey;
 import com.wildfire.common.entities.players.PlayerConfigHolder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -87,11 +87,12 @@ public record BreastDataComponent(float breastSize, float cleavage, Vector3fc of
             return null;
         }
 
-        CompoundTag compoundTag = component.copyTag();
-        return OR_LEGACY.parse(NbtOps.INSTANCE, compoundTag.getCompound(WildfireAPI.MODID).orElseGet(() -> compoundTag.getCompoundOrEmpty(LEGACY_KEY)))
-                .result()
-                .map(breastDataComponent -> breastDataComponent.withComponent(component))
-                .orElse(null);
+        final CompoundTag compoundTag = component.copyTag();
+        return compoundTag.getCompound(WildfireAPI.MODID)
+            .or(() -> compoundTag.getCompound(LEGACY_KEY))
+            .flatMap(tag -> OR_LEGACY.parse(NbtOps.INSTANCE, tag).result())
+            .map(breastComponent -> breastComponent.withComponent(component))
+            .orElse(null);
     }
 
     public void write(ItemStack stack) {
