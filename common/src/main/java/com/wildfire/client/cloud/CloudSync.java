@@ -29,16 +29,12 @@ import com.mojang.serialization.JsonOps;
 import com.mojang.util.InstantTypeAdapter;
 import com.wildfire.api.WildfireAPI;
 import com.wildfire.client.config.ClientConfig;
-import com.wildfire.client.contributors.Contributor;
-import com.wildfire.client.contributors.ContributorDeserializer;
 import com.wildfire.common.LoaderAgnostics;
 import com.wildfire.common.WildfireGender;
 import com.wildfire.common.WildfireLang;
 import com.wildfire.common.config.enums.SyncVerbosity;
 import com.wildfire.common.entities.avatars.AvatarConfig;
 import com.wildfire.common.entities.players.PlayerConfigHolder;
-import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -63,7 +59,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.Executor;
-import java.util.stream.Collectors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Util;
@@ -89,7 +84,6 @@ public final class CloudSync {
     private static final Executor EXECUTOR = Util.ioPool().forName(WildfireAPI.MODID + "$cloudSync");
     private static final Gson GSON = new GsonBuilder()
         .registerTypeAdapter(Instant.class, new InstantTypeAdapter())
-        .registerTypeAdapter(Contributor.class, new ContributorDeserializer())
         .create();
 
     private static final HttpClient CLIENT = Util.make(() -> {
@@ -185,40 +179,6 @@ public final class CloudSync {
                 .header("User-Agent", USER_AGENT)
                 .header("Accept", "application/json")
                 .timeout(Duration.ofSeconds(5));
-    }
-
-    @ApiStatus.Internal
-    public static CompletableFuture<Map<UUID, Contributor>> getContributors() {
-        return CompletableFuture.supplyAsync(() -> {
-            var request = createRequest(URI.create(getCloudServer() + "/contributors")).GET().build();
-
-            HttpResponse<String> response;
-            try {
-                response = CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString()).join();
-                if(response.statusCode() != HttpURLConnection.HTTP_OK) {
-                    WildfireGender.LOGGER.warn("Couldn't fetch contributor list: server responded {}", response.statusCode());
-                    return Map.of();
-                }
-            } catch(Exception e) {
-                WildfireGender.LOGGER.warn("Couldn't fetch contributor list", e);
-                return Map.of();
-            }
-
-            try {
-                var json = GSON.fromJson(response.body(), JsonObject.class);
-                var interim = json.asMap()
-                        .entrySet()
-                        .stream()
-                        .collect(Collectors.toMap(
-                                entry -> UUID.fromString(entry.getKey()),
-                                entry -> GSON.fromJson(entry.getValue(), Contributor.class)
-                        ));
-                return Collections.unmodifiableMap(interim.size() <= 8 ? new Object2ObjectArrayMap<>(interim) : new Object2ObjectOpenHashMap<>(interim));
-            } catch(Exception e) {
-                WildfireGender.LOGGER.error("Failed to parse contributor list", e);
-                return Map.of();
-            }
-        }, EXECUTOR);
     }
 
     private static String generateServerId() {

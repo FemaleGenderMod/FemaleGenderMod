@@ -26,76 +26,43 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
 import org.jspecify.annotations.Nullable;
 
-/// @apiNote Only use this on the client side
-public record Contributor(
-    // TODO this technically supports multiple roles due to this using a bitmask, but any additional roles other than
-    //		the topmost one defined in Role is currently ignored
-    int roles,
-    @Nullable TextColor color,
-    @Nullable String name,
-    boolean showInCredits
-) {
-
+public record Contributor(String name, Role role, boolean showInCredits) {
     private static final TextColor DEFAULT_COLOR = TextColor.GOLD;
 
     public TextColor getColor() {
-        return color == null ? getRole().getColor() : color;
+        return role.getColor();
     }
 
     public Component asText() {
-        return getRole().langEntry.translateColored(getColor());
-    }
-
-    public Role getRole() {
-        if (roles == 0) {
-            return Role.GENERIC;
-        }
-
-        for (var role : Role.values()) {
-            if (role.isIn(this.roles)) {
-                return role;
-            }
-        }
-
-        return Role.GENERIC;
+        return role.langEntry.translateColored(getColor());
     }
 
     public enum Role {
-        MOD_CREATOR(0, WildfireLang.CONTRIBUTOR_ROLE_MOD_CREATOR, TextColor.LIGHT_PURPLE),
-        FABRIC_MAINTAINER(1, WildfireLang.CONTRIBUTOR_ROLE_FABRIC_MAINTAINER, 0xA78FFF),
-        NEOFORGE_MAINTAINER(2, WildfireLang.CONTRIBUTOR_ROLE_NEO_MAINTAINER, 0xA78FFF),
-        CI_MAINTAINER(8, WildfireLang.CONTRIBUTOR_ROLE_CI_MAINTAINER, 0x50C878),
-        DEVELOPER(3, WildfireLang.CONTRIBUTOR_ROLE_DEVELOPER),
-        TRANSLATOR(4, WildfireLang.CONTRIBUTOR_ROLE_TRANSLATOR, 0x66CCFF),
-        MASCOT(5, WildfireLang.CONTRIBUTOR_ROLE_MASCOT),
-        VOICE_ACTOR_FEMALE(6, WildfireLang.CONTRIBUTOR_ROLE_FEMALE_VOICE_ACTOR),
-        GENERIC(7, WildfireLang.CONTRIBUTOR_ROLE_GENERIC),
+        MOD_CREATOR(WildfireLang.CONTRIBUTOR_ROLE_MOD_CREATOR, TextColor.LIGHT_PURPLE),
+        FABRIC_MAINTAINER(WildfireLang.CONTRIBUTOR_ROLE_FABRIC_MAINTAINER, 0xA78FFF),
+        NEOFORGE_MAINTAINER(WildfireLang.CONTRIBUTOR_ROLE_NEO_MAINTAINER, 0xA78FFF),
+        CI_MAINTAINER(WildfireLang.CONTRIBUTOR_ROLE_CI_MAINTAINER, 0x50C878),
+        DEVELOPER(WildfireLang.CONTRIBUTOR_ROLE_DEVELOPER),
+        TRANSLATOR(WildfireLang.CONTRIBUTOR_ROLE_TRANSLATOR, 0x66CCFF),
+        MASCOT(WildfireLang.CONTRIBUTOR_ROLE_MASCOT),
+        VOICE_ACTOR_FEMALE(WildfireLang.CONTRIBUTOR_ROLE_FEMALE_VOICE_ACTOR),
+        GENERIC(WildfireLang.CONTRIBUTOR_ROLE_GENERIC),
         ;
 
-        private final int bit;
         private final WildfireLang langEntry;
         private final @Nullable TextColor color;
 
-        Role(int bit, WildfireLang langEntry, int color) {
-            this(bit, langEntry, TextColor.fromRgb(color));
+        Role(WildfireLang langEntry, int color) {
+            this(langEntry, TextColor.fromRgb(color));
         }
 
-        Role(int bit, WildfireLang langEntry, @Nullable TextColor color) {
-            this.bit = 1 << bit;
+        Role(WildfireLang langEntry, @Nullable TextColor color) {
             this.langEntry = langEntry;
             this.color = color;
         }
 
-        Role(int bit, WildfireLang langEntry) {
-            this(bit, langEntry, null);
-        }
-
-        public int bit() {
-            return bit;
-        }
-
-        public boolean isIn(int bitmask) {
-            return (bitmask & bit()) == bit();
+        Role(WildfireLang langEntry) {
+            this(langEntry, null);
         }
 
         public TextColor getColor() {

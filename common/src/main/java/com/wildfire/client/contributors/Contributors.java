@@ -19,32 +19,19 @@
 package com.wildfire.client.contributors;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Suppliers;
-import com.wildfire.common.WildfireGender;
-import com.wildfire.client.cloud.CloudSync;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.SequencedMap;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 import net.minecraft.Optionull;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
-import org.intellij.lang.annotations.Language;
-import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Unmodifiable;
-
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
-import java.util.function.Supplier;
 import org.jspecify.annotations.Nullable;
 
-/// @apiNote Only use this on the client side
 public final class Contributors {
-    @Language("RegExp")
-    private static final String UUID_PATTERN = "(?i)[a-z0-9]{8}-[a-z0-9]{4}-4[0-9a-z]{3}-[a-z0-9]{4}-[a-z0-9]{12}";
-
     private Contributors() {
         throw new UnsupportedOperationException();
     }
@@ -76,20 +63,8 @@ public final class Contributors {
         addContributor("372271ab-28f2-44bd-b585-95f43e010c22", "KeiraFGM", Contributor.Role.MASCOT, false);
     }
 
-    private static final Supplier<CompletableFuture<Map<UUID, Contributor>>> MERGED_CONTRIBUTORS = Suppliers.memoize(() -> CompletableFuture.supplyAsync(() -> {
-        Map<UUID, Contributor> contributors;
-        try {
-            contributors = CloudSync.getContributors().join();
-        } catch(Exception e) {
-            WildfireGender.LOGGER.error("Failed to retrieve contributors", e);
-            return CONTRIBUTORS;
-        }
-        WildfireGender.LOGGER.debug("Retrieved contributor map from Cloud Sync: {}", contributors);
-        return merge(contributors);
-    }));
-
     public static @Unmodifiable Map<UUID, Contributor> getContributors() {
-        return Collections.unmodifiableMap(MERGED_CONTRIBUTORS.get().getNow(CONTRIBUTORS));
+        return Collections.unmodifiableMap(CONTRIBUTORS);
     }
 
     public static @Unmodifiable Set<UUID> getContributorUUIDs() {
@@ -101,7 +76,7 @@ public final class Contributors {
     }
 
     public static Contributor.@Nullable Role getRole(UUID uuid) {
-        return map(uuid, Contributor::getRole);
+        return map(uuid, Contributor::role);
     }
 
     public static @Nullable Component getNametag(UUID uuid) {
@@ -112,24 +87,13 @@ public final class Contributors {
         return map(uuid, Contributor::getColor);
     }
 
-    private static void addContributor(@Pattern(UUID_PATTERN) String uuid, String name, Contributor.Role role, boolean showInCredits) {
-        var parsedUuid = UUID.fromString(uuid);
+    private static void addContributor(@UUIDPattern String uuid, String name, Contributor.Role role, boolean showInCredits) {
+        UUID parsedUuid = UUID.fromString(uuid);
         Preconditions.checkArgument(!CONTRIBUTORS.containsKey(parsedUuid), "Contributor with UUID '%s' is already present", uuid);
-        CONTRIBUTORS.put(parsedUuid, new Contributor(role.bit(), null, name, showInCredits));
+        CONTRIBUTORS.put(parsedUuid, new Contributor(name, role, showInCredits));
     }
 
-    @SuppressWarnings("PatternValidation")
-    private static void addContributor(@Pattern(UUID_PATTERN) String uuid, String name, Contributor.Role role) {
+    private static void addContributor(@UUIDPattern String uuid, String name, Contributor.Role role) {
         addContributor(uuid, name, role, true);
-    }
-
-    private static SequencedMap<UUID, Contributor> merge(Map<UUID, Contributor> toMerge) {
-        var merged = new LinkedHashMap<>(CONTRIBUTORS);
-        for(var entry : toMerge.entrySet()) {
-            // ensure hardcoded contributors are always present in the credits screen by ignoring a fetched
-            // contributor entry with no name set
-            merged.merge(entry.getKey(), entry.getValue(), (a, b) -> (a.name() != null && b.name() == null) ? a : b);
-        }
-        return merged;
     }
 }

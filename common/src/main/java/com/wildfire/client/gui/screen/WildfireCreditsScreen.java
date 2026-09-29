@@ -51,18 +51,18 @@ public class WildfireCreditsScreen extends BaseWildfireScreen {
     //General contributor list
     private final FakeGUIPlayer[] contributors = Contributors.getContributors().entrySet().stream()
             .filter(it -> it.getValue().name() != null && it.getValue().showInCredits())
-            .filter(it -> it.getValue().getRole() != Role.TRANSLATOR) // exclude translators
+            .filter(it -> it.getValue().role() != Role.TRANSLATOR) // exclude translators
             .sorted(Comparator.comparing(it -> it.getValue().name()))
-            .sorted(Comparator.comparing(it -> it.getValue().getRole()))
+            .sorted(Comparator.comparing(it -> it.getValue().role()))
             .map(it -> new FakeGUIPlayer(it.getValue().name(), it.getKey(), FakeGUIPlayer.FEMALE_CHANGES))
             .toArray(FakeGUIPlayer[]::new);
 
     //Translator list
     private final FakeGUIPlayer[] translators = Contributors.getContributors().entrySet().stream()
             .filter(it -> it.getValue().name() != null && it.getValue().showInCredits())
-            .filter(it -> it.getValue().getRole() == Role.TRANSLATOR) // only have translators
+            .filter(it -> it.getValue().role() == Role.TRANSLATOR) // only have translators
             .sorted(Comparator.comparing(it -> it.getValue().name()))
-            .sorted(Comparator.comparing(it -> it.getValue().getRole()))
+            .sorted(Comparator.comparing(it -> it.getValue().role()))
             .map(it -> new FakeGUIPlayer(it.getValue().name(), it.getKey(), FakeGUIPlayer.FEMALE_CHANGES))
             .toArray(FakeGUIPlayer[]::new);
 
