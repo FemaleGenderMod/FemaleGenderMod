@@ -18,80 +18,107 @@
 
 package com.wildfire.client.gui.screen;
 
+import com.wildfire.client.cloud.CloudSync;
+import com.wildfire.client.cloud.SyncLog;
+import com.wildfire.client.cloud.SyncingTooFrequentlyException;
+import com.wildfire.client.config.ClientConfig;
+import com.wildfire.client.gui.IFancyFontRenderer.TextAlignment;
 import com.wildfire.client.gui.WildfireButton;
-import com.wildfire.main.WildfireGender;
-import com.wildfire.main.WildfireLang;
-import com.wildfire.main.cloud.CloudSync;
-import com.wildfire.main.cloud.SyncLog;
-import com.wildfire.main.cloud.SyncLog.Entry;
-import com.wildfire.main.cloud.SyncingTooFrequentlyException;
-import com.wildfire.main.config.GeneralClientConfig;
-import com.wildfire.main.text.TextComponentUtil;
-import java.util.Objects;
-import java.util.UUID;
+import com.wildfire.common.WildfireGender;
+import com.wildfire.common.WildfireLang;
+import com.wildfire.common.config.value.ConfigValue;
+import com.wildfire.common.entities.players.PlayerConfigHolder;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnknownNullability;
+import net.minecraft.client.gui.screens.Screen;
 
+/// @apiNote Only use this on the client side
 public class WildfireCloudSyncScreen extends BaseWildfireScreen {
 
-    private static final ResourceLocation BACKGROUND = WildfireGender.rl("textures/gui/sync_bg_v2.png");
+    private static final ResourceLocation BACKGROUND = WildfireGender.id("textures/gui/sync_bg_v2.png");
 
-    private WildfireButton btnSyncNow, btnAutomaticSync;
+    private static final Component ENABLED = WildfireLang.LABEL_ENABLED.translateColored(ChatFormatting.GREEN);
+    private static final Component DISABLED = WildfireLang.LABEL_DISABLED.translateColored(ChatFormatting.RED);
 
-    protected WildfireCloudSyncScreen(Screen parent, UUID uuid) {
-        super(WildfireLang.CLOUD_SETTINGS.translate(), parent, uuid);
+    protected WildfireCloudSyncScreen(Screen parent, PlayerConfigHolder config) {
+        super(WildfireLang.CLOUD_SETTINGS.translate(), parent, config);
     }
-
     @Override
     public void init() {
+        super.init();
         int x = this.width / 2;
         int y = this.height / 2;
         int yPos = y - 47;
         int xPos = x - 156 / 2 - 1;
 
-        addRenderableWidget(new WildfireButton(xPos, yPos, 157, 20, WildfireLang.CLOUD_STATUS.translate(CloudSync.isEnabled()), button -> {
-            boolean newValue = !GeneralClientConfig.INSTANCE.cloudSync.get();
-            GeneralClientConfig.INSTANCE.cloudSync.set(newValue);
-            GeneralClientConfig.INSTANCE.save();
-            button.setMessage(WildfireLang.CLOUD_STATUS.translate(CloudSync.isEnabled()));
-            btnAutomaticSync.active = CloudSync.isEnabled();
-            btnAutomaticSync.setMessage(WildfireLang.CLOUD_AUTOMATIC.translate(CloudSync.isEnabled() ? GeneralClientConfig.INSTANCE.syncPlayerData.get() : WildfireLang.OFF));
-            btnSyncNow.visible = newValue;
-        }));
+        final var ref = new Object() {
+            @UnknownNullability
+            WildfireButton btnSyncNow, btnDelete, btnAutomaticSync;
+        };
 
-        btnAutomaticSync = addRenderableWidget(new WildfireButton(xPos, yPos + 20, 157, 20, WildfireLang.CLOUD_AUTOMATIC.translate(
-              CloudSync.isEnabled() ? GeneralClientConfig.INSTANCE.syncPlayerData.get() : WildfireLang.OFF), button -> {
-            boolean newVal = !GeneralClientConfig.INSTANCE.syncPlayerData.get();
-            GeneralClientConfig.INSTANCE.syncPlayerData.set(newVal);
-            GeneralClientConfig.INSTANCE.save();
-            button.setMessage(WildfireLang.CLOUD_AUTOMATIC.translate(newVal));
-        }));
-        btnAutomaticSync.setTooltip(Tooltip.create(TextComponentUtil.build(WildfireLang.CLOUD_AUTOMATIC_TOOLTIP_1, "\n\n", WildfireLang.CLOUD_AUTOMATIC_TOOLTIP_2)));
-        btnAutomaticSync.active = CloudSync.isEnabled();
+        addButton(builder -> builder
+                .message(() -> WildfireLang.CLOUD_STATUS.translate(CloudSync.isEnabled() ? ENABLED : DISABLED))
+                .position(xPos, yPos)
+                .size(157, 20)
+                .onPress(button -> {
+                    if (ClientConfig.config().cloudSync().enabled().update(ConfigValue.TOGGLE)) {
+                        boolean available = CloudSync.isAvailable();
+                        boolean enabled = ClientConfig.config().cloudSync().enabled().get();
+                        button.updateMessage();
+                        ref.btnAutomaticSync.setActive(enabled);
+                        ref.btnSyncNow.setVisible(enabled && available);
+                        ref.btnDelete.setVisible(!enabled && available);
+                        ref.btnAutomaticSync.updateMessage();
+                    }
+                }));
 
-        btnSyncNow = addRenderableWidget(new WildfireButton(xPos + 98, yPos + 42, 60, 15, WildfireLang.CLOUD_SYNC.translate(), this::sync));
-        //btnSyncNow.setTooltip(Tooltip.of(Component.empty()
-        //		.append(Component.literal("Sync Server data is cached for a minimum time of 30 minutes. If you do not see any changes please try to re-sync later."))));
-        btnSyncNow.visible = GeneralClientConfig.INSTANCE.cloudSync.get();
+        ref.btnAutomaticSync = addButton(builder -> builder
+                .message(() -> WildfireLang.CLOUD_AUTOMATIC.translate(CloudSync.isEnabled() ? (ClientConfig.config().cloudSync().automatic().get() ? ENABLED : DISABLED) : WildfireLang.LABEL_OFF.translate()))
+                .position(xPos, yPos + 20)
+                .size(157, 20)
+                .onPress(button -> {
+                    if (ClientConfig.config().cloudSync().automatic().update(ConfigValue.TOGGLE)) {
+                        button.updateMessage();
+                    }
+                })
+                .tooltip(Tooltip.create(WildfireLang.CLOUD_AUTOMATIC_TOOLTIP.line(1)
+                        .append("\n\n")
+                        .append(WildfireLang.CLOUD_AUTOMATIC_TOOLTIP.line(2))))
+                .active(CloudSync.isEnabled()));
 
-        addRenderableWidget(new WildfireButton(this.width / 2 + 73, yPos - 11, 9, 9, TextComponentUtil.getString("X"),
-              button -> onClose(), text -> AbstractWidget.wrapDefaultNarrationMessage(CommonComponents.GUI_DONE)));
+        ref.btnSyncNow = addButton(builder -> builder
+                .message(WildfireLang.CLOUD_SYNC::translate)
+                .position(xPos + 98, yPos + 42)
+                .size(60, 15)
+                .onPress(this::sync));
+        ref.btnSyncNow.setVisible(CloudSync.isEnabled());
 
-		/*btnHelp = addRenderableWidget(new WildfireButton(this.width / 2 + 73 - 10, yPos - 11, 9, 9, Component.literal("?"),
-				button -> {
-					//client.setScreen(new WildfireCloudDetailsScreen(this, client.player.getUuid())); // Disabled for now. Not complete
-					// BUTTON IS SUPPOSED TO DO NOTHING AT THE MOMENT
-				}));*/
+        ref.btnDelete = addButton(builder -> builder
+                .message(() -> WildfireLang.CLOUD_DELETE.translateColored(ChatFormatting.RED))
+                .position(xPos + 98, yPos + 42)
+                .size(60, 15)
+                .onPress(this::delete));
+        ref.btnDelete.setVisible(!CloudSync.isEnabled());
 
-        super.init();
+        addButton(builder -> builder
+                .message(() -> Component.literal("X"))
+                .position(this.width / 2 + 74, yPos - 11)
+                .size(8, font.lineHeight)
+                .onPress(ignored -> onClose())
+                .narration(ignored -> Component.translatable("gui.narrate.button", Component.translatable("gui.done"))));
+
+        /*this.addDrawableChild(btnHelp = new WildfireButton(this.width / 2 + 73 - 10, yPos - 11, 9, 9, Component.literal("?"),
+                button -> {
+                    //client.setScreen(new WildfireCloudDetailsScreen(this, client.player.getUUID())); // Disabled for now. Not complete
+                    // BUTTON IS SUPPOSED TO DO NOTHING AT THE MOMENT
+                }));*/
     }
 
     private void sync(Button button) {
@@ -99,13 +126,14 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
         button.setMessage(WildfireLang.CLOUD_SYNCING.translate());
         CompletableFuture.runAsync(() -> {
             try {
-                CloudSync.sync(Objects.requireNonNull(getPlayer())).join();
+                var config = (PlayerConfigHolder) this.config;
+                CloudSync.sync(config).join();
                 button.setMessage(WildfireLang.CLOUD_SYNCING_SUCCESS.translate());
-            } catch (Exception e) {
-                Throwable actualException = e instanceof CompletionException ce ? ce.getCause() : e;
-                if (actualException instanceof SyncingTooFrequentlyException) {
+            } catch(Exception e) {
+                var actualException = e instanceof CompletionException ce ? ce.getCause() : e;
+                if(actualException instanceof SyncingTooFrequentlyException) {
                     WildfireGender.LOGGER.warn("Failed to sync settings as we've already synced too recently");
-                    SyncLog.add(WildfireLang.SYNC_LOG_SYNC_TOO_FREQUENTLY);
+                    SyncLog.add(WildfireLang.SYNC_LOG_TOO_FREQUENT);
                 } else {
                     WildfireGender.LOGGER.error("Failed to sync settings", actualException);
                 }
@@ -114,44 +142,53 @@ public class WildfireCloudSyncScreen extends BaseWildfireScreen {
         });
     }
 
+    private void delete(Button widget) {
+        widget.active = false;
+        CompletableFuture.runAsync(() -> {
+            try {
+                var config = (PlayerConfigHolder) this.config;
+                CloudSync.deleteProfile(config).join();
+                widget.setMessage(WildfireLang.CLOUD_DELETED.translate());
+            } catch(Exception e) {
+                WildfireGender.LOGGER.error("Failed to delete cloud sync profile", e);
+                widget.setMessage(WildfireLang.CLOUD_DELETE_FAILED.translate());
+            }
+        });
+    }
+
     @Override
-    public void renderBackground(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         super.renderBackground(graphics, mouseX, mouseY, delta);
+        graphics.blit(BACKGROUND, (this.width - 172) / 2, (this.height - 124) / 2, 0, 0, 172, 144, 256, 256);
         graphics.blit(BACKGROUND, (this.width - 172) / 2, (this.height - 124) / 2, 0, 0, 172, 144, 256, 256);
     }
 
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         super.render(graphics, mouseX, mouseY, delta);
+        if(minecraft.level == null) return;
 
         int x = this.width / 2;
-        int y = this.height / 2 - 47;
+        int y = this.height / 2;
+        y -= 47;
 
-        //TODO - 1.21: Validate these are correct
-        drawScrollingString(graphics, getTitle(), x - 79, y - 11, TextAlignment.LEFT, 0x444444, 141, 0, false);
-        drawScrollingString(graphics, WildfireLang.CLOUD_STATUS_LOG.translate(), x - 79, y + 48, TextAlignment.LEFT, 0x444444, 95, 0, false);
-		/*GuiHelper.drawScrollableTextWithoutShadow(TextAlignment.LEFT, graphics, font, getTitle(), x - 79, y - 12, x - 79 + 141, y - 11 + 10, 0x444444);
-		GuiHelper.drawScrollableTextWithoutShadow(TextAlignment.LEFT, graphics, font, WildfireLang.CLOUD_STATUS_LOG.translate(), x - 79, y + 47, x - 79 + 95, y + 48 + 10, 0x444444);*/
+        drawScrollingString(graphics, getTitle(), x - 79, y - 12, TextAlignment.LEFT, 0xFF444444, 141, 11, 0, false);
+        drawScrollingString(graphics, WildfireLang.CLOUD_STATUS_LOG.translate(), x - 79, y + 47, TextAlignment.LEFT, 0xFF444444, 95, 11, 0, false);
 
-        int lineHeight = font().lineHeight;
-        for (int i = SyncLog.SYNC_LOG.size() - 1; i >= 0; i--) {
+        for(int i = SyncLog.SYNC_LOG.size() - 1; i >= 0; i--) {
             int reverseIndex = SyncLog.SYNC_LOG.size() - 1 - i;
-            Entry entry = SyncLog.SYNC_LOG.get(i);
+            var entry = SyncLog.SYNC_LOG.get(i);
 
-            if (reverseIndex < 6) {
-                //Add an extra space between each element
-                int ey = y + 110 - (lineHeight * reverseIndex + reverseIndex);
-                //TODO - 1.21: Validate this is correct
-                drawScrollingString(graphics, entry.text(), x - 78, ey, TextAlignment.LEFT, 0x444444, 156, 0, false);
-				/*GuiHelper.drawScrollableTextWithoutShadow(TextAlignment.LEFT, graphics, font, entry.text(),
-						x - 78, ey, x - 78 + 156, ey + 10, entry.color());*/
+            if(reverseIndex < 6) {
+                int ey = y + 110 - (reverseIndex * 10);
+                drawScrollingString(graphics, entry.text(), x - 78, ey, TextAlignment.LEFT, entry.color(), 156, 10, 0, false);
             }
         }
     }
 
     @Override
-    public void onClose() {
-        GeneralClientConfig.INSTANCE.save();
-        super.onClose();
+    public void removed() {
+        ClientConfig.INSTANCE.save();
+        super.removed();
     }
 }

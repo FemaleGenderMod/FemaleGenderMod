@@ -16,22 +16,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wildfire.client.gui.screen;
+/*package com.wildfire.client.gui.screen;
 
-import com.wildfire.client.gui.WildfireButton;
+import com.wildfire.gui.GuiUtils;
 import com.wildfire.main.WildfireGender;
-import com.wildfire.main.WildfireLang;
-import java.util.UUID;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
 
-public class WildfireCloudDetailsScreen extends BaseWildfireScreen {
+import java.util.UUID;
 
-    private static final ResourceLocation BACKGROUND = WildfireGender.rl("textures/gui/details_page.png");
+public class WildfireCloudDetailsScreen extends BaseWildfireScreen {//TODO: PROPER TRANSLATIONS
 
-    private WildfireButton nextPage, prevPage;
+    private static final Component TITLE = WildfireLang.CLOUD_DETAILS.translate();
+
+    private static final Component PAGE_1 = WildfireLang.CLOUD_DETAILS.translate().withStyle(style -> style.withUnderlined(true));
+
+    private static final Component NEXT_PAGE = WildfireLang.DETAILS_NEXT_PAGE.translate();
+    private static final Component PREV_PAGE = WildfireLang.DETAILS_PREV_PAGE.translate();
+    private static final ResourceLocation BACKGROUND = WildfireGender.id("textures/gui/details_page.png");
+
     private int currentPage = 0;
 
     public WildfireCloudDetailsScreen(Screen parent, UUID uuid) {
@@ -44,39 +50,49 @@ public class WildfireCloudDetailsScreen extends BaseWildfireScreen {
         int y = this.height / 2;
 
         currentPage = 0;
-        nextPage = addRenderableWidget(new WildfireButton(x + 46, y + 74, 76, 20, WildfireLang.DETAILS_NEXT_PAGE.translate(), button -> {
-            if (currentPage < 1) {
-                currentPage++;
-            }
-        }));
 
-        prevPage = addRenderableWidget(new WildfireButton(x - 128 + 6, y + 74, 76, 20, WildfireLang.DETAILS_PREV_PAGE.translate(), button -> {
-            if (currentPage > 0) {
-                currentPage--;
-            }
-        }));
-
-        super.init();
+//		this.addDrawableChild(new WildfireButton(x + 46, y + 74, 76, 20,
+//				NEXT_PAGE,
+//				button -> {
+//					if(currentPage < 1) {
+//						currentPage++;
+//					}
+//				}));
+//
+//
+//		this.addDrawableChild(new WildfireButton(x - 128 + 6, y + 74, 76, 20,
+//				PREV_PAGE,
+//				button -> {
+//					if(currentPage > 0) {
+//						currentPage--;
+//					}
+//				}));
     }
 
 
     @Override
-    public void renderBackground(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        super.renderBackground(graphics, mouseX, mouseY, delta);
-        graphics.blit(BACKGROUND, (this.width - 256) / 2, (this.height - 200) / 2, 0, 0, 256, 200, 256, 256);
+    public void renderBackground(GuiGraphics ctx, int mouseX, int mouseY, float delta) {
+        this.renderTransparentBackground(ctx);
+        ctx.blit(RenderPipelines.GUI_TEXTURED, BACKGROUND, (this.width - 256) / 2, (this.height - 200) / 2, 0, 0, 256, 200, 256, 256);
     }
 
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        super.render(graphics, mouseX, mouseY, delta);
+    public void render(GuiGraphics ctx, int mouseX, int mouseY, float delta) {
+        if (minecraft == null || minecraft.level == null) return;
+        super.render(ctx, mouseX, mouseY, delta);
 
         int x = this.width / 2;
         int y = this.height / 2;
 
-        drawCenteredText(graphics, WildfireLang.CLOUD_DETAILS.translate(), x, y - 94, 0x444444);
+        GuiUtils.drawCenteredText(ctx, font, TITLE, x, y - 94, 4473924);
 
         if (currentPage == 0) {
-            drawCenteredTextWrapped(graphics, WildfireLang.CLOUD_DETAILS_PAGE1.translate(), x, y - 75, 256 - 10, 0x00FF00);
+            GuiUtils.drawCenteredTextWrapped(ctx, font, WildfireLang.CLOUD_DETAILS.page(1), x, y - 75, 256 - 10, CommonColors.GREEN);
         }
     }
-}
+
+    @Override
+    public void onClose() {
+        super.onClose();
+    }
+}*/
