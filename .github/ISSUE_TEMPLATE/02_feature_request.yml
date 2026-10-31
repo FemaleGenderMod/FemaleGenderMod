@@ -1,0 +1,20 @@
+name: Feature Request
+description: File a feature request.
+labels: ["Suggestion"]
+body:
+  - type: textarea
+    id: describe-it
+    attributes:
+      label: "Describe the feature you're requesting"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: no-existing-request
+    attributes:
+      label: "This is not an existing request"
+      description: |
+        Please make sure to look through the existing issues to make sure that this request has not been made before.
+      options:
+        - label: This request has not been made before
+          required: true
