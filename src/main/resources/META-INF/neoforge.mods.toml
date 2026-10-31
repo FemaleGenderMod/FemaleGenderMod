@@ -1,27 +1,33 @@
 modLoader = "javafml"
-loaderVersion = "${loader_version}"
-license = "LGPLv3"
-issueTrackerURL = "https://github.com/WildfireRomeo/WildfireFemaleGenderMod/issues"
+loaderVersion = "[4,)"
+license = "LGPL-3.0"
+issueTrackerURL = "https://github.com/FemaleGenderMod/FemaleGenderMod/issues"
 
 [[mods]]
-    modId = "wildfire_gender"
-    version = "${file.jarVersion}"
+    modId = "female_gender_mod"
+    version = "5.0.0"
     displayName = "Female Gender Mod"
-    #updateJSONURL="https://change.me.example.invalid/updates.json"
-    displayURL = "https://www.curseforge.com/minecraft/mc-mods/female-gender-neoforge"
-    logoFile = "logo.png"
-    credits = "A2 76, Arcti_cc, BluelightAmelia, celeste, diademiemi, IzzyBizzy45, Kichura, PinguinLars, Powerless001, pupnewfster, RacoonDog"
-    authors = "WildfireRomeo"
-    description = "Adds extra customization options to the player model by adding breasts for a more feminine appearance."
-    displayTest = "IGNORE_SERVER_VERSION"
+    displayURL = "https://www.curseforge.com/minecraft/mc-mods/female-gender"
+    iconFile = "assets/female_gender_mod/icon.png"
+    bannerFile = "assets/female_gender_mod/banner.png"
+    authors = "WildfireRomeo, celeste, pupnewfster"
+    credits = "Arcti_cc, BluelightAmelia, diademiemi, IzzyBizzy45, Kichura, PinguinLars, Powerless001, Crosby"
+    description = "Adds extra customization options to the player model by adding breasts for a more feminine appearance"
 
-[[dependencies.wildfire_gender]]
+[[mixins]]
+    config = "female_gender_mod.mixins.json"
+[[mixins]]
+    config = "female_gender_mod.client.mixins.json"
+[[mixins]]
+    config = "female_gender_mod.neo.mixins.json"
+
+[[dependencies.female_gender_mod]]
     modId = "minecraft"
     type = "required"
-    versionRange = "${mc_version}"
+    versionRange = "[1.21.1]"
     side = "BOTH"
-[[dependencies.wildfire_gender]]
+[[dependencies.female_gender_mod]]
     modId = "neoforge"
     type = "required"
-    versionRange = "${neo_version}"
+    versionRange = "[21.1.228,)"
     side = "BOTH"

@@ -1,75 +1,97 @@
+/*
+ * Wildfire's Female Gender Mod is a female gender mod created for Minecraft.
+ * Copyright (C) 2023-present WildfireRomeo
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package com.wildfire.client.resources;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.JsonOps;
 import com.wildfire.api.IGenderArmor;
-import com.wildfire.main.WildfireGender;
+import com.wildfire.api.data.GenderArmorProvider;
+import com.wildfire.common.WildfireGender;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceKey;
+import java.util.Optional;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jspecify.annotations.Nullable;
 
-public class GenderArmorResourceManager extends SimpleJsonResourceReloadListener {
+/// @apiNote Only use this on the client side
+public final class GenderArmorResourceManager extends SimpleJsonResourceReloadListener {
 
+    public static final ResourceLocation ID = WildfireGender.id("armor_data");
     public static final GenderArmorResourceManager INSTANCE = new GenderArmorResourceManager();
+    @Deprecated(forRemoval = true)
+    private static final GenderArmorResourceManager LEGACY = new GenderArmorResourceManager("wildfire_gender_data", true);
 
-    @Unmodifiable
-    private Map<ResourceLocation, IGenderArmor> configs = Collections.emptyMap();
+    @Deprecated(forRemoval = true)
+    private final boolean isLegacy;
+    private @Unmodifiable Map<ResourceLocation, IGenderArmor> configs = Map.of();
 
     private GenderArmorResourceManager() {
-        //super(IGenderArmor.CODEC, FiledToIdConverter.json("wildfire_gender_data"));
-        super(new Gson(), "wildfire_gender_data");
+        this(GenderArmorProvider.PREFIX, false);
+    }
+
+    private GenderArmorResourceManager(String path, boolean isLegacy) {
+        super(new Gson(), path);
+        this.isLegacy = isLegacy;
     }
 
     @Override
-    protected void apply(@NotNull Map<ResourceLocation, JsonElement> prepared, @NotNull ResourceManager manager, @NotNull ProfilerFiller profiler) {
-        Map<ResourceLocation, IGenderArmor> built = new HashMap<>();
-        for (Map.Entry<ResourceLocation, JsonElement> entry : prepared.entrySet()) {
-            DataResult<IGenderArmor> decode = IGenderArmor.CODEC.parse(JsonOps.INSTANCE, entry.getValue());
-            if (decode.isSuccess()) {
-                built.put(entry.getKey(), decode.getOrThrow());
-            } else {
-                decode.ifError(error -> WildfireGender.LOGGER.error("Failed to load gender armor {}. {}", entry.getKey(), error.message()));
-            }
+    protected Map<ResourceLocation, JsonElement> prepare(ResourceManager manager, ProfilerFiller profiler) {
+        if (isLegacy) {
+            return super.prepare(manager, profiler);
         }
-        this.configs = Collections.unmodifiableMap(built);
+        Map<ResourceLocation, JsonElement> result = new HashMap<>(LEGACY.prepare(manager, profiler));
+        for (final ResourceLocation key : result.keySet()) {
+            WildfireGender.LOGGER.warn("Gender Armor config: '{}' should be moved to the new folder path: '{}'", key, GenderArmorProvider.PREFIX);
+        }
+        result.putAll(super.prepare(manager, profiler));
+        return result;
     }
 
-    @Nullable
-    public static IGenderArmor get(ResourceLocation model) {
+    @Override
+    protected void apply(Map<ResourceLocation, JsonElement> prepared, ResourceManager manager, ProfilerFiller profiler) {
+        Map<ResourceLocation, IGenderArmor> parsed = new HashMap<>();
+        for (final Map.Entry<ResourceLocation, JsonElement> entry : prepared.entrySet()) {
+            IGenderArmor.CODEC.parse(com.mojang.serialization.JsonOps.INSTANCE, entry.getValue())
+                .resultOrPartial(error -> WildfireGender.LOGGER.error("Failed to parse gender armor config '{}': {}", entry.getKey(), error))
+                .ifPresent(armor -> parsed.put(entry.getKey(), armor));
+        }
+        this.configs = Collections.unmodifiableMap(parsed);
+        WildfireGender.LOGGER.info("Loaded {} gender armor configs", parsed.size());
+    }
+
+    public static @Nullable IGenderArmor get(ResourceLocation model) {
         return INSTANCE.configs.get(model);
     }
 
-    @Nullable
-    public static IGenderArmor get(ItemStack stack) {
-        if (stack.getItem() instanceof ArmorItem armorItem) {
-            ResourceKey<ArmorMaterial> key = armorItem.getMaterial().getKey();
-            if (key != null) {
-                return get(key.location());
-            }
+    public static Optional<IGenderArmor> get(ItemStack item) {
+        if (item.getItem() instanceof ArmorItem armorItem) {
+            return Optional.ofNullable(armorItem.getMaterial().unwrapKey()
+                .map(key -> get(key.location()))
+                .orElse(null));
         }
-        ResourceLocation name = BuiltInRegistries.ITEM.getKeyOrNull(stack.getItem());
-        if (name != null) {
-            return get(name);
-        }
-        return null;
-        //TODO - 1.21.4: Switch to this
-        /*return Optional.ofNullable(stack.get(DataComponents.EQUIPPABLE))
-              .flatMap(Equippable::assetId)
-              .map(ResourceKey::location)
-              .map(GenderArmorResourceManager::get);*/
+        return Optional.empty();
     }
 }

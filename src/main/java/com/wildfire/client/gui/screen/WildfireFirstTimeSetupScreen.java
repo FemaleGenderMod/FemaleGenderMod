@@ -18,136 +18,170 @@
 
 package com.wildfire.client.gui.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.google.common.base.Suppliers;
+import com.wildfire.api.client.WildfireClientAPI;
 import com.wildfire.client.WildfireGenderClient;
+import com.wildfire.client.config.ClientConfig;
+import com.wildfire.client.gui.FakeGUIPlayer;
+import com.wildfire.client.gui.IFancyFontRenderer.TextAlignment;
 import com.wildfire.client.gui.WildfireButton;
-import com.wildfire.main.WildfireGender;
-import com.wildfire.main.WildfireLang;
-import com.wildfire.main.config.GeneralClientConfig;
-import com.wildfire.main.entitydata.PlayerConfig;
-import com.wildfire.main.text.TextComponentUtil;
+import com.wildfire.common.WildfireGender;
+import com.wildfire.common.WildfireLang;
+import com.wildfire.common.entities.avatars.AbstractAvatarConfigHolder;
+import com.wildfire.common.entities.players.SyncStatus;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.function.Supplier;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnknownNullability;
+import org.jspecify.annotations.Nullable;
 
+/// @apiNote Only use this on the client side
 public class WildfireFirstTimeSetupScreen extends BaseWildfireScreen {
 
-    private static final ResourceLocation BACKGROUND = WildfireGender.rl("textures/gui/first_time_bg.png");
+    private static final Component DESCRIPTION = WildfireLang.FIRST_TIME_DESCRIPTION.translate();
+    private static final Component NOTICE = WildfireLang.FIRST_TIME_NOTICE.translate();
+    private static final int SCREEN_WIDTH = 274;
 
-    private WildfireButton enableCloudSyncing, disableCloudSyncing;
+    private static final Component ENABLE_CLOUD_SYNCING = WildfireLang.FIRST_TIME_ENABLE.translateColored(ChatFormatting.GREEN);
+    private static final Component DISABLE_CLOUD_SYNCING = WildfireLang.FIRST_TIME_DISABLE.translateColored(ChatFormatting.RED);
 
-    public WildfireFirstTimeSetupScreen(Screen parent, UUID uuid) {
-        super(WildfireLang.CLOUD_SETTINGS.translate(), parent, uuid);
+    private static final ResourceLocation BACKGROUND = WildfireGender.id("textures/gui/first_time_bg.png");
+
+    private static final UUID keiraUUID = UUID.fromString("372271ab-28f2-44bd-b585-95f43e010c22");
+
+    private final Supplier<FakeGUIPlayer> fakeKeira = Suppliers.memoize(() -> new FakeGUIPlayer("KeiaraFGM", keiraUUID, FakeGUIPlayer.FEMALE_CHANGES));
+
+    public WildfireFirstTimeSetupScreen(@Nullable Screen parent, AbstractAvatarConfigHolder config) {
+        super(WildfireLang.FIRST_TIME_TITLE.translate().withStyle(style -> style.withUnderlined(true)), parent, config);
     }
 
     @Override
     public void init() {
+        super.init();
         int x = this.width / 2;
         int y = this.height / 2;
 
-        enableCloudSyncing = addRenderableWidget(new WildfireButton(x + 3, y + 74, 128, 20, WildfireLang.FIRST_TIME_SETUP_ENABLE_CLOUD_SYNC.translateColored(ChatFormatting.GREEN), button -> {
-            //Enable both settings, they can always disable automatic later? TBD
-            GeneralClientConfig.INSTANCE.cloudSync.set(true);
-            GeneralClientConfig.INSTANCE.syncPlayerData.set(true);
-            GeneralClientConfig.INSTANCE.firstTimeLoad.set(false);
-            GeneralClientConfig.INSTANCE.save();
+        final var ref = new Object() {
+            @UnknownNullability
+            WildfireButton no;
+        };
 
-            button.active = false;
-            button.setMessage(CommonComponents.ELLIPSIS);
-            disableCloudSyncing.active = false;
+        addButton(builder -> builder
+                .message(() -> ENABLE_CLOUD_SYNCING)
+                .position(x + 3, y + 74)
+                .size(128, 20)
+                .onPress(button -> {
+                    final var config = ClientConfig.config();
+                    config.cloudSync().enabled().update(true);
+                    config.cloudSync().automatic().update(true);
+                    config.firstTimeLoad().update(false);
 
-            final WardrobeBrowserScreen nextScreen = new WardrobeBrowserScreen(null, minecraft.player.getUUID());
-            doInitialSync().thenRun(() -> minecraft.execute(() -> minecraft.setScreen(nextScreen)));
-        }));
+                    button.active = false;
+                    button.setMessage(CommonComponents.ELLIPSIS);
+                    ref.no.setActive(false);
 
-        disableCloudSyncing = addRenderableWidget(new WildfireButton(x - 131, y + 74, 128, 20, WildfireLang.FIRST_TIME_SETUP_DISABLE_CLOUD_SYNC.translateColored(ChatFormatting.RED), button -> {
-            GeneralClientConfig.INSTANCE.cloudSync.set(false);
-            GeneralClientConfig.INSTANCE.syncPlayerData.set(false);
-            GeneralClientConfig.INSTANCE.firstTimeLoad.set(false);
-            GeneralClientConfig.INSTANCE.save();
+                    doInitialSync().thenRun(() ->
+                        minecraft.execute(() -> {
+                            // note that we intentionally ignore the config provided to this screen,
+                            // as it's possible that #doInitialSync() has invalidated our current config,
+                            // which would lead to changes made in the opened screen being effectively discarded
+                            assert minecraft.player != null;
+                            WardrobeBrowserScreen.open(minecraft, minecraft.player);
+                        })
+                    );
+                })
+                .tooltip(Tooltip.create(WildfireLang.FIRST_TIME_ENABLE_TOOLTIP.line(1)
+                        .append("\n\n")
+                        .append(WildfireLang.FIRST_TIME_ENABLE_TOOLTIP.line(2)))));
 
-            minecraft.setScreen(new WardrobeBrowserScreen(null, minecraft.player.getUUID()));
-        }));
+        ref.no = addButton(builder -> builder
+                .message(() -> DISABLE_CLOUD_SYNCING)
+                .position(x - 131, y + 74)
+                .size(128, 20)
+                .onPress(ignored -> {
+                    final var config = ClientConfig.config();
+                    config.cloudSync().enabled().update(false);
+                    config.cloudSync().automatic().update(false);
+                    config.firstTimeLoad().update(false);
 
-        super.init();
+                    minecraft.setScreen(new WardrobeBrowserScreen(null, this.config));
+                }));
     }
 
     private CompletableFuture<Void> doInitialSync() {
-        UUID clientUUID = minecraft.player.getUUID();
+        assert minecraft.player != null;
+        final var uuid = minecraft.player.getUUID();
+
+        WildfireClientAPI.players().invalidateIf(config -> config.syncStatus == SyncStatus.UNKNOWN);
+
         return CompletableFuture.runAsync(() -> {
-            PlayerConfig clientConfig = WildfireGender.getOrAddPlayerById(clientUUID);
-            if (!clientConfig.hasLocalConfig()) {
+            var clientConfig = WildfireClientAPI.players().getOrCreate(uuid);
+            if(!clientConfig.hasLocalConfig()) {
                 try {
                     // note that we wait for this to ensure that we don't have any inconsistencies with the synced
                     // data once we open the main menu
-                    WildfireGenderClient.loadGenderInfo(clientUUID, false, true).join();
-                } catch (CompletionException ignored) {
+                    WildfireGenderClient.loadGenderInfo(uuid, false, true).join();
+                } catch(CompletionException ignored) {
                     // loadGenderInfo should log any errors for us
                     return;
-                } catch (Exception e) {
+                } catch(Exception e) {
                     WildfireGender.LOGGER.error("Failed to perform initial sync from the cloud", e);
                     return;
                 }
-                PlayerConfig.saveGenderInfo(clientConfig);
+                clientConfig.save();
                 // don't immediately re-sync the data we just got back to the cloud
                 clientConfig.needsCloudSync = false;
             } else {
+                // simply assume that the config is already loaded, so no need to wait.
                 clientConfig.needsCloudSync = true;
             }
         });
     }
 
     @Override
-    public void renderBackground(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         super.renderBackground(graphics, mouseX, mouseY, delta);
-        graphics.blit(BACKGROUND, (this.width - 274) / 2, (this.height - 200) / 2, 0, 0, 274, 200, 512, 512);
+        graphics.blit(BACKGROUND, (this.width - SCREEN_WIDTH) / 2, (this.height - 200) / 2, 0, 0, SCREEN_WIDTH, 200, 512, 512);
     }
 
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        super.render(graphics, mouseX, mouseY, delta);
+    public void tick() {
+        super.tick();
+        this.fakeKeira.get().tick();
+    }
 
-        PoseStack mStack = graphics.pose();
+    @Override
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+        super.render(graphics, mouseX, mouseY, delta);
 
         int x = this.width / 2;
         int y = this.height / 2;
 
-        drawCenteredText(graphics, WildfireLang.FIRST_TIME_SETUP.translate(), x, y - 24, 4210752);
+        drawScrollingString(graphics, getTitle(), x - (SCREEN_WIDTH / 2), y - 24, TextAlignment.CENTER, 0xFF404040, SCREEN_WIDTH, 6, false);
 
-        drawCenteredTextWrapped(graphics, TextComponentUtil.build(ChatFormatting.LIGHT_PURPLE, "Keira Emberlyn:"), x + 32, y - 10, (int) ((256 - 65)), 0xFFFFFF);
+        drawScrollingString(graphics, WildfireLang.KEIRA.translateColored(ChatFormatting.LIGHT_PURPLE), x - 63, y - 10, TextAlignment.CENTER, 0xFFFFFF, 191, 0, false);
 
         //TODO: Vertical scroll bar for longer text?
-        drawCenteredTextWrapped(graphics, WildfireLang.FIRST_TIME_SETUP_DESCRIPTION.translate(), x + 32, y + 2, 256 - 65, 0xFFFFFF);
+        drawCenteredTextWrapped(graphics, DESCRIPTION, x + 32, y + 2, 256 - 65, 0xFFFFFF);
 
-        mStack.pushPose();
-        mStack.translate(x, y + 47, 0);
-        mStack.scale(0.8f, 0.8f, 1);
-        mStack.translate(-x, -y - 47, 0);
-        drawCenteredTextWrapped(graphics, WildfireLang.FIRST_TIME_SETUP_NOTICE.translate(), x, y + 68, (int) ((256 - 10) * 1.2f), 4210752);
-        mStack.popPose();
+        drawScaledScrollingString(graphics, NOTICE, x - (SCREEN_WIDTH / 2), y + 63, TextAlignment.CENTER, 0xFF404040, SCREEN_WIDTH, 6, false, 0.8F);
 
-        int keiraX = x - 133;
-        int keiraY = y - 12;
-        int keiraW = 60;
-        int keiraH = (int) (keiraW * ((float) KEIRA_HEIGHT / KEIRA_WIDTH));
-
-        graphics.blit(KEIRA_WAVE, keiraX, keiraY, 0, 0, keiraW, keiraH, KEIRA_WIDTH, KEIRA_HEIGHT, KEIRA_WIDTH, KEIRA_HEIGHT);
-
-        /*mStack.pushPose();
-        mStack.translate(keiraX + (keiraW / 2), keiraY + (keiraH / 2), 0);
-        mStack.mulPose(new Quaternionf().rotateZ(-25 * Mth.DEG_TO_RAD));
-        graphics.blit(KEIRA_LOOK, -keiraW / 2, -keiraH / 2, 0, 0, keiraW, keiraH, KEIRA_WIDTH, KEIRA_HEIGHT, KEIRA_WIDTH, KEIRA_HEIGHT);
-        mStack.popPose();*/
+        var fakeKeira = this.fakeKeira.get().getEntity();
+        InventoryScreen.renderEntityInInventoryFollowsMouse(graphics, x - 132, y - 13, x - 75, y + 60, 50, getEntityScale(fakeKeira, 0.4f), mouseX, mouseY, fakeKeira);
     }
 
     @Override
     public void removed() {
-        GeneralClientConfig.INSTANCE.save();
+        ClientConfig.INSTANCE.save();
+        super.removed();
     }
 }

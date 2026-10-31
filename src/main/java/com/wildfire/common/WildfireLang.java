@@ -1,0 +1,343 @@
+/*
+ * Wildfire's Female Gender Mod is a female gender mod created for Minecraft.
+ * Copyright (C) 2023-present WildfireRomeo
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package com.wildfire.common;
+
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.wildfire.api.NamedEnum;
+import com.wildfire.api.WildfireAPI;
+import java.util.Arrays;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextColor;
+import net.minecraft.world.Nameable;
+import org.jspecify.annotations.Nullable;
+
+public enum WildfireLang {
+    // TODO change this path?
+    MOD_NAME("player_list.title", "Female Gender Mod"),
+
+    ARMOR_TOOLTIP("armor.tooltip"),
+
+    UV_EDITOR("uv_editor"),
+    UV_EDITOR_RESET_ALL("uv_editor.reset_defaults_all"),
+    UV_EDITOR_RESET("uv_editor.reset_defaults"),
+    UV_EDITOR_NO_FACE("uv_editor.no_face_selected"),
+    UV_EDITOR_LB("uv_editor.selection.left_breast"),
+    UV_EDITOR_RB("uv_editor.selection.right_breast"),
+    UV_EDITOR_LB_OVERLAY("uv_editor.selection.left_breast_overlay"),
+    UV_EDITOR_RB_OVERLAY("uv_editor.selection.right_breast_overlay"),
+    UV_EDITOR_BODY_LAYER("uv_editor.selection.layer_body"),
+    UV_EDITOR_JACKET_LAYER("uv_editor.selection.layer_jacket"),
+
+    UV_EDITOR_X_POS("uv_editor.xpos"),
+    UV_EDITOR_Y_POS("uv_editor.ypos"),
+    UV_EDITOR_WIDTH("uv_editor.width"),
+    UV_EDITOR_HEIGHT("uv_editor.height"),
+    UV_EDITOR_INCREMENT("uv_editor.increment_tip"),
+    UV_EDITOR_ADD("uv_editor.add"),
+    UV_EDITOR_REMOVE("uv_editor.remove"),
+
+    UV_SELECTED_DIRECTION("uv.selected_direction"),
+    UV_QUAD("uv.quad"),
+
+    CREDITS_TITLE("credits.title"),
+    CREDITS_DESCRIPTION("credits.description"),
+    CREDITS_GENERAL("credits.general"),
+    CREDITS_TRANSLATORS("credits.translators"),
+
+    PLAYER_LIST_SETTINGS("player_list.settings_button"),
+    PLAYER_LIST_SYNC_STATUS("player_list.sync_status"),
+    PLAYER_LIST_LOADING("player_list.state.loading"),
+    PLAYER_LIST_SYNCED("player_list.state.synced"),
+    PLAYER_LIST_BOUNCE_MULTIPLIER("player_list.bounce_multiplier"),
+    PLAYER_LIST_BREAST_MOMENTUM("player_list.breast_momentum"),
+    PLAYER_LIST_SOUNDS("player_list.female_sounds"),
+
+    PLAYER_LIST_MODE("always_show_list"),
+    PLAYER_LIST_MODE_MOD_UI("always_show_list.mod_ui_only"),
+    PLAYER_LIST_MODE_MOD_UI_TOOLTIP("always_show_list.mod_ui_only.tooltip"),
+    PLAYER_LIST_MODE_TAB_LIST("always_show_list.tab_list_open"),
+    PLAYER_LIST_MODE_TAB_LIST_TOOLTIP("always_show_list.tab_list_open.tooltip"),
+    PLAYER_LIST_MODE_ALWAYS("always_show_list.always"),
+    PLAYER_LIST_MODE_ALWAYS_TOOLTIP("always_show_list.always.tooltip"),
+
+    CUSTOMIZATION_TAB_CUSTOMIZATION("breast_customization.tab_customization"),
+    CUSTOMIZATION_TAB_PHYSICS("breast_customization.tab_physics"),
+    CUSTOMIZATION_TAB_MISC("breast_customization.tab_miscellaneous"),
+    CUSTOMIZATION_PRESET_NEW("breast_customization.presets.add_new"),
+    CUSTOMIZATION_PRESET_DELETE("breast_customization.presets.delete"),
+    CUSTOMIZATION_DUAL_PHYSICS("breast_customization.dual_physics"),
+
+
+    WARDROBE_TITLE("wardrobe.title"),
+    WARDROBE_PLAYERS_USING("wardrobe.players_using_mod"),
+    WARDROBE_SLIDER_BREAST_SIZE("wardrobe.slider.breast_size"),
+    WARDROBE_SLIDER_SEPARATION("wardrobe.slider.separation"),
+    WARDROBE_SLIDER_HEIGHT("wardrobe.slider.height"),
+    WARDROBE_SLIDER_DEPTH("wardrobe.slider.depth"),
+    WARDROBE_SLIDER_ROTATION("wardrobe.slider.rotation"),
+    //TODO: Should these have wardrobe in the name?
+    WARDROBE_SLIDER_PITCH("slider.voice_pitch"),
+    WARDROBE_SLIDER_BOUNCE("slider.bounce"),
+    WARDROBE_SLIDER_FLOPPY("slider.floppy"),
+
+
+    APPEARANCE_SETTINGS_TITLE("appearance_settings.title"),
+    CHAR_SETTINGS_PHYSICS("char_settings.physics"),
+    CHAR_SETTINGS_JUMP("char_settings.jump"),
+    CHAR_SETTINGS_JUMPING("char_settings.jumping"),
+    CHAR_SETTINGS_HIDE_IN_ARMOR("char_settings.hide_in_armor"),
+    CHAR_SETTINGS_ARMOR_STAT("char_settings.show_armor_stat"),
+    CHAR_SETTINGS_HURT_SOUNDS("char_settings.hurt_sounds"),
+    CHAR_SETTINGS_HURT_SOUNDS_TOOLTIP("tooltip.hurt_sounds"),
+    CHAR_SETTINGS_OVERRIDE_PHYSICS("char_settings.override_armor_physics"),
+
+    LABEL_GENDER("label.gender"),
+    LABEL_FEMALE("label.female", "Female"),
+    LABEL_MALE("label.male", "Male"),
+    LABEL_OTHER("label.other", "Other"),
+
+    LABEL_ENABLED("label.enabled"),
+    LABEL_DISABLED("label.disabled"),
+    LABEL_ON("label.on"),
+    LABEL_OFF("label.off"),
+    LABEL_WITH_CREATOR("label.with_creator"),
+    LABEL_WITH_CONTRIBUTOR("label.with_contributor"),
+    LABEL_WITH_BOTH("label.with_both"),
+
+    CANCER_AWARENESS_TITLE("cancer_awareness.title"),
+
+    FIRST_TIME_TITLE("first_time_setup.title"),
+    FIRST_TIME_DESCRIPTION("first_time_setup.description"),
+    FIRST_TIME_NOTICE("first_time_setup.notice"),
+    FIRST_TIME_ENABLE("first_time_setup.enable"),
+    FIRST_TIME_ENABLE_TOOLTIP("first_time_setup.enable.tooltip"),
+    FIRST_TIME_DISABLE("first_time_setup.disable"),
+
+    CLOUD_SETTINGS("cloud_settings"),
+    CLOUD_TOOLTIP("cloud.tooltip"),
+    CLOUD_UNAVAILABLE_INVALID_ACC("cloud.unavailable.invalid_account"),
+    CLOUD_UNAVAILABLE_OFFLINE_SERVER("cloud.unavailable.offline_server"),
+    CLOUD_UNAVAILABLE_EDITING_MANNEQUIN("cloud.unavailable.editing_mannequin"),
+    CLOUD_STATUS("cloud.status"),
+    CLOUD_AUTOMATIC("cloud.automatic"),
+    CLOUD_AUTOMATIC_TOOLTIP("cloud.automatic.tooltip"),
+    CLOUD_SYNC("cloud.sync"),
+    CLOUD_SYNCING("cloud.syncing"),
+    CLOUD_SYNCING_SUCCESS("cloud.syncing.success"),
+    CLOUD_SYNCING_FAIL("cloud.syncing.fail"),
+    CLOUD_DELETE("cloud.delete"),
+    CLOUD_DELETED("cloud.deleted"),
+    CLOUD_DELETE_FAILED("cloud.delete_failed"),
+    CLOUD_STATUS_LOG("cloud.status_log"),
+
+    CLOUD_DETAILS("cloud_details.title"),
+    DETAILS_NEXT_PAGE("details.next_page"),
+    DETAILS_PREV_PAGE("details.prev_page"),
+    DETAILS_BACK("details.go_back"),
+
+    SYNC_LOG_AUTH_MOJANG("sync_log.authenticating_mojang"),
+    SYNC_LOG_AUTH_SYNC("sync_log.authenticating_sync"),
+    SYNC_LOG_AUTH_FAILED("sync_log.authentication_failed"),
+    SYNC_LOG_REAUTH("sync_log.reauthenticating"),
+    SYNC_LOG_FAILED("sync_log.failed_to_sync_data"),
+    SYNC_LOG_START("sync_log.attempting_sync"),
+    SYNC_LOG_SUCCESS("sync_log.sync_success"),
+    SYNC_LOG_TOO_FREQUENT("sync_log.sync_too_frequently"),
+    SYNC_LOG_PROFILE_DELETED("sync_log.data_deleted"),
+    SYNC_LOG_PROFILE_DELETION_FAILED("sync_log.data_deletion_failed"),
+    SYNC_LOG_NO_PROFILE("sync_log.no_data_to_delete"),
+    SYNC_LOG_SINGLE_PROFILE("sync_log.get_single_profile"),
+    SYNC_LOG_MULTIPLE_PROFILES("sync_log.get_multiple_profiles"),
+    SYNC_LOG_VERBOSITY_DEFAULT("sync_log.verbosity.default"),
+    SYNC_LOG_VERBOSITY_SHOW_FETCHES("sync_log.verbosity.show_fetches"),
+
+    CONTRIBUTOR_ROLE_MOD_CREATOR("contributor.role.mod_creator"),
+    CONTRIBUTOR_ROLE_FABRIC_MAINTAINER("contributor.role.fabric_maintainer"),
+    CONTRIBUTOR_ROLE_NEO_MAINTAINER("contributor.role.neoforge_maintainer"),
+    CONTRIBUTOR_ROLE_DEVELOPER("contributor.role.developer"),
+    CONTRIBUTOR_ROLE_CI_MAINTAINER("contributor.role.ci_maintainer"),
+    CONTRIBUTOR_ROLE_TRANSLATOR("contributor.role.translator"),
+    CONTRIBUTOR_ROLE_MASCOT("contributor.role.mascot"),
+    CONTRIBUTOR_ROLE_FEMALE_VOICE_ACTOR("contributor.role.voice_actor_female"),
+    CONTRIBUTOR_ROLE_GENERIC("contributor.role.generic"),
+
+    GENERIC_BRACKETS("generic.brackets"),
+    GENERIC_ELLIPSIS_SUFFIX("generic.ellipsis.suffix"),
+    GENERIC_CONCAT("generic.concat"),
+    GENERIC_COMMA("generic.comma", "%1$s, %2$s"),
+    GENERIC_SPACE("generic.space"),
+    GENERIC_DASH_EXPLANATION("generic.dash_explanation"),
+
+    KEIRA("misc.keira_emberlyn"),
+    MISC_F("misc.f"),
+    MISC_GM("misc.gm"),
+
+    NOT_IN_WORLD("not_in_world"),
+    NOT_IN_WORLD_TITLE("not_in_world.title"),
+
+    HURT_SOUND_SUBTITLE("hurt", "female", null),
+    KEY_CATEGORY("key.category", "generic", null),
+    KEY_CONFIG("key", "gender_menu", null),
+    KEY_TOGGLE("key", "toggle", null),
+
+    TOAST_GET_STARTED("toast", "get_started", null),
+
+    DEBUG_COMMAND("command.debug"),
+    COMMAND_INVALIDATE_CACHE("command.debug.invalidate_cache"),
+    COMMAND_INVALIDATE_CACHE_SUCCESS("command.debug.invalidate_cache.success"),
+    COMMAND_TARGET("command.debug.target"),
+    COMMAND_CACHE("command.debug.cache"),
+    COMMAND_FIRST_TIME("command.debug.firsttime"),
+    COMMAND_SYNC_VERBOSITY("command.debug.syncverbosity"),
+    COMMAND_ARMOR_STAND("command.server.debug.armor_stand"),
+    COMMAND_ARMOR_STAND_NO_COMPONENT("command.server.debug.armor_stand.error.no_component"),
+    COMMAND_TRIM("command.server.debug.trim"),
+
+    DEBUG_COMMAND_LOOKING_AT("command.looking_at"),
+    DEBUG_COMMAND_LOOKING_AT_NONE("command.looking_at.none"),
+    DEBUG_COMMAND_LOOKING_AT_UUID("command.looking_at.uuid"),
+    DEBUG_COMMAND_LOOKING_AT_TYPE("command.looking_at.type"),
+    DEBUG_COMMAND_LOOKING_AT_CLASS("command.looking_at.class"),
+    DEBUG_COMMAND_LOOKING_AT_RENDERER("command.looking_at.renderer"),
+    DEBUG_COMMAND_LOG_LEVEL("command.log_level"),
+    DEBUG_COMMAND_SYNCED_PLAYERS("command.synced_players"),
+    DEBUG_COMMAND_ENTITIES("command.entities"),
+
+    COMMAND_VERSION_INFO("command.server.version_info", "running version %1$s"),
+    COMMAND_SYNCED_PLAYER_COUNT("command.server.synced_players", "%1$s/%2$s synced players online"),
+    COMMAND_ENTITY_MUST_BE_MANNEQUIN("command.server.mannequin.not_mannequin", "Provided entity must be a mannequin"),
+    COMMAND_ENTITY_MUST_BE_AVATAR_LIKE("command.server.mannequin.not_avatar_like", "Provided entity must be a player or mannequin"),
+    COMMAND_SERVER_NO_MOD_ON_CLIENT("command.server.no_mod", "This command requires a compatible version of Female Gender Mod to use"),
+    COMMAND_SERVER_INVALID_GENDER("command.server.invalid_gender", "%1$s is not a recognized gender"),
+
+    COMMAND_MANNEQUIN_SET_VALUE("command.server.mannequin.set", "Set %1$s %2$s to %3$s"),
+    COMMAND_MANNEQUIN_COPIED_MULTIPLE_VALUES("command.server.mannequin.set.copied_multiple", "Copied %1$s settings from %2$s to %3$s"),
+    COMMAND_MANNEQUIN_NO_CHANGES("command.server.mannequin.set.no_changes", "No changes were made to %1$s"),
+
+    COMMAND_MANNEQUIN_DATA_GENDER("command.server.mannequin.data.gender", "gender"),
+    COMMAND_MANNEQUIN_DATA_BREAST_SIZE("command.server.mannequin.data.breast_size", "breast size"),
+    COMMAND_MANNEQUIN_DATA_X_OFFSET("command.server.mannequin.data.xOffset", "breast separation"),
+    COMMAND_MANNEQUIN_DATA_Y_OFFSET("command.server.mannequin.data.yOffset", "breast height"),
+    COMMAND_MANNEQUIN_DATA_Z_OFFSET("command.server.mannequin.data.zOffset", "breast depth"),
+    COMMAND_MANNEQUIN_DATA_CLEAVAGE("command.server.mannequin.data.cleavage", "breast rotation"),
+    COMMAND_MANNEQUIN_DATA_SHOW_IN_ARMOR("command.server.mannequin.data.show_in_armor", "show breasts in armor"),
+    COMMAND_MANNEQUIN_DATA_PHYSICS("command.server.mannequin.data.physics", "breast physics enabled"),
+    COMMAND_MANNEQUIN_DATA_PHYSICS_BOUNCE("command.server.mannequin.data.physics_bounce", "breast physics intensity"),
+    COMMAND_MANNEQUIN_DATA_PHYSICS_FLOPPY("command.server.mannequin.data.physics_floppy", "breast physics momentum"),
+    COMMAND_MANNEQUIN_DATA_PHYSICS_UNIBOOB("command.server.mannequin.data.physics_uniboob", "unified breast physics"),
+    COMMAND_MANNEQUIN_DATA_HURT_SOUNDS("command.server.mannequin.data.hurt_sounds", "female hurt sounds"),
+    COMMAND_MANNEQUIN_DATA_HURT_PITCH("command.server.mannequin.data.hurt_pitch", "hurt sound pitch"),
+
+    MANNEQUIN_CANT_EDIT_NO_PERMISSIONS("mannequin.edit.no_permissions", "You don't have permission to edit this mannequin"),
+
+    ;
+
+    private final String translationKey;
+    private final @Nullable String fallback;
+
+    WildfireLang(@Nullable String type, String path, @Nullable String fallback) {
+        if(type == null) {
+            this.translationKey = WildfireAPI.MODID + "." + path;
+        } else {
+            this.translationKey = WildfireGender.id(path).toLanguageKey(type);
+        }
+        this.fallback = fallback;
+    }
+
+    WildfireLang(String path, @Nullable String fallback) {
+        this(null, path, fallback);
+    }
+
+    WildfireLang(String path) {
+        this(null, path, null);
+    }
+
+    public @Nullable String getFallback() {
+        return fallback;
+    }
+
+    public String getTranslationKey() {
+        return translationKey;
+    }
+
+    public MutableComponent translateColored(TextColor textColor) {
+        //~ if >=26.2 'textColor.getValue()' -> 'textColor'
+        return translate().withColor(textColor.getValue());
+    }
+
+    public MutableComponent translateColored(TextColor textColor, Object... args) {
+        return translate(args).withColor(textColor.getValue());
+    }
+
+    public MutableComponent translateColored(ChatFormatting color) {
+        return translate().withStyle(color);
+    }
+    public MutableComponent translateColored(ChatFormatting color, Object... args) {
+        return translate(args).withStyle(color);
+    }
+
+    public MutableComponent translate() {
+        if(fallback == null) {
+            return Component.translatable(translationKey);
+        } else {
+            return Component.translatableWithFallback(translationKey, fallback);
+        }
+    }
+
+    public MutableComponent translate(Object... args) {
+        Object[] arguments = Arrays.stream(args).map(WildfireLang::parse).toArray();
+        if(fallback == null) {
+            return Component.translatable(translationKey, arguments);
+        } else {
+            return Component.translatableWithFallback(translationKey, fallback, arguments);
+        }
+    }
+
+    public MutableComponent line(int line) {
+        return Component.translatable(translationKey + ".line" + line);
+    }
+
+    public MutableComponent translateShort() {
+        return Component.translatable(translationKey + ".short");
+    }
+
+    public MutableComponent translateDescription() {
+        return Component.translatable(translationKey + ".description");
+    }
+
+    public SimpleCommandExceptionType simpleCommandException() {
+        return new SimpleCommandExceptionType(translate());
+    }
+
+    public DynamicCommandExceptionType dynamicCommandException() {
+        return new DynamicCommandExceptionType(this::translate);
+    }
+
+    private static Object parse(Object other) {
+        return switch(other) {
+            case Nameable nameable -> nameable.getDisplayName();
+            case NamedEnum named -> named.getTranslatedName();
+            case WildfireLang lang -> lang.translate();
+            default -> other;
+        };
+    }
+}

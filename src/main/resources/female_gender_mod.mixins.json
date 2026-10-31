@@ -1,0 +1,15 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "com.wildfire.common.mixins",
+    "compatibilityLevel": "JAVA_21",
+    "mixins": [
+        "ArmorStandMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    },
+    "overwrites": {
+      "requireAnnotations": true
+    }
+}

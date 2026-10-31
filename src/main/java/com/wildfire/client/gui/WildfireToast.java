@@ -18,9 +18,11 @@
 
 package com.wildfire.client.gui;
 
-import com.wildfire.main.WildfireGender;
-import java.util.ArrayList;
-import java.util.List;
+import com.wildfire.client.WildfireKeyBindings;
+import com.wildfire.client.gui.screen.BaseWildfireScreen;
+import com.wildfire.common.WildfireGender;
+import com.wildfire.client.config.ClientConfig;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.toasts.Toast;
@@ -28,46 +30,27 @@ import net.minecraft.client.gui.components.toasts.ToastComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public class WildfireToast implements Toast {
-    private static final ResourceLocation TEXTURE = ResourceLocation.withDefaultNamespace("toast/tutorial");
-    private static final ResourceLocation ICON = WildfireGender.rl("textures/bc_ribbon.png");
-    public static final int PROGRESS_BAR_WIDTH = 154;
-    public static final int PROGRESS_BAR_HEIGHT = 1;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import org.jspecify.annotations.Nullable;
+
+/// @apiNote Only use this on the client side
+public class WildfireToast implements Toast, IFancyFontRenderer {
+    private static final ResourceLocation TEXTURE = ResourceLocation.withDefaultNamespace("toast/advancement");
+    private static final ResourceLocation ICON = WildfireGender.id("bc_ribbon");
     private final List<FormattedCharSequence> text;
     private Visibility visibility = Visibility.SHOW;
-    private long lastTime;
-    private float lastProgress;
-    private float progress;
-    private final boolean hasProgressBar;
-    private final int displayDuration;
 
-    public WildfireToast(Font font, Component title, @Nullable Component description, boolean hasProgressBar, int i) {
+    public WildfireToast(Font textRenderer, Component title, @Nullable Component description) {
         this.text = new ArrayList<>(2);
-        //TODO - 1.21.4: CommonColors.PURPLE
-        this.text.addAll(font.split(title.copy().withColor(0xFF500050), 126));
+        //Note: 26.1 uses CommonColors.COSMOS_PINK here; as 1.21.1 has no such constant a close ribbon pink is inlined instead
+        this.text.addAll(textRenderer.split(title.copy().withColor(0xFFF38BAA), 126));
         if (description != null) {
-            this.text.addAll(font.split(description, 126));
+            this.text.addAll(textRenderer.split(description, 126));
         }
-
-        this.hasProgressBar = hasProgressBar;
-        this.displayDuration = i;
     }
-
-    public WildfireToast(Font font, Component title, @Nullable Component description, boolean hasProgressBar) {
-        this(font, title, description, hasProgressBar, 0);
-    }
-
-    //TODO - 1.21.4: Uncomment
-    /*@Override
-    public void update(ToastManager manager, long time) {
-        if(WildfireGenderClient.INSTANCE.toggleEditGUI.isDown()) {
-            this.visibility = Visibility.HIDE;
-        }
-        //this.visibility = (double)time >= 10000.0 * manager.getNotificationDisplayTimeMultiplier() ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
-    }*/
 
     @Override
     public int height() {
@@ -78,40 +61,47 @@ public class WildfireToast implements Toast {
         return Math.max(this.text.size(), 2) * 11;
     }
 
-    @NotNull
     @Override
-    public Visibility render(@NotNull GuiGraphics graphics, @NotNull ToastComponent toast, long timeSinceLastVisible) {
-        int height = height();
-        graphics.blitSprite(TEXTURE, 0, 0, width(), height);
-
-        graphics.blit(ICON, 6, 6, 0, 0, 20, 20, 20, 20, 20, 20);
-        int j = this.text.size() * 11;
-        int k = 7 + (this.getTextHeight() - j) / 2;
-
-        for (int l = 0; l < this.text.size(); l++) {
-            graphics.drawString(toast.getMinecraft().font, this.text.get(l), 30, k + l * 11, 0xFF000000, false);
-        }
-
-        if (this.hasProgressBar) {
-            int l = height - 4;
-            graphics.fill(3, l, 157, l + 1, -1);
-            int filledColor;
-            if (this.progress >= this.lastProgress) {
-                filledColor = 0xFF005500;
-            } else {
-                filledColor = 0xFF550000;
+    public Visibility render(GuiGraphics graphics, ToastComponent toast, long fullyVisibleForMs) {
+        //Note: 1.21.1 has no ToastManager/update/getWantedVisibility, so the hide logic from 26.1's #update is merged into #render
+        if(shouldHide()) {
+            hide();
+            if (ClientConfig.config().showToast().update(false)) {
+                CompletableFuture.runAsync(ClientConfig.INSTANCE::save);
             }
+        }
+        if(visibility == Visibility.HIDE) {
+            return visibility;
+        }
+        int i = this.height();
+        graphics.blitSprite(TEXTURE, 0, 0, width(), i);
 
-            graphics.fill(3, l, (int)(3.0F + 154.0F * this.lastProgress), l + 1, filledColor);
+        graphics.blitSprite(ICON, 6, 6, 20, 20);
+        int j = this.text.size() * 11;
+        int lineY = 7 + (getTextHeight() - j) / 2;
+
+        for (FormattedCharSequence line : text) {
+            drawScrollingString(graphics, line, 26, lineY, TextAlignment.RELATIVE, 0xFFFFFF, width() - 35, 2, false, fullyVisibleForMs);
+            lineY += 11;
         }
         return visibility;
+    }
+
+    private boolean shouldHide() {
+        Minecraft client = Minecraft.getInstance();
+        if(client.screen instanceof BaseWildfireScreen) {
+            return true;
+        }
+        return WildfireKeyBindings.INSTANCE.configKey().isDown();
     }
 
     public void hide() {
         this.visibility = Visibility.HIDE;
     }
 
-    public void setProgress(float progress) {
-        this.progress = progress;
+    @Override
+    public long getTimeOpened() {
+        //Unused
+        return 0;
     }
 }
